@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_about"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.runwise.supply.mine.AboutActivity"
+    android:background="@color/base_background_color"
+    >
+    <include
+        layout="@layout/common_title_bar"/>
+
+    <EditText
+        android:id="@+id/giveMessage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:textColor="#3e3e3e"
+        android:textSize="14sp"
+        android:textColorHint="#b3b3b3"
+        android:hint="亲,您遇到什么问题,有什么功能意见吗?欢迎提给我们,谢谢!"
+        android:gravity="top"
+        android:background="#ffff"
+        android:padding="10dp"
+        />
+    
+    <TextView
+        android:id="@+id/commitMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:textColor="#ffff"
+        android:text="确认提交"
+        android:background="@drawable/base_btn_selector"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        />
+
+</LinearLayout>

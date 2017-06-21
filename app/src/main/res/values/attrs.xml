@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tab -->
+    <declare-styleable name="PraiseView">
+        <attr name="defaultSrc" format="reference" />
+    </declare-styleable>
+</resources>

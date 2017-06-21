@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="base_color">#4696f7</color>
+    <color name="base_background_color">#f5f5f5</color>
+    <color name="bg_gray">#cacaca</color>
+    <color name="tab_text_on_color">@color/base_color</color>
+    <color name="tab_text_off_color">#5d5d5d</color>
+    <color name="pv_wait_color">#cacaca</color>
+    <color name="tag_press_grag">#d1cfd1</color>
+    <color name="tag_press_normal">#0000</color>
+    <color name="dealer_address_color">#666666</color>
+    <color name="dealer_name_color">#333333</color>
+    <color name="code_normal">#f0f4fe</color>
+    <color name="code_press">#cdced4</color>
+    <color name="btn_green">#4b98f4</color>
+    <color name="setting_title_bg">#f9f9f9</color>
+    <color name="setting_title">#333333</color>
+    <color name="settting_content">#999999</color>
+</resources>

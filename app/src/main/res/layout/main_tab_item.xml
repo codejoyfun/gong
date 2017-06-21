@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="6dp"
+    >
+
+    <FrameLayout
+        android:id="@+id/iv_icon_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" >
+
+        <ImageView
+            android:id="@+id/tab_iv_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/tab_1"
+            />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/tv_text_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_icon_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp" >
+        <TextView
+            android:id="@+id/tab_tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="班级圈"
+            android:textSize="@dimen/main_tab_font_size"
+            android:textColor="@drawable/tab_textcolor_selector"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_hint"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_toRightOf="@id/iv_icon_layout"
+        android:background="@drawable/red_point_bg"
+        android:gravity="center"
+        android:scaleType="fitXY"
+        android:visibility="invisible" />
+
+</RelativeLayout>

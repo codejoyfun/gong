@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base_background_color" >
+
+    <include
+        android:id="@+id/sex_tittle"
+        layout="@layout/common_title_bar" />
+
+    <RelativeLayout
+        android:id="@+id/ret_nan"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sex_tittle"
+        android:background="@color/white"
+        android:clickable="true"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/tv_nan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:padding="8dp"
+            android:text="男"
+            android:textColor="#212121"
+            android:textSize="14dp" />
+
+        <ImageView
+            android:id="@+id/img_n1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:scaleType="matrix"
+            android:src="@drawable/select_icon"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/ret_nv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ret_nan"
+        android:layout_marginTop="1dp"
+        android:background="@color/white"
+        android:clickable="true"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/tv_nv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:padding="8dp"
+            android:text="女"
+            android:textColor="#212121"
+            android:textSize="14dp" />
+
+        <ImageView
+            android:id="@+id/img_n2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:scaleType="matrix"
+            android:src="@drawable/select_icon"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

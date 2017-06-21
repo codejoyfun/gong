@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/base_background_color">
+
+    <include
+        android:id="@+id/titleLayout"
+        layout="@layout/common_title_bar" />
+
+    <LinearLayout
+        android:id="@+id/update_userinfo_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleLayout"
+        android:layout_marginTop="8dip"
+        android:background="@drawable/setting_phone_update_bg"
+        android:orientation="horizontal"
+        android:paddingBottom="6dip"
+        android:paddingTop="6dip" >
+
+        <EditText
+            android:id="@+id/update_userinfo_value"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dip"
+            android:layout_marginTop="1dip"
+            android:layout_weight="1.0"
+            android:background="#fff"
+            android:padding="6dip"
+            android:singleLine="true"
+            android:textColor="#8b8b8b"
+            android:textSize="14dip"
+            android:inputType="number"
+            android:text=""/>
+
+        <ImageView
+            android:id="@+id/update_userinfo_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+             android:padding="4dp"
+            android:layout_marginRight="4dip"
+            android:src="@drawable/btn_del_search_normal" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/update_userinfo_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/update_userinfo_layout"
+        android:paddingLeft="6dip"
+        android:paddingTop="10dip"
+        android:textSize="14dip" />
+
+</RelativeLayout>

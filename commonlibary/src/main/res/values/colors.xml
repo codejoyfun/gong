@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="base_color">#4696f7</color>
+    <color name="base_background_color">#f2f2f2</color>
+    <color name="btn_unenable">#a0c6f4</color>
+    <color name="title_bg">#f9f9f9</color>
+
+
+    <color name="top_bar_normal_bg">#4ebcd3</color>
+    <color name="mediacontroller_bg_pressed">#ffffffff</color>
+    <color name="mediacontroller_bg">#00000000</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="indicator_center">#2fbcfd</color>
+    <color name="indicator_end">@color/base_color</color>
+    <color name="indicator_start">#102fbcfd</color>
+    <color name="default_color">#cacaca</color>
+    <color name="listselector">#EEEEEE</color>
+
+    <color name="bottom_dialog_textcolor">#515151</color>
+    <color name="bottom_dialog_divider">#c6c6c6</color>
+    <color name="white">#ffff</color>
+
+
+</resources>

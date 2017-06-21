@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DevInfor>
+
+    <!-- 修改成你在sharesdk后台注册的应用的appkey" -->
+    <ShareSDK AppKey="1c6fde1249b3a" />
+    <!-- ShareByAppClient标识是否使用客户端分享，默认是false -->
+
+    <SinaWeibo
+        AppKey="2657498538"
+        AppSecret="562272913b4277daeeba066ffad9b07a"
+        Enable="false"
+        Id="1"
+        SortId="1"
+        RedirectUrl="http://sns.whalecloud.com/sina2/callback"
+        ShareByAppClient="true"
+        />
+
+    <WechatMoments
+        AppId="wx73885d3f98e79bdc"
+        AppSecret="6b7afa327c4c962e167e42130410aaec"
+        Enable="true"
+        Id="2"
+        SortId="2"
+        ShareByAppClient="true"
+       />
+
+    <Wechat
+        AppId="wx73885d3f98e79bdc"
+        AppSecret="6b7afa327c4c962e167e42130410aaec"
+        Enable="true"
+        Id="3"
+        SortId="3"
+        ShareByAppClient="true"
+     />
+    <!--<QZone-->
+        <!--AppId="101062407"-->
+        <!--AppKey="eb03fb2e38002740c564b64bc656c357"-->
+        <!--Enable="true"-->
+        <!--Id="3"-->
+        <!--ShareByAppClient="true"-->
+        <!--SortId="4" />-->
+
+    <QQ
+        AppId="1105943349"
+        AppKey="7XdshIR2U9dtAwTL"
+        Enable="true"
+        ShareByAppClient="true"
+        Id="4"
+        SortId="4" />
+
+</DevInfor>

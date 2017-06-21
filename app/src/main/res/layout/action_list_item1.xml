@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_btn_selector"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/classcircle_bottom_margin"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <FrameLayout
+            android:layout_width="@dimen/classcircle_item_img_left"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:id="@+id/classCircleBodyTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/base_color"
+                android:text="05\n11月"
+                android:gravity="left|top"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_img"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/classcircle_item_img_right"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dp"
+            android:paddingBottom="8dp"
+            >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/pic01"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    fresco:placeholderImage="@color/bg_gray"
+                    fresco:placeholderImageScaleType="fitXY"
+                    fresco:failureImage="@color/bg_gray"
+                    fresco:failureImageScaleType="fitXY"
+                    fresco:viewAspectRatio="1.33"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_devide_pay_protocol"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ffff"
+    tools:context="com.runwise.supply.message.DevidePayProtocolActivity">
+
+    <include
+        android:id="@+id/title_layout"
+        layout="@layout/common_title_bar" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/protocolText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="15sp"
+                android:lineSpacingExtra="4dp"
+                android:padding="8dp"
+                />
+            <Button
+                android:id="@+id/nextBtn"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/getcode_selector"
+                android:text="确认协议并签字"
+                android:textColor="#ffff"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

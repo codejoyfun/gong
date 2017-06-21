@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base_background_color"
+    android:orientation="vertical"
+    >
+
+    <include
+        android:id="@+id/sex_tittle"
+        layout="@layout/common_title_bar" />
+
+    <RelativeLayout
+        android:id="@+id/whoLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sex_tittle"
+        android:background="@color/white"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="公开"
+                android:textColor="#212121"
+                android:textSize="14dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="所有人可见"
+                android:textColor="#b3b3b3"
+                android:textSize="12dp"
+                android:layout_marginTop="4dp"
+                />
+
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/img_n1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:scaleType="matrix"
+            android:src="@drawable/select_icon"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#e9e8eb"
+        />
+
+    <RelativeLayout
+        android:id="@+id/whoLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sex_tittle"
+        android:background="@color/white"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="好友圈"
+                android:textColor="#212121"
+                android:textSize="14dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="关注的好友可见"
+                android:textColor="#b3b3b3"
+                android:textSize="12dp"
+                android:layout_marginTop="4dp"
+                />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_n2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:scaleType="matrix"
+            android:src="@drawable/select_icon"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#e9e8eb"
+        />
+
+    <RelativeLayout
+        android:id="@+id/whoLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sex_tittle"
+        android:background="@color/white"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="仅自己可见"
+                android:textColor="#212121"
+                android:textSize="14dp" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_n3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:scaleType="matrix"
+            android:src="@drawable/select_icon"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</LinearLayout>

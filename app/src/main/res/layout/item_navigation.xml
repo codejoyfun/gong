@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="#fefefe"
+    >
+    <ImageView 
+        android:id="@+id/guid_bg"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:scaleType="centerCrop"
+        />
+     <TextView 
+         android:id="@+id/guid_go"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:gravity="center"
+         android:textColor="#ffff"
+         android:textSize="14sp"
+         android:background="#a5cbf9"
+         android:layout_gravity="bottom|center_horizontal"
+         android:text="进入首页"
+         android:paddingTop="8dp"
+         android:paddingBottom="8dp"
+         android:paddingLeft="12dp"
+         android:paddingRight="12dp"
+         android:layout_marginBottom="80dp"
+         />
+</FrameLayout>

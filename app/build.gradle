@@ -1,0 +1,99 @@
+apply plugin: 'com.android.application'
+repositories {
+    flatDir {
+        dirs 'libs' //aar目录
+    }
+}
+dependencies {
+    compile fileTree(include: '*.jar', dir: 'libs')
+    compile project(':commonlibary')
+    compile project(':ucrop')
+    compile 'com.android.support:cardview-v7:21.0.3'
+    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.anthonycr.grant:permissions:1.0'
+    compile files('libs/BaiduLBS_Android.jar')
+    compile files('libs/superadapter-3.6.6.jar')
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '25.0.0'
+//    buildToolsVersion '25.0.2'
+
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    // 移除lint检查的error
+    lintOptions {
+        abortOnError false
+    }
+    productFlavors {
+        instant {
+            minSdkVersion 21
+        }
+        app {
+            minSdkVersion 14
+        }
+    }
+    defaultConfig {
+        applicationId "com.runwise.supply"
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 20160926
+        versionName "V1.0.0"
+        multiDexEnabled true
+        ndk {
+            abiFilters "armeabi"
+        }
+    }
+    signingConfigs {
+//        debug {
+//            //debug也用正式证书编译，方便调试分享等
+//            storeFile file("../carKeystore.jks")
+//            storePassword "redharecar"
+//            keyAlias "redharecar"
+//            keyPassword "redharecar"
+//        }
+
+        release {
+            storeFile file("../fruitKeystore.jks")
+            storePassword "runwise"
+            keyAlias "runwise"
+            keyPassword "runwise"
+        }
+    }
+    buildTypes {
+        debug {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+
+            versionNameSuffix ""
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
+        }
+        release {
+            // 不显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            // 是否进行混淆
+            minifyEnabled false
+            //压缩
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            // 混淆文件的位置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+

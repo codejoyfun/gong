@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center" >
+
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#961a1a1a"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/medial_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:src="@drawable/back_btn"
+            android:textColor="#ffff" />
+
+        <TextView
+            android:id="@+id/mediacontroller_filename"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_weight="1.0"
+            android:singleLine="true"
+            android:text="文件名"
+            android:textColor="#ffff"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/showpower"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:id="@+id/showtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:textColor="#ffff"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/mediaCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom"
+        android:layout_below="@id/top"
+        android:background="#0000" />
+
+    <LinearLayout
+        android:id="@id/bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#961a1a1a"
+        android:orientation="vertical" >
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#64FFffff" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/mediacontroller_time_current"
+                android:layout_width="57dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:background="#0000"
+                android:gravity="right"
+                android:src="@android:drawable/ic_media_previous"
+                android:text="00:00"
+                android:textColor="#ffff" />
+
+            <SeekBar
+                android:id="@+id/mediacontroller_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#0000"
+                android:maxHeight="4dp"
+                android:minHeight="4dp"
+                android:progressDrawable="@drawable/mdeial_seekbar_style"
+                android:thumb="@drawable/medial_seekbar_selector"
+                android:thumbOffset="3dp" />
+
+            <TextView
+                android:id="@+id/mediacontroller_time_total"
+                android:layout_width="57dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:background="#0000"
+                android:src="@android:drawable/ic_media_next"
+                android:text="00:00"
+                android:textColor="#ffff" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:id="@+id/controlLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center" >
+
+                <ImageButton
+                    android:id="@+id/mediacontroller_previous"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#0000"
+                    android:src="@drawable/medial_button_play_back_selector" />
+
+                <ImageButton
+                    android:id="@+id/mediacontroller_pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="26dp"
+                    android:layout_marginRight="26dp"
+                    android:background="#0000"
+                    android:src="@drawable/medial_button_play_selector" />
+
+                <ImageButton
+                    android:id="@+id/mediacontroller_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#0000"
+                    android:src="@drawable/medial_button_play_forward_selector" />
+            </LinearLayout>
+            
+              <ImageView
+                android:id="@+id/full_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:src="@drawable/medial_button_normalscreen_selector"
+                android:layout_alignParentRight="true"
+                 />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

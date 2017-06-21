@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_expert_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.runwise.supply.index.ExpertDetailActivity"
+    android:orientation="vertical"
+    android:background="#ffff"
+    >
+    <include
+        android:id="@+id/titleLayout"
+        layout="@layout/common_title_bar"/>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:layout_below="@id/titleLayout"
+        android:layout_above="@+id/sayHim"
+        />
+    <Button
+        android:id="@id/sayHim"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/getcode_selector"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="联系他"
+        android:textColor="#ffff"
+        android:textSize="16sp"
+        android:visibility="visible"
+        android:layout_alignParentBottom="true"
+        />
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/titleLayout"
+        />
+</RelativeLayout>

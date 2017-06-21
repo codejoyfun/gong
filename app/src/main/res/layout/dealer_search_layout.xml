@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/title_bar"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_alignParentTop="true">
+        <EditText
+
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:background="#eeeff0"
+            android:hint="请输入商家名称"
+            android:textSize="13sp"
+            android:textColorHint="#a8a8a8"
+            android:drawableLeft="@drawable/dealer_search"
+            android:layout_weight="1"
+            android:paddingLeft="10dp"
+            android:drawablePadding="10dp"
+            android:layout_marginLeft="20dp"
+            android:id="@+id/searchET" />
+        <Button
+            android:text="取消"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/cancelBtn"
+            android:textColor="#4b98f4"
+            android:textSize="16sp"
+            android:background="@null" />
+
+    </LinearLayout>
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#dfdfdf"
+        android:layout_below="@id/title_bar"
+        ></View>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f5f5f5"
+        android:layout_below="@id/line">
+        <TextView
+            android:id="@+id/tip"
+            android:textColor="#999999"
+            android:textSize="13sp"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:paddingLeft="20dp"
+            android:background="#f5f5f5"
+            android:layout_alignParentTop="true"
+            android:text="历史搜索"/>
+        <ListView
+            android:id="@+id/history_list"
+            android:layout_below="@id/tip"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:background="#ffffff"
+            android:divider="@null">
+        </ListView>
+        <Button
+            android:id="@+id/clearBtn"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:text="清空历史"
+            android:textSize="15sp"
+
+            android:textColor="#4b98f4"
+            android:layout_below="@id/history_list"
+            android:layout_marginTop="44dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/clear_history_btn"/>
+        <ListView
+            android:id="@+id/search_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:background="#ffffff"
+            android:divider="@null"></ListView>
+        <ImageView
+            android:id="@+id/nodata"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/search_dealer"
+            android:visibility="gone"
+            android:scaleType="center"/>
+    </RelativeLayout>
+
+</RelativeLayout>

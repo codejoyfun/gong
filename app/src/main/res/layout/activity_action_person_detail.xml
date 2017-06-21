@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffff"
+    android:id="@+id/rootLayout"
+    >
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pullListView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:listSelector="#0000"
+        ptr:ptrAnimationStyle="flip"
+        android:layout_marginBottom="@dimen/padding_bottom"
+        />
+    <FrameLayout
+        android:id="@+id/titleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_top_bar"
+        >
+        <View
+            android:id="@+id/titleBg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/base_color"
+            android:visibility="gone"
+            />
+        <LinearLayout
+            android:id="@+id/left_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+            <ImageView
+                android:id="@+id/title_iv_left"
+                android:layout_width="26dp"
+                android:layout_height="fill_parent"
+                android:scaleType="center"
+                android:visibility="visible"
+                android:src="@drawable/back_btn"
+                />
+        </LinearLayout>
+    </FrameLayout>
+
+    <include
+        android:id="@+id/actionBottomLayout"
+        layout="@layout/action_person_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        />
+
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+    <include layout="@layout/show_big_viewpager_layout" />
+
+</RelativeLayout>

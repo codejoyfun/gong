@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/white_btn_selector"
+    android:padding="10dp"
+    android:gravity="center_vertical"
+    >
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/contactHead"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        fresco:failureImage="@drawable/default_avatar"
+        fresco:failureImageScaleType="centerCrop"
+        fresco:overlayImage="@drawable/head_over_bg"
+        fresco:placeholderImage="@drawable/default_avatar"
+        fresco:placeholderImageScaleType="centerCrop"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        fresco:roundAsCircle="false" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        >
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="hhhh"
+            android:textColor="#212121"
+            android:textSize="14sp" />
+        <TextView
+            android:id="@+id/context"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp"
+            android:text="hhhh"
+            android:textColor="#595959"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+     <LinearLayout
+         android:id="@+id/addBtn"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal"
+         android:gravity="center_vertical"
+         android:background="@drawable/base_btn_selector"
+         android:paddingLeft="12dp"
+         android:paddingRight="12dp"
+         >
+         <ImageView
+             android:id="@+id/hintIcon"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:src="@drawable/un_contact_icon"
+             />
+
+         <TextView
+             android:id="@+id/hint"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center_vertical"
+             android:gravity="center_vertical"
+             android:paddingBottom="6dp"
+             android:paddingTop="6dp"
+             android:text="关注"
+             android:textColor="#ffff"
+             android:textSize="14sp"
+             android:layout_marginLeft="2dp"
+             />
+     </LinearLayout>
+</LinearLayout>

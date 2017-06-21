@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    >
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@null" >
+
+        <LinearLayout
+            android:id="@+id/select_layout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/nick_bg_shape"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="保存图片"
+                android:textColor="#515151"
+                android:textSize="18sp" 
+                android:gravity="center"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#c6c6c6" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/cancle_button"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/select_layout"
+            android:background="@drawable/nick_bg_shape"
+            android:text="取消"
+            android:textColor="@color/top_bar_normal_bg"
+            android:textSize="18sp" 
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

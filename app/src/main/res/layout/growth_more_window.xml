@@ -1,0 +1,69 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:background="#90FFFFFF"
+    android:gravity="bottom|center_horizontal" >
+
+    <RelativeLayout
+        android:id="@+id/growth_more_window_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="4dip">
+        <TextView
+            android:id="@+id/growth_more_window_album"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawableTop="@drawable/growth_more_window_album_img"
+            android:gravity="center_horizontal"
+            android:paddingBottom="@dimen/more_window_item_margin"
+            android:drawablePadding="6dp"
+            android:text="照片"
+            android:textColor="#828282"
+            />
+
+        <TextView
+            android:id="@+id/growth_more_window_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_toRightOf="@+id/growth_more_window_album"
+            android:clickable="true"
+            android:drawableTop="@drawable/growth_more_window_camera_img"
+            android:gravity="center_horizontal"
+            android:paddingBottom="@dimen/more_window_item_margin"
+            android:drawablePadding="6dp"
+            android:textColor="#828282"
+
+            android:text="相机"/>
+
+        <TextView
+            android:id="@+id/growth_more_window_diary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_toRightOf="@+id/growth_more_window_camera"
+            android:clickable="true"
+            android:drawableTop="@drawable/growth_more_window_diary"
+            android:gravity="center_horizontal"
+            android:paddingBottom="@dimen/more_window_item_margin"
+            android:drawablePadding="6dp"
+            android:textColor="#828282"
+
+            android:text="文本"/>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/growth_more_window_close"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:background="#eeeeee"
+        android:padding="10dip"
+        android:src="@drawable/growth_more_window_close_img" />
+</RelativeLayout>

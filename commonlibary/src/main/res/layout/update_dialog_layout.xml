@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:background="@drawable/dialog_bg"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/update_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:gravity="left"
+            android:textColor="#666666"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/update_context"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/update_title"
+            android:layout_margin="10dp"
+            android:gravity="left"
+            android:minHeight="60dp"
+            android:textColor="#666666"
+            android:textSize="16sp"
+            android:lineSpacingExtra="4dp"
+            />
+
+        <View
+            android:id="@+id/update_hline"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_below="@id/update_context"
+            android:background="#919191" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/update_hline" >
+
+            <Button
+                android:id="@+id/update_cancle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/white_btn_selector"
+                android:onClick="doClick"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="取消"
+                android:textColor="#999999"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="#919191" />
+
+            <Button
+                android:id="@+id/update_ok"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/white_btn_selector"
+                android:minWidth="120dip"
+                android:onClick="doClick"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="确定"
+                android:textColor="@color/base_color"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

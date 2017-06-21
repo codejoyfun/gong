@@ -1,0 +1,39 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+
+
+
+
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+
+
+        -->
+    </style>
+
+    <style name="RatingBarStyle" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/dealer_ratingbar</item>
+        <item name="android:minHeight">17dp</item>
+        <item name="android:maxHeight">17dp</item>
+    </style>
+
+    <style name="Theme.Welcome" parent="@style/Theme.AnimStyle">
+        <item name="android:windowBackground">@drawable/splash_layers</item>
+    </style>
+    <style name="ImageTranslucentTheme" parent="android:Theme.Light">
+        <!--在Android 4.4之前的版本上运行，直接跟随系统主题-->
+    </style>
+    <style name="ButtonStyle" >
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
+</resources>

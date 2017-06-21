@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_btn_selector"
+    android:orientation="vertical"
+    android:padding="6dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <com.facebook.drawee.view.SimpleDraweeView
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/comHead"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                fresco:failureImage="@drawable/default_avatar"
+                fresco:failureImageScaleType="centerCrop"
+                fresco:overlayImage="@drawable/head_over_bg"
+                fresco:placeholderImage="@drawable/default_avatar"
+                fresco:placeholderImageScaleType="centerCrop"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                fresco:roundAsCircle="false" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            >
+
+            <TextView
+                android:id="@+id/comName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="name"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                />
+
+            <TextView
+                android:id="@+id/comAddrass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="北京市"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:textColor="#b3b3b3"
+                />
+
+            <TextView
+                android:id="@+id/comPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="朝阳区"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:textColor="#b3b3b3"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

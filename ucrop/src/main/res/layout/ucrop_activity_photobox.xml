@@ -1,0 +1,128 @@
+<LinearLayout
+    android:id="@+id/ucrop_photobox"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_top_bar"
+        android:background="@color/base_color"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/left_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/title_iv_left"
+                android:layout_width="26dp"
+                android:layout_height="fill_parent"
+                android:scaleType="center"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/title_tv_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingLeft="8dp"
+                android:textColor="#ffffffff"
+                android:textSize="16sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/right_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/title_iv_rigth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/title_tv_rigth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="#ffffffff"
+                android:textSize="16sp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/mid_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/title_tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="#ffffffff"
+                android:textSize="18sp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/title_iv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:clickable="true"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/ucrop_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/wrapper_controls"
+        android:background="@color/ucrop_color_crop_background">
+
+        <ImageView
+            android:id="@+id/image_view_logo"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            tools:background="@drawable/ucrop_vector_ic_crop"
+            tools:ignore="MissingPrefix"/>
+
+        <com.yalantis.ucrop.view.UCropView
+            android:id="@+id/ucrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0"/>
+
+    </FrameLayout>
+
+</LinearLayout>

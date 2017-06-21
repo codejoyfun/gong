@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/addImg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            fresco:placeholderImage="@color/pv_wait_color"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:viewAspectRatio="1"
+            />
+
+        <ImageView
+            android:id="@+id/playVideoTag"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:src="@drawable/video_play_icon"
+            />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/deleteImg"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_gravity="right"
+        android:scaleType="fitEnd"
+        android:src="@drawable/chat_groupdel"
+        android:visibility="visible"
+        />
+
+</FrameLayout>

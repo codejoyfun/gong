@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <com.kids.commonframe.base.view.IPhotoDraweeView
+        android:id="@+id/imgDraweeView"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        fresco:actualImageScaleType="fitCenter"
+        >
+    </com.kids.commonframe.base.view.IPhotoDraweeView>
+    <ProgressBar
+        android:id="@+id/imgProgress"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_gravity="center"
+        />
+</FrameLayout>

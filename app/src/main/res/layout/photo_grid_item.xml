@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/picTakePic"
+        android:padding="2dip"
+        fresco:placeholderImage="@color/pv_wait_color"
+        fresco:placeholderImageScaleType="fitCenter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/picButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:focusable="false" 
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="16dp"/>
+
+    <!--<ImageView-->
+        <!--android:id="@+id/test_img"-->
+        <!--android:layout_width="30dip"-->
+        <!--android:layout_height="30dip"-->
+        <!--android:background="@drawable/log_qq_check"/>-->
+</RelativeLayout>

@@ -1,0 +1,23 @@
+<resources>
+    <dimen name="bottom_tab_font_size">14.0sp</dimen>
+    <dimen name="main_tab_font_size">12.0sp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="shadowSize">8dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="classcircle_item_img_left">10.0dip</dimen>
+    <dimen name="classcircle_item_img_right">10.0dip</dimen>
+    <dimen name="classcircle_oneitem_img_right">54.0dip</dimen>
+    <dimen name="classcircle_option_layout_hieght">38.0dip</dimen>
+    <dimen name="classcircle_line_inespacing">6.0dip</dimen>
+    <dimen name="classcircle_bottom_padding">12.0dip</dimen>
+    <dimen name="classcircle_bottom_margin">10.0dip</dimen>
+
+    <dimen name="more_window_item_margin">12dp</dimen>
+    <dimen name="verticalSpacing">6dp</dimen>
+    <dimen name="optionMenuHeight">42dp</dimen>
+    <dimen name="padding_bottom">36dp</dimen>
+
+</resources>

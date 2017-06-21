@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0f3f6"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/titleLayout"
+        layout="@layout/common_title_bar" />
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pulltorefreshlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/titleLayout"
+        android:cacheColorHint="#00000000"
+        android:divider="#dde4eb"
+        android:dividerHeight="1px"
+        ptr:ptrAnimationStyle="flip" >
+    </com.handmark.pulltorefresh.library.PullToRefreshListView>
+
+    <View
+        android:id="@+id/bgView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/titleLayout"
+        android:layout_marginTop="50dp"
+        android:background="#90000000"
+        android:visibility="gone"
+        />
+
+    <com.kids.commonframe.base.view.SlidingLayer
+        android:id="@+id/slidingLayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleLayout"
+        android:layout_marginTop="@dimen/optionMenuHeight"
+        >
+    </com.kids.commonframe.base.view.SlidingLayer>
+
+</RelativeLayout>

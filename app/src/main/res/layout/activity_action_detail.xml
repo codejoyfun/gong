@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffff"
+    android:id="@+id/rootLayout"
+    >
+    <include
+        android:id="@+id/titleLayout"
+        layout="@layout/common_title_bar" />
+
+    <com.kids.commonframe.base.view.PinnedPullToRefreshListView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pullListView"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:listSelector="#0000"
+        ptr:ptrAnimationStyle="flip"
+        android:layout_marginBottom="@dimen/padding_bottom"
+        />
+    <include
+        android:id="@+id/flowLayout"
+        android:layout_below="@id/titleLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        layout="@layout/action_flow_layout"
+        android:visibility="gone"
+        />
+
+    <include layout="@layout/action_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        />
+
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+    <include layout="@layout/show_big_viewpager_layout" />
+
+</RelativeLayout>

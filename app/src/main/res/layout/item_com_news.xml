@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <com.facebook.drawee.view.SimpleDraweeView
+            xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/actionNewsHead"
+            android:layout_width="46.0dip"
+            android:layout_height="46.0dip"
+            fresco:roundAsCircle="false"
+            fresco:placeholderImage="@drawable/default_avatar"
+            fresco:placeholderImageScaleType="centerCrop"
+            fresco:failureImage="@drawable/default_avatar"
+            fresco:failureImageScaleType="centerCrop"
+            fresco:overlayImage="@drawable/default_avatar"
+            android:visibility="visible"
+            />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            >
+
+            <TextView
+                android:id="@+id/actionNewsName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="果果	"
+                android:textSize="16sp"
+                android:textColor="#6A6A6A"
+                android:singleLine="true"
+                android:layout_marginTop="16dp"
+                />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                >
+                <TextView
+                    android:id="@+id/actionNewsContext"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center_vertical"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="4dp"
+                    android:text="我们"
+                    android:textSize="14sp"
+                    android:textColor="#2b2b2b" />
+                <ImageView
+                    android:id="@+id/actionNewsIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/actionNewsTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="3分钟前"
+                android:textColor="#cacaca"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                />
+        </LinearLayout>
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/actionNewsPic"
+            android:layout_width="120dp"
+            android:layout_height="90dp"
+            fresco:placeholderImage="@color/bg_gray"
+            fresco:placeholderImageScaleType="fitXY"
+            fresco:failureImage="@color/bg_gray"
+            fresco:failureImageScaleType="fitXY"
+            />
+    </LinearLayout>
+    <View
+        android:id="@+id/actionNewsLine"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#d7d7d7"
+        android:layout_marginTop="12dp"
+        />
+</LinearLayout>

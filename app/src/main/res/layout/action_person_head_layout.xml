@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/base_color"
+    >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:paddingTop="24dp"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            >
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/mineHead"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                fresco:failureImage="@drawable/default_avatar"
+                fresco:failureImageScaleType="centerCrop"
+                fresco:overlayImage="@drawable/head_over_bg"
+                fresco:placeholderImage="@drawable/default_avatar"
+                fresco:placeholderImageScaleType="centerCrop"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                fresco:roundAsCircle="false" />
+
+            <TextView
+                android:id="@+id/mineName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="#ffff"
+                android:textSize="@dimen/bottom_tab_font_size"
+                android:text=""
+                android:layout_marginTop="10dp"
+                />
+
+            <TextView
+                android:id="@+id/mineFlowCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:singleLine="true"
+                android:textColor="#ffff"
+                android:textSize="@dimen/bottom_tab_font_size"
+                android:layout_marginTop="6dp"
+                android:text=""
+                />
+
+            <TextView
+                android:id="@+id/mineRenzhen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:singleLine="true"
+                android:textColor="#ffff"
+                android:textSize="@dimen/bottom_tab_font_size"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/boder_bg"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text=""
+                android:visibility="gone"
+                />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
