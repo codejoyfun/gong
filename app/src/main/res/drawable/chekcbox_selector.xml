@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:drawable="@drawable/the_agreement_was_not_selected" android:state_checked="false"/>
-    <item android:drawable="@drawable/protocol_selected"/>
+    <item android:drawable="@drawable/login_ico_tick_darft" android:state_checked="false"/>
+    <item android:drawable="@drawable/login_ico_tick"/>
 </selector>

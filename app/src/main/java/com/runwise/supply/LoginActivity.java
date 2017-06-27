@@ -8,10 +8,12 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -49,6 +51,15 @@ public class LoginActivity extends NetWorkActivity {
 	private EditText mPassword;
 	@ViewInject(R.id.teacher_reg_password_see)
 	private CheckBox mPasswordSee;
+
+	private LoginPopUtil loginPopUtil;
+	@ViewInject(R.id.topLayout)
+	private View topLayout;
+	@ViewInject(R.id.login_pop_btn)
+	private ImageView loginPopIcon;
+
+	@ViewInject(R.id.remPassword)
+	private CheckBox remPassword;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,8 +67,6 @@ public class LoginActivity extends NetWorkActivity {
 		setStatusBarEnabled();
 		StatusBarUtil.StatusBarLightMode(this);
 		this.setContentView(R.layout.activity_login);
-		this.setTitleLeftIcon(true, R.drawable.marking);
-		this.setTitleText(true, "登录");
 //		String phoneNumber = SharePrenceUtil.getTempPhoneNumber(this);
 //		if ( !TextUtils.isEmpty(phoneNumber) ) {
 //			ed_userName.setText(phoneNumber);
@@ -77,8 +86,21 @@ public class LoginActivity extends NetWorkActivity {
 		login_btn.setEnabled(false);
 		mPhone.addTextChangedListener(new TextWatchListener());
 		mPassword.addTextChangedListener(new TextWatchListener());
+
+		loginPopUtil = new LoginPopUtil(this);
+		loginPopUtil.addOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+			}
+		});
+
 	}
 
+	@OnClick(R.id.login_pop_btn)
+    public void doLoginPopBtn(View view) {
+      loginPopUtil.showPop(topLayout,loginPopIcon);
+	}
 
 	private boolean isEmpty() {
 		boolean empty = false;
@@ -160,7 +182,7 @@ public class LoginActivity extends NetWorkActivity {
 		ToastUtil.show(mContext, errMsg);
 	}
 
-	@OnClick(R.id.left_layout)
+	@OnClick(R.id.closeBtn)
 	public void doBack(View v) {
 		this.finish();
 	}
