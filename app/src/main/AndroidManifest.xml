@@ -44,7 +44,9 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
-
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <!-- 分享需要的额外权限 -->
@@ -72,22 +74,15 @@
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="55ef993ae0f55affde0019d7" />
-        <!-- 百度地图 -->
-        <meta-data
-            android:name="com.baidu.lbsapi.API_KEY"
-            android:value="lmgAgeIeoMxH2N0BrjFGXuQKOLBhuxLR" />
 
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:taskAffinity=""
+            >
 
         </activity>
-
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote" />
         <!-- vitamio 的配置信息 -->
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"

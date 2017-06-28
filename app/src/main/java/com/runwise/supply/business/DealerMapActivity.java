@@ -56,15 +56,11 @@ public class DealerMapActivity extends BaseActivity {
         super.onResume();
         centerInMapByLatLng(latLng);
     }
-    @OnClick({R.id.title_iv_left,R.id.backIB})
+    @OnClick({R.id.title_iv_left})
     public  void leftClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
                 this.finish();
-                break;
-            case R.id.backIB:
-                //回到地图位置
-                centerInMapByLatLng(latLng);
                 break;
             default:
                 break;

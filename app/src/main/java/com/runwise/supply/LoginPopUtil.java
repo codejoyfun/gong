@@ -22,11 +22,15 @@ public class LoginPopUtil {
     private boolean hideSweetOption;
     private float preWid;
 
+    private LoginActivity.RemListAdapter remListAdapter;
     public LoginPopUtil(Context context) {
         inflater = LayoutInflater.from(context);
         Resources resources = context.getResources();
 //        popWidth = (int) (GlobalConstant.screenW - resources.getDimension(R.dimen.classcircle_item_img_left) + resources.getDimension(R.dimen.classcircle_item_img_right));
         popHeight = (int) (resources.getDimension(R.dimen.classcircle_option_layout_hieght));
+    }
+    public void setAdapter(LoginActivity.RemListAdapter remListAdapter) {
+        this.remListAdapter = remListAdapter;
     }
 
     private void initPop() {
@@ -43,6 +47,7 @@ public class LoginPopUtil {
 //        popupWindow.setAnimationStyle(R.style.classActionPopStyle);
 //        classActionZanLayout =  layout.findViewById(R.id.classActionZanLayout);
         ListView listView = (ListView) layout.findViewById(R.id.listView);
+        listView.setAdapter(remListAdapter);
 //        classActionZanLayout.setTag(zanView);
         if (onClickListener != null) {
             listView.setOnItemClickListener(onClickListener);

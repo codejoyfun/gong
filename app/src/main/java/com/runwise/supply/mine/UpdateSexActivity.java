@@ -91,7 +91,7 @@ public class UpdateSexActivity extends NetWorkActivity implements OnClickListene
 	public void updateSex() {
 		EditUserInfoRequest request = new EditUserInfoRequest();
 		request.setSex(sex);
-		request.setUid(userInfo.getMember_id());
+//		request.setUid(userInfo.getMember_id());
 		this.sendConnection("/Appapi/user/edit_info", request, REQUEST_UPDATE_SEX, true, UpdateUserInfoRep.class);
 	}
 

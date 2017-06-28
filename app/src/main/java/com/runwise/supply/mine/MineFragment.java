@@ -61,8 +61,8 @@ public class MineFragment extends NetWorkFragment {
         isLogin = true;
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         if (userInfo != null) {
-            FrecoFactory.getInstance(mContext).disPlay(mineHead, userInfo.getAvatar());
-            minePhone.setText(userInfo.getPhone());
+//            FrecoFactory.getInstance(mContext).disPlay(mineHead, userInfo.getAvatar());
+//            minePhone.setText(userInfo.getPhone());
         }
         MainActivity mainActivity = (MainActivity)mContext;
     }

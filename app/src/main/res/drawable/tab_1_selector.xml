@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:drawable="@drawable/home_after" android:state_pressed="true"/>
-    <item android:drawable="@drawable/home_after" android:state_selected="true"/>
-    <item android:drawable="@drawable/home_top"/>
+    <item android:drawable="@drawable/tabbar_home_highlight" android:state_pressed="true"/>
+    <item android:drawable="@drawable/tabbar_home_highlight" android:state_selected="true"/>
+    <item android:drawable="@drawable/tabbar_home_default"/>
 </selector>

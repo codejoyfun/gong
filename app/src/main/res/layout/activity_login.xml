@@ -68,7 +68,6 @@
                         android:layout_height="wrap_content"
                         android:background="#0000"
                         android:hint="请输入手机号码"
-                        android:inputType="number"
                         android:maxLength="11"
                         android:padding="10dp"
                         android:textColorHint="#b7b7b7"
@@ -128,7 +127,9 @@
                     android:layout_height="wrap_content"
                     android:button="@null"
                     android:background="@drawable/password_check_selector"
-                    android:checked="false" />
+                    android:checked="false"
+                    android:visibility="gone"
+                    />
             </LinearLayout>
             <View
                 android:layout_width="match_parent"

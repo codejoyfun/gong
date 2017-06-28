@@ -12,13 +12,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!-- 地图-->
-        <com.baidu.mapapi.map.MapView
-            android:id="@+id/bmapView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:clickable="true" />
-        <ImageButton
             android:id="@+id/backIB"
             android:layout_width="50dp"
             android:layout_height="50dp"
