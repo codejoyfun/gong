@@ -21,6 +21,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.business.NearFragment;
 import com.runwise.supply.entity.UserInfo;
+import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
 import com.runwise.supply.mine.MineFragment;
 import com.socketmobile.capture.Capture;
@@ -104,7 +105,7 @@ public class MainActivity extends NetWorkActivity {
         //TODO:这里根据登录状态，设置不同的页面进去
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
         if (!isLogined()){
-            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), IndexFragment.class, null);
+            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), NearFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), NearFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), NearFragment.class, null);

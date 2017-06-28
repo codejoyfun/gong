@@ -19,5 +19,7 @@
     <dimen name="verticalSpacing">6dp</dimen>
     <dimen name="optionMenuHeight">42dp</dimen>
     <dimen name="padding_bottom">36dp</dimen>
-
+    <dimen name="padding_right">7.5dp</dimen>
+    <dimen name="padding_left">7.5dp</dimen>
+    <dimen name="padding_top">5.5dp</dimen>
 </resources>
