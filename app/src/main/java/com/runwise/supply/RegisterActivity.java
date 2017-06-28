@@ -25,16 +25,13 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CheckUtil;
-import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.GetCodeRequest;
 import com.runwise.supply.entity.LoginRespone;
-import com.runwise.supply.entity.LoginResult;
 import com.runwise.supply.entity.RegisterRequest;
-import com.runwise.supply.entity.UserInfo;
 import com.runwise.supply.mine.entity.UrlResult;
 import com.runwise.supply.tools.StatusBarUtil;
 
@@ -156,16 +153,16 @@ public class RegisterActivity extends NetWorkActivity {
 				holdCode = true;
 				break;
 			case REGISTER:
-				LoginRespone loginRespone = (LoginRespone) result;
-				LoginResult loginResult = loginRespone.getData();
-				SPUtils.put(this,"sign",loginResult.getUser_token());
+//				LoginRespone loginRespone = (LoginRespone) result;
+//				LoginResult loginResult = loginRespone.getData();
+//				SPUtils.put(this,"sign",loginResult.getUser_token());
 				UserLoginEvent loginEvent = new UserLoginEvent();
-				loginEvent.setUserInfo(loginRespone);
+//				loginEvent.setUserInfo(loginRespone);
 				loginEvent.setIntent(targerIntent);
 				EventBus.getDefault().post(loginEvent);
-				UserInfo userInfo = new UserInfo(loginResult.getMember_id());
-				userInfo.setPhone(phonNumber);
-				GlobalApplication.getInstance().saveUserInfo(userInfo);
+//				UserInfo userInfo = new UserInfo(loginResult.getMember_id());
+//				userInfo.setPhone(phonNumber);
+//				GlobalApplication.getInstance().saveUserInfo(userInfo);
 				this.finish();
 				break;
 			case REQUEST_HELP:

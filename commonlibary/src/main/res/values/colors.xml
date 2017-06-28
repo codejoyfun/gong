@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="base_color">#4696f7</color>
+    <color name="base_color">#81c147</color>
     <color name="base_background_color">#f2f2f2</color>
-    <color name="btn_unenable">#a0c6f4</color>
+    <color name="btn_unenable">#c9e49f</color>
     <color name="title_bg">#f9f9f9</color>
 
 

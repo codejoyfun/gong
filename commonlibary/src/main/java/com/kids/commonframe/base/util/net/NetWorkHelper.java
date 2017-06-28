@@ -2,8 +2,9 @@ package com.kids.commonframe.base.util.net;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.android.internal.http.multipart.Part;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -21,12 +22,7 @@ import com.android.volley.toolbox.Volley;
 import com.kids.commonframe.R;
 import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.MD5;
-import com.kids.commonframe.base.util.ParamsUtils;
-import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.config.Constant;
-import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -159,7 +155,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 			url += "?"+queryParam.toString();
 		}
 		LogUtils.e(url);
-		RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where);
+		RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where,targerClass);
 		RequestErrorListener errorLietener = new RequestErrorListener(where);
 		HttpCallBack<T> httpCallback = new HttpCallBack<T>
 				( url ,succeessLietener , errorLietener ,where , method, bodyParams,bodyParamStr,partList,targerClass);
@@ -171,36 +167,36 @@ public class NetWorkHelper<T extends BaseEntity> {
 		}
 	}
 
-	/**
-	 * 封装后台 xml 请求，尽可能的简化了请求
-	 * @param bizCode  接口业务代码
-	 * @param bodyKeys  附加参数
-	 * @param bodyValues
-	 * @param where
-	 * @param showDialog
-	 * @param targerClass
-	 */
-	public  void sendConnection(String bizCode,String[] bodyKeys,String[] bodyValues, int where, boolean showDialog, Class<?> targerClass) {
-		this.setXmlParseType();
-		StringBuffer requestParams = new StringBuffer();
-		for ( int i = 0; i < bodyKeys.length; i ++ ) {
-			String requestKey = bodyKeys[i];
-			String requestValue = bodyValues[i];
-			if(TextUtils.isEmpty(requestKey)){
-				requestParams.append(requestValue);
-			}
-			else{
-				requestParams.append("<"+requestKey+">" + requestValue + "</"+requestKey+">");
-			}
-		}
-		String request = "<Root><BizCode>"+bizCode+"</BizCode><ClientType>Android_Phone_Teacher</ClientType>"
-				+ "<ClientOS>"+ CommonUtils.getVersionName(context)+"</ClientOS><ClientIP>10.38.1.110</ClientIP>" + "<Award></Award>"
-				+ "<SessionId></SessionId>" + "<SvcContent>" + "<![CDATA[" + "<Request>"
-				+ requestParams.toString()+ "</Request>  ]]></SvcContent></Root>";
-		LogUtils.e(request);
-		setBodyParams(new String[]{"xmlmsg","type","ps"}, new String[]{request,"xml","0"});
-		sendConnection(Method.POST, GlobalConstant.BASE_URL, new String[]{}, new String[]{}, where, showDialog, targerClass,null);
-	}
+//	/**
+//	 * 封装后台 xml 请求，尽可能的简化了请求
+//	 * @param bizCode  接口业务代码
+//	 * @param bodyKeys  附加参数
+//	 * @param bodyValues
+//	 * @param where
+//	 * @param showDialog
+//	 * @param targerClass
+//	 */
+//	public  void sendConnection(String bizCode,String[] bodyKeys,String[] bodyValues, int where, boolean showDialog, Class<?> targerClass) {
+//		this.setXmlParseType();
+//		StringBuffer requestParams = new StringBuffer();
+//		for ( int i = 0; i < bodyKeys.length; i ++ ) {
+//			String requestKey = bodyKeys[i];
+//			String requestValue = bodyValues[i];
+//			if(TextUtils.isEmpty(requestKey)){
+//				requestParams.append(requestValue);
+//			}
+//			else{
+//				requestParams.append("<"+requestKey+">" + requestValue + "</"+requestKey+">");
+//			}
+//		}
+//		String request = "<Root><BizCode>"+bizCode+"</BizCode><ClientType>Android_Phone_Teacher</ClientType>"
+//				+ "<ClientOS>"+ CommonUtils.getVersionName(context)+"</ClientOS><ClientIP>10.38.1.110</ClientIP>" + "<Award></Award>"
+//				+ "<SessionId></SessionId>" + "<SvcContent>" + "<![CDATA[" + "<Request>"
+//				+ requestParams.toString()+ "</Request>  ]]></SvcContent></Root>";
+//		LogUtils.e(request);
+//		setBodyParams(new String[]{"xmlmsg","type","ps"}, new String[]{request,"xml","0"});
+//		sendConnection(Method.POST, GlobalConstant.BASE_URL, new String[]{}, new String[]{}, where, showDialog, targerClass,null);
+//	}
 
 	/**
 	 * json请求封装
@@ -213,10 +209,15 @@ public class NetWorkHelper<T extends BaseEntity> {
 	public void sendConnection(String bizName,Object params, int where, boolean showDialog, Class<?> targerClass) {
 		this.setJsonParseType();
 		if(params != null) {
-			bodyParams = ParamsUtils.buildParam(params);
+			bodyParamStr = JSON.toJSONString(params);
+			LogUtils.e(bodyParamStr);
+		}
+		else {
+			bodyParamStr = null;
 		}
 		sendConnection(Method.POST , Constant.BASE_URL + bizName,  new String[]{}, new String[]{}, where, showDialog ,targerClass,null);
 	}
+
 
 	public void sendConnection(String bizName, int where, boolean showDialog, Class<?> targerClass) {
 		this.setJsonParseType();
@@ -313,10 +314,16 @@ public class NetWorkHelper<T extends BaseEntity> {
 			LogUtils.e(parsed);
 			T resultObj = null;
 			if ( newWorkCallBack != null ) {
-				resultObj = newWorkCallBack.onParse( where , targerClass ,parsed);
+				resultObj = newWorkCallBack.onParse( where , BaseEntity.class ,parsed);
 			}
 			if ( resultObj == null && paseInterface != null ) {
-				resultObj =  paseInterface.paseResult(targerClass, parsed);
+				resultObj =  paseInterface.paseResult(BaseEntity.class, parsed);
+				BaseEntity.ResultBean resultBean = resultObj.getResult();
+				if (resultBean.getData() != null) {
+					JSONObject jsonObject = (JSONObject) resultBean.getData();
+					Object object = JSON.parseObject(jsonObject.toJSONString(), targerClass);
+					resultBean.setData(object);
+				}
 			}
 			return Response.success(resultObj, HttpHeaderParser.parseCacheHeaders(response));
 		}
@@ -358,23 +365,24 @@ public class NetWorkHelper<T extends BaseEntity> {
 			if( filePartList != null ) {
 				return "multipart/form-data; boundary=" + Part.getBoundary();
 			}
-//			if ( paseInterface != null && paseInterface instanceof IJsonParseImp) {
-//				return "application/json";
-//			}
+			if ( paseInterface != null && paseInterface instanceof IJsonParseImp) {
+				return "application/json";
+			}
 			return super.getBodyContentType();
 		}
 
 		@Override
 		public Map<String, String> getHeaders() throws AuthFailureError {
-			String appSecret = "6d73a17134d1b211c656e58135c19504";
-			long currentTime = System.currentTimeMillis()/1000;
-			String apiToken = MD5.getMD5("VRR3rHcio7Bprr7H" + appSecret + currentTime);
+//			String appSecret = "6d73a17134d1b211c656e58135c19504";
+//			long currentTime = System.currentTimeMillis()/1000;
+//			String apiToken = MD5.getMD5("VRR3rHcio7Bprr7H" + appSecret + currentTime);
 			Map<String, String> headerMap = new HashMap<String, String>();
-			String userToken = (String) SPUtils.get(context,"sign","");
-			headerMap.put("user-token", userToken);
-			headerMap.put("api-token", apiToken);
-			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
-			headerMap.put("time", String.valueOf(currentTime));
+//			String userToken = (String) SPUtils.get(context,"sign","");
+//			headerMap.put("user-token", userToken);
+//			headerMap.put("api-token", apiToken);
+//			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
+			headerMap.put("X-Odoo-Db", "LBZ20170607");
+
 			LogUtils.e("Headers:" + headerMap.toString());
 			return headerMap;
 		}
@@ -408,26 +416,43 @@ public class NetWorkHelper<T extends BaseEntity> {
 			}
 		}
 	}
+
 	private class RequestSuccessListener<M extends BaseEntity> implements Listener<T>{
 		private int what;
-		public RequestSuccessListener( int what ){
+		private Class targerClass;
+		public RequestSuccessListener( int what ,Class targerClass){
 			this.what = what;
+			this.targerClass = targerClass;
 		}
 		@Override
 		public void onResponse(T response) {
 			dismissProgressDialog( what );
-			String repCode = response.getErr_code();
-			if ( "0".equals(repCode)) {
-				if ( newWorkCallBack != null ) {
-					newWorkCallBack.onSuccess(response,what);
+			if(response.getResult() != null) {
+				String repCode = response.getResult().getState();
+				if ( "A0006".equals(repCode)) {
+					if ( newWorkCallBack != null ) {
+						newWorkCallBack.onSuccess(response,what);
+					}
+				}
+				else {
+					cellBackError(response,what);
 				}
 			}
 			else {
-				if ( newWorkCallBack != null ) {
-					String errorMsg = response.getMsg();
-					newWorkCallBack.onFailure(errorMsg, response, what);
-				}
+				cellBackError(response,what);
 			}
+		}
+	}
+	private void cellBackError(T response,int what) {
+		if ( newWorkCallBack != null ) {
+			String errorMsg = "";
+			if (response.getResult() != null) {
+				errorMsg = response.getResult().getError();
+			}
+			else {
+				errorMsg = response.getError().getMessage();
+			}
+			newWorkCallBack.onFailure(errorMsg, response, what);
 		}
 	}
 	/**

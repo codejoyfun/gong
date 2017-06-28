@@ -41,7 +41,7 @@ public abstract class NetWorkFragment extends BaseFragment implements NetWorkCal
 	 * xml请求接口
 	 */
 	public void sendConnection(String bizCode,String[] bodyKeys,String[] bodyValues, int where, boolean showDialog, Class<?> targerClass) {
-		netWorkHelper.sendConnection(bizCode, bodyKeys, bodyValues, where, showDialog, targerClass);
+//		netWorkHelper.sendConnection(bizCode, bodyKeys, bodyValues, where, showDialog, targerClass);
 	}
 	/**
 	 * json请求接口

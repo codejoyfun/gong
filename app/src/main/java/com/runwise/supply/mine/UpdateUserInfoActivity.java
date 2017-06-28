@@ -91,7 +91,7 @@ public class UpdateUserInfoActivity extends NetWorkActivity {
             case UPDATE_USERINFO_NICKNAME:
                 tMinLen = 1;
                 tMaxLen = 10;
-                value = userInfo.getNickname();
+//                value = userInfo.getNickname();
                 title = "修改姓名";
                 hint = "请输入姓名";
                 mUserinfoValueEdt.setFilters(new InputFilter[]{new InputFilter.LengthFilter(tMaxLen)});
@@ -110,7 +110,7 @@ public class UpdateUserInfoActivity extends NetWorkActivity {
             case UPDATE_PHONE_NUMBER:
                 tMinLen = 1;
                 tMaxLen = 11;
-                value = userInfo.getPhone();
+//                value = userInfo.getPhone();
                 title = "修改手机号";
                 hint = "请输入手机号，数字类型";
                 mUserinfoHint.setGravity(Gravity.CENTER);
@@ -194,18 +194,18 @@ public class UpdateUserInfoActivity extends NetWorkActivity {
         boolean check = true;
         switch (type){
             case UPDATE_USERINFO_NICKNAME:
-                request.setUid(userInfo.getMember_id());
+//                request.setUid(userInfo.getMember_id());
                 request.setNickname(updateValue);
 //                check = checkValue(updateValue,tMinLen,tMaxLen);
                 break;
             case UPDATE_USERINFO_AGE:
-                request.setUid(userInfo.getMember_id());
+//                request.setUid(userInfo.getMember_id());
                 request.setAge(updateValue);
 //                check = checkValue(updateValue,tMinLen,tMaxLen);
                 break;
             case UPDATE_PHONE_NUMBER:
                 check = checkPhoneNumber(updateValue);
-                request.setUid(userInfo.getMember_id());
+//                request.setUid(userInfo.getMember_id());
                 request.setPhone(updateValue);
                 break;
         }
@@ -249,7 +249,7 @@ public class UpdateUserInfoActivity extends NetWorkActivity {
         UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
         switch (where){
             case UPDATE_USERINFO_NICKNAME:
-                userInfo.setNickname(updateValue);
+//                userInfo.setNickname(updateValue);
                 intent.putExtra("nickname", updateValue);
                 break;
 
@@ -258,7 +258,7 @@ public class UpdateUserInfoActivity extends NetWorkActivity {
                 intent.putExtra("age", updateValue);
                 break;
             case UPDATE_PHONE_NUMBER:
-                userInfo.setPhone(updateValue);
+//                userInfo.setPhone(updateValue);
                 intent.putExtra("phone", updateValue);
                 break;
         }

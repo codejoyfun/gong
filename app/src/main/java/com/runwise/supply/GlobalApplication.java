@@ -41,7 +41,7 @@ public class GlobalApplication extends MultiDexApplication {
     public UserInfo loadUserInfo() {
          mUserInfo = (UserInfo) SPUtils.readObject(this,"userInfo");
          if (mUserInfo != null) {
-             uid = mUserInfo.getMember_id();
+             uid = mUserInfo.getUid();
          }
          else {
            SPUtils.loginOut (instance);

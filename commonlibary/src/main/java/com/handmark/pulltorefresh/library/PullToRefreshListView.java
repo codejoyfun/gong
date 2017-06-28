@@ -35,7 +35,7 @@ import com.kids.commonframe.R;
 
 
 public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView> {
-	private int MIN_DATA_SEIZE = 10;
+	private int MIN_DATA_SEIZE = 0;
 	private LoadingLayout mHeaderLoadingView;
 	private LoadingLayout mFooterLoadingView;
 
@@ -46,6 +46,7 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 
 	private Mode currentMode;
 
+	private ListAdapter listAdapter;
 	public PullToRefreshListView(Context context) {
 		super(context);
 	}
@@ -373,8 +374,16 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 		}
 
 	}
+
+	@Override
+	public void setAdapter(ListAdapter adapter) {
+		super.setAdapter(adapter);
+		listAdapter = adapter;
+		currentMode = getMode();
+	}
+
 	private void addFooterView () {
-		if (null != mLvFooterLoadingFrame && !mAddedLvFooter && (getMode() == Mode.BOTH|| getMode() == Mode.PULL_FROM_END)) {
+		if (null != mLvFooterLoadingFrame && !mAddedLvFooter) {
 			mRefreshableView.addFooterView(mLvFooterLoadingFrame, null, false);
 			mAddedLvFooter = true;
 		}
@@ -399,10 +408,8 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 	 * @param totalCount 记录总条数
 	 */
 	public void onRefreshComplete (int totalCount) {
-		if ( currentMode == null ) {
-			currentMode = getMode();
-		}
-		int adapterSize = mRefreshableView.getCount() ;
+		int adapterSize = listAdapter.getCount() ;
+//		LogUtils.e("==============="+adapterSize);
 		if (adapterSize >= MIN_DATA_SEIZE && adapterSize < totalCount) {
 			if ( currentMode != getMode()) {
 				this.setMode(currentMode);
@@ -416,14 +423,11 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 				mAddedLvFooter = false;
 				setPullListViewModel();
 			}
-//			else if ( adapterSize < totalCount ) {
-//				addFooterView();
-//			}
 		}
 		onRefreshComplete();
-		if ( adapterSize >= totalCount) {
+		if ( adapterSize >= totalCount || adapterSize < 10) {
 			setPullListViewModel();
-			mFooterLoadingView.setFooterComplete("已加载全部");
+			mFooterLoadingView.setFooterComplete("没有更多内容啦~~");
 		}
 	}
 }

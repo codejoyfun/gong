@@ -42,7 +42,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                >
 
                 <TextView
                     android:id="@+id/pull_to_refresh_text"

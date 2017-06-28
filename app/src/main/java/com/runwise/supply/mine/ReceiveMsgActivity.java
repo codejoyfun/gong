@@ -60,7 +60,7 @@ public class ReceiveMsgActivity extends NetWorkActivity {
                 UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
                 UsMessageRequest messageRequest = new UsMessageRequest();
                 messageRequest.setMsg(message);
-                messageRequest.setUid(userInfo.getMember_id());
+//                messageRequest.setUid(userInfo.getMember_id());
                 sendConnection("/Appapi/Guestbook/addmsg",messageRequest,REQUEST_MAIN,true,UsMessageResult.class);
 
                 break;

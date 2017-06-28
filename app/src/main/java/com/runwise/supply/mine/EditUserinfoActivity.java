@@ -121,11 +121,11 @@ public class EditUserinfoActivity extends NetWorkActivity {
         province.setType("all");
         sendConnection("/Appapi/user/getProvinceList",province,RESPONSE_WEIZI,true,ProvinceList.class);
 
-        FrecoFactory.getInstance(this).disPlay(userHead,userInfo.getAvatar());
-        userInfoName.setText(userInfo.getNickname());
+//        FrecoFactory.getInstance(this).disPlay(userHead,userInfo.getAvatar());
+//        userInfoName.setText(userInfo.getNickname());
 //        userInfoAge.setText(userInfo.getAge());
 //        userInfoSex.setText("2".equals(userInfo.getSex()) ? "女" : "男");
-        userInfoPhone.setText(userInfo.getPhone());
+//        userInfoPhone.setText(userInfo.getPhone());
         this.setTitleText(true,"个人信息");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
     }
@@ -160,9 +160,9 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 }, null));
                 break;
             case REQUEST_GROWTH_RUL:
-                if (userInfo != null) {
-                    userInfo.setAvatar(growthUrl);
-                }
+//                if (userInfo != null) {
+//                    userInfo.setAvatar(growthUrl);
+//                }
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
                 Fresco.getImagePipeline().evictFromCache(updateImgUri);
                 FrecoFactory.getInstance(this).disPlay(userHead, updateImgUri);
@@ -244,7 +244,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
         this.growthUrl = growthUrl;
         EditUserInfoRequest request = new EditUserInfoRequest();
         request.setHeadsmall(growthUrl);
-        request.setUid(userInfo.getMember_id());
+//        request.setUid(userInfo.getMember_id());
         sendConnection("/Appapi/user/edit_info", request, REQUEST_GROWTH_RUL, true, UpdateUserInfoRep.class);
     }
     @OnClick({R.id.userInfoHead,R.id.shenfenLayout,R.id.leixinLayout,R.id.lingyuLayout,R.id.left_layout,R.id.userInfoAgeLayout
@@ -302,7 +302,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                         bean.setSelect(true);
                         EditUserInfoRequest request = new EditUserInfoRequest();
                         request.setLingyu_id(bean.getId());
-                        request.setUid(userInfo.getMember_id());
+//                        request.setUid(userInfo.getMember_id());
                         sendConnection("/Appapi/user/edit_info", request, REQUEST_UPDATE_TYPE, true, UpdateUserInfoRep.class);
                     }
                 });
@@ -334,7 +334,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                         bean.setSelect(true);
                         EditUserInfoRequest request = new EditUserInfoRequest();
                         request.setJigou_type(bean.getId());
-                        request.setUid(userInfo.getMember_id());
+//                        request.setUid(userInfo.getMember_id());
                         sendConnection("/Appapi/user/edit_info", request, REQUEST_UPDATE_ORG, true, UpdateUserInfoRep.class);
                     }
                 });
@@ -366,7 +366,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                         bean.setSelect(true);
                         EditUserInfoRequest request = new EditUserInfoRequest();
                         request.setProvince_id(bean.getProvince_id());
-                        request.setUid(userInfo.getMember_id());
+//                        request.setUid(userInfo.getMember_id());
                         sendConnection("/Appapi/user/edit_info", request, REQUEST_UPDATE_PROVINCE, true, UpdateUserInfoRep.class);
                     }
                 });
@@ -452,7 +452,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                     break;
                 case REQUEST_UPDATE_NAME:
                     userInfo = GlobalApplication.getInstance().loadUserInfo();
-                    userInfoName.setText(userInfo.getNickname());
+//                    userInfoName.setText(userInfo.getNickname());
                     break;
                 case REQUEST_UPDATE_AGE:
                     userInfo = GlobalApplication.getInstance().loadUserInfo();
@@ -464,7 +464,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                     break;
                 case REQUEST_UPDATE_PHONENUMBER:
                     userInfo = GlobalApplication.getInstance().loadUserInfo();
-                    userInfoPhone.setText(userInfo.getPhone());
+//                    userInfoPhone.setText(userInfo.getPhone());
                     break;
             }
         }
