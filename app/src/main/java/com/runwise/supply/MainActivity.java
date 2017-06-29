@@ -24,6 +24,7 @@ import com.runwise.supply.entity.UserInfo;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
 import com.runwise.supply.mine.MineFragment;
+import com.runwise.supply.orderpage.OrderFragment;
 import com.socketmobile.capture.Capture;
 import com.socketmobile.capture.client.CaptureClient;
 import com.socketmobile.capture.client.CaptureDeviceClient;
@@ -105,7 +106,7 @@ public class MainActivity extends NetWorkActivity {
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
         if (!isLogined()){
             mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), NearFragment.class, null);
+            mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), NearFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), NearFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);

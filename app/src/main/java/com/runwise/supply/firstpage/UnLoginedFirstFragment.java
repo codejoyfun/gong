@@ -1,16 +1,19 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
@@ -18,6 +21,7 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.business.BannerHolderView;
@@ -91,6 +95,15 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         pullListView.getRefreshableView().addHeaderView(headView);
         nAdapter = new NewsAdapter(mContext);
         pullListView.setAdapter(nAdapter);
+        pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                NewsResponse.ListBean bean = (NewsResponse.ListBean)adapterView.getAdapter().getItem(i);
+                Intent intent = new Intent(mContext,PageDeatailActivity.class);
+                intent.putExtra("url",bean.getUrl());
+                startActivity(intent);
+            }
+        });
         requestData(true);
     }
 
@@ -102,7 +115,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             loadType = FROMSTART;
             loadStr = "/gongfu/v2/wechat/news";
             //只在首次加载轮播图
-            LunboRequest lbRequest = new LunboRequest("访客端");
+            LunboRequest lbRequest = new LunboRequest("餐户端");
             sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
         }else{
             loadType = FROMEND;
@@ -139,17 +152,31 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         }
     }
 
-    private void updateLb(List<ImagesBean> post_list) {
+    private void updateLb(final List<ImagesBean> post_list) {
         banner.setPages(new CBViewHolderCreator<BannerHolderView>() {
             @Override
             public BannerHolderView createHolder() {
                 return new BannerHolderView();
             }
-        }, post_list).setPointViewVisible(true)
+        }, post_list)
+                .setPointViewVisible(true)
+//                .setPageIndicator(new Int[]{R.id.})
+                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
                 .startTurning(5000)
                 .setPointViewVisible(true)
                 .setManualPageable(true);  //设置手动影响;
         banner.setCanLoop(true);
+        banner.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                ImagesBean bean = post_list.get(position);
+                if (bean != null && bean.getCover_url() != null){
+                    Intent intent = new Intent(mContext,PageDeatailActivity.class);
+                    intent.putExtra("url", Constant.BASE_URL + bean.getPost_url());
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     private void updateUI(List<NewsResponse.ListBean> list,boolean isStart) {
