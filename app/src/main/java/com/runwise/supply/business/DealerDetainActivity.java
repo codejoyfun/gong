@@ -220,7 +220,7 @@ public class DealerDetainActivity extends NetWorkActivity implements AdapterView
             ss2.setSpan(new AbsoluteSizeSpan(15, true), s2StartIndex, s2LastIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             viewHolder.firstPeriod.setText(ss);
             viewHolder.monthPeriod.setText(ss2);
-            FrecoFactory.getInstance(mContext).disPlay(viewHolder.icon,bean.getImage().getImg_path());
+            FrecoFactory.getInstance(mContext).disPlay(viewHolder.icon,"");
             viewHolder.name.setText(bean.getTitle());
             HashMap<String,String> spMap = CommonUtils.formatMoney(bean.getSale_price());
             viewHolder.guidePrice.setText(spMap.get(CommonUtils.MONEY_VALUE)+spMap.get(CommonUtils.MONEY_UNIT));

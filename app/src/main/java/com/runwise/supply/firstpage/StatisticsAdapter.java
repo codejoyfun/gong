@@ -13,21 +13,39 @@ import com.runwise.supply.R;
  * Created by libin on 2017/6/27.
  */
 
-public class StatisticsAdapter extends RecyclerView.Adapter {
+public class StatisticsAdapter extends RecyclerView.Adapter implements View.OnClickListener{
     private static final double[] numValue = {52.8,5,2.7,2400,56};
     private static final String[] contontValue = {"销量增长量(万元)","门店增长量(个)","库存周转率(天)","临期实材额(元)","临期食材量(件)"};
+    private StatisticsItemClickListener itemListener;
+
+    public void setItemListener(StatisticsItemClickListener itemListener) {
+        this.itemListener = itemListener;
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.statistics_item,parent,false);
         RelativeLayout rl1 = (RelativeLayout) view.findViewById(R.id.rl1);
-        RelativeLayout rl2 = (RelativeLayout) view.findViewById(R.id.rl1);
-        RelativeLayout rl3 = (RelativeLayout) view.findViewById(R.id.rl1);
+        RelativeLayout rl2 = (RelativeLayout) view.findViewById(R.id.rl2);
+        RelativeLayout rl3 = (RelativeLayout) view.findViewById(R.id.rl3);
         RelativeLayout[] rls = {rl1,rl2,rl3};
         for (View rl:rls) {
             rl.setVisibility(View.INVISIBLE);
         }
-        rls[viewType].setVisibility(View.VISIBLE);
+        if (viewType == 0){
+            rl1.setVisibility(View.VISIBLE);
+            rl1.findViewById(R.id.siv).setVisibility(View.VISIBLE);
+            rl1.findViewById(R.id.content2Tv).setVisibility(View.INVISIBLE);
+        }else if(viewType == 1){
+            rl1.setVisibility(View.VISIBLE);
+            rl1.findViewById(R.id.siv).setVisibility(View.INVISIBLE);
+            rl1.findViewById(R.id.content2Tv).setVisibility(View.VISIBLE);
+        }else if(viewType == 2){
+            rl2.setVisibility(View.VISIBLE);
+        }else if(viewType == 3){
+            rl3.setVisibility(View.VISIBLE);
+        }
+        rl3.setOnClickListener(this);
         ViewHolder vh = new ViewHolder(view);
         return vh;
     }
@@ -77,6 +95,14 @@ public class StatisticsAdapter extends RecyclerView.Adapter {
             return 3;
         }
     }
+
+    @Override
+    public void onClick(View view) {
+        if (itemListener != null){
+            itemListener.onItemClick();
+        }
+    }
+
     public static class   ViewHolder extends RecyclerView.ViewHolder{
         public RelativeLayout rl1;
         public RelativeLayout rl2;
@@ -87,5 +113,8 @@ public class StatisticsAdapter extends RecyclerView.Adapter {
             rl2 = (RelativeLayout)itemView.findViewById(R.id.rl2);
             rl3 = (RelativeLayout)itemView.findViewById(R.id.rl3);
         }
+    }
+    public  interface StatisticsItemClickListener{
+        void onItemClick();
     }
 }

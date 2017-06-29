@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.facebook.cache.disk.DiskCacheConfig;
+import com.facebook.common.util.ByteConstants;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.ControllerListener;
@@ -15,6 +17,7 @@ import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
@@ -26,6 +29,7 @@ public class FrecoFactory {
     private static FrecoFactory instance;
     private FrecoFactory(Context context) {
         this.mContext = context;
+        initFresco();
     }
     private Context mContext;
     public static FrecoFactory getInstance(Context context) {
@@ -127,7 +131,6 @@ public class FrecoFactory {
         }
 //        imageRequestBuilder.setAutoRotateEnabled(true);
 //        imageRequestBuilder.setLowestPermittedRequestLevel(ImageRequest.RequestLevel.FULL_FETCH);
-
         DraweeController draweeController = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(imageRequestBuilder.build())
                 .setOldController(draweeView.getController())
@@ -136,5 +139,17 @@ public class FrecoFactory {
                 .build();
         draweeView.setController(draweeController);
     }
-
+    private void initFresco(){
+        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(mContext)
+                .setBaseDirectoryPath(mContext.getFilesDir())
+                .setBaseDirectoryName("image_cache")
+                .setMaxCacheSize(50 * ByteConstants.MB)
+                .setMaxCacheSizeOnLowDiskSpace(10 * ByteConstants.MB)
+                .setMaxCacheSizeOnVeryLowDiskSpace(2 * ByteConstants.MB)
+                .build();
+        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(mContext)
+                .setNetworkFetcher(new ElnImageDownloaderFetcher())
+                .setMainDiskCacheConfig(diskCacheConfig).build();
+        Fresco.initialize(mContext, config);
+    }
 }
