@@ -76,7 +76,7 @@ public class LoginActivity extends NetWorkActivity {
 		setStatusBarEnabled();
 		StatusBarUtil.StatusBarLightMode(this);
 		this.setContentView(R.layout.activity_login);
-//		String phoneNumber = SharePrenceUtil.getTempPhoneNumber(this);
+//		String phoneNumber = SharePrenceUtil.getTempPhoneNumber(this);d
 //		if ( !TextUtils.isEmpty(phoneNumber) ) {
 //			ed_userName.setText(phoneNumber);
 //			ed_pass.requestFocus();
@@ -197,7 +197,6 @@ public class LoginActivity extends NetWorkActivity {
 				LoginData loginData = (LoginData)resultBean.getData();
 				UserInfo userInfoData = loginData.getUser();
 //				SPUtils.put(this,"sign",loginResult.getUser_token());
-//				loadUserInfo();
 				if (remPassword.isChecked()) {
 					DbUtils mDb = DbUtils.create(this);
 					try {
@@ -213,10 +212,12 @@ public class LoginActivity extends NetWorkActivity {
 						e.printStackTrace();
 					}
 				}
-				ToastUtil.show(mContext,"登录成功"+ userInfoData.getUsername());
+				GlobalApplication.getInstance().saveUserInfo(userInfoData);
+				ToastUtil.show(mContext,"登录成功");
 				if (targerIntent != null) {
 					startActivity(targerIntent);
 				}
+				this.finish();
 				break;
 			case USER_INFO:
 //				UserInfoResult userInfoResult = (UserInfoResult) result;
@@ -225,13 +226,12 @@ public class LoginActivity extends NetWorkActivity {
 //				UserLoginEvent loginEvent = new UserLoginEvent();
 //				loginEvent.setIntent(targerIntent);
 //				EventBus.getDefault().post(loginEvent);
-//				GlobalApplication.getInstance().saveUserInfo(userInfoData.getEntity());
 //
 //				ToastUtil.show(mContext,"登录成功");
 //				if (targerIntent != null) {
 //					startActivity(targerIntent);
 //				}
-				this.finish();
+//				this.finish();
 				break;
 		}
 	}

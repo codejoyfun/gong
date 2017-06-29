@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="base_color">#81c149</color>
+    <color name="base_color">#7bbd4f</color>
     <color name="base_background_color">#f5f5f5</color>
     <color name="bg_gray">#cacaca</color>
     <color name="tab_text_on_color">@color/base_color</color>

@@ -39,9 +39,9 @@ public class NavigationActivity extends BaseActivity {
 		setContentView(R.layout.activity_navigation_main);
 		 inflater = LayoutInflater.from(this);
 		List<Integer> viewList = new ArrayList<Integer>();
-		viewList.add(R.drawable.guid_1);
-		viewList.add(R.drawable.guid_2);
-		viewList.add(R.drawable.guid_3);
+		viewList.add(R.drawable.guidepage_1);
+		viewList.add(R.drawable.guidepage_2);
+		viewList.add(R.drawable.guidepage_3);
 		 adapter = new NavAdapter(viewList);
 		viewPager.setAdapter(adapter);
 		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
