@@ -30,6 +30,6 @@ public class BannerHolderView implements Holder<ImagesBean> {
 
     @Override
     public void UpdateUI(Context context, int position,final ImagesBean bean) {
-        FrecoFactory.getInstance(context).disPlay(simpleDraweeView, Constant.BASE_URL);
+        FrecoFactory.getInstance(context).disPlay(simpleDraweeView, Constant.BASE_URL+bean.getCover_url());
     }
 }

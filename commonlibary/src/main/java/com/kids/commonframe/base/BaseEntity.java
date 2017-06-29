@@ -1,5 +1,7 @@
 package com.kids.commonframe.base;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.List;
 
 /**
@@ -178,7 +180,6 @@ public class BaseEntity<T>{
 		public void setState(String state) {
 			this.state = state;
 		}
-
 		public T getData() {
 			return data;
 		}

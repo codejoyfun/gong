@@ -18,6 +18,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.NewsRequest;
 import com.runwise.supply.firstpage.entity.NewsResponse;
 
@@ -94,6 +95,9 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         if (isStart){
             loadType = FROMSTART;
             loadStr = "/gongfu/v2/wechat/news";
+            //只在首次加载轮播图
+            LunboRequest lbRequest = new LunboRequest("访客端");
+            sendConnection("/gongfu/blog/post/list/",lbRequest,0,false,);
         }else{
             loadType = FROMEND;
             loadStr = "/gongfu/v2/wechat/more";
