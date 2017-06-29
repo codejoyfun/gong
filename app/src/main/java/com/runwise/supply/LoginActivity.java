@@ -69,6 +69,7 @@ public class LoginActivity extends NetWorkActivity {
 
 	private RemListAdapter remListAdapter;
 	private LoginRequest loginRequest;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

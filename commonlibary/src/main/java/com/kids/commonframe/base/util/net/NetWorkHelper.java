@@ -324,6 +324,11 @@ public class NetWorkHelper<T extends BaseEntity> {
 					Object object = JSON.parseObject(jsonObject.toJSONString(), targerClass);
 					resultBean.setData(object);
 				}
+				else {
+					JSONObject jsonObject = JSONObject.parseObject(parsed);
+					BaseEntity.ResultBean object = (BaseEntity.ResultBean)JSON.parseObject(jsonObject.getString("result"), targerClass);
+					resultObj.setResult(object);
+				}
 			}
 //			Map<String, String> responseHeaders = response.headers;
 //			String rawCookies = responseHeaders.get("Set-Cookie");
