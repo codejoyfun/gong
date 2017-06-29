@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 没一个实体类都要继承该类
  */
-public class BaseEntity<T>{
+public class BaseEntity{
 	/**
 	 * jsonrpc : 2.0
 	 * id : null
@@ -155,7 +155,7 @@ public class BaseEntity<T>{
 		}
 	}
 
-	public class ResultBean {
+	public static class ResultBean {
 		/**
 		 * state : A0006
 		 * data : {"isSuccess":false,"mobile":"13737574563"}
@@ -163,7 +163,7 @@ public class BaseEntity<T>{
 
 		private String state;
 		private String error;
-		private T data;
+		private Object data;
 
 		public String getError() {
 			return error;
@@ -180,11 +180,11 @@ public class BaseEntity<T>{
 		public void setState(String state) {
 			this.state = state;
 		}
-		public T getData() {
+		public Object getData() {
 			return data;
 		}
 
-		public void setData(T data) {
+		public void setData(Object data) {
 			this.data = data;
 		}
 

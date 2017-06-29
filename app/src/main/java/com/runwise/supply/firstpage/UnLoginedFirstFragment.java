@@ -2,6 +2,7 @@ package com.runwise.supply.firstpage;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
@@ -18,7 +20,10 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.business.BannerHolderView;
+import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.firstpage.entity.LunboRequest;
+import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.NewsRequest;
 import com.runwise.supply.firstpage.entity.NewsResponse;
 
@@ -31,6 +36,7 @@ import java.util.List;
 public class UnLoginedFirstFragment extends NetWorkFragment implements StatisticsAdapter.StatisticsItemClickListener{
     private static final int FROMSTART = 0;
     private static final int FROMEND = 1;
+    private static final int FROMLB = 2;
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -97,7 +103,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             loadStr = "/gongfu/v2/wechat/news";
             //只在首次加载轮播图
             LunboRequest lbRequest = new LunboRequest("访客端");
-            sendConnection("/gongfu/blog/post/list/",lbRequest,0,false,);
+            sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
         }else{
             loadType = FROMEND;
             loadStr = "/gongfu/v2/wechat/more";
@@ -113,18 +119,37 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        BaseEntity.ResultBean resultBean= result.getResult();
-        NewsResponse response = (NewsResponse) resultBean.getData();
         switch (where){
             case FROMSTART:
-                updateUI(response.getList(),true);
+                BaseEntity.ResultBean resultBean= result.getResult();
+                NewsResponse sRes = (NewsResponse) resultBean.getData();
+                updateUI(sRes.getList(),true);
                 break;
             case FROMEND:
-                updateUI(response.getList(),false);
+                BaseEntity.ResultBean resultBean2= result.getResult();
+                NewsResponse eRes = (NewsResponse) resultBean2.getData();
+                updateUI(eRes.getList(),false);
+                break;
+            case FROMLB:
+                LunboResponse lRes = (LunboResponse) result.getResult();
+                updateLb(lRes.getPost_list());
                 break;
             default:
                 break;
         }
+    }
+
+    private void updateLb(List<ImagesBean> post_list) {
+        banner.setPages(new CBViewHolderCreator<BannerHolderView>() {
+            @Override
+            public BannerHolderView createHolder() {
+                return new BannerHolderView();
+            }
+        }, post_list).setPointViewVisible(true)
+                .startTurning(5000)
+                .setPointViewVisible(true)
+                .setManualPageable(true);  //设置手动影响;
+        banner.setCanLoop(true);
     }
 
     private void updateUI(List<NewsResponse.ListBean> list,boolean isStart) {
