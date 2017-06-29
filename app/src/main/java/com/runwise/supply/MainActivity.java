@@ -31,7 +31,6 @@ import com.socketmobile.capture.events.DataDecodedEvent;
 import com.socketmobile.capture.events.DeviceAvailabilityEvent;
 import com.socketmobile.capture.types.DecodedData;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -115,6 +114,7 @@ public class MainActivity extends NetWorkActivity {
             mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), NearFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_3), MineFragment.class, null);
         }
+        mTabHost.getTabWidget().setDividerDrawable(null);
 
     }
 

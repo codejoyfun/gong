@@ -325,6 +325,9 @@ public class NetWorkHelper<T extends BaseEntity> {
 					resultBean.setData(object);
 				}
 			}
+//			Map<String, String> responseHeaders = response.headers;
+//			String rawCookies = responseHeaders.get("Set-Cookie");
+//			LogUtils.e("sessionid----------------" + rawCookies.substring(0, rawCookies.indexOf(";")));
 			return Response.success(resultObj, HttpHeaderParser.parseCacheHeaders(response));
 		}
 		@Override

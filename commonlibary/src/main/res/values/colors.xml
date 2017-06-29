@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="base_color">#81c147</color>
+    <color name="base_color">#7bbd4f</color>
     <color name="base_background_color">#f2f2f2</color>
     <color name="btn_unenable">#c9e49f</color>
     <color name="title_bg">#f9f9f9</color>
@@ -11,9 +11,9 @@
     <color name="mediacontroller_bg">#00000000</color>
     <color name="transparent">#00000000</color>
 
-    <color name="indicator_center">#2fbcfd</color>
+    <color name="indicator_center">#8bc441</color>
     <color name="indicator_end">@color/base_color</color>
-    <color name="indicator_start">#102fbcfd</color>
+    <color name="indicator_start">#0098cd34</color>
     <color name="default_color">#cacaca</color>
     <color name="listselector">#EEEEEE</color>
 
