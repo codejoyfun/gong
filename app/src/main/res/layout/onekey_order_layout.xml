@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <include layout="@layout/common_title_bar"
+        android:id="@+id/title_bar"></include>
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pullListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:listSelector="#0000"
+        ptr:ptrAnimationStyle="flip"
+        android:background="#ffffff"
+        android:divider="@null"
+        android:layout_below="@id/title_bar"
+        />
+    <ImageView
+        android:layout_centerInParent="true"
+        android:id="@+id/loadingImg"
+        android:scaleType="fitXY"
+        android:layout_width="64dp"
+        android:layout_height="170dp" />
+    <TextView
+        android:id="@+id/loadingTv"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="正在计算..."
+        android:gravity="center"
+        android:textSize="12sp"
+        android:textColor="#999999"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/loadingImg"/>
+</RelativeLayout>
