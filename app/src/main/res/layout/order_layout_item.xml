@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/padding_left" android:paddingRight="15dp"
+    android:paddingTop="14dp" android:paddingBottom="14.7dp">
+    <com.facebook.drawee.view.SimpleDraweeView
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/imageSdv"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_alignParentLeft="true"
+        fresco:placeholderImage="@drawable/default_avatar"
+        fresco:placeholderImageScaleType="centerCrop"
+        fresco:failureImage="@drawable/default_avatar"
+        fresco:failureImageScaleType="centerCrop"/>
+    <TextView
+        android:id="@+id/nameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="黑鱼(常用)"
+        android:textColor="#444444"
+        android:textSize="16sp"
+        android:layout_marginLeft="11dp"
+        android:layout_toRightOf="@id/imageSdv"/>
+    <TextView
+        android:id="@+id/numberTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nameTv"
+        android:layout_alignLeft="@id/nameTv"
+        android:text="33053535  2-3斤/条"
+        android:textColor="#999999"
+        android:textSize="11sp"
+        android:layout_marginTop="5dp"
+        />
+    <TextView
+        android:id="@+id/moneyTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/numberTv"
+        android:layout_alignLeft="@id/nameTv"
+        android:text="¥10.0／斤"
+        android:textColor="#999999"
+        android:textSize="11sp"
+        android:layout_marginTop="5dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/countTv"
+        android:layout_alignParentRight="true"
+        android:textColor="#2E2E2E"
+        android:textSize="18sp"
+        android:layout_centerVertical="true"
+        android:text="x 12"/>
+</RelativeLayout>
