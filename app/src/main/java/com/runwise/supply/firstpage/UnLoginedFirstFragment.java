@@ -163,6 +163,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
 //                .setPageIndicator(new Int[]{R.id.})
                 .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
                 .startTurning(5000)
+                .setPageIndicator(new int[]{R.drawable.guidepage_circle_normal,R.drawable.guidepage_circle_highlight})
                 .setPointViewVisible(true)
                 .setManualPageable(true);  //设置手动影响;
         banner.setCanLoop(true);

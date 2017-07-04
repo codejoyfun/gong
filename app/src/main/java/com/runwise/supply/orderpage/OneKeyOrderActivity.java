@@ -1,5 +1,6 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -64,7 +65,7 @@ public class OneKeyOrderActivity extends NetWorkActivity {
             handler.postDelayed(runnable,30);
         }
     };
-    @OnClick(R.id.dateTv)
+    @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.dateTv:
@@ -74,6 +75,12 @@ public class OneKeyOrderActivity extends NetWorkActivity {
                 }else{
                     dialog.show();
                 }
+                break;
+            case R.id.title_iv_left:
+                break;
+            case R.id.title_tv_rigth:
+                Intent intent = new Intent(mContext,ProductActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;
@@ -212,4 +219,5 @@ public class OneKeyOrderActivity extends NetWorkActivity {
         int resID = getResources().getIdentifier(name, "drawable", appInfo.packageName);
         return resID;
     }
+
 }

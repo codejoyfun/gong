@@ -3,6 +3,7 @@ package com.runwise.supply.orderpage;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,6 +17,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 
+import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.ContextUtils;
 
 /**
@@ -61,6 +63,7 @@ public class OrderFragment extends NetWorkFragment {
                 break;
             case R.id.sureBtn:
                 //跳转到智能下单页面
+                Log.i("Jp", JPushInterface.getRegistrationID(mContext.getApplicationContext()));
                 Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
                 startActivity(intent);
                 break;
