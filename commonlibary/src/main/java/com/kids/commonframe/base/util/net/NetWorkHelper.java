@@ -213,7 +213,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 			LogUtils.e(bodyParamStr);
 		}
 		else {
-			bodyParamStr = null;
+			bodyParamStr = "{}";
 		}
 		sendConnection(Method.POST , Constant.BASE_URL + bizName,  new String[]{}, new String[]{}, where, showDialog ,targerClass,null);
 	}

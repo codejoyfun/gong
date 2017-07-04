@@ -10,6 +10,8 @@ import com.liulishuo.filedownloader.FileDownloader;
 import com.runwise.supply.entity.UserInfo;
 import com.socketmobile.capture.Capture;
 
+import cn.jpush.android.api.JPushInterface;
+
 /**
  * Created by myChaoFile on 16/10/13.
  */
@@ -30,6 +32,8 @@ public class GlobalApplication extends MultiDexApplication {
         Fresco.initialize(this , ImagePipelineConfigFactory.getImagePipelineConfig(this));
         //下载器初始化
         FileDownloader.init(this);
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
 
     }
     public static GlobalApplication getInstance() {

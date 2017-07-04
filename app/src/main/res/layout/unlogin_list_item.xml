@@ -2,16 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#ffffff"
     android:paddingRight="@dimen/padding_right"
     android:paddingTop="@dimen/padding_top"
-    android:paddingBottom="@dimen/padding_top"
     android:paddingLeft="@dimen/padding_left">
-    <ImageView
+    <com.facebook.drawee.view.SimpleDraweeView
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
         android:id="@+id/imageIv"
-        android:layout_width="45dp"
-        android:layout_height="35dp"
+        android:layout_width="90dp"
+        android:layout_height="70dp"
         android:layout_alignParentRight="true"
         android:scaleType="centerInside"
+        android:layout_marginLeft="13dp"
+        fresco:placeholderImageScaleType="fitXY"
         android:src="@drawable/login_logo"/>
     <TextView
         android:id="@+id/titleTv"
@@ -19,16 +22,25 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@id/imageIv"
-        android:textSize="8sp"
+        android:textSize="16sp"
         android:textColor="#2E2E2E"
         android:maxLines="2"
         android:text="玩转IP餐厅,这几招就够了玩转IP餐厅,这几招就够了玩转IP餐厅,这几招就够了玩转IP餐厅,这几招就够了玩转IP餐厅,这几招就够了!"/>
     <TextView
+        android:id="@+id/fromTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="餐饮创业"
-        android:textSize="6sp"
+        android:textSize="12sp"
         android:layout_alignBottom="@id/imageIv"
         android:layout_alignWithParentIfMissing="true"
         android:textColor="#ABABAB"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#e5e5e5"
+        android:layout_below="@id/fromTv"
+        android:layout_marginTop="11dp"
+        android:layout_alignParentBottom="true"
+        />
 </RelativeLayout>

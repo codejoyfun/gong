@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingRight="@dimen/padding_right"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+        <ImageButton
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/nav_back"/>
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:background="#E5E5E5"
+            android:layout_weight="1"
+            android:layout_marginLeft="15dp"
+            android:textSize="13sp"
+            android:drawableLeft="@drawable/searchbar_ico_search"
+            android:paddingLeft="16dp"
+            android:drawablePadding="7dp"
+            android:layout_gravity="center_vertical"
+            android:hint="商品名称、关键字"/>
+        <Button
+            android:layout_width="49dp"
+            android:layout_height="32dp"
+            android:background="#9ACC35"
+            android:text="添加"
+            android:textSize="14sp"
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="7dp"
+            android:layout_gravity="center_vertical"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/base_background_color"
+        android:layout_below="@id/search_bar"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <com.ogaclejapan.smarttablayout.SmartTabLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:background="#f6f6f6"
+                app:stl_customTabTextLayoutId="@layout/custom_tab"
+                app:stl_defaultTabTextColor="@color/base_color"
+                app:stl_defaultTabTextSize="16dp"
+                app:stl_distributeEvenly="true"
+                app:stl_dividerColor="@color/transparent"
+                app:stl_indicatorColor="@color/base_color"
+                app:stl_indicatorCornerRadius="2dp"
+                app:stl_indicatorInterpolation="smart"
+                app:stl_indicatorThickness="4dp"
+                app:stl_overlineColor="@color/transparent"
+                app:stl_underlineThickness="0dp" />
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
+        </LinearLayout>
+    </FrameLayout>
+</RelativeLayout>

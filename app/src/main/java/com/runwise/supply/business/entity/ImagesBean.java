@@ -6,22 +6,23 @@ package com.runwise.supply.business.entity;
 
 public class ImagesBean {
 
+
     /**
-     * image_id : 10
-     * name : asdfs
-     * img_path : http://img1.xcarimg.com/b141/s6727/c_20160711161902856092123214503.jpg
+     * post_url : /blog/1/post/1
+     * name : 豉香黑鱼
+     * cover_url : /web/image/841
      */
 
-    private int image_id;
+    private String post_url;
     private String name;
-    private String img_path;
+    private String cover_url;
 
-    public int getImage_id() {
-        return image_id;
+    public String getPost_url() {
+        return post_url;
     }
 
-    public void setImage_id(int image_id) {
-        this.image_id = image_id;
+    public void setPost_url(String post_url) {
+        this.post_url = post_url;
     }
 
     public String getName() {
@@ -32,11 +33,11 @@ public class ImagesBean {
         this.name = name;
     }
 
-    public String getImg_path() {
-        return img_path;
+    public String getCover_url() {
+        return cover_url;
     }
 
-    public void setImg_path(String img_path) {
-        this.img_path = img_path;
+    public void setCover_url(String cover_url) {
+        this.cover_url = cover_url;
     }
 }
