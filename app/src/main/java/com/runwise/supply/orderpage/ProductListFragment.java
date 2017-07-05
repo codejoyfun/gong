@@ -12,7 +12,7 @@ public class ProductListFragment extends NetWorkFragment {
 
     @Override
     protected int createViewByLayoutId() {
-        return R.layout.product_layout;
+        return R.layout.product_layout_item;
     }
 
     @Override

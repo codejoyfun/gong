@@ -16,4 +16,6 @@
     <color name="setting_title_bg">#f9f9f9</color>
     <color name="setting_title">#333333</color>
     <color name="settting_content">#999999</color>
+
+    <color name="divider">#ffd2d2d2</color>
 </resources>
