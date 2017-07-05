@@ -21,7 +21,9 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -31,10 +33,8 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.entity.LoginData;
 import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
-import com.runwise.supply.entity.UserInfo;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.List;
@@ -197,7 +197,10 @@ public class LoginActivity extends NetWorkActivity {
 				BaseEntity.ResultBean resultBean= result.getResult();
 				LoginData loginData = (LoginData)resultBean.getData();
 				UserInfo userInfoData = loginData.getUser();
-//				SPUtils.put(this,"sign",loginResult.getUser_token());
+				if("false".equals(loginData.getIsSuccess())) {
+                  ToastUtil.show(mContext,"登陆冲突，该账号已登陆");
+					return;
+				}
 				if (remPassword.isChecked()) {
 					DbUtils mDb = DbUtils.create(this);
 					try {

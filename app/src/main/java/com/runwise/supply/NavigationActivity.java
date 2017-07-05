@@ -123,6 +123,9 @@ public class NavigationActivity extends BaseActivity {
 			View mainView = inflater.inflate( R.layout.item_navigation, null);
 			ImageView imageView = (ImageView)mainView.findViewById(R.id.guid_bg);
 			TextView go = (TextView) mainView.findViewById(R.id.guid_go);
+			TextView guidTitle = (TextView) mainView.findViewById(R.id.guidTitle);
+			TextView guidSubTitle = (TextView) mainView.findViewById(R.id.guidSubTitle);
+
 			if ( arg1 == views.size()-1 ) {
 				go.setVisibility(View.VISIBLE);
 				go.setOnClickListener(new OnClickListener() {
@@ -134,6 +137,20 @@ public class NavigationActivity extends BaseActivity {
 			}
 			else {
 				go.setVisibility(View.GONE);
+			}
+			switch (arg1) {
+				case 0:
+					guidTitle.setText("集中采购食材");
+					guidSubTitle.setText("质高价低");
+					break;
+				case 1:
+					guidTitle.setText("中央厨房加工");
+					guidSubTitle.setText("卫生安全");
+					break;
+				case 2:
+					guidTitle.setText("统一配送到店");
+					guidSubTitle.setText("稳定高效");
+					break;
 			}
 			imageView.setImageResource(views.get(arg1));
 			container.addView(mainView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

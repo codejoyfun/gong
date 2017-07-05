@@ -22,6 +22,8 @@ import com.android.volley.toolbox.Volley;
 import com.kids.commonframe.R;
 import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.LoginData;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -326,13 +328,21 @@ public class NetWorkHelper<T extends BaseEntity> {
 				}
 				else {
 					JSONObject jsonObject = JSONObject.parseObject(parsed);
-					BaseEntity.ResultBean object = (BaseEntity.ResultBean)JSON.parseObject(jsonObject.getString("result"), targerClass);
-					resultObj.setResult(object);
+					try {
+						BaseEntity.ResultBean object = (BaseEntity.ResultBean) JSON.parseObject(jsonObject.getString("result"), targerClass);
+						resultObj.setResult(object);
+					}
+					catch (ClassCastException e){
+						e.printStackTrace();
+					}
 				}
 			}
 			Map<String, String> responseHeaders = response.headers;
 			String rawCookies = responseHeaders.get("Set-Cookie");
-			LogUtils.e("sessionid----------------" + rawCookies.substring(0, rawCookies.indexOf(";")));
+			if(targerClass == LoginData.class) {
+				LogUtils.e("登陆存sessionid----------------" + rawCookies.substring(0, rawCookies.indexOf(";")));
+				SPUtils.put(context,"sign",rawCookies.substring(0, rawCookies.indexOf(";")));
+			}
 			return Response.success(resultObj, HttpHeaderParser.parseCacheHeaders(response));
 		}
 		@Override
@@ -385,8 +395,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 //			long currentTime = System.currentTimeMillis()/1000;
 //			String apiToken = MD5.getMD5("VRR3rHcio7Bprr7H" + appSecret + currentTime);
 			Map<String, String> headerMap = new HashMap<String, String>();
-//			String userToken = (String) SPUtils.get(context,"sign","");
-//			headerMap.put("user-token", userToken);
+			String userToken = (String) SPUtils.get(context,"sign","");
+			headerMap.put("Cookie", userToken);
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 			headerMap.put("X-Odoo-Db", "LBZ20170607");

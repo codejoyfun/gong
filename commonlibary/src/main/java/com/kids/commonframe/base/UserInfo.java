@@ -1,4 +1,4 @@
-package com.runwise.supply.entity;
+package com.kids.commonframe.base;
 
 import java.io.Serializable;
 

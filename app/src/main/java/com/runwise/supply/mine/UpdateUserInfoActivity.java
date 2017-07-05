@@ -17,9 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.kids.commonframe.base.UserInfo;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.UserInfo;
 import com.runwise.supply.mine.entity.EditUserInfoRequest;
 import com.runwise.supply.mine.entity.UpdateUserInfoRep;
 import com.kids.commonframe.base.BaseEntity;

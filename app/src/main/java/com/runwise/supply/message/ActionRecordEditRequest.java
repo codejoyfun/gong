@@ -7,6 +7,7 @@ import com.android.internal.http.multipart.FilePart;
 import com.android.internal.http.multipart.Part;
 import com.android.internal.http.multipart.StringPart;
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ImageUtils;
 import com.kids.commonframe.base.util.LogUtil;
@@ -16,7 +17,6 @@ import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.entity.QnTokenRepEntity;
-import com.runwise.supply.entity.UserInfo;
 import com.runwise.supply.pictakelist.PicTake;
 
 import java.io.File;

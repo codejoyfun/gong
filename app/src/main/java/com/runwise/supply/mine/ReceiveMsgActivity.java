@@ -5,9 +5,9 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
+import com.kids.commonframe.base.UserInfo;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.UserInfo;
 import com.runwise.supply.mine.entity.UsMessageRequest;
 import com.runwise.supply.mine.entity.UsMessageResult;
 import com.kids.commonframe.base.BaseEntity;

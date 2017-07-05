@@ -1,5 +1,7 @@
 package com.runwise.supply.entity;
 
+import com.kids.commonframe.base.UserInfo;
+
 /**
  * Created by myChaoFile on 17/1/10.
  */
