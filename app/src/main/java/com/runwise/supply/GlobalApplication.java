@@ -4,11 +4,10 @@ import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.ImagePipelineConfigFactory;
 import com.liulishuo.filedownloader.FileDownloader;
-import com.runwise.supply.entity.UserInfo;
-import com.socketmobile.capture.Capture;
 
 import cn.jpush.android.api.JPushInterface;
 

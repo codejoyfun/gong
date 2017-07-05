@@ -1,7 +1,7 @@
 package com.runwise.supply.mine.entity;
 
-import com.runwise.supply.entity.UserInfo;
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.UserInfo;
 
 /**
  * Created by mychao on 2016/11/1.

@@ -5,37 +5,55 @@ package com.runwise.supply.entity;
  */
 
 public class RegisterRequest {
-    public RegisterRequest(String phone, String code, String password) {
-        this.phone = phone;
-        this.code = code;
-        this.password = password;
+    /**
+     * mobile : 12355557779
+     * name : Tom03
+     * email :
+     * company :
+     */
+
+    private String mobile;
+    private String name;
+    private String email;
+    private String company;
+
+    public RegisterRequest(String mobile, String name, String email,String company) {
+        this.mobile = mobile;
+        this.name = name;
+        this.email = email;
+        this.company = company;
     }
 
-    private String phone;//	是	手机号
-    private String code;//	是	验证码
-    private String password;//	是	密码
 
-    public String getPhone() {
-        return phone;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
-    public String getCode() {
-        return code;
+    public String getName() {
+        return name;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
     }
 }

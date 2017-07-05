@@ -1,10 +1,10 @@
-package com.runwise.supply.entity;
+package com.kids.commonframe.base;
 
 /**
  * Created by myChaoFile on 2017/6/27.
  */
 
-public class LoginData{
+public class LoginData {
     private String isSuccess;
     private UserInfo user;
 
