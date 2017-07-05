@@ -6,16 +6,16 @@ package com.runwise.supply.entity;
 
 public class GetCodeRequest {
     public GetCodeRequest(String phone) {
-        this.phone = phone;
+        this.mobile = phone;
     }
 
-    private String phone;
+    private String mobile;
 
-    public String getPhone() {
-        return phone;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }

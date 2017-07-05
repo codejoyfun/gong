@@ -25,6 +25,7 @@ import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
 import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
+import com.runwise.supply.tools.StatusBarUtil;
 import com.socketmobile.capture.Capture;
 import com.socketmobile.capture.client.CaptureClient;
 import com.socketmobile.capture.client.CaptureDeviceClient;
@@ -69,6 +70,8 @@ public class MainActivity extends NetWorkActivity {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         setContentView(R.layout.activity_main);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         requestPermissions();
         initTabView();
         //检查版本
