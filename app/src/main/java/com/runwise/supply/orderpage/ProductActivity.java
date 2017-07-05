@@ -13,16 +13,23 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by libin on 2017/7/3.
  */
 
 public class ProductActivity extends NetWorkActivity {
+    //数据获取
+    private static final int PRODUCT_GET = 1;
+    //数据查询
+    private static final int PRODUCT_QUERY = 2;
+
     @ViewInject(R.id.indicator)
     private SmartTabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -38,10 +45,26 @@ public class ProductActivity extends NetWorkActivity {
         adapter = new TabPageIndicatorAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         smartTabLayout.setViewPager(viewPager);
+        sendRequest();
     }
-
+    private void sendRequest() {
+        ///gongfu/v3/shop/product/list
+        Object request = null;
+        sendConnection("/gongfu/v3/shop/product/list",request,PRODUCT_GET,true, ProductData.class);
+    }
     @Override
     public void onSuccess(BaseEntity result, int where) {
+        switch (where){
+            case PRODUCT_GET:
+                BaseEntity.ResultBean resultBean= result.getResult();
+                ProductData products= (ProductData) resultBean.getData();
+
+                break;
+            case PRODUCT_QUERY:
+                break;
+            default:
+                break;
+        }
 
     }
 
