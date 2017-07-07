@@ -57,7 +57,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 		setStatusBarEnabled();
 		StatusBarUtil.StatusBarLightMode(this);
 		setContentView(R.layout.activity_findpassword);
-		this.setTitleText(true,"找回密码");
+		this.setTitleText(true,"重置密码");
 		this.setTitleLeftIcon(true,R.drawable.marking);
 		String phoneNum = getIntent().getStringExtra("phoneNumber");
 		mPhonenNmber.setText(phoneNum);
@@ -226,7 +226,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 			return;
 		}
 		GetCodeRequest paramBean = new GetCodeRequest(phonNumber);
-		this.sendConnection("members/send.json",paramBean ,GET_CODE, true, BaseEntity.class);
+		this.sendConnection("/gongfu/get_captcha",paramBean ,GET_CODE, true, null);
 	}
 
 	@Override
