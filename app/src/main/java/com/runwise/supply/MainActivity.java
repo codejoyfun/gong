@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,8 @@ import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
 import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.socketmobile.capture.Capture;
 import com.socketmobile.capture.client.CaptureClient;
@@ -36,9 +39,14 @@ import com.socketmobile.capture.types.DecodedData;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends NetWorkActivity {
+    //缓存全部商品列表的标识
+    private static final int QUERY_ALL = 1;
     private int devicesConnected = -1;
     private long mExitTime;
     @ViewInject(android.R.id.tabhost)
@@ -46,6 +54,23 @@ public class MainActivity extends NetWorkActivity {
     //未读小红点
     private TextView mMsgHite;
     private UserInfo userInfo;
+    private class CachRunnale implements  Runnable{
+        private List<ProductBasicList.ListBean> basicList;
+
+        public CachRunnale(List basicList) {
+            this.basicList = basicList;
+        }
+
+        @Override
+        public void run() {
+            ProductBasicUtils.setBasicArr(basicList);
+            HashMap<String,ProductBasicList.ListBean> map = new HashMap<>();
+            for (ProductBasicList.ListBean bean : basicList){
+                map.put(String.valueOf(bean.getProductID()),bean);
+            }
+            ProductBasicUtils.setBasicMap(map);
+        }
+    }
     private CaptureClient.Listener mListener= new CaptureClient.Listener()
     {
 
@@ -81,8 +106,9 @@ public class MainActivity extends NetWorkActivity {
 //        CaptureClient mClient = new CaptureClient();
 //        mClient.setListener(mListener);
 //        mClient.connect();
+        //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
+        queryProductList();
     }
-
 
     @TargetApi(23)
     private void requestPermissions() {
@@ -144,7 +170,15 @@ public class MainActivity extends NetWorkActivity {
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-
+        switch(where){
+            case QUERY_ALL:
+                BaseEntity.ResultBean resultBean= result.getResult();
+                ProductBasicList basicList = (ProductBasicList) resultBean.getData();
+                new Thread(new CachRunnale(basicList.getList())).start();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -244,5 +278,9 @@ public class MainActivity extends NetWorkActivity {
     private void print(String message) {
         ToastUtil.show(mContext,message);
 //        ((TextView) findViewById(R.id.hello_scan)).append("\n" + message);
+    }
+    private void queryProductList() {
+        Object request = null;
+        sendConnection("/gongfu/v2/product/list/",request, QUERY_ALL,false, ProductBasicList.class);
     }
 }

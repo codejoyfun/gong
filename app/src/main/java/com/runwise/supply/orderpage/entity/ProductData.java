@@ -7,7 +7,6 @@ import java.util.List;
  */
 
 public class ProductData {
-
     private List<ListBean> list;
 
     public List<ListBean> getList() {
@@ -20,44 +19,30 @@ public class ProductData {
 
     public static class ListBean {
         /**
-         * uomID : 条
-         * settlePrice : 6
          * actualQty : 0
-         * settleUomId : 斤
-         * stockType : lengcanghuo
+         * isTwoUnit : false
          * presetQty : 0
-         * productID : 8
-         * price : 18
+         * settlePrice : false
+         * productID : 13
+         * priceID : 2913
+         * stockType : lengcanghuo
+         * settleUomId : false
+         * uomID : 条
+         * price : 3.8
          * uom : 条
-         * priceID : 348
          */
 
-        private String uomID;
-        private int settlePrice;
         private int actualQty;
-        private String settleUomId;
-        private String stockType;
+        private boolean isTwoUnit;
         private int presetQty;
+        private String settlePrice;
         private int productID;
-        private int price;
-        private String uom;
         private String priceID;
-
-        public String getUomID() {
-            return uomID;
-        }
-
-        public void setUomID(String uomID) {
-            this.uomID = uomID;
-        }
-
-        public int getSettlePrice() {
-            return settlePrice;
-        }
-
-        public void setSettlePrice(int settlePrice) {
-            this.settlePrice = settlePrice;
-        }
+        private String stockType;
+        private String settleUomId;
+        private String uomID;
+        private double price;
+        private String uom;
 
         public int getActualQty() {
             return actualQty;
@@ -67,20 +52,12 @@ public class ProductData {
             this.actualQty = actualQty;
         }
 
-        public String getSettleUomId() {
-            return settleUomId;
+        public boolean isIsTwoUnit() {
+            return isTwoUnit;
         }
 
-        public void setSettleUomId(String settleUomId) {
-            this.settleUomId = settleUomId;
-        }
-
-        public String getStockType() {
-            return stockType;
-        }
-
-        public void setStockType(String stockType) {
-            this.stockType = stockType;
+        public void setIsTwoUnit(boolean isTwoUnit) {
+            this.isTwoUnit = isTwoUnit;
         }
 
         public int getPresetQty() {
@@ -91,6 +68,14 @@ public class ProductData {
             this.presetQty = presetQty;
         }
 
+        public String getSettlePrice() {
+            return settlePrice;
+        }
+
+        public void setSettlePrice(String settlePrice) {
+            this.settlePrice = settlePrice;
+        }
+
         public int getProductID() {
             return productID;
         }
@@ -99,11 +84,42 @@ public class ProductData {
             this.productID = productID;
         }
 
-        public int getPrice() {
+        public String getPriceID() {
+            return priceID;
+        }
+
+        public void setPriceID(String priceID) {
+            this.priceID = priceID;
+        }
+
+        public String getStockType() {
+            return stockType;
+        }
+
+        public void setStockType(String stockType) {
+            this.stockType = stockType;
+        }
+        public String getSettleUomId() {
+            return settleUomId;
+        }
+
+        public void setSettleUomId(String settleUomId) {
+            this.settleUomId = settleUomId;
+        }
+
+        public String getUomID() {
+            return uomID;
+        }
+
+        public void setUomID(String uomID) {
+            this.uomID = uomID;
+        }
+
+        public double getPrice() {
             return price;
         }
 
-        public void setPrice(int price) {
+        public void setPrice(double price) {
             this.price = price;
         }
 
@@ -113,14 +129,6 @@ public class ProductData {
 
         public void setUom(String uom) {
             this.uom = uom;
-        }
-
-        public String getPriceID() {
-            return priceID;
-        }
-
-        public void setPriceID(String priceID) {
-            this.priceID = priceID;
         }
     }
 }

@@ -10,7 +10,6 @@
         android:layout_width="55dp"
         android:layout_height="55dp"
         fresco:placeholderImageScaleType="focusCrop"
-        fresco:failureImage="@drawable/car"
         fresco:placeholderImage="@drawable/car"
         android:layout_alignParentLeft="true"
         />
@@ -22,7 +21,6 @@
         android:src="@drawable/btn_add"
         android:background="@null"
         android:layout_centerVertical="true"
-        android:visibility="invisible"
         />
     <LinearLayout
         android:id="@+id/editLL"
@@ -30,7 +28,8 @@
         android:layout_centerVertical="true"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="invisible">
         <ImageButton
             android:id="@+id/input_minus"
             android:layout_width="wrap_content"
@@ -42,6 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/input_bg"
+            android:maxLength="4"
+            android:gravity="center"
             android:inputType="numberDecimal"/>
         <ImageButton
             android:id="@+id/input_add"

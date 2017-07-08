@@ -1,10 +1,15 @@
 package com.runwise.supply.orderpage;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -13,9 +18,25 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.bean.ProductCountChangeEvent;
+import com.kids.commonframe.base.bean.ProductGetEvent;
+import com.kids.commonframe.base.bean.ProductQueryEvent;
+import com.kids.commonframe.base.util.img.FrecoFactory;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.orderpage.entity.ProductData;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import io.vov.vitamio.utils.Log;
 
 /**
  * Created by libin on 2017/7/3.
@@ -23,36 +44,82 @@ import com.runwise.supply.R;
  */
 
 public class ProductListFragment extends NetWorkFragment {
-    public enum DataType{
-        ALL("all"),
-        LENGCANGHUO("lengcanghuo"),
-        FREEZE("freeze"),
-        DRY("dry");
-
-        private final String type;
-
-        DataType(String type) {
-            this.type =type;
-        }
-
-        public String getType() {
-            return type;
-        }
-    }
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
+    public  DataType type;
+    //选中数量map
+    private static HashMap<String,Integer> countMap = new HashMap<>();
+    //缓存全部商品列表
+    private static ArrayList<ProductData.ListBean> arrayList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ProductAdapter();
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
+
     }
 
     @Override
     protected int createViewByLayoutId() {
         return R.layout.product_layout_list;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDataSynEvent(ProductGetEvent event) {
+        //得到数据，更新UI
+        if (arrayList == null) {
+            arrayList = ((ProductActivity)getActivity()).getDataList();
+        }
+        if (type == DataType.ALL){
+            //先统计一次id,个数
+            for (ProductData.ListBean bean : arrayList){
+                countMap.put(String.valueOf(bean.getProductID()),Integer.valueOf(0));
+            }
+            adapter.setData(arrayList);
+        }else{
+            ArrayList<ProductData.ListBean> typeList = new ArrayList<>();
+            for (ProductData.ListBean bean : arrayList){
+                    if (bean.getStockType().equals(type.getType())){
+                        typeList.add(bean);
+                    }
+            }
+            adapter.setData(typeList);
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDataSynEvent(ProductCountChangeEvent event){
+        adapter.notifyDataSetChanged();
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public  void onDataSynEvent(ProductQueryEvent event){
+        String word = event.getSearchWord();
+        //只在当前类型下面找名称包括的元素
+        List<ProductData.ListBean> findArray = findArrayByWord(word);
+        adapter.setData(findArray);
+    }
+    //返回当前标签下名称包含的
+    private List<ProductData.ListBean> findArrayByWord(String word) {
+        List<ProductData.ListBean> findList = new ArrayList<>();
+        if (type == DataType.ALL){
+            for (ProductData.ListBean bean : arrayList){
+                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+                if (basicBean.getName().contains(word)) {
+                    findList.add(bean);
+                }
+            }
+        }else{
+            for (ProductData.ListBean bean : arrayList){
+                if (bean.getStockType().equals(type.getType())){
+                    ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+                    if (basicBean.getName().contains(word)) {
+                        findList.add(bean);
+                    }
+                }
+            }
+        }
+        return findList;
     }
 
     @Override
@@ -77,20 +144,41 @@ public class ProductListFragment extends NetWorkFragment {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.addBtn.setOnClickListener(new View.OnClickListener() {
+            final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
+            final EditText editText = viewHolder.editText;
+            //先根据集合里面对应个数初始化一次
+            if (countMap.get(String.valueOf(bean.getProductID())) > 0){
+                viewHolder.editLL.setVisibility(View.VISIBLE);
+                viewHolder.addBtn.setVisibility(View.INVISIBLE);
+            }else{
+                viewHolder.editLL.setVisibility(View.INVISIBLE);
+                viewHolder.addBtn.setVisibility(View.VISIBLE);
+            }
+            editText.setText(countMap.get(String.valueOf(bean.getProductID()))+"");
+            final LinearLayout ll = viewHolder.editLL;
+            final ImageButton addBtn = viewHolder.addBtn;
+            addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     view.setVisibility(View.INVISIBLE);
+                    ll.setVisibility(View.VISIBLE);
+                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    editText.setText(++currentNum+"");
+                    countMap.put(String.valueOf(bean.getProductID()),currentNum);
                 }
             });
-            final EditText editText = viewHolder.editText;
             viewHolder.inputMBtn.setOnClickListener(new View.OnClickListener(){
 
                 @Override
                 public void onClick(View v) {
-                    int currentNum = Integer.valueOf(editText.getText().toString());
-                    if (currentNum < 0){
-                        editText.setText(--currentNum);
+                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    if (currentNum > 0){
+                        editText.setText(--currentNum+"");
+                        countMap.put(String.valueOf(bean.getProductID()),currentNum);
+                        if (currentNum == 0){
+                            addBtn.setVisibility(View.VISIBLE);
+                            ll.setVisibility(View.INVISIBLE);
+                        }
                     }
 
                 }
@@ -99,14 +187,53 @@ public class ProductListFragment extends NetWorkFragment {
 
                 @Override
                 public void onClick(View v) {
-                    int currentNum = Integer.valueOf(editText.getText().toString());
-                    editText.setText(++currentNum);
+                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    editText.setText(++currentNum+"");
+                    countMap.put(String.valueOf(bean.getProductID()),currentNum);
                 }
             });
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    int changedNum = 0;
+                    if (!TextUtils.isEmpty(s)){
+                        changedNum = Integer.valueOf(s.toString());
+                    }
+                    countMap.put(String.valueOf(bean.getProductID()),changedNum);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+            if (basicBean != null){
+                viewHolder.name.setText(basicBean.getName());
+                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
+                sb.append(basicBean.getUnit());
+                if (bean.isIsTwoUnit()){
+                    sb.append("\n¥")
+                            .append(bean.getSettlePrice())
+                            .append("元/")
+                            .append(bean.getSettleUomId());
+                }else{
+                    sb.append("\n¥")
+                            .append(bean.getPrice())
+                            .append("元/")
+                            .append(bean.getUom());
+                }
+                viewHolder.content.setText(sb.toString());
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
+            }
 
             return convertView;
         }
-
         class ViewHolder {
             @ViewInject(R.id.name)
             TextView            name;   //名称
@@ -114,6 +241,8 @@ public class ProductListFragment extends NetWorkFragment {
             SimpleDraweeView    sDv;    //头像
             @ViewInject(R.id.content)
             TextView            content;//内容
+            @ViewInject(R.id.editLL)
+            LinearLayout editLL;        //整体编辑框
             @ViewInject(R.id.addBtn)
             ImageButton         addBtn; //添加按钮
             @ViewInject(R.id.input_minus)
@@ -122,7 +251,6 @@ public class ProductListFragment extends NetWorkFragment {
             ImageButton         inputPBtn;//加
             @ViewInject(R.id.editText)
             EditText            editText; //输入框
-
 
         }
     }

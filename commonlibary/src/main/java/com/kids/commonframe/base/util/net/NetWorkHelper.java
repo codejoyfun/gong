@@ -399,7 +399,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 			headerMap.put("Cookie", userToken);
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
-			headerMap.put("X-Odoo-Db", "LBZ20170607");
+//			headerMap.put("X-Odoo-Db", "LBZ20170607");
+			headerMap.put("X-Odoo-Db", "DemoforHD20170516");
 
 			LogUtils.e("Headers:" + headerMap.toString());
 			return headerMap;
