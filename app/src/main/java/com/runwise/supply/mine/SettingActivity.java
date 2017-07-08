@@ -38,10 +38,10 @@ import java.util.List;
  */
 
 public class SettingActivity extends NetWorkActivity {
-    @ViewInject(R.id.setItemName_2)
-    private TextView setItemName_2;
-    @ViewInject(R.id.setItemName_3)
-    private TextView setItemName_3;
+    @ViewInject(R.id.setItemName_4)
+    private TextView setItemName_4;
+    @ViewInject(R.id.setItemName_5)
+    private TextView setItemName_5;
 
     private final int REQUEST_HELP = 1;
 
@@ -61,7 +61,7 @@ public class SettingActivity extends NetWorkActivity {
 
         File cacheDir = StorageUtils.getCacheDirectory(mContext);
         try {
-            setItemName_3.setText(CommonUtils.formetFileSize(CommonUtils.getFileFolderSize(cacheDir)));
+            setItemName_4.setText(CommonUtils.formetFileSize(CommonUtils.getFileFolderSize(cacheDir)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,7 +72,7 @@ public class SettingActivity extends NetWorkActivity {
         else {
             exitButton.setVisibility(View.GONE);
         }
-        setItemName_2.setText(CommonUtils.getVersionName(this));
+        setItemName_5.setText(CommonUtils.getVersionName(this));
     }
 
 
@@ -83,10 +83,8 @@ public class SettingActivity extends NetWorkActivity {
         switch (view.getId()) {
             //给我们的留言
             case R.id.setItemLayout_1:
-                intent = new Intent(mContext,ChangePwdActivity.class);
-                if (checkLogin(intent)) {
-                    startActivity(intent);
-                }
+                intent = new Intent(mContext,UserGuidActivity.class);
+                startActivity(intent);
                 break;
             case R.id.setItemLayout_2:
 //                //检查版本
@@ -94,11 +92,11 @@ public class SettingActivity extends NetWorkActivity {
 //                checkVersionManager.checkVersion(true);
                 break;
             //清除缓存
-            case R.id.setItemLayout_3:
+            case R.id.setItemLayout_4:
                 showDialogue();
                 break;
             //给我评分
-            case R.id.setItemLayout_4:
+            case R.id.setItemLayout_3:
                 List<String> packList = ScoreUtils.InstalledAPPs(this);
                 if(packList != null && !packList.isEmpty()) {
                     ScoreUtils.launchAppDetail(this,this.getPackageName(),packList.get(0));
@@ -109,7 +107,8 @@ public class SettingActivity extends NetWorkActivity {
                 break;
             //关于我们
             case R.id.setItemLayout_5:
-                sendConnection("about/us.json",REQUEST_HELP,true, UrlResult.class);
+                intent = new Intent(mContext,AboutActivity.class);
+                startActivity(intent);
                 break;
             //返回
             case R.id.left_layout:
@@ -175,7 +174,7 @@ public class SettingActivity extends NetWorkActivity {
                         File cacheDir = StorageUtils.getCacheDirectory(mContext);
                         CommonUtils.deleteDir(cacheDir);
                         ToastUtil.show(mContext,"清除完成");
-                        setItemName_3.setText("0M");
+                        setItemName_4.setText("0M");
                         break;
                 }
                 mClearDialog.dismiss();
