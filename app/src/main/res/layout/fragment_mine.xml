@@ -58,6 +58,7 @@
 
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/settingIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
@@ -71,6 +72,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/cellIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="10dp"

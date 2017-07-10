@@ -13,7 +13,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="6dip"
-        android:background="#808080"/>
+        android:background="#ededed"/>
     <TextView
         android:id="@+id/cancle_button"
         android:layout_width="fill_parent"

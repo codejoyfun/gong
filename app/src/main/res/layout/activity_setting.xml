@@ -15,7 +15,6 @@
         android:layout_weight="1"
         android:orientation="vertical"
         >
-
         <RelativeLayout
             android:id="@+id/setItemLayout_1"
             android:layout_width="match_parent"
@@ -36,14 +35,14 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="14dp"
                 android:clickable="true"
-                android:src="@drawable/set_up_modify_password"/>
+                android:src="@drawable/setting_guidance"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:text="修改密码"
+                android:text="用户指南"
                 android:textColor="#3e3e3e"
                 android:textSize="@dimen/bottom_tab_font_size"
                 android:layout_toRightOf="@id/setItemIcon_1"
@@ -64,14 +63,18 @@
                 />
         </RelativeLayout>
 
+
         <RelativeLayout
             android:id="@+id/setItemLayout_2"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/white_btn_selector"
-            android:layout_marginTop="12dp"
             >
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e8eae7"
+                />
             <ImageView
                 android:id="@+id/setItemIcon_2"
                 android:layout_width="20dp"
@@ -80,40 +83,26 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="14dp"
                 android:clickable="true"
-                android:src="@drawable/set_up_current_version_number"/>
+                android:src="@drawable/setting_reminder"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:text="当前版本"
+                android:text="下单提醒推送"
                 android:textColor="#3e3e3e"
                 android:textSize="@dimen/bottom_tab_font_size"
                 android:layout_toRightOf="@id/setItemIcon_2"
                 />
 
             <ImageView
-                android:id="@+id/rightRowIcon2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:src="@drawable/more_img"/>
-
-            <TextView
-                android:id="@+id/setItemName_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/rightRowIcon2"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="4dp"
-                android:text="1.0.0"
-                android:textColor="#b3b3b3"
-                android:layout_marginRight="2dp"
-                android:textSize="14sp"/>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
@@ -121,6 +110,8 @@
                 android:layout_alignParentBottom="true"
                 />
         </RelativeLayout>
+
+
 
         <RelativeLayout
             android:id="@+id/setItemLayout_3"
@@ -141,7 +132,64 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="14dp"
                 android:clickable="true"
-                android:src="@drawable/set_up_clears"/>
+                android:src="@drawable/setting_rate"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="给我们反馈"
+                android:textColor="#3e3e3e"
+                android:textSize="@dimen/bottom_tab_font_size"
+                android:layout_toRightOf="@id/setItemIcon_3"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/more_img"/>
+
+            <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toLeftOf="@id/rightRowIcon"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginLeft="4dp"-->
+            <!--android:text="10M"-->
+            <!--android:textColor="#b3b3b3"-->
+            <!--android:layout_marginRight="2dp"-->
+            <!--android:textSize="14sp"/>-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e8eae7"
+                android:layout_alignParentBottom="true"
+                />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/setItemLayout_4"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/white_btn_selector"
+            >
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e8eae7"
+                />
+            <ImageView
+                android:id="@+id/setItemIcon_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="14dp"
+                android:clickable="true"
+                android:src="@drawable/setting_cleartrash"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -151,7 +199,7 @@
                 android:text="清理缓存"
                 android:textColor="#3e3e3e"
                 android:textSize="@dimen/bottom_tab_font_size"
-                android:layout_toRightOf="@id/setItemIcon_3"
+                android:layout_toRightOf="@id/setItemIcon_4"
 
                 />
 
@@ -165,7 +213,7 @@
                 android:src="@drawable/more_img"/>
 
             <TextView
-                android:id="@+id/setItemName_3"
+                android:id="@+id/setItemName_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/rightRowIcon1"
@@ -184,97 +232,36 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/setItemLayout_4"
+            android:id="@+id/setItemLayout_5"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/white_btn_selector"
             android:layout_marginTop="12dp"
             >
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="#e8eae7"
-                />
-            <ImageView
-                android:id="@+id/setItemIcon_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="14dp"
-                android:clickable="true"
-                android:src="@drawable/set_up_mark"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:text="给我评分"
-                android:textColor="#3e3e3e"
-                android:textSize="@dimen/bottom_tab_font_size"
-                android:layout_toRightOf="@id/setItemIcon_4"
-                />
-
-            <ImageView
-                android:id="@+id/rightRowIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/more_img"/>
-
-            <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_toLeftOf="@id/rightRowIcon"-->
-                <!--android:layout_centerVertical="true"-->
-                <!--android:layout_marginLeft="4dp"-->
-                <!--android:text="10M"-->
-                <!--android:textColor="#b3b3b3"-->
-                <!--android:layout_marginRight="2dp"-->
-                <!--android:textSize="14sp"/>-->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="#e8eae7"
-                android:layout_alignParentBottom="true"
-                />
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/setItemLayout_5"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/white_btn_selector"
-            >
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="#e8eae7"
-                />
             <ImageView
                 android:id="@+id/setItemIcon_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="14dp"
                 android:clickable="true"
-                android:src="@drawable/set_up_about"/>
+                android:src="@drawable/setting_icon_logo"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:text="关于我们"
+                android:text="关于供鲜生"
                 android:textColor="#3e3e3e"
                 android:textSize="@dimen/bottom_tab_font_size"
                 android:layout_toRightOf="@id/setItemIcon_5"
                 />
 
             <ImageView
+                android:id="@+id/rightRowIcon2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -282,16 +269,18 @@
                 android:layout_marginRight="10dp"
                 android:src="@drawable/more_img"/>
 
-            <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_toLeftOf="@id/rightRowIcon"-->
-                <!--android:layout_centerVertical="true"-->
-                <!--android:layout_marginLeft="4dp"-->
-                <!--android:text="10M"-->
-                <!--android:textColor="#b3b3b3"-->
-                <!--android:layout_marginRight="2dp"-->
-                <!--android:textSize="14sp"/>-->
+            <TextView
+                android:id="@+id/setItemName_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/rightRowIcon2"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="1.0.0"
+                android:textColor="#b3b3b3"
+                android:layout_marginRight="2dp"
+                android:textSize="14sp"/>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
@@ -299,6 +288,7 @@
                 android:layout_alignParentBottom="true"
                 />
         </RelativeLayout>
+
         <TextView
             android:id="@+id/exit_user"
             android:layout_width="match_parent"

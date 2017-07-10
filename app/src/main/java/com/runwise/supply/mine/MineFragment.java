@@ -96,9 +96,28 @@ public class MineFragment extends NetWorkFragment {
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_SYSTEM:
-                SystemInfoResult infoResult = (SystemInfoResult)result;
-                SystemInfoData info = infoResult.getData();
-                final String number = info.getEntity().getCompany_phone();
+                break;
+        }
+    }
+
+    @Override
+    public void onFailure(String errMsg, BaseEntity result, int where) {
+
+    }
+    @OnClick({R.id.settingIcon,R.id.cellIcon,R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
+            R.id.itemLayout_6,R.id.itemLayout_7,R.id.itemLayout_8,R.id.itemLayout_9})
+    public void doClickHandler(View view) {
+        Intent intent;
+        switch (view.getId()) {
+            //头像
+            case R.id.mineHead:
+                intent = new Intent(mContext, EditUserinfoActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
+                    startActivity(intent);
+                }
+                break;
+            case R.id.cellIcon:
+                final String number = "111111";
                 dialog.setModel(CustomDialog.BOTH);
                 dialog.setTitle("联系客服");
                 dialog.setMessageGravity();
@@ -112,22 +131,9 @@ public class MineFragment extends NetWorkFragment {
                 });
                 dialog.show();
                 break;
-        }
-    }
-
-    @Override
-    public void onFailure(String errMsg, BaseEntity result, int where) {
-
-    }
-    @OnClick({R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
-            R.id.itemLayout_6})
-    public void doClickHandler(View view) {
-        Intent intent;
-        switch (view.getId()) {
-            //头像
-            case R.id.mineHead:
-                if(!SPUtils.isLogin(mContext)) {
-                    intent = new Intent(mContext, LoginActivity.class);
+            case R.id.settingIcon:
+                intent = new Intent(mContext, SettingActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
                 }
                 break;
@@ -145,19 +151,7 @@ public class MineFragment extends NetWorkFragment {
                 break;
             case R.id.itemLayout_3:
 //                sendConnection("welcome/system.json",null,REQUEST_SYSTEM,true, SystemInfoResult.class);
-                final String number = "010-53675001";
-                dialog.setModel(CustomDialog.BOTH);
-                dialog.setTitle("联系客服");
-                dialog.setMessageGravity();
-                dialog.setMessage(number);
-                dialog.setLeftBtnListener("取消",null);
-                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        CommonUtils.callNumber(mContext,number);
-                    }
-                });
-                dialog.show();
+
                 break;
             case R.id.itemLayout_4:
                 intent = new Intent(mContext, ActionSendActivity.class);
@@ -169,8 +163,7 @@ public class MineFragment extends NetWorkFragment {
 //                ShareUtil.showShare(mContext,"分享给朋友","分享内容","http://ofwp5weyr.bkt.clouddn.com/71aafd87-5c6f-4629-9dce-9347e14a19a3.png","http://www.baidu.com");
 //                break;
             case R.id.itemLayout_6:
-                intent = new Intent(mContext, SettingActivity.class);
-                startActivity(intent);
+
                 break;
         }
 

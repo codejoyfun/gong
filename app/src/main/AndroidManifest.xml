@@ -388,6 +388,10 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".mine.UserGuidActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

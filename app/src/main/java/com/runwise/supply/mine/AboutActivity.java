@@ -22,8 +22,8 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
  */
 public class AboutActivity extends NetWorkActivity {
     private final int REQUEST_HELP = 1;
-    @ViewInject(R.id.appName)
-    private TextView appName;
+//    @ViewInject(R.id.appName)
+//    private TextView appName;
     @ViewInject(R.id.appCode)
     private TextView appCode;
     @Override
@@ -33,7 +33,7 @@ public class AboutActivity extends NetWorkActivity {
         this.setTitleText(true,"关于");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
         appCode.setText(CommonUtils.getVersionName(this));
-        appName.setText(CommonUtils.getAppName(this));
+//        appName.setText(CommonUtils.getAppName(this));
     }
 
     @Override
@@ -53,16 +53,16 @@ public class AboutActivity extends NetWorkActivity {
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
-    @OnClick({R.id.versionLayout,R.id.helpLayout,R.id.left_layout})
+    @OnClick({R.id.left_layout})
     public void doClickHandler(View view) {
         switch (view.getId()) {
-            case R.id.versionLayout:
-                CheckVersionManager checkVersionManager = new CheckVersionManager(this);
-                checkVersionManager.checkVersion(true);
-                break;
-            case R.id.helpLayout:
-                sendConnection("/Appapi/article/get_help_url",REQUEST_HELP,true, HelperResult.class);
-                break;
+//            case R.id.versionLayout:
+//                CheckVersionManager checkVersionManager = new CheckVersionManager(this);
+//                checkVersionManager.checkVersion(true);
+//                break;
+//            case R.id.helpLayout:
+//                sendConnection("/Appapi/article/get_help_url",REQUEST_HELP,true, HelperResult.class);
+//                break;
             case R.id.left_layout:
                 this.finish();
                 break;
