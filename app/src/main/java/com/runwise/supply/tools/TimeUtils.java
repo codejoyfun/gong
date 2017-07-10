@@ -300,4 +300,13 @@ public class TimeUtils {
 		String str =  sdf.format(calendar.getTime());
 		return str;
 	}
+	public static String getAB2FormatData(int dayNum){
+		Date date = new Date();
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		calendar.add(Calendar.DATE, dayNum);//把日期往后增加一天.整数往后推,负数往前移动
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String str =  sdf.format(calendar.getTime());
+		return str;
+	}
 }

@@ -31,10 +31,13 @@
         android:layout_marginTop="15dp"
         android:layout_below="@id/loadingImg"/>
     <LinearLayout
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:orientation="horizontal"
         android:background="@drawable/onekey_circle"
+        android:layout_marginBottom="-55dp"
+        android:visibility="gone"
         android:layout_alignParentBottom="true">
         <RelativeLayout
             android:layout_width="0dp"
@@ -67,6 +70,7 @@
                 android:layout_marginTop="4.5dp"
                 android:textSize="14sp"/>
             <TextView
+                android:id="@+id/moenyTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="¥240.00"
@@ -78,6 +82,7 @@
 
         </RelativeLayout>
         <Button
+            android:id="@+id/onekeyBtn"
             android:layout_width="124dp"
             android:layout_height="match_parent"
             android:background="#9ACC35"
@@ -85,4 +90,39 @@
             android:textSize="18sp"
             android:text="一键下单"/>
     </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/select_bar"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:background="#FFFFFF"
+        android:paddingLeft="15dp"
+        android:layout_marginBottom="-55dp"
+        android:paddingRight="15dp">
+        <CheckBox
+            android:id="@+id/allCb"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_alignParentLeft="true"
+            android:button="@drawable/product_selector"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全选"
+            android:textSize="15sp"
+            android:layout_centerVertical="true"
+            android:textColor="#2E2E2E"
+            android:layout_marginLeft="13dp"
+            android:layout_toRightOf="@id/allCb"/>
+        <Button
+            android:layout_width="71dp"
+            android:layout_height="31dp"
+            android:background="@drawable/call_phone_circle"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="删除"/>
+    </RelativeLayout>
 </RelativeLayout>
