@@ -10,7 +10,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -21,31 +20,46 @@ import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.orderpage.entity.DefaultProductData;
+import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
-import org.greenrobot.eventbus.EventBus;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by libin on 2017/7/8.
  */
 
 public class OneKeyAdapter extends IBaseAdapter {
+    public enum SELECTTYPE{
+        NO_SELECT, ALL_SELECT, PART_SELECT
+    }
     private Context mContext;
     private boolean editMode;
-    private HashMap<String,Integer> countMap = new HashMap<>();
+    private HashMap<Integer,Integer> countMap = new HashMap<>();
+    private List<DefaultPBean> selectArr = new ArrayList<>();
 
     public OneKeyAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public HashMap<String, Integer> getCountMap() {
+    public HashMap<Integer, Integer> getCountMap() {
         return countMap;
     }
+
+    public List<DefaultPBean> getSelectArr() {
+        return selectArr;
+    }
+
+    public void setSelectArr(List<DefaultPBean> selectArr) {
+        this.selectArr = selectArr;
+    }
+
     interface OneKeyInterface{
         void countChanged();
+        //选择的类型,0没选，1全选,2部分选
+        void selectClicked(SELECTTYPE selectType);
     }
     private OneKeyInterface callback;
     public void setCallback(OneKeyInterface callback) {
@@ -62,7 +76,13 @@ public class OneKeyAdapter extends IBaseAdapter {
         if (convertView == null){
             viewHolder = new ViewHolder();
             convertView = View.inflate(mContext, R.layout.defalut_product_item, null);
-            ViewUtils.inject(viewHolder,convertView);
+            viewHolder.nameTv = (TextView)convertView.findViewById(R.id.name);
+            viewHolder.contentTv = (TextView)convertView.findViewById(R.id.content);
+            viewHolder.checkbox = (CheckBox)convertView.findViewById(R.id.checkbox);
+            viewHolder.sdv = (SimpleDraweeView)convertView.findViewById(R.id.productImage);
+            viewHolder.mBtn = (ImageButton)convertView.findViewById(R.id.input_minus) ;
+            viewHolder.aBtn = (ImageButton)convertView.findViewById(R.id.input_add);
+            viewHolder.editText = (EditText)convertView.findViewById(R.id.editText);
             convertView.setTag(viewHolder);
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
@@ -73,28 +93,31 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.checkbox.setVisibility(View.GONE);
         }
         final EditText editText = viewHolder.editText;
-        final DefaultProductData.ListBean bean = (DefaultProductData.ListBean) mList.get(position);
+        final DefaultPBean bean = (DefaultPBean) mList.get(position);
         ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
         if (basicBean != null){
             viewHolder.nameTv.setText(basicBean.getName());
             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
         }
-        if (!countMap.containsKey(String.valueOf(bean.getProductID()))){
-            countMap.put(String.valueOf(bean.getProductID()),bean.getPresetQty());
+        if (!countMap.containsKey(bean.getProductID())){
+            countMap.put(bean.getProductID(),bean.getPresetQty());
         }
-        editText.setText(String.valueOf(countMap.get(String.valueOf(bean.getProductID()))));
+        Integer proId = bean.getProductID();
+        String count = String.valueOf(countMap.get(proId));
+        editText.setText(count);
         StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
         sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getUom());
         viewHolder.contentTv.setText(sb.toString());
         viewHolder.mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int count = countMap.get(String.valueOf(bean.getProductID()));
+                final Integer pId = bean.getProductID();
+                int count = countMap.get(pId);
                 if (count > 1){
                     editText.setText(String.valueOf(--count));
-                    countMap.put(String.valueOf(bean.getProductID()),count);
+                    countMap.put(pId,count);
                 }else{
-                    countMap.remove(String.valueOf(bean.getProductID()));
+                    countMap.remove(pId);
                     mList.remove(bean);
                     notifyDataSetChanged();;
                 }
@@ -106,12 +129,13 @@ public class OneKeyAdapter extends IBaseAdapter {
 
             @Override
             public void onClick(View v) {
-                int count = countMap.get(String.valueOf(bean.getProductID()));
+                final Integer pId = bean.getProductID();
+                int count = countMap.get(pId);
                 if (count >= 9999){
                     ToastUtil.show(mContext,"最大只支持到9999");
                 }else{
                     editText.setText(String.valueOf(++count));
-                    countMap.put(String.valueOf(bean.getProductID()),count);
+                    countMap.put(pId,Integer.valueOf(count));
                 }
                 callback.countChanged();
             }
@@ -130,7 +154,7 @@ public class OneKeyAdapter extends IBaseAdapter {
                 }else{
                     num = Integer.valueOf(s.toString());
                 }
-                countMap.put(String.valueOf(bean.getProductID()),num);
+                countMap.put(bean.getProductID(),num);
 //                notifyDataSetChanged();
                 callback.countChanged();
 
@@ -141,25 +165,61 @@ public class OneKeyAdapter extends IBaseAdapter {
 
             }
         });
+        viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    if (!selectArr.contains(bean)){
+                        selectArr.add(bean);
+                    }
+                }else{
+                    selectArr.remove(bean);
+                }
+                //返回是否全选标记,true全选, false一个没选
+                if (selectArr.size() == mList.size() && selectArr.size() != 0){
+                    callback.selectClicked(SELECTTYPE.ALL_SELECT);
+                }else if (selectArr.size() == 0){
+                    callback.selectClicked(SELECTTYPE.NO_SELECT);
+                }else{
+                    callback.selectClicked(SELECTTYPE.PART_SELECT);
+                }
+            }
+        });
         if (position == mList.size() - 1){
            callback.countChanged();
         }
+        if (selectArr.contains(bean)){
+            viewHolder.checkbox.setChecked(true);
+        }else{
+            viewHolder.checkbox.setChecked(false);
+        }
         return convertView;
     }
+    public void setAllSelect(boolean isAll){
+        if (isAll){
+            selectArr.clear();
+            selectArr.addAll(mList);
+        }else{
+            selectArr.clear();
+        }
+        notifyDataSetChanged();
+    }
+    public void deleteSelectItems(){
+        //TODO:同时如果计数里面有值，也得一并清掉
+        mList.removeAll(selectArr);
+        selectArr.clear();
+        if (mList.isEmpty()){
+            callback.selectClicked(SELECTTYPE.NO_SELECT);
+        }
+        notifyDataSetChanged();
+    }
     class ViewHolder{
-        @ViewInject(R.id.name)
         TextView nameTv;
-        @ViewInject(R.id.content)
         TextView contentTv;
-        @ViewInject(R.id.checkbox)
         CheckBox checkbox;
-        @ViewInject(R.id.productImage)
         SimpleDraweeView sdv;
-        @ViewInject(R.id.input_minus)
         ImageButton mBtn;
-        @ViewInject(R.id.input_add)
         ImageButton aBtn;
-        @ViewInject(R.id.editText)
         EditText editText;
     }
 }

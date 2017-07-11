@@ -5,7 +5,11 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcel;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -19,8 +23,10 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
+import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.TimeUtils;
@@ -38,6 +44,7 @@ import me.shaohui.bottomdialog.BottomDialog;
 public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface{
     private static final int DEFAULT_TYPE = 0;
     private static final int COMMIT_TYPE = 1;
+    private static final int ADD_PRODUCT = 1000;
     int[] loadingImgs = new int[31];
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -56,6 +63,12 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private TextView loadingTv;
     @ViewInject(R.id.select_bar)
     private RelativeLayout select_bar;
+    @ViewInject(R.id.deleteBtn)
+    private Button deleteBtn;
+    @ViewInject(R.id.allCb)
+    private CheckBox allCb;
+    //标记是否主动点击全部,默认是主动true
+    private boolean isInitiative = true;
     //弹窗星期的View集合
     private TextView[] wArr = new TextView[3];
     private TextView[] dArr = new TextView[3];
@@ -87,7 +100,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         }
     };
     private OneKeyAdapter adapter;
-    @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth,R.id.onekeyBtn})
+    @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth,R.id.onekeyBtn,R.id.deleteBtn})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.dateTv:
@@ -101,13 +114,27 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             case R.id.title_iv_left:
                 if (editMode){
                     //到添加页面
-
+                    Intent intent = new Intent(mContext,ProductActivity.class);
+                    Bundle bundle = new Bundle();
+                    int size = adapter.getList().size();
+                    ArrayList<AddedProduct> addedList = new ArrayList<>();
+                    for (int i = 0; i < size;i++){
+                        DefaultPBean bean = (DefaultPBean) adapter.getList().get(i);
+                        Parcel parcel = Parcel.obtain();
+                        AddedProduct ap = AddedProduct.CREATOR.createFromParcel(parcel);
+                        ap.setProductId(String.valueOf(bean.getProductID()));
+                        int count = adapter.getCountMap().get(bean.getProductID());
+                        ap.setCount(count);
+                        parcel.recycle();
+                        addedList.add(ap);
+                    }
+                    bundle.putParcelableArrayList("ap",addedList);
+                    intent.putExtra("apbundle",bundle);
+                    startActivityForResult(intent,ADD_PRODUCT);
                 }else
                     finish();
                 break;
             case R.id.title_tv_rigth:
-//                Intent intent = new Intent(mContext,ProductActivity.class);
-//                startActivity(intent);
                 if (!editMode){
                     this.setTitleRightText(true,"完成");
                     this.setTitleLeftIcon(true,R.drawable.nav_add);
@@ -130,9 +157,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 CommitOrderRequest request = new CommitOrderRequest();
                 request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
                 request.setOrder_type_id("121");
-                List<DefaultProductData.ListBean> list = adapter.getList();
+                List<DefaultPBean> list = adapter.getList();
                 List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
-                for (DefaultProductData.ListBean bean : list){
+                for (DefaultPBean bean : list){
                     CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
                     pBean.setProduct_id(bean.getProductID());
                     int qty = adapter.getCountMap().get(String.valueOf(bean.getProductID()));
@@ -142,9 +169,27 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 request.setProducts(cList);
                 sendConnection("/gongfu/v2/order/create/",request,COMMIT_TYPE,true, CommitResponse.class);
                 break;
+            case R.id.deleteBtn:
+                adapter.deleteSelectItems();
+                //更新个数
+                countChanged();
+                break;
             default:
                 break;
         }
+    }
+
+    private void setDeleteBtnOk(boolean isOk) {
+        if (isOk){
+            deleteBtn.setEnabled(true);
+            deleteBtn.setBackgroundResource(R.drawable.product_delete_ok);
+            deleteBtn.setTextColor(Color.parseColor("#FF3B30"));
+        }else{
+            deleteBtn.setEnabled(false);
+            deleteBtn.setBackgroundResource(R.drawable.product_delete_circle);
+            deleteBtn.setTextColor(Color.parseColor("#E3E3E3"));
+        }
+
     }
 
     private void initDefaultDate(View v) {
@@ -263,6 +308,23 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 requestDefalutProduct();
             }
         },2000);
+        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isInitiative){
+                    if (isChecked){
+                        //adapter里面所有的选中
+                        setDeleteBtnOk(true);
+                        adapter.setAllSelect(true);
+                    }else{
+                        //清掉adapter里面所有选中的状态
+                        setDeleteBtnOk(false);
+                        adapter.setAllSelect(false);
+                    }
+                }
+                isInitiative = true;
+            }
+        });
     }
     private void requestDefalutProduct(){
         ///gongfu/v2/shop/preset/product/list
@@ -316,13 +378,55 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     public void countChanged() {
         int totalNum = 0;
         double totalMoney = 0;
-        List<DefaultProductData.ListBean> list = adapter.getList();
-        for (DefaultProductData.ListBean bean : list){
-            int count = adapter.getCountMap().get(String.valueOf(bean.getProductID()));
+        List<DefaultPBean> list = adapter.getList();
+        for (DefaultPBean bean : list){
+            int count = adapter.getCountMap().get(bean.getProductID());
             totalNum += count;
             totalMoney += count*bean.getPriceUnit();
         }
         totalMoneyTv.setText(totalMoney+"元");
         totalNumTv.setText(totalNum+"件");
+    }
+
+    @Override
+    public void selectClicked(OneKeyAdapter.SELECTTYPE type) {
+        switch(type){
+            case ALL_SELECT:
+                allCb.setChecked(true);
+                setDeleteBtnOk(true);
+                break;
+            case PART_SELECT:
+                isInitiative = false;
+                allCb.setChecked(false);
+                setDeleteBtnOk(true);
+                break;
+            case NO_SELECT:
+                setDeleteBtnOk(false);
+                allCb.setChecked(false);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+       switch(resultCode){
+           case 2000:
+               Bundle bundle = data.getExtras();
+               ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
+               ArrayList<DefaultPBean> newList = new ArrayList<>();
+               adapter.getCountMap().clear();
+               if (backList != null){
+                   for (AddedProduct pro : backList){
+                       Integer proId = Integer.valueOf(pro.getProductId());
+                       Integer count = pro.getCount();
+                       DefaultPBean bean = new DefaultPBean();
+                       bean.setProductID(Integer.valueOf(proId));
+                       newList.add(bean);
+                       adapter.getCountMap().put(proId,count);
+                   }
+                   adapter.setData(newList);
+               }
+               break;
+       }
     }
 }

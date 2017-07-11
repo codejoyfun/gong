@@ -25,7 +25,9 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 
@@ -48,19 +50,30 @@ public class ProductListFragment extends NetWorkFragment {
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
     public  DataType type;
+    private ArrayList<AddedProduct> addedPros;
     //选中数量map
     private static HashMap<String,Integer> countMap = new HashMap<>();
     //缓存全部商品列表
     private static ArrayList<ProductData.ListBean> arrayList;
+
+    public static HashMap<String, Integer> getCountMap() {
+        return countMap;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ProductAdapter();
+        addedPros = getArguments().getParcelableArrayList("ap");
+        //最先从上个页面，取一次有的数据
+//        int count = existInLastPager();
+//        if (count > 0){
+//            countMap.put(String.valueOf(bean.getProductID()),count);
+//        }
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
 
     }
-
     @Override
     protected int createViewByLayoutId() {
         return R.layout.product_layout_list;
@@ -76,7 +89,11 @@ public class ProductListFragment extends NetWorkFragment {
             //先统计一次id,个数
             for (ProductData.ListBean bean : arrayList){
                 countMap.put(String.valueOf(bean.getProductID()),Integer.valueOf(0));
+                //同时根据上个页面传值更新一次
+                int count = existInLastPager(bean);
+                countMap.put(String.valueOf(bean.getProductID()),count);
             }
+
             adapter.setData(arrayList);
         }else{
             ArrayList<ProductData.ListBean> typeList = new ArrayList<>();
@@ -234,6 +251,7 @@ public class ProductListFragment extends NetWorkFragment {
 
             return convertView;
         }
+
         class ViewHolder {
             @ViewInject(R.id.name)
             TextView            name;   //名称
@@ -253,5 +271,15 @@ public class ProductListFragment extends NetWorkFragment {
             EditText            editText; //输入框
 
         }
+    }
+    private int existInLastPager(ProductData.ListBean bean) {
+        if (addedPros != null){
+            for (AddedProduct product : addedPros){
+                if(product.getProductId().equals(String.valueOf(bean.getProductID()))){
+                    return product.getCount();
+                }
+            }
+        }
+        return 0;
     }
 }

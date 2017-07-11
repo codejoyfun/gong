@@ -95,7 +95,6 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_alignParentBottom="true"
-        android:gravity="center_vertical"
         android:visibility="gone"
         android:background="#FFFFFF"
         android:paddingLeft="15dp"
@@ -107,22 +106,26 @@
             android:layout_height="22dp"
             android:layout_alignParentLeft="true"
             android:button="@drawable/product_selector"
+            android:layout_centerVertical="true"
             />
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="全选"
             android:textSize="15sp"
             android:layout_centerVertical="true"
             android:textColor="#2E2E2E"
+            android:gravity="center_vertical"
             android:layout_marginLeft="13dp"
             android:layout_toRightOf="@id/allCb"/>
         <Button
+            android:id="@+id/deleteBtn"
             android:layout_width="71dp"
             android:layout_height="31dp"
-            android:background="@drawable/call_phone_circle"
+            android:background="@drawable/product_delete_circle"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:textColor="#E3E3E3"
             android:text="删除"/>
     </RelativeLayout>
 </RelativeLayout>
