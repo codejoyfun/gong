@@ -128,4 +128,50 @@
             android:textColor="#E3E3E3"
             android:text="删除"/>
     </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/self_help_rl"
+        android:visibility="gone"
+        android:layout_below="@id/title_bar">
+        <TextView
+            android:id="@+id/tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:text="您还没有相关商品哦"
+            android:layout_centerInParent="true"
+            android:textColor="#666666"/>
+        <TextView
+            android:id="@+id/tip2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="点击按钮添加商品"
+            android:layout_below="@id/tip"
+            android:gravity="center"
+            android:layout_marginTop="5dp"
+            android:textColor="#B6B6B6"/>
+        <Button
+            android:id="@+id/self_add_btn"
+            android:layout_width="125dp"
+            android:layout_height="45dp"
+            android:text="添加商品"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_below="@id/tip2"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/product_add_circle"
+            />
+        <ImageView
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:src="@drawable/default_ico_noneorder"
+            android:scaleType="centerInside"
+            android:layout_above="@id/tip"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="15dp"/>
+
+    </RelativeLayout>
 </RelativeLayout>

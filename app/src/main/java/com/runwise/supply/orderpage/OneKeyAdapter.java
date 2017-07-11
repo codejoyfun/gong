@@ -37,6 +37,8 @@ public class OneKeyAdapter extends IBaseAdapter {
     }
     private Context mContext;
     private boolean editMode;
+
+    private boolean ischange=true;
     private HashMap<Integer,Integer> countMap = new HashMap<>();
     private List<DefaultPBean> selectArr = new ArrayList<>();
 
@@ -73,6 +75,7 @@ public class OneKeyAdapter extends IBaseAdapter {
     @Override
     protected View getExView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
+        final DefaultPBean bean = (DefaultPBean) mList.get(position);
         if (convertView == null){
             viewHolder = new ViewHolder();
             convertView = View.inflate(mContext, R.layout.defalut_product_item, null);
@@ -84,6 +87,33 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.aBtn = (ImageButton)convertView.findViewById(R.id.input_add);
             viewHolder.editText = (EditText)convertView.findViewById(R.id.editText);
             convertView.setTag(viewHolder);
+            viewHolder.editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (!ischange) {
+                        Integer num;
+                        if (TextUtils.isEmpty(s)){
+                            num = 0;
+                        }else{
+                            num = Integer.valueOf(s.toString());
+                        }
+                        countMap.put(bean.getProductID(),num);
+//                notifyDataSetChanged();
+                        callback.countChanged();
+                    }
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
         }
@@ -93,7 +123,6 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.checkbox.setVisibility(View.GONE);
         }
         final EditText editText = viewHolder.editText;
-        final DefaultPBean bean = (DefaultPBean) mList.get(position);
         ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
         if (basicBean != null){
             viewHolder.nameTv.setText(basicBean.getName());
@@ -104,7 +133,9 @@ public class OneKeyAdapter extends IBaseAdapter {
         }
         Integer proId = bean.getProductID();
         String count = String.valueOf(countMap.get(proId));
+        ischange = true;
         editText.setText(count);
+        ischange = false;
         StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
         sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getUom());
         viewHolder.contentTv.setText(sb.toString());
@@ -140,28 +171,10 @@ public class OneKeyAdapter extends IBaseAdapter {
                 callback.countChanged();
             }
         });
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Integer num;
-                if (TextUtils.isEmpty(s)){
-                    num = 0;
-                }else{
-                    num = Integer.valueOf(s.toString());
-                }
-                countMap.put(bean.getProductID(),num);
-//                notifyDataSetChanged();
-                callback.countChanged();
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            public void onFocusChange(View v, boolean hasFocus) {
 
             }
         });

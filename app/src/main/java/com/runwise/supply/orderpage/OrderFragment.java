@@ -34,7 +34,7 @@ public class OrderFragment extends NetWorkFragment {
     protected int createViewByLayoutId() {
         return R.layout.order_fragment_layout;
     }
-    @OnClick({R.id.dayWeekTv,R.id.sureBtn})
+    @OnClick({R.id.dayWeekTv,R.id.sureBtn,R.id.selfHelpBtn})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.dayWeekTv:
@@ -63,9 +63,12 @@ public class OrderFragment extends NetWorkFragment {
                 break;
             case R.id.sureBtn:
                 //跳转到智能下单页面
-                Log.i("Jp", JPushInterface.getRegistrationID(mContext.getApplicationContext()));
                 Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.selfHelpBtn:
+                Intent intent2 = new Intent(mContext,SelpHelpOrderActivity.class);
+                startActivity(intent2);
                 break;
         }
 

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -28,7 +29,6 @@ import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
@@ -36,12 +36,12 @@ import java.util.List;
 
 import me.shaohui.bottomdialog.BottomDialog;
 
-
 /**
- * Created by libin on 2017/6/30.
+ * Created by libin on 2017/7/12.
+ * 跟智能下单页面大体一致，可继承，暂复制。
  */
 
-public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface{
+public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface{
     private static final int DEFAULT_TYPE = 0;
     private static final int COMMIT_TYPE = 1;
     private static final int ADD_PRODUCT = 1000;
@@ -67,6 +67,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private Button deleteBtn;
     @ViewInject(R.id.allCb)
     private CheckBox allCb;
+    @ViewInject(R.id.self_help_rl)
+    private RelativeLayout self_help_rl;
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
     //弹窗星期的View集合
@@ -100,7 +102,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         }
     };
     private OneKeyAdapter adapter;
-    @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth,R.id.onekeyBtn,R.id.deleteBtn})
+    @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth,R.id.onekeyBtn,R.id.deleteBtn,R.id.self_add_btn})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.dateTv:
@@ -173,6 +175,26 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 adapter.deleteSelectItems();
                 //更新个数
                 countChanged();
+                break;
+            case R.id.self_add_btn:
+                //到添加页面
+                Intent intent = new Intent(mContext,ProductActivity.class);
+                Bundle bundle = new Bundle();
+                int size = adapter.getList().size();
+                ArrayList<AddedProduct> addedList = new ArrayList<>();
+                for (int i = 0; i < size;i++){
+                    DefaultPBean bean = (DefaultPBean) adapter.getList().get(i);
+                    Parcel parcel = Parcel.obtain();
+                    AddedProduct ap = AddedProduct.CREATOR.createFromParcel(parcel);
+                    ap.setProductId(String.valueOf(bean.getProductID()));
+                    int count = adapter.getCountMap().get(bean.getProductID());
+                    ap.setCount(count);
+                    parcel.recycle();
+                    addedList.add(ap);
+                }
+                bundle.putParcelableArrayList("ap",addedList);
+                intent.putExtra("apbundle",bundle);
+                startActivityForResult(intent,ADD_PRODUCT);
                 break;
             default:
                 break;
@@ -290,24 +312,27 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.onekey_order_layout);
-        setTitleText(true,"智能下单");
+        self_help_rl.setVisibility(View.VISIBLE);
+        loadingImg.setVisibility(View.INVISIBLE);
+        loadingTv.setVisibility(View.INVISIBLE);
+        setTitleText(true,"自助下单");
         setTitleLeftIcon(true,R.drawable.nav_back);
         setTitleRightText(true,"编辑");
         pullListView.setVisibility(View.INVISIBLE);
         adapter = new OneKeyAdapter(mContext);
         adapter.setCallback(this);
         pullListView.setAdapter(adapter);
-        initLoadingImgs();
+//        initLoadingImgs();
         handler.postDelayed(runnable,0);
         dateTv.setText(cachedDWStr);
 //        showDialog.setTitle("选择送达日期");
 //        showDialog.setCancelable(true)
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                requestDefalutProduct();
-            }
-        },2000);
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                requestDefalutProduct();
+//            }
+//        },2000);
         allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -409,23 +434,32 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-       switch(resultCode){
-           case 2000:
-               Bundle bundle = data.getExtras();
-               ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
-               List<DefaultPBean> newList = new ArrayList<>();
-               if (backList != null){
-                   for (AddedProduct pro : backList){
-                       Integer proId = Integer.valueOf(pro.getProductId());
-                       Integer count = pro.getCount();
-                       DefaultPBean bean = new DefaultPBean();
-                       bean.setProductID(proId);
-                       newList.add(bean);
-                       adapter.getCountMap().put(proId,count);
-                   }
-                   adapter.setData(newList);
-               }
-               break;
-       }
+        switch(resultCode){
+            case 2000:
+                Bundle bundle = data.getExtras();
+                ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
+                List<DefaultPBean> newList = new ArrayList<>();
+                if (backList != null){
+                    for (AddedProduct pro : backList){
+                        Integer proId = Integer.valueOf(pro.getProductId());
+                        Integer count = pro.getCount();
+                        DefaultPBean bean = new DefaultPBean();
+                        bean.setProductID(proId);
+                        newList.add(bean);
+                        adapter.getCountMap().put(proId,count);
+                    }
+                    adapter.setData(newList);
+                }
+                if (backList != null && backList.size() > 0){
+                    self_help_rl.setVisibility(View.GONE);
+                    bottom_bar.setVisibility(View.VISIBLE);
+                    ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext,55));
+                    pullListView.setVisibility(View.VISIBLE);
+                }else{
+                    self_help_rl.setVisibility(View.VISIBLE);
+                    bottom_bar.setVisibility(View.INVISIBLE);
+                }
+                break;
+        }
     }
 }
