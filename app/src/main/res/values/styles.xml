@@ -24,6 +24,12 @@
         <item name="android:maxHeight">14dp</item>
     </style>
 
+    <style name="RatingBarBigStyle" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/dealer_big_ratingbar</item>
+        <item name="android:minHeight">44dp</item>
+        <item name="android:maxHeight">44dp</item>
+    </style>
+
     <style name="Theme.Welcome" parent="@style/Theme.AnimStyle">
         <item name="android:windowBackground">@drawable/splash_layers</item>
     </style>

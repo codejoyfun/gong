@@ -12,12 +12,18 @@ import android.support.v4.util.ArrayMap;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.internal.http.multipart.FilePart;
+import com.android.internal.http.multipart.Part;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ImageUtils;
+import com.kids.commonframe.base.util.LogUtil;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomBottomDialog;
@@ -33,6 +39,8 @@ import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
+import com.runwise.supply.ChangePhoneActivity;
+import com.runwise.supply.FindPasswordActivity;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.business.entity.FilterItem;
@@ -44,6 +52,8 @@ import com.runwise.supply.entity.QnTokenRepEntity;
 import com.runwise.supply.mine.entity.EditUserInfoRequest;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.mine.entity.UpdateUserInfoRep;
+import com.runwise.supply.mine.entity.UploadImg;
+import com.runwise.supply.tools.StatusBarUtil;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
@@ -51,18 +61,18 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 
 public class EditUserinfoActivity extends NetWorkActivity {
-    private final int REQUEST_CLASS_CIRCLE_TOKEN = 4;
-    private final int REQUEST_GROWTH_RUL = 5;
     private final int REQUEST_UPDATE_NAME = 10;
     private final int REQUEST_UPDATE_AGE = 11;
     private final int REQUEST_UPDATE_SEX = 12;
     private final int REQUEST_UPDATE_PHONENUMBER = 13;
+    private final int REQUEST_UPLOAD_IMAGEFILE = 14;
 
     private final int RET_CAMERA = 101;
     private final int RET_GALLERY = 102;
@@ -73,26 +83,6 @@ public class EditUserinfoActivity extends NetWorkActivity {
     private String token;
     private String growthUrl;
 
-    private static final int RESPONSE_WEIZI = 7;
-
-    private static final int RESPONSE_JIGOU = 8;
-    private static final int RESPONSE_LINGYU = 9;
-    //位置
-    private List<Province> provinceList;
-    private final int REQUEST_UPDATE_PROVINCE = 13;
-    //机构类型
-    private List<FilterItem> orgList;
-    private final int REQUEST_UPDATE_ORG = 14;
-    //专业领域
-    private List<FilterItem> typeList;
-    private final int REQUEST_UPDATE_TYPE = 15;
-
-    @ViewInject(R.id.shenfenText)
-    private TextView shenfenText;
-    @ViewInject(R.id.leixinText)
-    private TextView leixinText;
-    @ViewInject(R.id.lingyuText)
-    private TextView lingyuText;
     private UserInfo userInfo;
 
     @ViewInject(R.id.userHead)
@@ -100,32 +90,29 @@ public class EditUserinfoActivity extends NetWorkActivity {
 
     @ViewInject(R.id.userInfoName)
     private TextView userInfoName;
-    @ViewInject(R.id.userInfoAge)
-    private TextView userInfoAge;
-    @ViewInject(R.id.userInfoSex)
-    private TextView userInfoSex;
+    @ViewInject(R.id.userInfoId)
+    private TextView userInfoId;
+    @ViewInject(R.id.userInfoPlace)
+    private TextView userInfoPlace;
+    @ViewInject(R.id.userInfoStore)
+    private TextView userInfoStore;
     @ViewInject(R.id.userInfoPhone)
     private TextView userInfoPhone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_edit_userinfo);
         capTempPhotoUrl = Uri.fromFile(new File(CommonUtils.getCachePath(mContext),"temp.jpg"));
         userInfo = GlobalApplication.getInstance().loadUserInfo();
-        //专业领域
-        sendConnection("/Appapi/lingyu/getList",RESPONSE_LINGYU,true,FilterList.class);
-        //机构类型
-        sendConnection("/Appapi/zhuanjia/getSuoshuList",RESPONSE_JIGOU,true,FilterList.class);
-        //位置
-        ProvinceRequest province = new ProvinceRequest();
-        province.setType("all");
-        sendConnection("/Appapi/user/getProvinceList",province,RESPONSE_WEIZI,true,ProvinceList.class);
 
-//        FrecoFactory.getInstance(this).disPlay(userHead,userInfo.getAvatar());
-//        userInfoName.setText(userInfo.getNickname());
-//        userInfoAge.setText(userInfo.getAge());
-//        userInfoSex.setText("2".equals(userInfo.getSex()) ? "女" : "男");
-//        userInfoPhone.setText(userInfo.getPhone());
+        FrecoFactory.getInstance(this).disPlay(userHead,Constant.BASE_URL + userInfo.getAvatarUrl());
+        userInfoName.setText(userInfo.getUsername());
+        userInfoId.setText(userInfo.getLogin());
+        userInfoPlace.setText(userInfo.getRegion());
+        userInfoStore.setText(userInfo.getStreet());
+        userInfoPhone.setText(userInfo.getMobile());
         this.setTitleText(true,"个人信息");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
     }
@@ -133,102 +120,14 @@ public class EditUserinfoActivity extends NetWorkActivity {
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
-            case REQUEST_CLASS_CIRCLE_TOKEN:
-                QnTokenRepEntity tokenResponse = (QnTokenRepEntity) result;
-                if (tokenResponse != null) {
-                    token = tokenResponse.getData();
-                }
-                // 获取时间戳
-                String key = UUID.randomUUID() + ".png";
-                UploadManager uploadManager = new UploadManager();
-                showUploadDialog();
-                uploadManager.put(updateImgUri.getPath(), key, token, new UpCompletionHandler() {
-                    @Override
-                    public void complete(String arg0, ResponseInfo arg1, JSONObject arg2) {
-                        String imageUrl = Constant.QINIU_URL + arg0;
-                        updateGrowthUrl(imageUrl);
-                    }
-                }, new UploadOptions(null, null, false, new UpProgressHandler() {
-
-                    @Override
-                    public void progress(String key, double percent) {
-                        int progress = (int) (percent * 100);
-                        LogUtils.i("PersonalInfoActivity_UploadOptions : " + percent
-                                + "/" + progress);
-                        // setDialogProgress(progress);
-                    }
-                }, null));
-                break;
-            case REQUEST_GROWTH_RUL:
-//                if (userInfo != null) {
-//                    userInfo.setAvatar(growthUrl);
-//                }
+            case REQUEST_UPLOAD_IMAGEFILE:
+                UploadImg uploadImg = (UploadImg)result.getResult();
+                userInfo.setAvatarUrl(uploadImg.getAvatar_url());
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
                 Fresco.getImagePipeline().evictFromCache(updateImgUri);
                 FrecoFactory.getInstance(this).disPlay(userHead, updateImgUri);
                 dismissUploadDialog("头像上传成功!");
                 break;
-            //专业领域
-            case RESPONSE_LINGYU:
-                FilterList filterList = (FilterList)result;
-                typeList = filterList.getData();
-                if (typeList != null)
-                    for(FilterItem bean:typeList) {
-//                        if(bean.getId().equals(this.userInfo.getLingyu_id())) {
-//                            bean.setSelect(true);
-//                            lingyuText.setText(bean.getName());
-//                            break;
-//                        }
-                    }
-                break;
-            //位置
-            case RESPONSE_WEIZI:
-                ProvinceList resultList = (ProvinceList)result;
-                provinceList = resultList.getData();
-                if (provinceList != null )
-                    for(Province bean : provinceList) {
-//                        if(bean.getProvince_id().equals(this.userInfo.getProvince_id())) {
-//                            bean.setSelect(true);
-//                            shenfenText.setText(bean.getName());
-//                            break;
-//                        }
-                    }
-                break;
-            //机构类型
-            case RESPONSE_JIGOU:
-                FilterList filterList1 = (FilterList)result;
-                orgList = filterList1.getData();
-                if(orgList != null)
-                    for(FilterItem bean:orgList) {
-//                        if(bean.getId().equals(this.userInfo.getJigou_type())) {
-//                            bean.setSelect(true);
-//                            leixinText.setText(bean.getName());
-//                            break;
-//                        }
-                    }
-                break;
-            //位置
-            case REQUEST_UPDATE_PROVINCE:
-                UpdateUserInfoRep proviBean = (UpdateUserInfoRep) result;
-//                this.userInfo.setProvince_id(proviBean.getData().getProvince_id());
-                GlobalApplication.getInstance().saveUserInfo(this.userInfo);
-                ToastUtil.show(mContext,"修改完成");
-                break;
-            //机构类型
-            case REQUEST_UPDATE_ORG:
-                UpdateUserInfoRep orgBean = (UpdateUserInfoRep) result;
-//                this.userInfo.setJigou_type(orgBean.getData().getJigou_type());
-                GlobalApplication.getInstance().saveUserInfo(this.userInfo);
-                ToastUtil.show(mContext,"修改完成");
-                break;
-            //专业领域
-            case REQUEST_UPDATE_TYPE:
-                UpdateUserInfoRep lingyuBean = (UpdateUserInfoRep) result;
-//                this.userInfo.setLingyu_id(lingyuBean.getData().getLingyu_id());
-                GlobalApplication.getInstance().saveUserInfo(this.userInfo);
-                ToastUtil.show(mContext,"修改完成");
-                break;
-
         }
 
     }
@@ -237,18 +136,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
     public void onFailure(String errMsg, BaseEntity result, int where) {
         ToastUtil.show(this,errMsg);
     }
-    /**
-     * 更新头像
-     */
-    public void updateGrowthUrl(String growthUrl) {
-        this.growthUrl = growthUrl;
-        EditUserInfoRequest request = new EditUserInfoRequest();
-        request.setHeadsmall(growthUrl);
-//        request.setUid(userInfo.getMember_id());
-        sendConnection("/Appapi/user/edit_info", request, REQUEST_GROWTH_RUL, true, UpdateUserInfoRep.class);
-    }
-    @OnClick({R.id.userInfoHead,R.id.shenfenLayout,R.id.leixinLayout,R.id.lingyuLayout,R.id.left_layout,R.id.userInfoAgeLayout
-            ,R.id.userInfoNameLayout,R.id.userInfoSexLayout,R.id.userInfoPhoneLayout})
+    @OnClick({R.id.userInfoHead,R.id.left_layout,R.id.userInfoPhoneLayout,R.id.userInfoChangePhoneLayout,R.id.exit_user})
     public void handlerClickEvent(View view) {
         switch (view.getId()) {
             case R.id.userInfoHead:
@@ -276,129 +164,26 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 });
                 customBottomDialog.show();
                 break;
-            //专业领域
-            case R.id.lingyuLayout:
-                List<String> items = new ArrayList<String>();
-                int selectInt = 0;
-                if(typeList != null) {
-                    for(int i = 0;i < typeList.size(); i ++) {
-                        FilterItem bean = typeList.get(i);
-                        items.add(bean.getName());
-                        if(bean.isSelect()) {
-                            selectInt = i;
-                        }
-                    }
-                }
-                CustomSelectDialog dataDialog = new CustomSelectDialog(this, items);
-                dataDialog.setCurrentItem(selectInt);
-                dataDialog.addPickerListener("确定", new PickerClickListener() {
-                    @Override
-                    public void doPickClick(String currentStr, int currentPosition) {
-                        lingyuText.setText(currentStr);
-                        for(FilterItem bean:typeList) {
-                            bean.setSelect(false);
-                        }
-                        FilterItem bean = typeList.get(currentPosition);
-                        bean.setSelect(true);
-                        EditUserInfoRequest request = new EditUserInfoRequest();
-                        request.setLingyu_id(bean.getId());
-//                        request.setUid(userInfo.getMember_id());
-                        sendConnection("/Appapi/user/edit_info", request, REQUEST_UPDATE_TYPE, true, UpdateUserInfoRep.class);
-                    }
-                });
-                dataDialog.show();
-                break;
-            //机构类型
-            case R.id.leixinLayout:
-                List<String> items1 = new ArrayList<String>();
-                int selectInt1 = 0;
-                if(orgList != null) {
-                    for(int i = 0;i < orgList.size(); i ++) {
-                        FilterItem bean = orgList.get(i);
-                        items1.add(bean.getName());
-                        if(bean.isSelect()) {
-                            selectInt1 = i;
-                        }
-                    }
-                }
-                CustomSelectDialog dataDialog1 = new CustomSelectDialog(this, items1);
-                dataDialog1.setCurrentItem(selectInt1);
-                dataDialog1.addPickerListener("确定", new PickerClickListener() {
-                    @Override
-                    public void doPickClick(String currentStr, int currentPosition) {
-                        leixinText.setText(currentStr);
-                        for(FilterItem bean:orgList) {
-                            bean.setSelect(false);
-                        }
-                        FilterItem bean = orgList.get(currentPosition);
-                        bean.setSelect(true);
-                        EditUserInfoRequest request = new EditUserInfoRequest();
-                        request.setJigou_type(bean.getId());
-//                        request.setUid(userInfo.getMember_id());
-                        sendConnection("/Appapi/user/edit_info", request, REQUEST_UPDATE_ORG, true, UpdateUserInfoRep.class);
-                    }
-                });
-                dataDialog1.show();
-                break;
-            //省份
-            case R.id.shenfenLayout:
-                List<String> items2 = new ArrayList<String>();
-                int selectInt2 = 0;
-                if(provinceList != null) {
-                    for(int i = 0;i < provinceList.size(); i ++) {
-                        Province bean = provinceList.get(i);
-                        items2.add(bean.getName());
-                        if(bean.isSelect()) {
-                            selectInt2 = i;
-                        }
-                    }
-                }
-                CustomSelectDialog dataDialog2 = new CustomSelectDialog(this, items2);
-                dataDialog2.setCurrentItem(selectInt2);
-                dataDialog2.addPickerListener("确定", new PickerClickListener() {
-                    @Override
-                    public void doPickClick(String currentStr, int currentPosition) {
-                        shenfenText.setText(currentStr);
-                        for(Province bean:provinceList) {
-                            bean.setSelect(false);
-                        }
-                        Province bean = provinceList.get(currentPosition);
-                        bean.setSelect(true);
-                        EditUserInfoRequest request = new EditUserInfoRequest();
-                        request.setProvince_id(bean.getProvince_id());
-//                        request.setUid(userInfo.getMember_id());
-                        sendConnection("/Appapi/user/edit_info", request, REQUEST_UPDATE_PROVINCE, true, UpdateUserInfoRep.class);
-                    }
-                });
-                dataDialog2.show();
-                break;
             case R.id.left_layout:
                 finish();
                 break;
-            //年龄
-            case R.id.userInfoAgeLayout:
-                Intent intentAge = new Intent(this, UpdateUserInfoActivity.class);
-                intentAge.putExtra("type",UpdateUserInfoActivity.UPDATE_USERINFO_AGE);
-                startActivityForResult(intentAge,REQUEST_UPDATE_AGE);
+            //退出登录
+            case R.id.exit_user:
+                showLogoutDialog();
                 break;
-            //名字
-            case R.id.userInfoNameLayout:
-                Intent intentName = new Intent(this, UpdateUserInfoActivity.class);
-                intentName.putExtra("type",UpdateUserInfoActivity.UPDATE_USERINFO_NICKNAME);
-                startActivityForResult(intentName,REQUEST_UPDATE_NAME);
-                break;
-            //性别
-            case R.id.userInfoSexLayout:
-                Intent intentSex = new Intent(this, UpdateSexActivity.class);
-//                intentSex.putExtra("sex",userInfo.getSex());
-                startActivityForResult(intentSex,REQUEST_UPDATE_SEX);
+            //重置密码
+            case R.id.userInfoChangePhoneLayout:
+                this.startActivity(new Intent(this, FindPasswordActivity.class));
                 break;
             //手机号
             case R.id.userInfoPhoneLayout:
-                Intent intentPhone = new Intent(this, UpdateUserInfoActivity.class);
-                intentPhone.putExtra("type",UpdateUserInfoActivity.UPDATE_PHONE_NUMBER);
-                startActivityForResult(intentPhone,REQUEST_UPDATE_PHONENUMBER);
+                Intent intentPhone = new Intent(this, ChangePhoneActivity.class);
+                startActivity(intentPhone);
+//                Intent intentPhone = new Intent(this, UpdateUserInfoActivity.class);
+//                intentPhone.putExtra("type",UpdateUserInfoActivity.UPDATE_PHONE_NUMBER);
+//                startActivityForResult(intentPhone,REQUEST_UPDATE_PHONENUMBER);
                 break;
+
         }
     }
 
@@ -448,7 +233,15 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 //裁切完成
                 case UCrop.REQUEST_CROP:
                     updateImgUri = UCrop.getOutput(data);
-                    getToken();
+                    showUploadDialog();
+                    List<Part> partList = new ArrayList<>();
+                    try {
+                        String path1Scaled = ImageUtils.getScaledImage(this,updateImgUri.getPath());
+                        partList.add(new FilePart("avatar_file", new File(path1Scaled)));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    sendConnection("/gongfu/user/avatar", partList, REQUEST_UPLOAD_IMAGEFILE, false, UploadImg.class);
                     break;
                 case REQUEST_UPDATE_NAME:
                     userInfo = GlobalApplication.getInstance().loadUserInfo();
@@ -468,23 +261,6 @@ public class EditUserinfoActivity extends NetWorkActivity {
                     break;
             }
         }
-    }
-    /**
-     * 获取token
-     */
-    public void getToken() {
-        getQiniuToken("0", "");
-    }
-    /**
-     * 获取Token
-     *
-     * @param type 数据类型 //0图片，1视频，2音频，3文档(非指定)，不填默认文件类型如（doc等）
-     */
-    public void getQiniuToken(String type, String fileName) {
-//        QnTokenRequest qnTokenRequest = new QnTokenRequest();
-//        qnTokenRequest.setFileName(fileName);
-//        qnTokenRequest.setFileType(type);
-        this.sendConnection("/Appapi/qiniu/gettoken", REQUEST_CLASS_CIRCLE_TOKEN, true, QnTokenRepEntity.class);
     }
 
     private void startCropActivity(@NonNull Uri uri) {
@@ -526,5 +302,27 @@ public class EditUserinfoActivity extends NetWorkActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().post(new UpdateUserInfo());
+    }
+
+    private void showLogoutDialog() {
+        final CustomBottomDialog mLogoutDialog = new CustomBottomDialog(this);
+        ArrayMap<Integer, String> menus = new ArrayMap<Integer, String>();
+        menus.put(0, "退出登录");
+        mLogoutDialog.addItemViews(menus);
+        mLogoutDialog.setOnBottomDialogClick(new CustomBottomDialog.OnBottomDialogClick() {
+            @Override
+            public void onItemClick(View view) {
+                switch (view.getId()) {
+                    case 0:
+                        SPUtils.loginOut(mContext);
+                        //退出登录
+                        EventBus.getDefault().post(new UserLogoutEvent());
+                        finish();
+                        break;
+                }
+                mLogoutDialog.dismiss();
+            }
+        });
+        mLogoutDialog.show();
     }
 }

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -15,6 +17,9 @@ import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.config.Constant;
+import com.kids.commonframe.config.GlobalConstant;
+import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -45,6 +50,20 @@ public class MineFragment extends NetWorkFragment {
     private UserInfo userInfo;
 
     boolean isLogin;
+
+    @ViewInject(R.id.ratingbarPeisong)
+    private RatingBar ratingbarPeisong;
+    @ViewInject(R.id.peisongStr)
+    private TextView peisongStr;
+    @ViewInject(R.id.peisongImg)
+    private ImageView peisongImg;
+
+    @ViewInject(R.id.ratingbarZhiliang)
+    private RatingBar ratingbarZhiliang;
+    @ViewInject(R.id.zhiliangStr)
+    private TextView zhiliangStr;
+    @ViewInject(R.id.zhiliangImg)
+    private ImageView zhiliangImg;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +80,28 @@ public class MineFragment extends NetWorkFragment {
         isLogin = true;
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         if (userInfo != null) {
-//            FrecoFactory.getInstance(mContext).disPlay(mineHead, userInfo.getAvatar());
-//            minePhone.setText(userInfo.getPhone());
+            LogUtils.e(Constant.BASE_URL + userInfo.getAvatarUrl());
+
+            FrecoFactory.getInstance(mContext).disPlay(mineHead, Constant.BASE_URL + userInfo.getAvatarUrl());
+            minePhone.setText(userInfo.getUsername());
+
+            ratingbarPeisong.setRating(userInfo.getCateringServiceScore());
+            peisongStr.setText(userInfo.getCateringServiceScore()+"");
+            if ("-1".equals(userInfo.getCateringServiceTrend())) {
+                peisongImg.setImageResource(R.drawable.tag_down);
+            }
+            else {
+                peisongImg.setImageResource(R.drawable.tag_up);
+            }
+
+            ratingbarZhiliang.setRating(userInfo.getCateringQualityScore());
+            zhiliangStr.setText(userInfo.getCateringQualityScore()+"");
+            if ("-1".equals(userInfo.getCateringQualityTrend())) {
+                zhiliangImg.setImageResource(R.drawable.tag_down);
+            }
+            else {
+                zhiliangImg.setImageResource(R.drawable.tag_up);
+            }
         }
         MainActivity mainActivity = (MainActivity)mContext;
     }
@@ -70,7 +109,7 @@ public class MineFragment extends NetWorkFragment {
     private void setLogoutStatus() {
         isLogin = false;
         FrecoFactory.getInstance(mContext).disPlay(mineHead, "");
-        minePhone.setText("点击登录");
+        minePhone.setText("登录/注册>");
         minePhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +119,13 @@ public class MineFragment extends NetWorkFragment {
                 }
             }
         });
+        ratingbarPeisong.setRating(0);
+        peisongStr.setText(0.0+"");
+        peisongImg.setImageResource(R.drawable.tag_up);
+
+        ratingbarZhiliang.setRating(0);
+        zhiliangStr.setText(0.0+"");
+        zhiliangImg.setImageResource(R.drawable.tag_down);
     }
 
     @Override

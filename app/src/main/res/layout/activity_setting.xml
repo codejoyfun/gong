@@ -289,22 +289,7 @@
                 />
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/exit_user"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="22dp"
-            android:layout_marginBottom="40dp"
-            android:background="@drawable/white_btn_selector"
-            android:text="退出登录"
-            android:textColor="#fd5b67"
-            android:textSize="16sp"
-            android:visibility="visible"
-            android:gravity="center"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            />
+
     </LinearLayout>
 
 </LinearLayout>

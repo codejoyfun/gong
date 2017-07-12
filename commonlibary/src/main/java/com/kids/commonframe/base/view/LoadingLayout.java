@@ -44,6 +44,7 @@ public class LoadingLayout extends FrameLayout  implements OnClickListener{
 	private void init(Context context) {
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View view = inflater.inflate(R.layout.loading_layout, null);
+
 		view.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {

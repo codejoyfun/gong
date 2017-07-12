@@ -8,6 +8,7 @@ import android.widget.EditText;
 import com.kids.commonframe.base.UserInfo;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.FinishActEvent;
 import com.runwise.supply.mine.entity.UsMessageRequest;
 import com.runwise.supply.mine.entity.UsMessageResult;
 import com.kids.commonframe.base.BaseEntity;
@@ -15,6 +16,8 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import org.greenrobot.eventbus.EventBus;
 
 
 /**
@@ -30,7 +33,8 @@ public class ReceiveMsgActivity extends NetWorkActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receivemsg);
         this.setTitleText(true,"给我们留言");
-        this.setTitleLeftIcon(true,R.drawable.back_btn);
+        this.setTitleLeftIcon(true,R.drawable.nav_closed);
+        this.setTitleRightText(true,"提交");
     }
 
     @Override
@@ -40,6 +44,7 @@ public class ReceiveMsgActivity extends NetWorkActivity {
                 UsMessageResult usResult = (UsMessageResult) result;
                 ToastUtil.show(mContext,"留言成功");
                 finish();
+                EventBus.getDefault().post(new FinishActEvent());
                 break;
         }
     }
@@ -48,10 +53,10 @@ public class ReceiveMsgActivity extends NetWorkActivity {
     public void onFailure(String errMsg, BaseEntity result, int where) {
         ToastUtil.show(mContext,errMsg);
     }
-    @OnClick({R.id.commitMsg,R.id.left_layout})
+    @OnClick({R.id.right_layout,R.id.left_layout})
     public void doClickHandler(View view) {
         switch (view.getId()) {
-            case R.id.commitMsg:
+            case R.id.right_layout:
                 String message = giveMessage.getText().toString();
                 if(TextUtils.isEmpty(message)) {
                     ToastUtil.show(mContext,"请输入留言");

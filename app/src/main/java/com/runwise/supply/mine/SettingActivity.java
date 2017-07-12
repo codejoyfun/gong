@@ -65,13 +65,7 @@ public class SettingActivity extends NetWorkActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        isLogin = SPUtils.isLogin(mContext);
-        if (isLogin) {
-            exitButton.setVisibility(View.VISIBLE);
-        }
-        else {
-            exitButton.setVisibility(View.GONE);
-        }
+
         setItemName_5.setText(CommonUtils.getVersionName(this));
     }
 
@@ -87,9 +81,9 @@ public class SettingActivity extends NetWorkActivity {
                 startActivity(intent);
                 break;
             case R.id.setItemLayout_2:
-//                //检查版本
-//                CheckVersionManager checkVersionManager = new CheckVersionManager(this);
-//                checkVersionManager.checkVersion(true);
+                //推送设置
+                intent = new Intent(mContext,NotiySettingActivity.class);
+                startActivity(intent);
                 break;
             //清除缓存
             case R.id.setItemLayout_4:
@@ -97,13 +91,15 @@ public class SettingActivity extends NetWorkActivity {
                 break;
             //给我评分
             case R.id.setItemLayout_3:
-                List<String> packList = ScoreUtils.InstalledAPPs(this);
-                if(packList != null && !packList.isEmpty()) {
-                    ScoreUtils.launchAppDetail(this,this.getPackageName(),packList.get(0));
-                }
-                else {
-                    ScoreUtils.launchAppDetail(this,this.getPackageName(),"");
-                }
+//                List<String> packList = ScoreUtils.InstalledAPPs(this);
+//                if(packList != null && !packList.isEmpty()) {
+//                    ScoreUtils.launchAppDetail(this,this.getPackageName(),packList.get(0));
+//                }
+//                else {
+//                    ScoreUtils.launchAppDetail(this,this.getPackageName(),"");
+//                }
+                intent = new Intent(mContext,PReceiveMsgActivity.class);
+                startActivity(intent);
                 break;
             //关于我们
             case R.id.setItemLayout_5:
@@ -114,10 +110,7 @@ public class SettingActivity extends NetWorkActivity {
             case R.id.left_layout:
                 this.finish();
                 break;
-            //退出登录
-            case R.id.exit_user:
-                showLogoutDialog();
-                break;
+
 
         }
 
@@ -139,27 +132,7 @@ public class SettingActivity extends NetWorkActivity {
 
     }
 
-    private void showLogoutDialog() {
-        final CustomBottomDialog mLogoutDialog = new CustomBottomDialog(this);
-        ArrayMap<Integer, String> menus = new ArrayMap<Integer, String>();
-        menus.put(0, "退出登录");
-        mLogoutDialog.addItemViews(menus);
-        mLogoutDialog.setOnBottomDialogClick(new CustomBottomDialog.OnBottomDialogClick() {
-            @Override
-            public void onItemClick(View view) {
-                switch (view.getId()) {
-                    case 0:
-                        SPUtils.loginOut(mContext);
-                        //退出登录
-                        EventBus.getDefault().post(new UserLogoutEvent());
-                        finish();
-                        break;
-                }
-                mLogoutDialog.dismiss();
-            }
-        });
-        mLogoutDialog.show();
-    }
+
 
     private void showDialogue() {
         final CustomBottomDialog  mClearDialog = new CustomBottomDialog(this);

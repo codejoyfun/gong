@@ -133,7 +133,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:numStars="5"
-                        android:id="@+id/ratingbar"
+                        android:id="@+id/ratingbarPeisong"
                         style="@style/RatingBarStyle"
                         android:stepSize="0.1"
                         android:isIndicator="true"
@@ -141,6 +141,7 @@
                         android:layout_marginLeft="6dp"
                         />
                     <TextView
+                        android:id="@+id/peisongStr"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
@@ -154,7 +155,8 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/tag_down"
                         android:layout_marginLeft="4dp"
-                        android:id="@+id/imageView" />
+                        android:id="@+id/peisongImg"
+                        />
                 </LinearLayout>
 
                 <LinearLayout
@@ -175,7 +177,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:numStars="5"
-                        android:id="@+id/ratingbar1"
+                        android:id="@+id/ratingbarZhiliang"
                         style="@style/RatingBarStyle"
                         android:stepSize="0.1"
                         android:isIndicator="true"
@@ -183,6 +185,7 @@
                         android:layout_marginLeft="6dp"
                         />
                     <TextView
+                        android:id="@+id/zhiliangStr"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
@@ -191,6 +194,7 @@
                         android:layout_marginLeft="6dp"
                         />
                     <ImageView
+                        android:id="@+id/zhiliangImg"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/tag_up"
@@ -207,13 +211,14 @@
             android:background="@drawable/white_btn_selector"
             android:orientation="vertical"
             android:layout_marginTop="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             >
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:paddingBottom="3dp"
                 >
                 <LinearLayout
                     android:id="@+id/itemLayout_1"
@@ -228,6 +233,7 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/more_restaurant_thisweek"
                         />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -235,7 +241,7 @@
                         android:textColor="#432f30"
                         android:text="本周订单"
                         android:layout_marginTop="6dp"
-                        />
+                        android:id="@+id/textView" />
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/itemLayout_2"
@@ -314,7 +320,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingTop="6dp"
+                android:paddingTop="7dp"
                 >
                 <LinearLayout
                     android:id="@+id/itemLayout_5"

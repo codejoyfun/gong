@@ -10,33 +10,29 @@
     >
     <include
         layout="@layout/common_title_bar"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="#3f3f3f"
+        android:text="我们怎样做的更好呢?"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        />
 
     <EditText
         android:id="@+id/giveMessage"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="160dp"
         android:textColor="#3e3e3e"
         android:textSize="14sp"
         android:textColorHint="#b3b3b3"
-        android:hint="亲,您遇到什么问题,有什么功能意见吗?欢迎提给我们,谢谢!"
+        android:hint="有什么意见和想法尽管告诉我们吧"
         android:gravity="top"
         android:background="#ffff"
         android:padding="10dp"
+        android:layout_margin="40dp"
         />
     
-    <TextView
-        android:id="@+id/commitMsg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:textColor="#ffff"
-        android:text="确认提交"
-        android:background="@drawable/base_btn_selector"
-        android:gravity="center"
-        android:layout_marginTop="16dp"
-        />
 
 </LinearLayout>

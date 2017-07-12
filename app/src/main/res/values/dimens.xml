@@ -10,7 +10,7 @@
     <dimen name="classcircle_item_img_left">10.0dip</dimen>
     <dimen name="classcircle_item_img_right">10.0dip</dimen>
     <dimen name="classcircle_oneitem_img_right">54.0dip</dimen>
-    <dimen name="classcircle_option_layout_hieght">108.0dip</dimen>
+    <dimen name="classcircle_option_layout_hieght">138.0dip</dimen>
     <dimen name="classcircle_line_inespacing">6.0dip</dimen>
     <dimen name="classcircle_bottom_padding">12.0dip</dimen>
     <dimen name="classcircle_bottom_margin">10.0dip</dimen>
