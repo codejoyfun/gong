@@ -1,6 +1,8 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,13 +25,17 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,7 +52,8 @@ public class ProductActivity extends NetWorkActivity {
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
     private TabPageIndicatorAdapter adapter;
-    private ArrayList<ProductData.ListBean> dataList = new ArrayList<>();
+    private ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
+    private ArrayList<ProductData.ListBean> dataList = new ArrayList<>();//全部的商品信息
 
     public ArrayList<ProductData.ListBean> getDataList() {
         return dataList;
@@ -59,6 +66,11 @@ public class ProductActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.product_layout);
+        //获取上一个页面传来的Parcelable
+        Intent fromIntent = getIntent();
+        Bundle bundle = fromIntent.getBundleExtra("apbundle");
+        addedPros = bundle.getParcelableArrayList("ap");
+
         adapter = new TabPageIndicatorAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(4);
@@ -107,11 +119,37 @@ public class ProductActivity extends NetWorkActivity {
             }
         });
         sendRequest();
+
     }
-    @OnClick(R.id.title_iv_left)
+    @OnClick({R.id.title_iv_left,R.id.addBtn})
     public void btnClick(View view){
         switch(view.getId()){
             case R.id.title_iv_left:
+                finish();
+                break;
+            case R.id.addBtn:
+                //回值给调用的页面
+                Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
+                Bundle bundle = new Bundle();
+                //当前选中的商品信息
+                ArrayList<AddedProduct> addedList = new ArrayList<>();
+                HashMap<String,Integer> countMap = ProductListFragment.getCountMap();
+                Iterator iter = countMap.entrySet().iterator();
+                while (iter.hasNext()){
+                    Map.Entry<String,Integer> entry = (Map.Entry) iter.next();
+                    String key = entry.getKey();
+                    Integer count = entry.getValue();
+                    Parcel parcel = Parcel.obtain();
+                    AddedProduct pro = AddedProduct.CREATOR.createFromParcel(parcel);
+                    if (count != 0){
+                        pro.setCount(count);
+                        pro.setProductId(key);
+                        addedList.add(pro);
+                    }
+                }
+                bundle.putParcelableArrayList("backap",addedList);
+                intent.putExtras(bundle);
+                setResult(2000,intent);
                 finish();
                 break;
             default:
@@ -158,14 +196,22 @@ public class ProductActivity extends NetWorkActivity {
             titleList.add("冷藏货");
             titleList.add("冻货");
             titleList.add("干货");
+            Bundle bundle = new Bundle();
+            if (addedPros != null && addedPros.size() > 0){
+               bundle.putParcelableArrayList("ap",addedPros);
+            }
             ProductListFragment allFragment = new ProductListFragment();
             allFragment.type = DataType.ALL;
+            allFragment.setArguments(bundle);
             ProductListFragment coldFragment = new ProductListFragment();
             coldFragment.type = DataType.LENGCANGHUO;
+            coldFragment.setArguments(bundle);
             ProductListFragment freezeFragment = new ProductListFragment();
             freezeFragment.type = DataType.FREEZE;
+            freezeFragment.setArguments(bundle);
             ProductListFragment dryFragment = new ProductListFragment();
             dryFragment.type = DataType.DRY;
+            dryFragment.setArguments(bundle);
             fragmentList.add(allFragment);
             fragmentList.add(coldFragment);
             fragmentList.add(freezeFragment);

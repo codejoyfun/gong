@@ -30,6 +30,7 @@
             android:layout_gravity="center_vertical"
             android:hint="商品名称、关键字"/>
         <Button
+            android:id="@+id/addBtn"
             android:layout_width="49dp"
             android:layout_height="32dp"
             android:background="#9ACC35"
