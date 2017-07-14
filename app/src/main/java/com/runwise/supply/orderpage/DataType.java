@@ -5,7 +5,7 @@ package com.runwise.supply.orderpage;
  */
 
 public enum DataType{
-    ALL("all"),
+        ALL("all"),
     LENGCANGHUO("lengcanghuo"),
     FREEZE("donghuo"),
     DRY("ganhuo");

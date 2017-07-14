@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +20,10 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.business.NearFragment;
+import com.runwise.supply.business.MainRepertoryFragment;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
+import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -39,7 +39,6 @@ import com.socketmobile.capture.types.DecodedData;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -136,12 +135,12 @@ public class MainActivity extends NetWorkActivity {
         if (!isLogined()){
             mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), NearFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), NearFragment.class, null);
+            mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
+            mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);
         }else{
             mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), IndexFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), NearFragment.class, null);
+            mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_3), MineFragment.class, null);
         }
         mTabHost.getTabWidget().setDividerDrawable(null);

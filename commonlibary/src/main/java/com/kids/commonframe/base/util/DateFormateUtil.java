@@ -250,6 +250,24 @@ public class DateFormateUtil {
 			return dateFormatFromCalender(calend, "yyyy年MM月dd日 HH:mm");
 		}
 	}
+	public static String getLaterFormat(String timeStr) {
+		String dateStr = "";
+		//2017-10-03 11:25:03
+		final Calendar calend = dateFormatFromString(timeStr, DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
+		Calendar today = Calendar.getInstance();
+		//差几天
+		if (today.before(calend)) {
+			dateStr =  (calend.get(Calendar.DAY_OF_YEAR) - today.get(Calendar.DAY_OF_YEAR)) +"天到期";
+		}
+		//今天到期
+		else if (isToday(calend)) {
+			dateStr = "今天到期";
+		}
+		else {
+			dateStr = "已过期";
+		}
+		return dateStr;
+	}
 	public static SpannableString formatData(String time) {
 		if ( TextUtils.isEmpty(time) ) {
 			return null;
