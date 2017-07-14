@@ -21,7 +21,7 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.business.MainRepertoryFragment;
-import com.runwise.supply.firstpage.UnLoginedFirstFragment;
+import com.runwise.supply.firstpage.LoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.MineFragment;
@@ -53,6 +53,7 @@ public class MainActivity extends NetWorkActivity {
     //未读小红点
     private TextView mMsgHite;
     private UserInfo userInfo;
+    //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements  Runnable{
         private List<ProductBasicList.ListBean> basicList;
 
@@ -133,7 +134,8 @@ public class MainActivity extends NetWorkActivity {
         //TODO:这里根据登录状态，设置不同的页面进去
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
         if (!isLogined()){
-            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
+//            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
+            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
@@ -146,7 +148,8 @@ public class MainActivity extends NetWorkActivity {
         mTabHost.getTabWidget().setDividerDrawable(null);
 
     }
-
+    public void replaceTabPage(){
+    }
     private boolean isLogined() {
         return false;
     }

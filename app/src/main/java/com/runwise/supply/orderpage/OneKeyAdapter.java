@@ -38,7 +38,7 @@ public class OneKeyAdapter extends IBaseAdapter {
     private Context mContext;
     private boolean editMode;
 
-    private boolean ischange=true;
+    private boolean ischange;
     private HashMap<Integer,Integer> countMap = new HashMap<>();
     private List<DefaultPBean> selectArr = new ArrayList<>();
 

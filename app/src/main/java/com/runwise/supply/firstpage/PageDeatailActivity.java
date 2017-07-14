@@ -27,7 +27,7 @@ public class PageDeatailActivity extends NetWorkActivity {
         this.setTitleLeftIcon(true, R.drawable.back_btn);
         String url = getIntent().getStringExtra("url");
         Map<String, String > map = new HashMap<String, String>() ;
-        map.put("X-Odoo-Db", "LBZ20170607");
+        map.put("X-Odoo-Db", "DemoforHD20170516");
         webview.loadUrl(url,map);
     }
 
