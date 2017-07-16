@@ -1,5 +1,8 @@
 package com.runwise.supply.firstpage.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
@@ -18,7 +21,7 @@ public class OrderResponse {
         this.list = list;
     }
 
-    public static class ListBean {
+    public static class ListBean implements Parcelable{
         /**
          * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,"deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,"saleOrderProductID":822,"lotIDs":["42"],"stockType":"lengcanghuo","settleAmount":5,"lotList":[{"lotPk":"82242","lotID":42,"name":"Z201707051792","qty":5}],"productUomQty":5}]
          * amountTotal : 40.0
@@ -84,6 +87,53 @@ public class OrderResponse {
         private String doneDatetime;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+
+        public ListBean() {
+        }
+
+        protected ListBean(Parcel in) {
+            amountTotal = in.readDouble();
+            endUnloadDatetime = in.readString();
+            estimatedDate = in.readString();
+            isTwoUnit = in.readByte() != 0;
+            hasReturn = in.readInt();
+            loadingTime = in.readString();
+            estimatedTime = in.readString();
+            createDate = in.readString();
+            startUnloadDatetime = in.readString();
+            state = in.readString();
+            receiveUserName = in.readString();
+            tallyingUserName = in.readString();
+            isDoubleReceive = in.readByte() != 0;
+            settleAmountTotal = in.readDouble();
+            hasAttachment = in.readInt();
+            isFinishTallying = in.readByte() != 0;
+            createUserName = in.readString();
+            orderSettleName = in.readString();
+            publicAmountTotal = in.readDouble();
+            deliveredQty = in.readDouble();
+            confirmationDate = in.readString();
+            orderID = in.readInt();
+            name = in.readString();
+            appraisalUserName = in.readString();
+            amount = in.readDouble();
+            isToday = in.readByte() != 0;
+            doneDatetime = in.readString();
+            lines = in.createTypedArrayList(LinesBean.CREATOR);
+            stateTracker = in.createStringArrayList();
+        }
+
+        public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
+            @Override
+            public ListBean createFromParcel(Parcel in) {
+                return new ListBean(in);
+            }
+
+            @Override
+            public ListBean[] newArray(int size) {
+                return new ListBean[size];
+            }
+        };
 
         public double getAmountTotal() {
             return amountTotal;
@@ -333,6 +383,44 @@ public class OrderResponse {
             this.stateTracker = stateTracker;
         }
 
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeDouble(amountTotal);
+            dest.writeString(endUnloadDatetime);
+            dest.writeString(estimatedDate);
+            dest.writeByte((byte) (isTwoUnit ? 1 : 0));
+            dest.writeInt(hasReturn);
+            dest.writeString(loadingTime);
+            dest.writeString(estimatedTime);
+            dest.writeString(createDate);
+            dest.writeString(startUnloadDatetime);
+            dest.writeString(state);
+            dest.writeString(receiveUserName);
+            dest.writeString(tallyingUserName);
+            dest.writeByte((byte) (isDoubleReceive ? 1 : 0));
+            dest.writeDouble(settleAmountTotal);
+            dest.writeInt(hasAttachment);
+            dest.writeByte((byte) (isFinishTallying ? 1 : 0));
+            dest.writeString(createUserName);
+            dest.writeString(orderSettleName);
+            dest.writeDouble(publicAmountTotal);
+            dest.writeDouble(deliveredQty);
+            dest.writeString(confirmationDate);
+            dest.writeInt(orderID);
+            dest.writeString(name);
+            dest.writeString(appraisalUserName);
+            dest.writeDouble(amount);
+            dest.writeByte((byte) (isToday ? 1 : 0));
+            dest.writeString(doneDatetime);
+            dest.writeTypedList(lines);
+            dest.writeStringList(stateTracker);
+        }
+
         public static class StoreBean {
             /**
              * mobile : 13829781371
@@ -517,7 +605,7 @@ public class OrderResponse {
             }
         }
 
-        public static class LinesBean {
+        public static class LinesBean implements Parcelable{
             /**
              * productUom : 条
              * priceUnit : 8.0
@@ -549,6 +637,34 @@ public class OrderResponse {
             private double productUomQty;
             private List<String> lotIDs;
             private List<LotListBean> lotList;
+            public LinesBean(){}
+            protected LinesBean(Parcel in) {
+                productUom = in.readString();
+                priceUnit = in.readDouble();
+                discount = in.readDouble();
+                returnAmount = in.readDouble();
+                deliveredQty = in.readDouble();
+                priceSubtotal = in.readDouble();
+                productID = in.readInt();
+                tallyingAmount = in.readDouble();
+                saleOrderProductID = in.readInt();
+                stockType = in.readString();
+                settleAmount = in.readDouble();
+                productUomQty = in.readDouble();
+                lotIDs = in.createStringArrayList();
+            }
+
+            public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {
+                @Override
+                public LinesBean createFromParcel(Parcel in) {
+                    return new LinesBean(in);
+                }
+
+                @Override
+                public LinesBean[] newArray(int size) {
+                    return new LinesBean[size];
+                }
+            };
 
             public String getProductUom() {
                 return productUom;
@@ -660,6 +776,28 @@ public class OrderResponse {
 
             public void setLotList(List<LotListBean> lotList) {
                 this.lotList = lotList;
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeString(productUom);
+                dest.writeDouble(priceUnit);
+                dest.writeDouble(discount);
+                dest.writeDouble(returnAmount);
+                dest.writeDouble(deliveredQty);
+                dest.writeDouble(priceSubtotal);
+                dest.writeInt(productID);
+                dest.writeDouble(tallyingAmount);
+                dest.writeInt(saleOrderProductID);
+                dest.writeString(stockType);
+                dest.writeDouble(settleAmount);
+                dest.writeDouble(productUomQty);
+                dest.writeStringList(lotIDs);
             }
 
             public static class LotListBean {

@@ -74,10 +74,14 @@ public class LoginedFirstFragment extends NetWorkFragment {
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                Intent intent = new Intent(mContext,OrderDetailActivity.class);
+                Bundle bundle = new Bundle();
+                OrderResponse.ListBean bean = (OrderResponse.ListBean) adapterView.getAdapter().getItem(i);
+                bundle.putParcelable("order",bean);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
-        pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
