@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -110,7 +111,12 @@ public class EditUserinfoActivity extends NetWorkActivity {
         FrecoFactory.getInstance(this).disPlay(userHead,Constant.BASE_URL + userInfo.getAvatarUrl());
         userInfoName.setText(userInfo.getUsername());
         userInfoId.setText(userInfo.getLogin());
-        userInfoPlace.setText(userInfo.getRegion());
+        if (TextUtils.isEmpty(userInfo.getRegion())) {
+            userInfoPlace.setText("暂无");
+        }
+        else{
+            userInfoPlace.setText(userInfo.getRegion());
+        }
         userInfoStore.setText(userInfo.getStreet());
         userInfoPhone.setText(userInfo.getMobile());
         this.setTitleText(true,"个人信息");

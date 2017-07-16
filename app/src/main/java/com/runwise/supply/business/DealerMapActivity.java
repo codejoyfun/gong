@@ -31,7 +31,6 @@ import com.runwise.supply.tools.StatusBarUtil;
  */
 
 public class DealerMapActivity extends BaseActivity {
-    @ViewInject(R.id.bmapView)
     private MapView mMapView;
     private BaiduMap mBaiduMap;
     private static BitmapDescriptor bitmap = BitmapDescriptorFactory

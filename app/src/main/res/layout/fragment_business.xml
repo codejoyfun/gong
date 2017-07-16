@@ -1,40 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/base_color"
     android:orientation="vertical"
-    android:paddingTop="@dimen/status_bar_padding_top"
+    android:paddingTop="25dp"
     >
-    <LinearLayout
-        android:id="@+id/titleLayout"
+    <include
+        layout="@layout/common_title_bar"
+        />
+    <FrameLayout
+        android:id="@+id/contextLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/base_color">
-        <include
-            layout="@layout/common_title_bar"
-            />
-    </LinearLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/titleLayout"
-        android:background="@android:color/white" >
-        <!-- 地图-->
-        <com.baidu.mapapi.map.TextureMapView
-            android:id="@+id/bmapView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:clickable="true" />
-        <!--可左右滑动的页签-->
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_alignParentBottom="true">
+        android:layout_height="match_parent"/>
 
-        </android.support.v7.widget.RecyclerView>
-    </RelativeLayout>
-
-
-</RelativeLayout>
+</LinearLayout>
