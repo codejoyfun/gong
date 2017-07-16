@@ -34,7 +34,7 @@ import java.util.List;
  * Created by libin on 2017/7/13.
  */
 
-public class LoginedFirstFragment extends NetWorkFragment {
+public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapter.DoActionInterface{
     private static final int FROMSTART = 0;
     private static final int FROMLB = 1;
     private static final int FROMDB = 2;
@@ -69,7 +69,7 @@ public class LoginedFirstFragment extends NetWorkFragment {
         banner.getLayoutParams().height = height;
 
         pullListView.getRefreshableView().addHeaderView(headView);
-        adapter = new OrderAdapter(mContext);
+        adapter = new OrderAdapter(mContext,this);
         pullListView.setAdapter(adapter);
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -161,6 +161,29 @@ public class LoginedFirstFragment extends NetWorkFragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void doAction(OrderDoAction action,int position) {
+        switch(action){
+            case CANCLE:
+                break;
+            case UPLOAD:
+                break;
+            case TALLY:
+                break;
+            case RATE:
+                break;
+            case RECEIVE:
+                Intent intent = new Intent(mContext,ReceiveActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order",(OrderResponse.ListBean)adapter.getItem(position));
+                intent.putExtras(bundle);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
     }
 
 }

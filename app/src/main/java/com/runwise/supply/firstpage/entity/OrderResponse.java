@@ -106,6 +106,7 @@ public class OrderResponse {
             tallyingUserName = in.readString();
             isDoubleReceive = in.readByte() != 0;
             settleAmountTotal = in.readDouble();
+            waybill = in.readParcelable(WaybillBean.class.getClassLoader());
             hasAttachment = in.readInt();
             isFinishTallying = in.readByte() != 0;
             createUserName = in.readString();
@@ -404,6 +405,7 @@ public class OrderResponse {
             dest.writeString(tallyingUserName);
             dest.writeByte((byte) (isDoubleReceive ? 1 : 0));
             dest.writeDouble(settleAmountTotal);
+            dest.writeParcelable(waybill,flags);
             dest.writeInt(hasAttachment);
             dest.writeByte((byte) (isFinishTallying ? 1 : 0));
             dest.writeString(createUserName);
@@ -477,7 +479,7 @@ public class OrderResponse {
             }
         }
 
-        public static class WaybillBean {
+        public static class WaybillBean implements Parcelable{
             /**
              * deliverUser : {"mobile":"15778177356","userID":30,"name":"李明","avatarUrl":"/gongfu/user/avatar/30/6691999026166866162.png"}
              * waybillID : 188
@@ -489,6 +491,28 @@ public class OrderResponse {
             private int waybillID;
             private String name;
             private DeliverVehicleBean deliverVehicle;
+
+            public WaybillBean() {
+            }
+
+            protected WaybillBean(Parcel in) {
+                deliverUser = in.readParcelable(DeliverUserBean.class.getClassLoader());
+                waybillID = in.readInt();
+                name = in.readString();
+                deliverVehicle = in.readParcelable(DeliverVehicleBean.class.getClassLoader());
+            }
+
+            public static final Creator<WaybillBean> CREATOR = new Creator<WaybillBean>() {
+                @Override
+                public WaybillBean createFromParcel(Parcel in) {
+                    return new WaybillBean(in);
+                }
+
+                @Override
+                public WaybillBean[] newArray(int size) {
+                    return new WaybillBean[size];
+                }
+            };
 
             public DeliverUserBean getDeliverUser() {
                 return deliverUser;
@@ -522,7 +546,20 @@ public class OrderResponse {
                 this.deliverVehicle = deliverVehicle;
             }
 
-            public static class DeliverUserBean {
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeParcelable(deliverUser,flags);
+                dest.writeInt(waybillID);
+                dest.writeString(name);
+                dest.writeParcelable(deliverVehicle,flags);
+            }
+
+            public static class DeliverUserBean implements Parcelable{
                 /**
                  * mobile : 15778177356
                  * userID : 30
@@ -534,6 +571,28 @@ public class OrderResponse {
                 private int userID;
                 private String name;
                 private String avatarUrl;
+
+                public DeliverUserBean() {
+                }
+
+                protected DeliverUserBean(Parcel in) {
+                    mobile = in.readString();
+                    userID = in.readInt();
+                    name = in.readString();
+                    avatarUrl = in.readString();
+                }
+
+                public static final Creator<DeliverUserBean> CREATOR = new Creator<DeliverUserBean>() {
+                    @Override
+                    public DeliverUserBean createFromParcel(Parcel in) {
+                        return new DeliverUserBean(in);
+                    }
+
+                    @Override
+                    public DeliverUserBean[] newArray(int size) {
+                        return new DeliverUserBean[size];
+                    }
+                };
 
                 public String getMobile() {
                     return mobile;
@@ -566,9 +625,22 @@ public class OrderResponse {
                 public void setAvatarUrl(String avatarUrl) {
                     this.avatarUrl = avatarUrl;
                 }
+
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
+
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
+                    dest.writeString(mobile);
+                    dest.writeInt(userID);
+                    dest.writeString(name);
+                    dest.writeString(avatarUrl);
+                }
             }
 
-            public static class DeliverVehicleBean {
+            public static class DeliverVehicleBean implements  Parcelable{
                 /**
                  * licensePlate : 沪A 0409D
                  * name : 江淮汽车/机型重卡/沪A 0409D
@@ -578,6 +650,39 @@ public class OrderResponse {
                 private String licensePlate;
                 private String name;
                 private int vehicleID;
+
+                public DeliverVehicleBean() {
+                }
+
+                protected DeliverVehicleBean(Parcel in) {
+                    licensePlate = in.readString();
+                    name = in.readString();
+                    vehicleID = in.readInt();
+                }
+
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
+                    dest.writeString(licensePlate);
+                    dest.writeString(name);
+                    dest.writeInt(vehicleID);
+                }
+
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
+
+                public static final Creator<DeliverVehicleBean> CREATOR = new Creator<DeliverVehicleBean>() {
+                    @Override
+                    public DeliverVehicleBean createFromParcel(Parcel in) {
+                        return new DeliverVehicleBean(in);
+                    }
+
+                    @Override
+                    public DeliverVehicleBean[] newArray(int size) {
+                        return new DeliverVehicleBean[size];
+                    }
+                };
 
                 public String getLicensePlate() {
                     return licensePlate;

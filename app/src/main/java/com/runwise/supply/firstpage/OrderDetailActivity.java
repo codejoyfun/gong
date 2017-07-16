@@ -1,12 +1,12 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.animation.ValueAnimatorCompat;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -18,6 +18,7 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.List;
  * Created by libin on 2017/7/14.
  */
 
-public class OrderDetailActivity extends NetWorkActivity {
+public class OrderDetailActivity extends NetWorkActivity{
     private OrderResponse.ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -59,10 +60,14 @@ public class OrderDetailActivity extends NetWorkActivity {
     private TextView countTv;
     @ViewInject(R.id.indexLine)
     private View indexLine;         //指示线
+    @ViewInject(R.id.gotoStateBtn)
+    private Button gotoStateBtn;    //查看更多状态
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_detail_layout);
         setTitleText(true,"订单详情");
         setTitleLeftIcon(true,R.drawable.nav_back);
@@ -130,7 +135,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             adapter.setProductList(listDatas);
             //默认线在全部上
             int padding = (CommonUtils.getScreenWidth(this)/4 - CommonUtils.dip2px(mContext,36))/2;
-            ViewPropertyAnimator.animate(indexLine).translationX(padding);
+            indexLine.setTranslationX(padding);
 
         }
     }
@@ -147,7 +152,8 @@ public class OrderDetailActivity extends NetWorkActivity {
         return false;
     }
 
-    @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.freezeBtn,R.id.dryBtn})
+    @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,
+            R.id.freezeBtn,R.id.dryBtn,R.id.gotoStateBtn})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
@@ -166,6 +172,13 @@ public class OrderDetailActivity extends NetWorkActivity {
                 break;
             case R.id.dryBtn:
                 switchTabBy(DataType.DRY);
+                break;
+            case R.id.gotoStateBtn:
+                Intent intent = new Intent(this,OrderStateActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order", bean);
+                intent.putExtras(bundle);
+                startActivity(intent);
                 break;
         }
     }

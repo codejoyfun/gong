@@ -29,6 +29,7 @@ import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
@@ -289,6 +290,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.onekey_order_layout);
         setTitleText(true,"智能下单");
         setTitleLeftIcon(true,R.drawable.nav_back);

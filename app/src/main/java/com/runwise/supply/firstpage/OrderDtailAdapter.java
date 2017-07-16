@@ -57,13 +57,23 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         int pId = bean.getProductID();
         ViewHolder vh = (ViewHolder)holder;
         ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(pId));
-        FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+        if (basicBean != null && basicBean.getImage() != null){
+            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+        }
         int puq = (int)bean.getProductUomQty();
         int dq = (int)bean.getDeliveredQty();
         vh.oldPriceTv.setText("x"+dq);
         vh.nowPriceTv.setText("x"+puq);
         vh.weightTv.setText(bean.getSettleAmount()+"");
-        vh.name.setText(basicBean.getName());
+        if (basicBean != null){
+            vh.name.setText(basicBean.getName());
+            StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
+            sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+            vh.content.setText(sb.toString());
+        }else{
+            vh.name.setText("");
+        }
+
     }
 
     @Override
