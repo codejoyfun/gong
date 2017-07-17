@@ -3,6 +3,8 @@ package com.runwise.supply.tools;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
+import com.lidroid.xutils.util.LogUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -308,5 +310,67 @@ public class TimeUtils {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String str =  sdf.format(calendar.getTime());
 		return str;
+	}
+
+    //当前时间
+	public static String getCurrentDate() {
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String str =  sdf.format(date.getTime());
+		return str;
+	}
+	//本周开始时间
+	public static String getThisWeekStart() {
+		Date date = new Date();
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		int dayInWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		dayInWeek -= 1;
+		//本周第一天
+		calendar.add(Calendar.DATE, -dayInWeek);//把日期往后增加一天.整数往后推,负数往前移动
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String str =  sdf.format(calendar.getTime());
+		return str;
+	}
+	//上周结束时间
+	public static String getPerWeekEnd() {
+		Date date = new Date();
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		int dayInWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		//本周第一天
+		calendar.add(Calendar.DATE, -dayInWeek);//把日期往后增加一天.整数往后推,负数往前移动
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String str =  sdf.format(calendar.getTime());
+		return str;
+	}
+	//上周开始
+	public static String getPerWeekStart() {
+		Date date = new Date();
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		int dayInWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		//本周第一天
+		calendar.add(Calendar.DATE, -dayInWeek);//把日期往后增加一天.整数往后推,负数往前移动
+		calendar.add(Calendar.DATE, -6);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String str =  sdf.format(calendar.getTime());
+		return str;
+	}
+
+	//获取前月的第一天
+	public static String getPerMonthStart() {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal_1=Calendar.getInstance();//获取当前日期 
+		cal_1.add(Calendar.MONTH,-1);
+		cal_1.set(Calendar.DAY_OF_MONTH,1);//设置为1号,当前日期既为本月第一天 
+		return format.format(cal_1.getTime());
+	}
+	//获取前月的最后一天
+	public static String getPerMonthEnd() {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cale = Calendar.getInstance();
+		cale.set(Calendar.DAY_OF_MONTH, 0);//设置为1号,当前日期既为本月第一天 
+		return format.format(cale.getTime());
 	}
 }

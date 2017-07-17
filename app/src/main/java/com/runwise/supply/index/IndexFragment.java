@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -33,7 +32,6 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.GlobalConstant;
@@ -56,19 +54,10 @@ import com.runwise.supply.index.entity.IndexCarSys;
 import com.runwise.supply.index.entity.IndexDealers;
 import com.runwise.supply.index.entity.IndexPager;
 import com.runwise.supply.index.entity.LocationRequest;
-import com.runwise.supply.mine.MsgListActivity;
+import com.runwise.supply.mine.ReturnListFragment;
 import com.runwise.supply.tools.UserUtils;
-import com.socketmobile.capture.Capture;
-import com.socketmobile.capture.client.CaptureDeviceClient;
-import com.socketmobile.capture.events.DataDecodedEvent;
-import com.socketmobile.capture.events.DeviceAvailabilityEvent;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -668,7 +657,7 @@ public class IndexFragment extends NetWorkFragment implements View.OnClickListen
             //消息
             case R.id.headMsgLayout_flow:
             case R.id.headMsgLayout:
-                Intent intent = new Intent(mContext, MsgListActivity.class);
+                Intent intent = new Intent(mContext, ReturnListFragment.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
                 }

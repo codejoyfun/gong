@@ -82,12 +82,12 @@ public class MoreCarListActivity extends NetWorkActivity {
                             DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
                     refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
                     page = 1;
-                    requestData(false, REQUEST_START, page+ "", "20");
+                    requestData(false, REQUEST_START, page, 20);
                 }
 
                 @Override
                 public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-                    requestData(false, REQUEST_DEN, (++page) +"", "20");
+                    requestData(false, REQUEST_DEN, (++page) , 20);
                 }
             };
 
@@ -95,7 +95,7 @@ public class MoreCarListActivity extends NetWorkActivity {
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        requestData(true, REQUEST_MAIN, page+ "", "20");
+        requestData(true, REQUEST_MAIN, page, 20);
     }
 
     @OnClick(R.id.left_layout)
@@ -103,10 +103,10 @@ public class MoreCarListActivity extends NetWorkActivity {
         this.finish();
     }
 
-    public void requestData (boolean showDialog,int where, String page,String limit) {
+    public void requestData (boolean showDialog,int where, int page,int limit) {
         PageRequest request = new PageRequest();
         request.setLimit(limit);
-        request.setPage(page);
+        request.setPz(page);
         sendConnection("car/list.json",request,where,showDialog,IndexCarInfoResult.class);
     }
 

@@ -220,6 +220,7 @@
                 android:orientation="horizontal"
                 android:paddingBottom="3dp"
                 >
+
                 <LinearLayout
                     android:id="@+id/itemLayout_1"
                     android:layout_width="0dp"
@@ -243,6 +244,7 @@
                         android:layout_marginTop="6dp"
                         android:id="@+id/textView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/itemLayout_2"
                     android:layout_width="0dp"
@@ -362,7 +364,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
                         android:textColor="#432f30"
-                        android:text="上周末库存"
+                        android:text="上月末库存"
                         android:layout_marginTop="6dp"
                         />
                 </LinearLayout>
