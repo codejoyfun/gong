@@ -29,6 +29,7 @@ import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
+import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
@@ -311,6 +312,8 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.onekey_order_layout);
         self_help_rl.setVisibility(View.VISIBLE);
         loadingImg.setVisibility(View.INVISIBLE);

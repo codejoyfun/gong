@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#FFFFFF"
+    android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/serviceBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="17sp"
+        android:textColor="#2E2E2E"
+        android:background="@null"
+        android:text="联系客服"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#E5E5E5" />
+    <Button
+        android:id="@+id/deliverBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="17sp"
+        android:textColor="#2E2E2E"
+        android:background="@null"
+        android:text="联系配送员"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#E5E5E5" />
+    <Button
+        android:id="@+id/onlineServiceBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="在线客服"
+        android:background="@null"
+        android:textSize="17sp"
+        android:textColor="#2E2E2E"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#E5E5E5" />
+    <Button
+        android:id="@+id/cancleBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="取消"
+        android:background="#EDEDED"
+        android:textSize="17sp"
+        android:textColor="#2E2E2E"/>
+</LinearLayout>

@@ -34,7 +34,7 @@ import java.util.List;
  * Created by libin on 2017/7/13.
  */
 
-public class LoginedFirstFragment extends NetWorkFragment {
+public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapter.DoActionInterface{
     private static final int FROMSTART = 0;
     private static final int FROMLB = 1;
     private static final int FROMDB = 2;
@@ -69,15 +69,19 @@ public class LoginedFirstFragment extends NetWorkFragment {
         banner.getLayoutParams().height = height;
 
         pullListView.getRefreshableView().addHeaderView(headView);
-        adapter = new OrderAdapter(mContext);
+        adapter = new OrderAdapter(mContext,this);
         pullListView.setAdapter(adapter);
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                Intent intent = new Intent(mContext,OrderDetailActivity.class);
+                Bundle bundle = new Bundle();
+                OrderResponse.ListBean bean = (OrderResponse.ListBean) adapterView.getAdapter().getItem(i);
+                bundle.putParcelable("order",bean);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
-        pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -157,6 +161,29 @@ public class LoginedFirstFragment extends NetWorkFragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void doAction(OrderDoAction action,int position) {
+        switch(action){
+            case CANCLE:
+                break;
+            case UPLOAD:
+                break;
+            case TALLY:
+                break;
+            case RATE:
+                break;
+            case RECEIVE:
+                Intent intent = new Intent(mContext,ReceiveActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order",(OrderResponse.ListBean)adapter.getItem(position));
+                intent.putExtras(bundle);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
     }
 
 }

@@ -28,11 +28,21 @@ import java.util.HashMap;
  */
 
 public class OrderAdapter extends IBaseAdapter {
+    public interface DoActionInterface{
+        void doAction(OrderDoAction action,int postion);
+    }
+    private DoActionInterface callback;
     private Context context;
+
+    public void setDoActionCallBack(DoActionInterface doActionCallBack) {
+        this.callback = doActionCallBack;
+    }
+
     //记录当前扩展打开的状态
     private HashMap<Integer,Boolean> expandMap = new HashMap<>();
-    public OrderAdapter(Context context) {
+    public OrderAdapter(Context context,DoActionInterface callback) {
         this.context = context;
+        this.callback = callback;
     }
 
     @Override
@@ -65,11 +75,27 @@ public class OrderAdapter extends IBaseAdapter {
                 }
             }
         });
-        //TODO:
         viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //根据状态进行不同的逻辑处理
+                OrderDoAction action = null;
+                String doAction = ((Button)v).getText().toString();
+                if ("取消订单".equals(doAction)){
+                    action = OrderDoAction.CANCLE;
+                }else if("点货".equals(doAction)){
+                    action = OrderDoAction.TALLY;
+                }else if("收货".equals(doAction)){
+                    action = OrderDoAction.RECEIVE;
+                }else if("上传凭证".equals(doAction)){
+                    action = OrderDoAction.UPLOAD;
+                }else if("评价".equals(doAction)){
+                    action = OrderDoAction.RATE;
+                }
+                if (callback != null){
+                    callback.doAction(action,position);
+                }
+
             }
         });
         if (expandMap.get(Integer.valueOf(position)) != null && expandMap.get(Integer.valueOf(position)).booleanValue()){
