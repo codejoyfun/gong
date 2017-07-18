@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -62,6 +63,12 @@ public class OrderDetailActivity extends NetWorkActivity{
     private View indexLine;         //指示线
     @ViewInject(R.id.gotoStateBtn)
     private Button gotoStateBtn;    //查看更多状态
+    @ViewInject(R.id.rightBtn2)
+    private Button rightBtn2;
+    @ViewInject(R.id.rightBtn)
+    private Button rightBtn;
+    @ViewInject(R.id.bottom_bar)
+    private RelativeLayout bottom_bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,15 +94,22 @@ public class OrderDetailActivity extends NetWorkActivity{
             if (bean.getState().equals("draft")){
                 state = "订单已提交";
                 tip = "订单号："+bean.getName();
+                //底部只有"取消订单"
+                rightBtn.setText("取消订单");
+                rightBtn2.setVisibility(View.INVISIBLE);
             }else if(bean.getState().equals("sale")){
                 state = "订单已确认";
                 tip = "正在为您挑拣商品";
+                bottom_bar.setVisibility(View.GONE);
             }else if(bean.getState().equals("peisong")){
                 state = "订单已发货";
                 tip = "预计发达时间："+bean.getEstimatedTime();
+                rightBtn.setText("收货");
             }else if (bean.getState().equals("done")){
                 state = "订单已收货";
                 tip = "收货人："+bean.getReceiveUserName();
+                rightBtn.setText("评价");
+                rightBtn.setText("售后订单");
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);

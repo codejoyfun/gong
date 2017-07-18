@@ -26,9 +26,9 @@
             android:id="@+id/receivedTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13dp"
-            android:textColor="#999999"
-            android:text="xxx"
+            android:textSize="16sp"
+            android:textColor="#343434"
+            android:text="0"
             />
         <TextView
             android:id="@+id/countTv"
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="22dp"
         android:textSize="11sp"
-        android:text="20斤"
+        android:text="0"
         android:gravity="center_vertical"
         android:layout_alignRight="@id/countLL"
         android:layout_below="@id/countLL"

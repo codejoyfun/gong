@@ -379,10 +379,12 @@
         <activity android:name=".firstpage.PageDeatailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
+            android:theme="@style/ImageTranslucentTheme"
             />
         <activity android:name=".orderpage.OneKeyOrderActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
             />
         <activity android:name=".orderpage.ProductActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

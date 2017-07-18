@@ -30,6 +30,12 @@ public class ProductBasicList {
          */
 
         private String name;
+        private boolean isTwoUnit;
+        private boolean settlePrice;
+        private String uom;
+        private String settleUomId;
+        private double price;
+
         private ImageBean image;
         private String barcode;
         private String defaultCode;
@@ -43,6 +49,46 @@ public class ProductBasicList {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public boolean isTwoUnit() {
+            return isTwoUnit;
+        }
+
+        public void setTwoUnit(boolean twoUnit) {
+            isTwoUnit = twoUnit;
+        }
+
+        public boolean isSettlePrice() {
+            return settlePrice;
+        }
+
+        public void setSettlePrice(boolean settlePrice) {
+            this.settlePrice = settlePrice;
+        }
+
+        public String getUom() {
+            return uom;
+        }
+
+        public void setUom(String uom) {
+            this.uom = uom;
+        }
+
+        public String getSettleUomId() {
+            return settleUomId;
+        }
+
+        public void setSettleUomId(String settleUomId) {
+            this.settleUomId = settleUomId;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
         }
 
         public ImageBean getImage() {

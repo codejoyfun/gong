@@ -9,6 +9,7 @@ import com.kids.commonframe.base.view.webview.X5WebView;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,8 @@ public class PageDeatailActivity extends NetWorkActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.page_detail_webview);
         this.setTitleLeftIcon(true, R.drawable.back_btn);
         String url = getIntent().getStringExtra("url");

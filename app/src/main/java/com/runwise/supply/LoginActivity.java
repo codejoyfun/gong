@@ -37,6 +37,8 @@ import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.tools.StatusBarUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 
@@ -218,6 +220,8 @@ public class LoginActivity extends NetWorkActivity {
 				}
 				GlobalApplication.getInstance().saveUserInfo(userInfoData);
 				ToastUtil.show(mContext,"登录成功");
+				//@libin added
+				EventBus.getDefault().post(new UserLoginEvent());
 				if (targerIntent != null) {
 					startActivity(targerIntent);
 				}
