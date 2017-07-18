@@ -184,10 +184,10 @@ public class NotiySettingDateActivity extends NetWorkActivity implements Adapter
         this.finish();
     }
 
-    public void requestData (boolean showDialog,int where, String page,String limit) {
+    public void requestData (boolean showDialog,int where, int page,int limit) {
         PageRequest request = new PageRequest();
         request.setLimit(limit);
-        request.setPage(page);
+        request.setPz(page);
         sendConnection("collect/list.json",request,where,showDialog,CollectResult.class);
     }
 

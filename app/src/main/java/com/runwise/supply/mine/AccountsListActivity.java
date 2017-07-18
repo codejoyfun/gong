@@ -2,11 +2,7 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.format.DateUtils;
-import android.text.style.AbsoluteSizeSpan;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,35 +16,25 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
-import com.runwise.supply.business.CarSettingFragmentContainer;
-import com.runwise.supply.business.SelectDealerActivity;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.index.entity.CarImage;
-import com.runwise.supply.index.entity.CarPeriod;
-import com.runwise.supply.mine.entity.CollectCar;
-import com.runwise.supply.mine.entity.CollectCarInfo;
-import com.runwise.supply.mine.entity.CollectData;
-import com.runwise.supply.mine.entity.CollectResult;
+import com.runwise.supply.mine.entity.MsgEntity;
+import com.runwise.supply.mine.entity.MsgList;
+import com.runwise.supply.mine.entity.MsgResult;
+import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.tools.StatusBarUtil;
 
-import java.util.HashMap;
-
-import static com.runwise.supply.R.id.carDoit;
-import static com.runwise.supply.R.id.carName;
-import static com.runwise.supply.R.id.carPic;
-import static com.runwise.supply.R.id.carPrice;
-import static com.runwise.supply.R.id.carRealPrice;
-
 /**
- * 下单提醒推送
+ * 对账单
  */
-public class NotiySettingActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
+public class AccountsListActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
@@ -57,7 +43,7 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
     private LoadingLayout loadingLayout;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
-    private NotifyListAdapter adapter;
+    private AccountsAdapter adapter;
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
@@ -66,17 +52,16 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
-        setContentView(R.layout.activity_notiy_list);
-        this.setTitleText(true,"下单提醒推送");
+        setContentView(R.layout.activity_title_list);
+        this.setTitleText(true,"对账单");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
-        this.setTitleRigthIcon(true,R.drawable.nav_add);
 
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
-        pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
+        pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setOnItemClickListener(this);
 
-        adapter = new NotifyListAdapter();
+        adapter = new AccountsAdapter();
 
         if(mOnRefreshListener2 == null){
             mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -99,8 +84,8 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        loadingLayout.setStatusLoading();
         requestData(false, REQUEST_MAIN, page, 10);
+        loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
     }
 
@@ -109,17 +94,11 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
         this.finish();
     }
 
-    @OnClick(R.id.right_layout)
-    public void doRightClick(View view) {
-        Intent intent = new Intent(this ,NotiySettingDateActivity.class);
-        startActivity(intent);
-    }
-
     public void requestData (boolean showDialog,int where, int page,int limit) {
         PageRequest request = new PageRequest();
         request.setLimit(limit);
         request.setPz(page);
-        sendConnection("collect/list.json",request,where,showDialog,CollectResult.class);
+        sendConnection("message/list.json",request,where,showDialog,MsgResult.class);
     }
 
 
@@ -127,23 +106,23 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
-                CollectResult mainResult = (CollectResult)result;
-                CollectData mainListResult = mainResult.getData();
-                adapter.setData(mainListResult.getEntities());
-                loadingLayout.onSuccess(adapter.getCount(),"暂无推送",R.drawable.nonocitify_icon);
+                MsgResult mainResult = (MsgResult)result;
+                MsgList mainListResult = mainResult.getData();
+//                adapter.setData(mainListResult.getEntities());
+                loadingLayout.onSuccess(adapter.getCount(),"",R.drawable.news);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
-                CollectResult startResult = (CollectResult) result;
-                CollectData startListResult = startResult.getData();
-                adapter.setData(startListResult.getEntities());
+                MsgResult startResult = (MsgResult) result;
+                MsgList startListResult = startResult.getData();
+//                adapter.setData(startListResult.getEntities());
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
-                CollectResult endResult = (CollectResult) result;
-                CollectData sndListResult = endResult.getData();
+                MsgResult endResult = (MsgResult) result;
+                MsgList sndListResult = endResult.getData();
                 if (sndListResult.getEntities() != null && !sndListResult.getEntities().isEmpty()) {
-                    adapter.appendData(sndListResult.getEntities());
+//                    adapter.appendData(sndListResult.getEntities());
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 }
                 else {
@@ -155,17 +134,21 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        ToastUtil.show(mContext,errMsg);
+        loadingLayout.onFailure("",R.drawable.no_network);
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.nonocitify_icon);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CollectCarInfo bean = (CollectCarInfo)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(this,CarSettingFragmentContainer.class);
-        intent.putExtra("carid",bean.getCar_id());
+        MsgEntity bean = (MsgEntity)parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext,MsgDetailActivity.class);
+        intent.putExtra("msgId",bean.getMessage_id());
+        bean.setIs_read("1");
+        adapter.notifyDataSetChanged();
         startActivity(intent);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -178,34 +161,47 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
         requestData(false, REQUEST_MAIN, page, 10);
     }
 
-    public class NotifyListAdapter extends IBaseAdapter<CollectCarInfo> {
+
+    public class AccountsAdapter extends IBaseAdapter<RepertoryEntity.ListBean>{
         @Override
-        protected View getExView(int position, View convertView,
-                                 ViewGroup parent) {
-            ViewHolder holder = null;
+        protected View getExView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder = null;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_notify, null);
-                holder = new ViewHolder();
-                holder.what = (TextView) convertView.findViewById(R.id.what);
-                holder.time = (TextView) convertView.findViewById(R.id.time);
-                holder.type = (TextView) convertView.findViewById(R.id.type);
-                convertView.setTag(holder);
+                viewHolder = new ViewHolder();
+                convertView = View.inflate(mContext, R.layout.item_accounts_list, null);
+                ViewUtils.inject(viewHolder,convertView);
+                convertView.setTag(viewHolder);
             }
             else {
-                holder = (ViewHolder) convertView.getTag();
+                viewHolder = (ViewHolder) convertView.getTag();
             }
-            CollectCarInfo collectCarInfo = mList.get(position);
-            final CollectCar carInfo = collectCarInfo.getCar();
-            CarImage carImage = carInfo.getImage();
-
+            final RepertoryEntity.ListBean bean =  mList.get(position);
+            RepertoryEntity.ListBean.ProductBean productBean = bean.getProduct();
+            if (productBean != null){
+                viewHolder.name.setText(productBean.getName());
+                viewHolder.number.setText(productBean.getDefault_code() + " | ");
+                viewHolder.content.setText(productBean.getUnit());
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
+            }
+            viewHolder.value.setText("￥"+bean.getQty()+"");
+            viewHolder.dateNumber.setText(bean.getLot_num());
             return convertView;
         }
 
         class ViewHolder {
-             TextView what;
-             TextView time;
-             TextView type;
-        }
+            @ViewInject(R.id.name)
+            TextView            name;
+            @ViewInject(R.id.productImage)
+            SimpleDraweeView sDv;
+            @ViewInject(R.id.number)
+            TextView            number;
+            @ViewInject(R.id.content)
+            TextView content;
+            @ViewInject(R.id.value)
+            TextView         value;
+            @ViewInject(R.id.dateNumber)
+            TextView         dateNumber;
 
+        }
     }
 }

@@ -24,6 +24,7 @@ import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -321,7 +322,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 			if ( resultObj == null && paseInterface != null ) {
 				resultObj =  paseInterface.paseResult(BaseEntity.class, parsed);
 				BaseEntity.ResultBean resultBean = resultObj.getResult();
-				if (resultBean.getData() != null) {
+				if (resultBean != null && resultBean.getData() != null) {
 					JSONObject jsonObject = (JSONObject) resultBean.getData();
 					Object object = JSON.parseObject(jsonObject.toJSONString(), targerClass);
 					resultBean.setData(object);
@@ -470,6 +471,11 @@ public class NetWorkHelper<T extends BaseEntity> {
 			}
 			else {
 				errorMsg = response.getError().getMessage();
+				//sessino失效
+				if(100 == response.getError().getCode()) {
+					SPUtils.loginOut(context);
+					ToastUtil.show(context,"登陆过期，请重新登陆");
+				}
 			}
 			newWorkCallBack.onFailure(errorMsg, response, what);
 		}

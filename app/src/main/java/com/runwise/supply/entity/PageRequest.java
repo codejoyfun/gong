@@ -5,22 +5,48 @@ package com.runwise.supply.entity;
  */
 
 public class PageRequest {
-    private String page;
-    private String limit;
 
-    public String getLimit() {
+    /**
+     * pz : 3
+     * start : 2017-07-02
+     * end : 2017-07-08
+     * limit : 10
+     */
+
+    private int pz;
+    private String start;
+    private String end;
+    private int limit;
+
+    public int getPz() {
+        return pz;
+    }
+
+    public void setPz(int pz) {
+        this.pz = pz;
+    }
+
+    public String getStart() {
+        return start;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
+
+    public int getLimit() {
         return limit;
     }
 
-    public void setLimit(String limit) {
+    public void setLimit(int limit) {
         this.limit = limit;
-    }
-
-    public String getPage() {
-        return page;
-    }
-
-    public void setPage(String page) {
-        this.page = page;
     }
 }

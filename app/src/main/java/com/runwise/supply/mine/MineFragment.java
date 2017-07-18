@@ -18,7 +18,6 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
-import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -26,9 +25,6 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
-import com.runwise.supply.message.ActionSendActivity;
-import com.runwise.supply.mine.entity.SystemInfoData;
-import com.runwise.supply.mine.entity.SystemInfoResult;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
 
@@ -151,7 +147,7 @@ public class MineFragment extends NetWorkFragment {
 
     }
     @OnClick({R.id.settingIcon,R.id.cellIcon,R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
-            R.id.itemLayout_6,R.id.itemLayout_7,R.id.itemLayout_8,R.id.itemLayout_9})
+            R.id.itemLayout_5,R.id.itemLayout_6,R.id.itemLayout_7,R.id.itemLayout_8,R.id.itemLayout_9})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -184,32 +180,68 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.itemLayout_1:
-                intent = new Intent(mContext, IActionListActivity.class);
+                intent = new Intent(mContext, OrderActivity.class);
+                intent.putExtra("position",1);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
                 }
                 break;
             case R.id.itemLayout_2:
-                intent = new Intent(mContext, OrderListActivity.class);
+                intent = new Intent(mContext, OrderActivity.class);
+                intent.putExtra("position",2);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
                 }
                 break;
+            //退货记录
             case R.id.itemLayout_3:
 //                sendConnection("welcome/system.json",null,REQUEST_SYSTEM,true, SystemInfoResult.class);
-
-                break;
-            case R.id.itemLayout_4:
-                intent = new Intent(mContext, ActionSendActivity.class);
+                intent = new Intent(mContext, ReturnActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
                 }
                 break;
-//            case R.id.itemLayout_5:
+            case R.id.itemLayout_4:
+                intent = new Intent(mContext, OrderActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
+                    startActivity(intent);
+                }
+                break;
+            //昨日库存
+            case R.id.itemLayout_5:
+                intent = new Intent(mContext, MeRepertoryActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
+                    startActivity(intent);
+                }
 //                ShareUtil.showShare(mContext,"分享给朋友","分享内容","http://ofwp5weyr.bkt.clouddn.com/71aafd87-5c6f-4629-9dce-9347e14a19a3.png","http://www.baidu.com");
-//                break;
+                break;
+            //上月末库存
             case R.id.itemLayout_6:
-
+                intent = new Intent(mContext, MeRepertoryActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
+                    startActivity(intent);
+                }
+                break;
+            //盘点记录
+            case R.id.itemLayout_7:
+                intent = new Intent(mContext, CheckActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
+                    startActivity(intent);
+                }
+                break;
+            //价目表
+            case R.id.itemLayout_8:
+                intent = new Intent(mContext, PriceListActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
+                    startActivity(intent);
+                }
+                break;
+            //对账单
+            case R.id.itemLayout_9:
+                intent = new Intent(mContext, AccountsListActivity.class);
+                if (UserUtils.checkLogin(intent,mContext)) {
+                    startActivity(intent);
+                }
                 break;
         }
 

@@ -1,54 +1,39 @@
 package com.runwise.supply.mine;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.format.DateUtils;
-import android.text.style.AbsoluteSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.img.FrecoFactory;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
-import com.runwise.supply.business.CarSettingFragmentContainer;
-import com.runwise.supply.business.SelectDealerActivity;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.index.entity.CarImage;
-import com.runwise.supply.index.entity.CarPeriod;
-import com.runwise.supply.mine.entity.CollectCar;
-import com.runwise.supply.mine.entity.CollectCarInfo;
-import com.runwise.supply.mine.entity.CollectData;
-import com.runwise.supply.mine.entity.CollectResult;
-import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.mine.entity.CheckResult;
+import com.runwise.supply.mine.entity.OrderResult;
+import com.runwise.supply.tools.TimeUtils;
 
-import java.util.HashMap;
-
-import static com.runwise.supply.R.id.carDoit;
-import static com.runwise.supply.R.id.carName;
-import static com.runwise.supply.R.id.carPic;
-import static com.runwise.supply.R.id.carPrice;
-import static com.runwise.supply.R.id.carRealPrice;
+import java.util.Calendar;
 
 /**
- * 下单提醒推送
+ * 盘点记录
  */
-public class NotiySettingActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
+public class CheckListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
@@ -57,26 +42,21 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
     private LoadingLayout loadingLayout;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
-    private NotifyListAdapter adapter;
+    private CarInfoListAdapter adapter;
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
+    public OrderDataType orderDataType;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarEnabled();
-        StatusBarUtil.StatusBarLightMode(this);
-        setContentView(R.layout.activity_notiy_list);
-        this.setTitleText(true,"下单提醒推送");
-        this.setTitleLeftIcon(true,R.drawable.back_btn);
-        this.setTitleRigthIcon(true,R.drawable.nav_add);
 
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
-        pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
+        pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setOnItemClickListener(this);
 
-        adapter = new NotifyListAdapter();
+        adapter = new CarInfoListAdapter();
 
         if(mOnRefreshListener2 == null){
             mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -91,7 +71,7 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
 
                 @Override
                 public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-                    requestData(false, REQUEST_DEN, (++page) , 10);
+                    requestData(false, REQUEST_DEN, ++page, 10);
                 }
             };
 
@@ -104,22 +84,29 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
         loadingLayout.setOnRetryClickListener(this);
     }
 
-    @OnClick(R.id.left_layout)
-    public void doBack(View view) {
-        this.finish();
-    }
-
-    @OnClick(R.id.right_layout)
-    public void doRightClick(View view) {
-        Intent intent = new Intent(this ,NotiySettingDateActivity.class);
-        startActivity(intent);
-    }
 
     public void requestData (boolean showDialog,int where, int page,int limit) {
         PageRequest request = new PageRequest();
         request.setLimit(limit);
         request.setPz(page);
-        sendConnection("collect/list.json",request,where,showDialog,CollectResult.class);
+        switch (orderDataType) {
+            case BENZHOU:
+                request.setStart(TimeUtils.getThisWeekStart());
+                request.setEnd(TimeUtils.getCurrentDate());
+                break;
+            case SHANGZHOU:
+                request.setStart(TimeUtils.getPerWeekStart());
+                request.setEnd(TimeUtils.getPerWeekEnd());
+                break;
+            case SHANGYUE:
+                request.setStart(TimeUtils.getPerMonthStart());
+                request.setEnd(TimeUtils.getPerMonthEnd());
+                break;
+            case GENGZAO:
+                request.setEnd(TimeUtils.getPerMonthStart());
+                break;
+        }
+        sendConnection("/gongfu/shop/inventory/list",request,where,showDialog,CheckResult.class);
     }
 
 
@@ -127,23 +114,20 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
-                CollectResult mainResult = (CollectResult)result;
-                CollectData mainListResult = mainResult.getData();
-                adapter.setData(mainListResult.getEntities());
-                loadingLayout.onSuccess(adapter.getCount(),"暂无推送",R.drawable.nonocitify_icon);
+                CheckResult mainListResult = (CheckResult)result.getResult();
+                adapter.setData(mainListResult.getList());
+                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
-                CollectResult startResult = (CollectResult) result;
-                CollectData startListResult = startResult.getData();
-                adapter.setData(startListResult.getEntities());
+                CheckResult startResult = (CheckResult)result.getResult();
+                adapter.setData(startResult.getList());
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
-                CollectResult endResult = (CollectResult) result;
-                CollectData sndListResult = endResult.getData();
-                if (sndListResult.getEntities() != null && !sndListResult.getEntities().isEmpty()) {
-                    adapter.appendData(sndListResult.getEntities());
+                CheckResult endResult = (CheckResult)result.getResult();
+                if (endResult.getList() != null && !endResult.getList().isEmpty()) {
+                    adapter.appendData(endResult.getList());
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 }
                 else {
@@ -156,19 +140,32 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.nonocitify_icon);
+        loadingLayout.onFailure("",R.drawable.no_network);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CollectCarInfo bean = (CollectCarInfo)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(this,CarSettingFragmentContainer.class);
-        intent.putExtra("carid",bean.getCar_id());
-        startActivity(intent);
+//        OrderEntity bean = (OrderEntity)parent.getAdapter().getItem(position);
+//        Intent intent = new Intent(mContext, IWebViewActivity.class);
+//        intent.putExtra(WebViewActivity.WEB_TITLE,bean.getTitle());
+//        if (bean.getOrder_status() == 1 ) {
+//            intent.putExtra(WebViewActivity.WEB_URL, bean.getApply_info_url());
+//            startActivity(intent);
+//        }
+//        else if(bean.getOrder_status() == 11) {
+//            Intent dealIntent = new Intent(this,RequestDetlActivity.class);
+//            startActivity(dealIntent);
+//        }
+//        else{
+//            intent.putExtra(WebViewActivity.WEB_URL, bean.getPeriod_url());
+//            startActivity(intent);
+//        }
     }
+
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected int createViewByLayoutId() {
+        return R.layout.activity_collection_list;
     }
 
     @Override
@@ -178,34 +175,48 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
         requestData(false, REQUEST_MAIN, page, 10);
     }
 
-    public class NotifyListAdapter extends IBaseAdapter<CollectCarInfo> {
+
+    public class CarInfoListAdapter extends IBaseAdapter<CheckResult.ListBean> {
         @Override
         protected View getExView(int position, View convertView,
                                  ViewGroup parent) {
             ViewHolder holder = null;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_notify, null);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_check_list, null);
                 holder = new ViewHolder();
-                holder.what = (TextView) convertView.findViewById(R.id.what);
-                holder.time = (TextView) convertView.findViewById(R.id.time);
-                holder.type = (TextView) convertView.findViewById(R.id.type);
+                ViewUtils.inject(holder,convertView);
                 convertView.setTag(holder);
             }
             else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            CollectCarInfo collectCarInfo = mList.get(position);
-            final CollectCar carInfo = collectCarInfo.getCar();
-            CarImage carImage = carInfo.getImage();
+            CheckResult.ListBean bean = mList.get(position);
 
+            holder.payStatus.setText(bean.getName());
+            holder.payDate.setText(bean.getCreate_date());
+            holder.number.setText(bean.getName());
+            holder.name.setText(bean.getCreate_partner().getName());
+            holder.money.setText(bean.getDelta_value()+"");
+            if ("confirm".equals(bean.getState())) {
+                holder.payStatus.setText("盘点中");
+                holder.payStatus.setVisibility(View.VISIBLE);
+            }
+            else {
+                holder.payStatus.setVisibility(View.GONE);
+            }
             return convertView;
         }
-
         class ViewHolder {
-             TextView what;
-             TextView time;
-             TextView type;
+            @ViewInject(R.id.payDate)
+            TextView payDate;
+            @ViewInject(R.id.payStatus)
+            TextView payStatus;
+            @ViewInject(R.id.number)
+            TextView number;
+            @ViewInject(R.id.name)
+            TextView name;
+            @ViewInject(R.id.money)
+            TextView money;
         }
-
     }
 }
