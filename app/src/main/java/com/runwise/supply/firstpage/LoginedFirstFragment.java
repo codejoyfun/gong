@@ -2,6 +2,9 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,7 +19,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
@@ -30,6 +35,9 @@ import com.runwise.supply.firstpage.entity.DashBoardResponse;
 import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -55,6 +63,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private TextView lastWeekBuy;
     private TextView lastMonthBuy;
     private TextView unPayMoney;
+    private boolean isLoadFirst = true;
+
+    public LoginedFirstFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,15 +110,28 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
             }
         });
-        requestData();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!SPUtils.isLogin(mContext)){
+            this.switchContent(this,new UnLoginedFirstFragment());
+        }else
+            requestData();
+    }
+
     //一次性加载全部，无分页
     private void requestData() {
-        LunboRequest lbRequest = new LunboRequest("餐户端");
-        sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
         Object request = null;
+        if (isLoadFirst){
+            isLoadFirst = false;        //只加载一次
+            LunboRequest lbRequest = new LunboRequest("餐户端");
+            sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
+            sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
+        }
         sendConnection("/gongfu/v2/orders/undone/detail",request,FROMSTART,true, OrderResponse.class);
-        sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
+
     }
 
     @Override
@@ -217,5 +242,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         sendConnection(urlSb.toString(),request,CANCEL,true,BaseEntity.ResultBean.class);
 
     }
+    public void switchContent(Fragment from, Fragment to) {
+        FragmentManager mManager = getFragmentManager();
+        if (from != to) {
+            FragmentTransaction mTransaction = mManager.beginTransaction();
+            if (!to.isAdded()) {
+                mTransaction.hide(from).add(R.id.realtabcontent, to);
 
+            } else
+                mTransaction.hide(from).show(to);
+            mTransaction.commit();
+        }
+
+    }
 }

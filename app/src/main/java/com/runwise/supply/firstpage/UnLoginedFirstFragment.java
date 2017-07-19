@@ -1,9 +1,10 @@
 package com.runwise.supply.firstpage;
-
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,7 +19,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
@@ -30,6 +33,9 @@ import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.NewsRequest;
 import com.runwise.supply.firstpage.entity.NewsResponse;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -52,7 +58,8 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private RecyclerView recyclerView;
     private StatisticsAdapter sAdapter;
     private NewsAdapter nAdapter;
-    int lastNewsId;                     //缓存最旧的一条新闻id
+    private int lastNewsId;                     //缓存最旧的一条新闻id
+    private boolean isLoadFirst = true;         //标记只加载一次
     private LinearLayoutManager layoutManager;
 
     @Override
@@ -104,19 +111,31 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
                 startActivity(intent);
             }
         });
-        requestData(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //判断登录状态,进行fragment的切换
+        if (SPUtils.isLogin(mContext)){
+            switchContent(this,new LoginedFirstFragment());
+        }else
+            requestData(true);
     }
 
     private void requestData(boolean isStart) {
         int loadType;
         String loadStr;
         NewsRequest newsRequest = null;
+        if (isLoadFirst){
+            isLoadFirst = false;
+            //只在首次加载轮播图+统计表
+            LunboRequest lbRequest = new LunboRequest("餐户端");
+            sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
+        }
         if (isStart){
             loadType = FROMSTART;
             loadStr = "/gongfu/v2/wechat/news";
-            //只在首次加载轮播图
-            LunboRequest lbRequest = new LunboRequest("餐户端");
-            sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
         }else{
             loadType = FROMEND;
             loadStr = "/gongfu/v2/wechat/more";
@@ -207,5 +226,19 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     @Override
     public void onItemClick() {
         ToastUtil.show(mContext,"点击了更多");
+    }
+
+    public void switchContent(Fragment from, Fragment to) {
+        FragmentManager mManager = getFragmentManager();
+        if (from != to) {
+            FragmentTransaction mTransaction = mManager.beginTransaction();
+            if (!to.isAdded()) {
+                mTransaction.hide(from).add(R.id.realtabcontent, to);
+
+            } else
+                mTransaction.hide(from).show(to);
+            mTransaction.commit();
+        }
+
     }
 }
