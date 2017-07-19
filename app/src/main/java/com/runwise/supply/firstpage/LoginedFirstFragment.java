@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,12 +17,15 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
+import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.DashBoardResponse;
 import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
@@ -38,6 +42,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int FROMSTART = 0;
     private static final int FROMLB = 1;
     private static final int FROMDB = 2;
+    private static final int CANCEL = 3;        //取消订单
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -128,6 +133,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 DecimalFormat df   = new DecimalFormat("######0.00");
                 lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
                 break;
+            case CANCEL:
+                BaseEntity.ResultBean resultBean3= result.getResult();
+                if("A0006".equals(resultBean3.getState())){
+                    ToastUtil.show(mContext,"取消成功");
+                    requestData();
+                }
+                break;
         }
     }
 
@@ -164,9 +176,19 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     }
 
     @Override
-    public void doAction(OrderDoAction action,int position) {
+    public void doAction(OrderDoAction action, final int position) {
         switch(action){
             case CANCLE:
+                dialog.setTitle("提示");
+                dialog.setMessage("确认取消订单?");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //发送取消订单请求
+                        cancleOrderRequest(position);
+                    }
+                });
+                dialog.show();
                 break;
             case UPLOAD:
                 break;
@@ -184,6 +206,16 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             default:
                 break;
         }
+    }
+
+    private void cancleOrderRequest(int position) {
+        OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(position);
+        StringBuffer urlSb = new StringBuffer("/gongfu/order/");
+        urlSb.append(bean.getOrderID()).append("/state");
+        CancleRequest request = new CancleRequest();
+        request.setState("cancel");
+        sendConnection(urlSb.toString(),request,CANCEL,true,BaseEntity.ResultBean.class);
+
     }
 
 }

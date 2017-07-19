@@ -134,10 +134,11 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.checkbox.setVisibility(View.GONE);
         }
         final EditText editText = viewHolder.editText;
-        ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+        ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
         if (basicBean != null){
             viewHolder.nameTv.setText(basicBean.getName());
-            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+            if (basicBean.getImage() != null)
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
         }
         Integer proId = bean.getProductID();
         String count = String.valueOf(countMap.get(proId));

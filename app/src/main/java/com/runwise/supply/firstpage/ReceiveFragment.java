@@ -91,7 +91,7 @@ public class ReceiveFragment extends BaseFragment{
             ViewHolder viewHolder = null;
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
-            final ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap().get(pId);
+            final ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap(mContext).get(pId);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
@@ -124,7 +124,8 @@ public class ReceiveFragment extends BaseFragment{
             }
             if (basicBean != null){
                 viewHolder.name.setText(basicBean.getName());
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+                if (basicBean.getImage() != null)
+                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
                 sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 viewHolder.content.setText(sb.toString());

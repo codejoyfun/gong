@@ -19,6 +19,9 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.business.MainRepertoryFragment;
 import com.runwise.supply.firstpage.LoginedFirstFragment;
@@ -63,12 +66,20 @@ public class MainActivity extends NetWorkActivity {
 
         @Override
         public void run() {
+            DbUtils dbUtils = DbUtils.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
             HashMap<String,ProductBasicList.ListBean> map = new HashMap<>();
             for (ProductBasicList.ListBean bean : basicList){
                 map.put(String.valueOf(bean.getProductID()),bean);
+                //同时存到dB里面
+                try {
+                    dbUtils.saveOrUpdate(bean);
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
             }
             ProductBasicUtils.setBasicMap(map);
+
         }
     }
     private CaptureClient.Listener mListener= new CaptureClient.Listener()
@@ -146,8 +157,6 @@ public class MainActivity extends NetWorkActivity {
         mTabHost.getTabWidget().setDividerDrawable(null);
 
     }
-    public void replaceTabPage(){
-    }
     private boolean isLogined() {
         return false;
     }
@@ -201,7 +210,6 @@ public class MainActivity extends NetWorkActivity {
         super.onResume();
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
         queryProductList();
-
     }
     @Override
     protected void onStop() {
