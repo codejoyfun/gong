@@ -451,6 +451,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme"
             />
+        <activity android:name=".mine.AccountsDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".repertory.EditRepertoryListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".repertory.EditRepertoryAddActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

@@ -1,18 +1,14 @@
-package com.runwise.supply.mine;
+package com.runwise.supply.repertory;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -21,9 +17,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.bean.ProductCountChangeEvent;
-import com.kids.commonframe.base.bean.ProductGetEvent;
-import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
@@ -34,17 +27,11 @@ import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.orderpage.ProductActivity;
-import com.runwise.supply.orderpage.ProductBasicUtils;
-import com.runwise.supply.orderpage.entity.AddedProduct;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
-import com.runwise.supply.orderpage.entity.ProductData;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -52,7 +39,7 @@ import java.util.List;
  * 根据传入的数据集合，显示全部、冷藏、冻货、干货集合
  */
 
-public class RepertoryListFragment extends NetWorkFragment {
+public class SearchListFragment extends NetWorkFragment {
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
@@ -127,7 +114,7 @@ public class RepertoryListFragment extends NetWorkFragment {
             ViewHolder viewHolder = null;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.repertory_layout_item, null);
+                convertView = View.inflate(mContext, R.layout.repertory_search_item, null);
                 ViewUtils.inject(viewHolder,convertView);
                 convertView.setTag(viewHolder);
             }
@@ -150,12 +137,14 @@ public class RepertoryListFragment extends NetWorkFragment {
                 }
                 viewHolder.number.setText(productBean.getDefault_code() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
+                viewHolder.addBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
             }
-            viewHolder.value.setText(bean.getQty()+"");
-            viewHolder.uom.setText(bean.getUom());
-            viewHolder.dateNumber.setText(bean.getLot_num());
-            viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
             return convertView;
         }
 
@@ -168,17 +157,8 @@ public class RepertoryListFragment extends NetWorkFragment {
             TextView            number;
             @ViewInject(R.id.content)
             TextView content;
-            @ViewInject(R.id.value)
-            TextView         value;
-            @ViewInject(R.id.uom)
-            TextView         uom;
-            @ViewInject(R.id.dateNumber)
-            TextView         dateNumber;
-            @ViewInject(R.id.dateLate)
-            TextView            dateLate;
-
-
-
+            @ViewInject(R.id.addBtn)
+            ImageView addBtn;
         }
     }
 }

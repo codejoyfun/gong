@@ -446,6 +446,7 @@
                 android:layout_marginRight="6dp"
                 android:background="@drawable/red_shap"
                 android:layout_centerVertical="true"
+                android:visibility="gone"
                 />
             <View
                 android:layout_width="match_parent"

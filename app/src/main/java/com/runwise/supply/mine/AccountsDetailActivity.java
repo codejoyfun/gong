@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
@@ -17,9 +16,7 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -29,14 +26,13 @@ import com.runwise.supply.mine.entity.CheckOrderData;
 import com.runwise.supply.mine.entity.MsgEntity;
 import com.runwise.supply.mine.entity.MsgList;
 import com.runwise.supply.mine.entity.MsgResult;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 /**
- * 对账单
+ * 对账单详情
  */
-public class AccountsListActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
+public class AccountsDetailActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
@@ -49,12 +45,16 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
+    @ViewInject(R.id.timeLaterLayout)
+    private View timeLaterLayout;
+    @ViewInject(R.id.totleMoney)
+    private TextView totleMoney;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
-        setContentView(R.layout.activity_title_list);
+        setContentView(R.layout.activity_account_detail);
         this.setTitleText(true,"对账单");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
 
@@ -86,9 +86,19 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        requestData(false, REQUEST_MAIN, page, 10);
+//        requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
+
+        CheckOrderData.BankStatementBean bean = (CheckOrderData.BankStatementBean)this.getIntent().getSerializableExtra("bean");
+        adapter.setData(bean.getOrders());
+        if(bean.isTimeLater()) {
+            timeLaterLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            timeLaterLayout.setVisibility(View.GONE);
+        }
+        totleMoney.setText("￥"+bean.getTotalPrice());
     }
 
     @OnClick(R.id.left_layout)
@@ -109,7 +119,7 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
         switch (where) {
             case REQUEST_MAIN:
                 CheckOrderData mainListResult = (CheckOrderData)result.getResult().getData();
-                adapter.setData(mainListResult.getBankStatement());
+//                adapter.setData(mainListResult.getBankStatement());
                 loadingLayout.onSuccess(adapter.getCount(),"暂无对账单",R.drawable.default_ico_nonepayorder);
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
@@ -142,9 +152,11 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CheckOrderData.BankStatementBean bean = (CheckOrderData.BankStatementBean)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(mContext,AccountsDetailActivity.class);
-        intent.putExtra("bean",bean);
+        MsgEntity bean = (MsgEntity)parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext,MsgDetailActivity.class);
+        intent.putExtra("msgId",bean.getMessage_id());
+        bean.setIs_read("1");
+        adapter.notifyDataSetChanged();
         startActivity(intent);
     }
 
@@ -161,44 +173,36 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
     }
 
 
-    public class CheckOrderAdapter extends IBaseAdapter<CheckOrderData.BankStatementBean>{
+    public class CheckOrderAdapter extends IBaseAdapter<CheckOrderData.BankStatementBean.OrdersBean>{
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.item_accounts_list, null);
+                convertView = View.inflate(mContext, R.layout.item_accountsdetail_list, null);
                 ViewUtils.inject(viewHolder,convertView);
                 convertView.setTag(viewHolder);
             }
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final CheckOrderData.BankStatementBean bean =  mList.get(position);
-            viewHolder.date.setText(bean.getBeginDate()+"至"+bean.getEndDate());
+            final CheckOrderData.BankStatementBean.OrdersBean bean =  mList.get(position);
+            viewHolder.date.setText(bean.getCreateDate());
             viewHolder.name.setText(bean.getName());
-//           viewHolder.status.setText();
-            if(!TimeUtils.isTimeInner(bean.getBeginDate(),bean.getEndDate())) {
-                bean.setTimeLater(true);
-                viewHolder.status.setVisibility(View.VISIBLE);
-            }
-            else {
-                bean.setTimeLater(false);
-                viewHolder.status.setVisibility(View.GONE);
-            }
+            viewHolder.sum.setText("共" + bean.getAmount()+"件商品");
             viewHolder.money.setText("￥"+bean.getTotalPrice());
             return convertView;
         }
 
         class ViewHolder {
-            @ViewInject(R.id.date)
-            TextView            date;
             @ViewInject(R.id.name)
-            TextView name;
-            @ViewInject(R.id.status)
-            TextView            status;
+            TextView            name;
             @ViewInject(R.id.money)
             TextView money;
+            @ViewInject(R.id.date)
+            TextView            date;
+            @ViewInject(R.id.sum)
+            TextView sum;
         }
     }
 }
