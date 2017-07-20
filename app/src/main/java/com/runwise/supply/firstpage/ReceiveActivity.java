@@ -1,4 +1,5 @@
 package com.runwise.supply.firstpage;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -67,6 +68,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TextView unitTv;
     private RelativeLayout twoUnitRL;
     private int totalQty;           //预计总的商品总数
+    private OrderResponse.ListBean lbean;
     public Map<String, ReceiveBean> getCountMap() {
         return countMap;
     }
@@ -81,9 +83,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         setTitleLeftIcon(true,R.drawable.nav_back);
         setTitleRightText(true,"完成");
         Bundle bundle = getIntent().getExtras();
-        OrderResponse.ListBean bean = bundle.getParcelable("order");
-        if (bean != null && bean.getLines() != null){
-            datas.addAll(bean.getLines());
+        lbean = bundle.getParcelable("order");
+        if (lbean != null && lbean.getLines() != null){
+            datas.addAll(lbean.getLines());
         }
         adapter = new TabPageIndicatorAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
@@ -139,7 +141,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         sureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String pId = bottomData.getProductId();
+                String pId = String.valueOf(bottomData.getProductId());
                 int count = Integer.valueOf(edEt.getText().toString());
                 bottomData.setCount(count);
                 countMap.put(pId,bottomData);
@@ -214,10 +216,13 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
             pb.setQty(bean.getCount());
+            pb.setHeight(bean.getCount());
             pbList.add(pb);
         }
         rr.setProducts(pbList);
-        sendConnection("/gongfu/order/231/receive/",rr,RECEIVE,true, BaseEntity.ResultBean.class);
+        StringBuffer sb = new StringBuffer("/gongfu/order/");
+        sb.append(lbean.getOrderID()).append("/receive/");
+        sendConnection(sb.toString(),rr,RECEIVE,true, BaseEntity.ResultBean.class);
 
     }
 
@@ -240,7 +245,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case RECEIVE:
-                BaseEntity.ResultBean resultBean= result.getResult();
+                Intent intent = new Intent(mContext,ReceiveSuccessActivity.class);
+                startActivity(intent);
+                finish();
                 break;
         }
 

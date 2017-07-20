@@ -26,7 +26,7 @@ public class ReceiveRequest {
          */
 
         private int qty;
-        private String product_id;
+        private int product_id;
         private double height;
 
         public int getQty() {
@@ -37,11 +37,11 @@ public class ReceiveRequest {
             this.qty = qty;
         }
 
-        public String getProduct_id() {
+        public int getProduct_id() {
             return product_id;
         }
 
-        public void setProduct_id(String product_id) {
+        public void setProduct_id(int product_id) {
             this.product_id = product_id;
         }
 

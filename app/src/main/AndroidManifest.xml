@@ -454,6 +454,16 @@
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme"
             />
+        <activity android:name=".firstpage.ReceiveSuccessActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImageTranslucentTheme"
+            />
+        <activity android:name=".firstpage.EvaluateActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImageTranslucentTheme"
+            />
     </application>
 
 </manifest>

@@ -109,7 +109,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 state = "订单已收货";
                 tip = "收货人："+bean.getReceiveUserName();
                 rightBtn.setText("评价");
-                rightBtn.setText("售后订单");
+                rightBtn2.setText("售后订单");
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);
@@ -167,7 +167,7 @@ public class OrderDetailActivity extends NetWorkActivity{
     }
 
     @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,
-            R.id.freezeBtn,R.id.dryBtn,R.id.gotoStateBtn})
+            R.id.freezeBtn,R.id.dryBtn,R.id.gotoStateBtn,R.id.rightBtn,R.id.rightBtn2})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
@@ -193,6 +193,23 @@ public class OrderDetailActivity extends NetWorkActivity{
                 bundle.putParcelable("order", bean);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                break;
+            case R.id.rightBtn:
+                Intent intent2;
+                if (rightBtn.getText().toString().equals("收货")){
+                    intent2 = new Intent(mContext,ReceiveActivity.class);
+                    Bundle bundle2 = new Bundle();
+                    bundle2.putParcelable("order",bean);
+                    intent2.putExtras(bundle2);
+                    startActivity(intent2);
+                    finish();
+                }else if(rightBtn.getText().toString().equals("评价")){
+                    intent2 = new Intent(mContext,EvaluateActivity.class);
+                    Bundle bundle2 = new Bundle();
+                    bundle2.putParcelable("order",bean);
+                    intent2.putExtras(bundle2);
+                    startActivity(intent2);
+                }
                 break;
         }
     }

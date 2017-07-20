@@ -97,31 +97,30 @@ public class ReceiveFragment extends BaseFragment{
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-
-                viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ReceiveBean rb = new ReceiveBean();
-                        if (basicBean != null){
-                            rb.setName(basicBean.getName());
-                            rb.setCount((int)bean.getProductUomQty());
-                            rb.setProductId(bean.getProductID()+"");
-                            if (basicBean.isTwoUnit() && TextUtils.isEmpty(basicBean.getSettleUomId())){
-                                rb.setTwoUnit(true);
-                                rb.setUnit(basicBean.getUnit());
-                            }else{
-                                rb.setTwoUnit(false);
-                            }
-                            if (callback != null){
-                                callback.doAction(rb);
-                            }
-                        }
-
-                    }
-                });
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+            viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReceiveBean rb = new ReceiveBean();
+                    if (basicBean != null){
+                        rb.setName(basicBean.getName());
+                        rb.setCount((int)bean.getProductUomQty());
+                        rb.setProductId(bean.getProductID());
+                        if (basicBean.isTwoUnit() && TextUtils.isEmpty(basicBean.getSettleUomId())){
+                            rb.setTwoUnit(true);
+                            rb.setUnit(basicBean.getUnit());
+                        }else{
+                            rb.setTwoUnit(false);
+                        }
+                        if (callback != null){
+                            callback.doAction(rb);
+                        }
+                    }
+
+                }
+            });
             if (basicBean != null){
                 viewHolder.name.setText(basicBean.getName());
                 if (basicBean.getImage() != null)

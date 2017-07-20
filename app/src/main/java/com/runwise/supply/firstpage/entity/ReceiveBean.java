@@ -6,7 +6,7 @@ package com.runwise.supply.firstpage.entity;
 
 public class ReceiveBean {
     private String name;        //货物名称
-    private String productId;   //商品id
+    private int productId;   //商品id
     private int count;          //商品数量
     private boolean isTwoUnit;  //是否为双单位
     private String unit;        //是双单位的话，单位是什么
@@ -23,11 +23,11 @@ public class ReceiveBean {
         this.name = name;
     }
 
-    public String getProductId() {
+    public int getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
 
@@ -70,12 +70,12 @@ public class ReceiveBean {
 
         ReceiveBean that = (ReceiveBean) o;
 
-        return productId != null ? productId.equals(that.productId) : that.productId == null;
+        return productId == that.productId;
 
     }
 
     @Override
     public int hashCode() {
-        return productId != null ? productId.hashCode() : 0;
+        return productId;
     }
 }
