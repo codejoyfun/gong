@@ -33,12 +33,12 @@ import com.runwise.supply.orderpage.OrderFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.socketmobile.capture.Capture;
-import com.socketmobile.capture.client.CaptureClient;
-import com.socketmobile.capture.client.CaptureDeviceClient;
-import com.socketmobile.capture.events.DataDecodedEvent;
-import com.socketmobile.capture.events.DeviceAvailabilityEvent;
-import com.socketmobile.capture.types.DecodedData;
+//import com.socketmobile.capture.Capture;
+//import com.socketmobile.capture.client.CaptureClient;
+//import com.socketmobile.capture.client.CaptureDeviceClient;
+//import com.socketmobile.capture.events.DataDecodedEvent;
+//import com.socketmobile.capture.events.DeviceAvailabilityEvent;
+//import com.socketmobile.capture.types.DecodedData;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -83,25 +83,25 @@ public class MainActivity extends NetWorkActivity {
 
         }
     }
-    private CaptureClient.Listener mListener= new CaptureClient.Listener()
-    {
-
-
-        @Override
-        public void onConnectionFailure(int i) {
-
-        }
-
-        @Override
-        public void onDeviceAvailabilityChanged(CaptureDeviceClient captureDeviceClient) {
-
-        }
-
-        @Override
-        public void onDataDecoded(CaptureDeviceClient captureDeviceClient, DecodedData decodedData) {
-            print(decodedData.getString());
-        }
-    };
+//    private CaptureClient.Listener mListener= new CaptureClient.Listener()
+//    {
+//
+//
+//        @Override
+//        public void onConnectionFailure(int i) {
+//
+//        }
+//
+//        @Override
+//        public void onDeviceAvailabilityChanged(CaptureDeviceClient captureDeviceClient) {
+//
+//        }
+//
+//        @Override
+//        public void onDataDecoded(CaptureDeviceClient captureDeviceClient, DecodedData decodedData) {
+//            print(decodedData.getString());
+//        }
+//    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +114,7 @@ public class MainActivity extends NetWorkActivity {
         //检查版本
         CheckVersionManager checkVersionManager = new CheckVersionManager(this);
 //        checkVersionManager.checkVersion(false);
-        Capture.init(getApplicationContext());
+//        Capture.init(getApplicationContext());
 //        CaptureClient mClient = new CaptureClient();
 //        mClient.setListener(mListener);
 //        mClient.connect();
@@ -240,51 +240,51 @@ public class MainActivity extends NetWorkActivity {
     public void onUserLoginout() {
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onScan(DataDecodedEvent event) {
-        print(event.data.getData().toString());
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onScan(DataDecodedEvent event) {
+//        print(event.data.getData().toString());
+//    }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataDecoded(DataDecodedEvent event) {
-        // Do something
-        print(event.data.getData().toString());
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onCaptureDeviceAvailabilityChanged(DeviceAvailabilityEvent event) {
-        Collection<CaptureDeviceClient> devices;
-        updateDeviceState(event);
-
-        // The first time we receive this event - via sticky event - we
-        // want to configure all available devices
-        if (devicesConnected < 0) {
-            devices = event.getAllDevices();
-        } else {
-            devices = event.getChangedDevices();
-        }
-
-        devicesConnected = event.getDeviceCount();
-
-        for (CaptureDeviceClient device : devices) {
-//            if (device.isMine()) {
-//                // Configuration
-//            }
-        }
-    }
-
-    private void updateDeviceState(DeviceAvailabilityEvent event) {
-//        Button btn = (Button) findViewById(R.id.btn_toggle);
-        if (event.isAnyDeviceAvailable()) {
-            print("Device available");
-
-        } else if (event.isAnyDeviceConnected()) {
-            print("Device connected");
-
-        } else {
-            print("No device");
-
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onDataDecoded(DataDecodedEvent event) {
+//        // Do something
+//        print(event.data.getData().toString());
+//    }
+//    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+//    public void onCaptureDeviceAvailabilityChanged(DeviceAvailabilityEvent event) {
+//        Collection<CaptureDeviceClient> devices;
+//        updateDeviceState(event);
+//
+//        // The first time we receive this event - via sticky event - we
+//        // want to configure all available devices
+//        if (devicesConnected < 0) {
+//            devices = event.getAllDevices();
+//        } else {
+//            devices = event.getChangedDevices();
+//        }
+//
+//        devicesConnected = event.getDeviceCount();
+//
+//        for (CaptureDeviceClient device : devices) {
+////            if (device.isMine()) {
+////                // Configuration
+////            }
+//        }
+//    }
+//
+//    private void updateDeviceState(DeviceAvailabilityEvent event) {
+////        Button btn = (Button) findViewById(R.id.btn_toggle);
+//        if (event.isAnyDeviceAvailable()) {
+//            print("Device available");
+//
+//        } else if (event.isAnyDeviceConnected()) {
+//            print("Device connected");
+//
+//        } else {
+//            print("No device");
+//
+//        }
+//    }
 
     private void print(String message) {
         ToastUtil.show(mContext,message);

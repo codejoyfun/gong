@@ -16,7 +16,7 @@ dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.anthonycr.grant:permissions:1.0'
     compile files('libs/superadapter-3.6.6.jar')
-    compile 'com.socketmobile:capture-android:0.9-SNAPSHOT'
+//    compile 'com.socketmobile:capture-android:0.9-SNAPSHOT'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'me.shaohui:bottomdialog:1.1.9'
 }

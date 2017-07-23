@@ -1,31 +1,42 @@
 package com.runwise.supply.firstpage;
 
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.PopupWindow;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.EvaluateLineRequest;
+import com.runwise.supply.firstpage.entity.EvaluateRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.runwise.supply.view.CheckedImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,12 +61,25 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private CheckBox        cb2;
     @ViewInject(R.id.cb3)
     private CheckBox        cb3;
-
+    @ViewInject(R.id.onekeyTv)
+    private TextView        onekeyTv;
+    @ViewInject(R.id.serviceEt)
+    private EditText        serviceEt;
+    @ViewInject(R.id.qualityEt)
+    private EditText        qualityEt;
+    @ViewInject(R.id.serviceRb)
+    private RatingBar       serviceRb;
+    private static final int ORDERREQUST = 1;
+    private static final int LINEREQUEST = 2;
 
     private EvaluateAdapter adapter;
     private OrderResponse.ListBean bean;
-    //维护星星分数的集合
-    private Map<String,Integer> rateMap = new HashMap<>();
+    //维护星星分数的集合,LineId -----> 星星分数
+    private Map<Integer,Integer> rateMap = new HashMap<>();
+    private PopupWindow popupWindow;
+    private View popView;
+    private int orderId;
+    private int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,28 +103,35 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         selectProductTypeData(DataType.LENGCANGHUO);
-
-        if(bean != null && bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null){
-            String deliverName = bean.getWaybill().getDeliverUser().getName();
-            nameTv.setText(deliverName);
-            String imgUrl = bean.getWaybill().getDeliverUser().getAvatarUrl();
-            FrecoFactory.getInstance(mContext).disPlay(headSdv, Constant.BASE_URL+imgUrl);
-        }else{
-            nameTv.setText("未知");
+        if (bean != null){
+            orderId = bean.getOrderID();
+            for(OrderResponse.ListBean.LinesBean lb : bean.getLines()){
+                rateMap.put(Integer.valueOf(lb.getSaleOrderProductID()),Integer.valueOf(0));
+            }
+            if(bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null){
+                String deliverName = bean.getWaybill().getDeliverUser().getName();
+                nameTv.setText(deliverName);
+                String imgUrl = bean.getWaybill().getDeliverUser().getAvatarUrl();
+                FrecoFactory.getInstance(mContext).disPlay(headSdv, Constant.BASE_URL+imgUrl);
+            }else{
+                nameTv.setText("未知");
+            }
+            String estimatTime = bean.getEstimatedTime();
+            String endUploadTime = bean.getEndUnloadDatetime();
+            StringBuffer sb = new StringBuffer("预计送达时间 ");
+            sb.append(estimatTime)
+                    .append("\n")
+                    .append("开始卸货时间 ")
+                    .append(endUploadTime);
+            timeTv.setText(sb.toString());
         }
-        String estimatTime = bean.getEstimatedTime();
-        String endUploadTime = bean.getEndUnloadDatetime();
-        StringBuffer sb = new StringBuffer("预计送达时间 ");
-        sb.append(estimatTime)
-                .append("    ")
-                .append("开始卸货时间 ")
-                .append(endUploadTime);
-        timeTv.setText(sb.toString());
+
         cb1.setOnCheckedChangeListener(this);
         cb2.setOnCheckedChangeListener(this);
         cb3.setOnCheckedChangeListener(this);
     }
-    @OnClick({R.id.coldBtn,R.id.freezeBtn,R.id.dryBtn,R.id.title_iv_left})
+    @OnClick({R.id.coldBtn,R.id.freezeBtn,R.id.dryBtn,
+            R.id.title_iv_left,R.id.onekeyTv,R.id.title_tv_rigth})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.coldBtn:
@@ -118,9 +149,91 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 selectProductTypeData(DataType.DRY);
                 break;
             case R.id.title_iv_left:
-                finish();
+                dialog.setMessage("评价尚未提交\n您确定要返回吗?");
+                dialog.setMessageGravity();
+                dialog.setLeftBtnListener("返回首页", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        finish();
+                    }
+                });
+                dialog.setRightBtnListener("继续评价", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+
+                    }
+                });
+                dialog.show();
+                break;
+            case R.id.onekeyTv:
+                if (popupWindow == null){
+                    popView = LayoutInflater.from(this).inflate(R.layout.pop_rate_layout,null);
+                    popupWindow = new PopupWindow(popView, ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT,true);
+                    popupWindow.setFocusable(true);
+                    popupWindow.setBackgroundDrawable(new BitmapDrawable());
+                    popupWindow.setOutsideTouchable(true);
+                    RatingBar rb = (RatingBar) popView.findViewById(R.id.ratingbar);
+                    rb.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                        @Override
+                        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                            if (fromUser){
+                                //更新全部商品的
+                               Iterator iterator =  rateMap.keySet().iterator();
+                                while (iterator.hasNext()){
+                                    Integer key = (Integer) iterator.next();
+                                    rateMap.put(key,Integer.valueOf((int)rating));
+                                }
+                                adapter.notifyDataSetChanged();
+                                popupWindow.dismiss();
+                            }
+                        }
+                    });
+                }
+                if (!popupWindow.isShowing()){
+                    int paddingX = CommonUtils.dip2px(mContext,100);
+                    int paddingY = CommonUtils.dip2px(mContext,10);
+                    popupWindow.showAsDropDown(onekeyTv,-paddingX,-paddingY);
+                }else{
+                    popupWindow.dismiss();
+                }
+                break;
+            case R.id.title_tv_rigth:
+                dialog.setTitle("提示");
+                dialog.setMessage("确认提交您的评价吗？");
+                dialog.setRightBtnListener("提交", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //发送提交请求
+                        sendEvaluateRequest();
+                    }
+                });
+                dialog.show();
                 break;
         }
+    }
+
+    private void sendEvaluateRequest() {
+        showIProgressDialog();
+        EvaluateRequest request = new EvaluateRequest();
+        request.setQuality_evaluation(qualityEt.getText().toString());
+        request.setService_evaluation(serviceEt.getText().toString());
+        request.setService_score((int)serviceRb.getRating());
+        StringBuffer sb = new StringBuffer("/gongfu/assess/order/");
+        sb.append(orderId).append("/");
+        sendConnection(sb.toString(),request,ORDERREQUST,false,BaseEntity.ResultBean.class);
+        //对订单商品行的评价:gongfu/assess/order/line/
+        EvaluateLineRequest lineRequest = new EvaluateLineRequest();
+        List<EvaluateLineRequest.OrderBean> list = new ArrayList<>();
+        Iterator iterator = rateMap.keySet().iterator();
+        while(iterator.hasNext()){
+            Integer key = (Integer) iterator.next();
+            EvaluateLineRequest.OrderBean ob = new EvaluateLineRequest.OrderBean();
+            ob.setLine_id(key);
+            ob.setQuality_score(rateMap.get(key));
+            list.add(ob);
+        }
+        lineRequest.setOrder(list);
+        sendConnection("/gongfu/assess/order/line/",lineRequest,LINEREQUEST,false,BaseEntity.ResultBean.class);
     }
 
     private void selectProductTypeData(DataType type) {
@@ -154,6 +267,20 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
+        switch (where){
+            case ORDERREQUST:
+                flag++;
+                break;
+            case LINEREQUEST:
+                flag++;
+                break;
+
+        }
+        if (flag == 2){
+            dismissIProgressDialog();
+            ToastUtil.show(mContext,"提交成功");
+            finish();
+        }
 
     }
 
@@ -163,8 +290,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     }
 
     @Override
-    public void rateChanged(String productId, Integer rateScore) {
-        rateMap.put(productId,rateScore);
+    public void rateChanged(Integer lineId, Integer rateScore) {
+        rateMap.put(lineId,rateScore);
     }
 
     @Override
@@ -187,9 +314,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 break;
             case R.id.cb3:
                 if(isChecked){
-                    cb2.setTextColor(Color.parseColor("#9ACC35"));
+                    cb3.setTextColor(Color.parseColor("#9ACC35"));
                 }else{
-                    cb2.setTextColor(Color.parseColor("#CCCCCC"));
+                    cb3.setTextColor(Color.parseColor("#CCCCCC"));
                 }
                 break;
         }

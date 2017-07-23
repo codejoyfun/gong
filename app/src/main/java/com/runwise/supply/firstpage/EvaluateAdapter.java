@@ -27,9 +27,9 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
     private LayoutInflater inflater;
     private Context context;
     private List<OrderResponse.ListBean.LinesBean> productList = new ArrayList();
-    //评价map,存productId ----> 星级
-    private Map<String,Integer> map;
-    public EvaluateAdapter(Context context,List list,Map<String,Integer> map) {
+    //评价map,LineId ----> 星级
+    private Map<Integer,Integer> map;
+    public EvaluateAdapter(Context context,List list,Map<Integer,Integer> map) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         if (list != null)
@@ -37,7 +37,8 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
         this.map = map;
     }
     public interface RatingBarClickCallback{
-       void rateChanged(String productId,Integer rateScore);
+        //商品行id ---->对分数
+       void rateChanged(Integer lineId,Integer rateScore);
     }
     private RatingBarClickCallback callback;
 
@@ -64,13 +65,14 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
         ViewHolder itemHolder = (ViewHolder) holder;
         OrderResponse.ListBean.LinesBean bean = productList.get(position);
         final String pId = String.valueOf(bean.getProductID());
+        final Integer lineId = bean.getSaleOrderProductID();
         ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(pId);
         if (basicBean != null){
             itemHolder.numTv.setText(basicBean.getDefaultCode());
             itemHolder.nameTv.setText(basicBean.getName());
         }
-        if (map != null && map.containsKey(pId)){
-            Integer rate = map.get(pId);
+        if (map != null && map.containsKey(lineId)){
+            Integer rate = map.get(lineId);
             itemHolder.ratingBar.setRating(rate);
         }
         itemHolder.ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -79,7 +81,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
                 if (fromUser){
                     //将当前星级信息给父activity
                     if (callback != null){
-                        callback.rateChanged(pId,Integer.valueOf((int)rating));
+                        callback.rateChanged(lineId,Integer.valueOf((int)rating));
                     }
                 }
             }

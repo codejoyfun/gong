@@ -19,6 +19,7 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.OrderState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +111,7 @@ public class OrderAdapter extends IBaseAdapter {
         }
         viewHolder.titleTv.setText(bean.getName());
         viewHolder.timeTv.setText(bean.getEstimatedTime());
-        viewHolder.stateTv.setText(State.getValueByName(bean.getState()));
+        viewHolder.stateTv.setText(OrderState.getValueByName(bean.getState()));
         if (bean.getWaybill() != null && bean.getWaybill() != null){
             viewHolder.carNumTv.setText(bean.getWaybill().getDeliverVehicle().getLicensePlate());
         }else{
@@ -145,11 +146,11 @@ public class OrderAdapter extends IBaseAdapter {
 
     private String getDoBtnTextByState(OrderResponse.ListBean bean) {
         String btnText = null;
-        if (bean.getState().equals(State.DRAFT.getName())){
+        if (bean.getState().equals(OrderState.DRAFT.getName())){
             btnText = "取消订单";
-        }else if(bean.getState().equals(State.SALE.getName())){
+        }else if(bean.getState().equals(OrderState.SALE.getName())){
             //不做任务事情，返回null,隐藏此按钮
-        }else if(bean.getState().equals(State.PEISONG.getName())){
+        }else if(bean.getState().equals(OrderState.PEISONG.getName())){
             if (bean.isIsDoubleReceive()){
                 if (bean.isIsFinishTallying()){
                     btnText = "收货";
@@ -160,9 +161,9 @@ public class OrderAdapter extends IBaseAdapter {
                 btnText = "收货";
             }
 
-        }else if(bean.getState().equals(State.DONE.getName())){
+        }else if(bean.getState().equals(OrderState.DONE.getName())){
             btnText = "上传支付凭证";
-        }else if(bean.getState().equals(State.RATED.getName())){
+        }else if(bean.getState().equals(OrderState.RATED.getName())){
             btnText = "评价";
         }
         return btnText;
@@ -194,40 +195,7 @@ public class OrderAdapter extends IBaseAdapter {
         @ViewInject(R.id.recyclerView)
         RecyclerView recyclerView;
     }
-    public enum State{
-        DRAFT("draft","待确认"),SALE("sale","已确认"),PEISONG("peisong","已发货"),
-        DONE("done","已收货"),RATED("rated","已评价"),CANCEL("cancel","已取消");
-        private String name;
-        private String value;
-        private State(String name,String value){
-            this.name = name;
-            this.value = value;
-       }
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-        public static String getValueByName(String name){
-            for(State s : State.values()){
-                if (s.getName().equals(name)){
-                    return s.getValue();
-                }
-            }
-            return "未知状态";
-        }
-    }
     private void setTimeLineContent(OrderResponse.ListBean bean,RecyclerView recyclerView){
         ArrayList<String> list = (ArrayList<String>) bean.getStateTracker();
         TimeLineAdapter adapter = new TimeLineAdapter(context,list);

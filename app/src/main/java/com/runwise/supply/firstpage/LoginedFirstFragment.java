@@ -47,7 +47,7 @@ import java.util.List;
  */
 
 public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapter.DoActionInterface{
-    private static final int FROMSTART = 0;
+    private static final int FROMORDER = 0;
     private static final int FROMLB = 1;
     private static final int FROMDB = 2;
     private static final int CANCEL = 3;        //取消订单
@@ -130,7 +130,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
             sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
         }
-        sendConnection("/gongfu/v2/orders/undone/detail",request,FROMSTART,true, OrderResponse.class);
+        sendConnection("/gongfu/v2/orders/undone/detail",request,FROMORDER,true, OrderResponse.class);
 
     }
 
@@ -142,7 +142,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
-            case FROMSTART:
+            case FROMORDER:
                 BaseEntity.ResultBean resultBean= result.getResult();
                 OrderResponse response = (OrderResponse) resultBean.getData();
                 adapter.setData(response.getList());

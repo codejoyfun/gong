@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -23,6 +24,8 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.shaohui.bottomdialog.BottomDialog;
 
 /**
  * Created by libin on 2017/7/14.
@@ -69,6 +72,45 @@ public class OrderDetailActivity extends NetWorkActivity{
     private Button rightBtn;
     @ViewInject(R.id.bottom_bar)
     private RelativeLayout bottom_bar;
+    private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
+            .setViewListener(new BottomDialog.ViewListener(){
+                @Override
+                public void bindView(View v) {
+                    initViews(v);
+                }
+            }).setLayoutRes(R.layout.return_replace_layout)
+            .setCancelOutside(true)
+            .setDimAmount(0.5f);
+
+    private void initViews(View v) {
+        TextView returnTv = (TextView) v.findViewById(R.id.returnTv);
+        TextView replaceTv = (TextView)v.findViewById(R.id.replaceTv);
+        TextView cancleTv = (TextView)v.findViewById(R.id.cancleTv);
+        returnTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //跳转到退换流程
+                Intent intent = new Intent(OrderDetailActivity.this,ReturnActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order", bean);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                bDialog.dismiss();
+            }
+        });
+        replaceTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtil.show(mContext,"换货");
+            }
+        });
+        cancleTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bDialog.dismiss();
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +152,9 @@ public class OrderDetailActivity extends NetWorkActivity{
                 tip = "收货人："+bean.getReceiveUserName();
                 rightBtn.setText("评价");
                 rightBtn2.setText("售后订单");
+            }else if(bean.getState().equals("rated")){
+                state = "订单已评价";
+                rightBtn.setText("售后订单");
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);
@@ -166,7 +211,7 @@ public class OrderDetailActivity extends NetWorkActivity{
         return false;
     }
 
-    @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,
+    @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,
             R.id.freezeBtn,R.id.dryBtn,R.id.gotoStateBtn,R.id.rightBtn,R.id.rightBtn2})
     public void btnClick(View view){
         switch (view.getId()){
@@ -194,6 +239,13 @@ public class OrderDetailActivity extends NetWorkActivity{
                 intent.putExtras(bundle);
                 startActivity(intent);
                 break;
+            case R.id.title_tv_rigth:
+                if (!bDialog.isVisible()){
+                    bDialog.show();
+                }else{
+                    bDialog.dismiss();
+                }
+                break;
             case R.id.rightBtn:
                 Intent intent2;
                 if (rightBtn.getText().toString().equals("收货")){
@@ -209,6 +261,9 @@ public class OrderDetailActivity extends NetWorkActivity{
                     bundle2.putParcelable("order",bean);
                     intent2.putExtras(bundle2);
                     startActivity(intent2);
+                    finish();
+                }else if(rightBtn.getText().toString().equals("售后订单")){
+
                 }
                 break;
         }
