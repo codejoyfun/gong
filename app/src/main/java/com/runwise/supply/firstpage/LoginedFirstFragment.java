@@ -216,6 +216,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 dialog.show();
                 break;
             case UPLOAD:
+                Intent uIntent = new Intent(mContext,UploadPayedPicActivity.class);
+                startActivity(uIntent);
                 break;
             case TALLY:
                 break;

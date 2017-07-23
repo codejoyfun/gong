@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <com.facebook.drawee.view.SimpleDraweeView
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sdv"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        fresco:placeholderImageScaleType="centerCrop"
+        android:layout_marginTop="10.5dp"
+        android:layout_marginRight="10.5dp"
+        fresco:roundAsCircle="false" />
+    <ImageButton
+        android:id="@+id/addIb"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/icon_payorder"/>
+    <ImageView
+        android:id="@+id/deleteIv"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        android:layout_alignTop="@id/sdv"
+        android:layout_alignRight="@id/sdv"
+        android:src="@drawable/btn_payorder_closed"
+        android:layout_marginRight="-10.5dp"
+        android:layout_marginTop="-10.5dp"/>
+
+</RelativeLayout>

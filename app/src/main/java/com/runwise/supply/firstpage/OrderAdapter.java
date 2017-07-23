@@ -88,7 +88,7 @@ public class OrderAdapter extends IBaseAdapter {
                     action = OrderDoAction.TALLY;
                 }else if("收货".equals(doAction)){
                     action = OrderDoAction.RECEIVE;
-                }else if("上传凭证".equals(doAction)){
+                }else if("上传支付凭证".equals(doAction)){
                     action = OrderDoAction.UPLOAD;
                 }else if("评价".equals(doAction)){
                     action = OrderDoAction.RATE;
