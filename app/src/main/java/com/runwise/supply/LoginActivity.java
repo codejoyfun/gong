@@ -42,7 +42,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.List;
 
 
-public class LoginActivity extends NetWorkActivity {
+public class  LoginActivity extends NetWorkActivity {
 	private static final int LOGIN = 1;
 	private static final int USER_INFO = 2;
 	public static Intent targerIntent;

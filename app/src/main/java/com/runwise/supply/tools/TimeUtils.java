@@ -3,6 +3,7 @@ package com.runwise.supply.tools;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
+import com.kids.commonframe.base.util.DateFormateUtil;
 import com.lidroid.xutils.util.LogUtils;
 
 import java.text.ParseException;
@@ -372,5 +373,18 @@ public class TimeUtils {
 		Calendar cale = Calendar.getInstance();
 		cale.set(Calendar.DAY_OF_MONTH, 0);//设置为1号,当前日期既为本月第一天 
 		return format.format(cale.getTime());
+	}
+
+	/**
+	 * 今天是否在指定的时间段内
+     */
+	public static boolean isTimeInner(String beginTimeStr,String endTimeStr) {
+		final Calendar beginCalend = DateFormateUtil.dateFormatFromString(beginTimeStr, DateFormateUtil.FORMAT_DATE);
+		final Calendar endCalend = DateFormateUtil.dateFormatFromString(endTimeStr, DateFormateUtil.FORMAT_DATE);
+		Calendar today = Calendar.getInstance();
+        if(today.before(endCalend) && today.after(beginCalend)) {
+			return  true;
+		}
+		return false;
 	}
 }

@@ -5,58 +5,83 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.runwise.supply.message.DividePayStepFinishActivity">
+    tools:context="com.runwise.supply.message.DividePayStepFinishActivity"
+    android:background="#f5f5f5"
+    >
     <include
         android:id="@+id/title_layout"
         layout="@layout/common_title_bar" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="50dp"
         >
-        <LinearLayout
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_ordersubmitsucced"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/blue_ave_shpe"
-            android:gravity="center"
-            >
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/tick"
-                />
-        </LinearLayout>
+            />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:textColor="#a6a6a6"
-            android:textSize="14sp"
-            android:text="申请成功"
+            android:textColor="#444"
+            android:textSize="17sp"
+            android:text="盘点成功"
             android:layout_marginTop="12dp"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:textColor="#a6a6a6"
+            android:textColor="#444"
             android:textSize="14sp"
-            android:text="我们将在1~3个工作日进行审核"
+            android:text="库存商品数量"
             android:layout_marginTop="12dp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="#444"
+            android:textSize="14sp"
+            android:text="盘点商品数量"
+            android:layout_marginTop="4dp"
             />
     </LinearLayout>
-    <Button
-        android:id="@+id/stepPayFinish"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/blue_boder_bg"
-        android:text="返回首页"
-        android:layout_marginLeft="22dp"
-        android:layout_marginRight="22dp"
-        android:layout_marginTop="60dp"
-        android:textColor="@color/base_color"
-        />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="40dp"
+        >
+        <Button
+            android:id="@+id/stepPayFinish"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@drawable/blue_boder_bg"
+            android:text="查看盘点记录"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp"
+            android:textColor="#363636"
+            />
+
+        <Button
+            android:id="@+id/stepPayFinish1"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@drawable/blue_boder_bg"
+            android:text="查看库存"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp"
+            android:textColor="#363636"
+            />
+    </LinearLayout>
+
 
 </LinearLayout>

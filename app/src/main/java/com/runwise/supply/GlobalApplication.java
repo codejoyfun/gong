@@ -46,9 +46,9 @@ public class GlobalApplication extends MultiDexApplication {
          if (mUserInfo != null) {
              uid = mUserInfo.getUid();
          }
-         else {
-           SPUtils.loginOut (instance);
-         }
+//         else {
+//           SPUtils.loginOut (instance);
+//         }
         return  mUserInfo;
     }
 

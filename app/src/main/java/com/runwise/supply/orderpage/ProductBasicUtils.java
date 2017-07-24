@@ -3,7 +3,10 @@ package com.runwise.supply.orderpage;
 import android.content.Context;
 
 import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
+import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;

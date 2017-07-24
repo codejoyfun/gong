@@ -1,10 +1,13 @@
 package com.kids.commonframe.base.util;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import java.text.ParseException;
@@ -250,23 +253,38 @@ public class DateFormateUtil {
 			return dateFormatFromCalender(calend, "yyyy年MM月dd日 HH:mm");
 		}
 	}
-	public static String getLaterFormat(String timeStr) {
-		String dateStr = "";
+	public static SpannableString getLaterFormat(String timeStr) {
+		if(TextUtils.isEmpty(timeStr)) {
+			return new SpannableString("");
+		}
 		//2017-10-03 11:25:03
 		final Calendar calend = dateFormatFromString(timeStr, DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
 		Calendar today = Calendar.getInstance();
 		//差几天
 		if (today.before(calend)) {
-			dateStr =  (calend.get(Calendar.DAY_OF_YEAR) - today.get(Calendar.DAY_OF_YEAR)) +"天到期";
+			int sumDay = calend.get(Calendar.DAY_OF_YEAR) - today.get(Calendar.DAY_OF_YEAR);
+			int length = String.valueOf(sumDay).length();
+			SpannableString spannStr = new SpannableString(sumDay+"天到期");
+			if(sumDay <= 3) {
+				spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6d6b")), 0, length , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+				spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#999999")), length, spannStr.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			}
+			else {
+				spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#999999")), 0, spannStr.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			}
+			return spannStr;
 		}
 		//今天到期
 		else if (isToday(calend)) {
-			dateStr = "今天到期";
+			SpannableString spannStr = new SpannableString("今天到期");
+			spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6d6b")), 0, spannStr.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			return spannStr;
 		}
 		else {
-			dateStr = "已过期";
+			SpannableString spannStr = new SpannableString("已到期");
+			spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6d6b")), 0, spannStr.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			return spannStr;
 		}
-		return dateStr;
 	}
 	public static SpannableString formatData(String time) {
 		if ( TextUtils.isEmpty(time) ) {

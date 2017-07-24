@@ -44,9 +44,7 @@ public class MineFragment extends NetWorkFragment {
     @ViewInject(R.id.mineHead)
     private SimpleDraweeView mineHead;
     private UserInfo userInfo;
-
     boolean isLogin;
-
     @ViewInject(R.id.ratingbarPeisong)
     private RatingBar ratingbarPeisong;
     @ViewInject(R.id.peisongStr)
