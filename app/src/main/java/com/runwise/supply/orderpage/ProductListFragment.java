@@ -150,19 +150,42 @@ public class ProductListFragment extends NetWorkFragment {
     }
 
     public class ProductAdapter extends IBaseAdapter {
+        private boolean ischange;
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
+            final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.product_layout_item, null);
                 ViewUtils.inject(viewHolder,convertView);
                 convertView.setTag(viewHolder);
+                EditText et = viewHolder.editText;
+                et.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        if (!ischange){
+                            int changedNum = 0;
+                            if (!TextUtils.isEmpty(s)){
+                                changedNum = Integer.valueOf(s.toString());
+                            }
+                            countMap.put(String.valueOf(bean.getProductID()),changedNum);
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
-            final EditText editText = viewHolder.editText;
             //先根据集合里面对应个数初始化一次
             if (countMap.get(String.valueOf(bean.getProductID())) > 0){
                 viewHolder.editLL.setVisibility(View.VISIBLE);
@@ -171,7 +194,10 @@ public class ProductListFragment extends NetWorkFragment {
                 viewHolder.editLL.setVisibility(View.INVISIBLE);
                 viewHolder.addBtn.setVisibility(View.VISIBLE);
             }
+            final EditText editText = viewHolder.editText;
+            ischange = true;
             editText.setText(countMap.get(String.valueOf(bean.getProductID()))+"");
+            ischange = false;
             final LinearLayout ll = viewHolder.editLL;
             final ImageButton addBtn = viewHolder.addBtn;
             addBtn.setOnClickListener(new View.OnClickListener() {
@@ -180,7 +206,9 @@ public class ProductListFragment extends NetWorkFragment {
                     view.setVisibility(View.INVISIBLE);
                     ll.setVisibility(View.VISIBLE);
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    ischange = true;
                     editText.setText(++currentNum+"");
+                    ischange = false;
                     countMap.put(String.valueOf(bean.getProductID()),currentNum);
                 }
             });
@@ -190,7 +218,9 @@ public class ProductListFragment extends NetWorkFragment {
                 public void onClick(View v) {
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     if (currentNum > 0){
+                        ischange = true;
                         editText.setText(--currentNum+"");
+                        ischange = false;
                         countMap.put(String.valueOf(bean.getProductID()),currentNum);
                         if (currentNum == 0){
                             addBtn.setVisibility(View.VISIBLE);
@@ -205,30 +235,13 @@ public class ProductListFragment extends NetWorkFragment {
                 @Override
                 public void onClick(View v) {
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    ischange = true;
                     editText.setText(++currentNum+"");
+                    ischange = false;
                     countMap.put(String.valueOf(bean.getProductID()),currentNum);
                 }
             });
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    int changedNum = 0;
-                    if (!TextUtils.isEmpty(s)){
-                        changedNum = Integer.valueOf(s.toString());
-                    }
-                    countMap.put(String.valueOf(bean.getProductID()),changedNum);
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
             ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
             if (basicBean != null){
                 viewHolder.name.setText(basicBean.getName());

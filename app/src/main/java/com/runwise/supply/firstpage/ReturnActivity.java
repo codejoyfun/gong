@@ -33,13 +33,16 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnBean;
+import com.runwise.supply.firstpage.entity.ReturnRequest;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +51,7 @@ import java.util.Map;
  */
 
 public class ReturnActivity extends NetWorkActivity implements ReturnFragment.ReturnCallback{
+    private static final int RETURN = 0;
     @ViewInject(R.id.indicator)
     private SmartTabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -85,7 +89,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         smartTabLayout.setViewPager(viewPager);
         initPopWindow();
     }
-    @OnClick({R.id.title_iv_left})
+    @OnClick({R.id.title_iv_left,R.id.commitBtn})
     public void btnClick(View v){
         switch(v.getId()){
             case R.id.title_iv_left:
@@ -105,7 +109,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
-
+                        sendReturnRequest();
                     }
                 });
                 dialog.show();
@@ -113,6 +117,27 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 
         }
     }
+
+    private void sendReturnRequest() {
+        ReturnRequest rr = new ReturnRequest();
+        List<ReturnRequest.ProductsBean> list = new ArrayList<>();
+        Iterator iterator = countMap.keySet().iterator();
+        while (iterator.hasNext()){
+            String key = (String) iterator.next();
+            ReturnBean rb = countMap.get(key);
+            ReturnRequest.ProductsBean  rsb = new ReturnRequest.ProductsBean();
+            rsb.setProduct_id(Integer.valueOf(key));
+            rsb.setQty(rb.getReturnCount());
+            rsb.setReason(rb.getNote());
+            list.add(rsb);
+
+        }
+        rr.setProducts(list);
+        StringBuffer sb = new StringBuffer("/gongfu//v2/order/");
+        sb.append(lbean.getOrderID()).append("/return/");
+        sendConnection(sb.toString(),rr,RETURN,true,BaseEntity.ResultBean.class);
+    }
+
     private void initPopWindow() {
         dialogView = LayoutInflater.from(this).inflate(R.layout.return_pop_layout, null);
         mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
@@ -205,6 +230,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             public void onClick(View v) {
                 if (currentRb != null && !editText.getText().toString().equals("0")){
                     currentRb.setReturnCount(Integer.valueOf(editText.getText().toString()));
+                    currentRb.setNote(questionEt.getText().toString());
                     countMap.put(String.valueOf(currentRb.getpId()),currentRb);
                     //更新fragment列表内容
                     EventBus.getDefault().post(new ReturnEvent());
@@ -218,7 +244,12 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
     }
     @Override
     public void onSuccess(BaseEntity result, int where) {
-
+        switch (where){
+            case RETURN:
+                ToastUtil.show(mContext,"退货成功");
+                finish();
+                break;
+        }
     }
 
     @Override
@@ -235,16 +266,24 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             TextView nameTv = (TextView) dialogView.findViewById(R.id.nameTv);
             nameTv.setText(rb.getName());
             TextView tipTv = (TextView)dialogView.findViewById(R.id.tipTv);
+            EditText questionEt = (EditText)dialogView.findViewById(R.id.questionEt);
+            CheckBox cb1 = (CheckBox)dialogView.findViewById(R.id.cb1);
+            CheckBox cb2 = (CheckBox)dialogView.findViewById(R.id.cb2);
+            CheckBox cb3 = (CheckBox)dialogView.findViewById(R.id.cb3);
             tipTv.setText("最多可申请"+rb.getMaxReturnCount()+"件");
             EditText et = (EditText)dialogView.findViewById(R.id.editText);
             if (countMap.containsKey(currentRb.getpId()+"")){
                 currentEditCount = countMap.get(currentRb.getpId()+"").getReturnCount();
                 et.setText(String.valueOf(currentEditCount));
+                questionEt.setText(countMap.get(currentRb.getpId()+"").getNote());
             }else{
                 currentEditCount = 0;
                 et.setText(String.valueOf(currentEditCount));
+                questionEt.setText("");
             }
-
+            cb1.setChecked(false);
+            cb2.setChecked(false);
+            cb3.setChecked(false);
         }
     }
 

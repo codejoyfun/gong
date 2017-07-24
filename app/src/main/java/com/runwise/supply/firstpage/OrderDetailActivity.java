@@ -96,6 +96,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 intent.putExtras(bundle);
                 startActivity(intent);
                 bDialog.dismiss();
+                finish();
             }
         });
         replaceTv.setOnClickListener(new View.OnClickListener() {

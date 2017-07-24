@@ -126,7 +126,7 @@
                     android:background="@drawable/return_cb_selector"
                     android:button="@null"
                     android:gravity="center"
-                    android:text="包装损害"
+                    android:text="包装损坏"
                     android:layout_marginLeft="12dp"
                     android:textColor="#CCCCCC"
                     android:textSize="12sp" />
