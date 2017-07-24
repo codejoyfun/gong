@@ -69,6 +69,33 @@ public class EditRepertoryResult extends BaseEntity.ResultBean {
             private int id;
             private int unit_price;
             private int actual_qty;
+            private int editNum;
+            private int type;
+            private boolean isChecked;
+
+            public int getType() {
+                return type;
+            }
+
+            public void setType(int type) {
+                this.type = type;
+            }
+
+            public boolean isChecked() {
+                return isChecked;
+            }
+
+            public void setChecked(boolean checked) {
+                isChecked = checked;
+            }
+
+            public int getEditNum() {
+                return editNum;
+            }
+
+            public void setEditNum(int editNum) {
+                this.editNum = editNum;
+            }
 
             public String getLife_end_date() {
                 return life_end_date;

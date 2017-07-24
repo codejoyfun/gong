@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:layout_height="51dp">
+    <TextView
+        android:id="@+id/numTv"
+        android:layout_width="wrap_content"
+        android:layout_height="13dp"
+        android:text="100001242"
+        android:textSize="10sp"
+        android:layout_marginTop="11dp"
+        android:textColor="#999999"/>
+    <TextView
+        android:id="@+id/nameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:text="上海青"
+        android:textSize="14sp"
+        android:layout_below="@id/numTv"
+        android:textColor="#2E2E2E"/>
+    <RatingBar
+        android:id="@+id/rateRb"
+        style="@style/RatingBarStyle2"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:numStars="5"
+        android:stepSize="1" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:background="#DFDFDF"/>
+</RelativeLayout>

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/base_background_color"
+    android:background="#ffff"
     android:orientation="vertical"
     >
 
@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp"
+          android:paddingLeft="10dp"
         >
         <com.runwise.supply.view.NoWatchEditText
             android:id="@+id/addNumber"
@@ -20,30 +20,37 @@
             android:background="#0000"
             android:textColor="#444444"
             android:textSize="14sp"
-            android:text="123213"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:hint="添加批次号"
             />
         <ImageView
             android:id="@+id/innerIcon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:src="@drawable/repart_inn_icon"
+            android:paddingLeft="8dp"
+            android:paddingRight="4dp"
             />
         <com.runwise.supply.view.NoWatchEditText
             android:id="@+id/addSum"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
             android:background="#0000"
             android:textColor="#444444"
             android:textSize="14sp"
             android:text="123213"
             android:maxLength="4"
             android:gravity="center"
+            android:inputType="number"
             />
         <ImageView
             android:id="@+id/addIcon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:src="@drawable/repart_add_icon"
+            android:paddingRight="10dp"
+            android:paddingLeft="4dp"
             />
     </LinearLayout>
    <View

@@ -121,7 +121,7 @@ public class ProductListFragment extends NetWorkFragment {
         List<ProductData.ListBean> findList = new ArrayList<>();
         if (type == DataType.ALL){
             for (ProductData.ListBean bean : arrayList){
-                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
                 if (basicBean.getName().contains(word)) {
                     findList.add(bean);
                 }
@@ -129,7 +129,7 @@ public class ProductListFragment extends NetWorkFragment {
         }else{
             for (ProductData.ListBean bean : arrayList){
                 if (bean.getStockType().equals(type.getType())){
-                    ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+                    ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
                     if (basicBean.getName().contains(word)) {
                         findList.add(bean);
                     }
@@ -229,7 +229,7 @@ public class ProductListFragment extends NetWorkFragment {
 
                 }
             });
-            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
             if (basicBean != null){
                 viewHolder.name.setText(basicBean.getName());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());

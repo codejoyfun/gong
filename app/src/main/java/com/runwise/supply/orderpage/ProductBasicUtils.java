@@ -1,5 +1,12 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Context;
+
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
+import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;
@@ -16,8 +23,21 @@ public class ProductBasicUtils {
     //便于搜索条件
     private static List<ProductBasicList.ListBean> basicArr = new ArrayList<>();
 
-    public static HashMap<String, ProductBasicList.ListBean> getBasicMap() {
-        return basicMap;
+    public static HashMap<String, ProductBasicList.ListBean> getBasicMap(Context context) {
+        //如果缓存中没有，去DB查一遍
+        if (basicMap.size() == 0){
+            DbUtils dbUitls = DbUtils.create(context);
+            try {
+                List<ProductBasicList.ListBean> list = dbUitls.findAll(ProductBasicList.ListBean.class);
+                for (ProductBasicList.ListBean bean : list){
+                    basicMap.put(String.valueOf(bean.getProductID()),bean);
+                }
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+            return basicMap;
+        }else
+            return basicMap;
     }
 
     public static void setBasicMap(HashMap<String, ProductBasicList.ListBean> basicMap) {

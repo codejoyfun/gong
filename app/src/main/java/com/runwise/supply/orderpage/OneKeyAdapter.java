@@ -73,6 +73,16 @@ public class OneKeyAdapter extends IBaseAdapter {
     }
 
     @Override
+    public void setData(List list) {
+        super.setData(list);
+        for (Object bean : list){
+            if (!countMap.containsKey(((DefaultPBean)bean).getProductID())){
+                countMap.put(((DefaultPBean)bean).getProductID(),((DefaultPBean)bean).getPresetQty());
+            }
+        }
+    }
+
+    @Override
     protected View getExView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
         final DefaultPBean bean = (DefaultPBean) mList.get(position);
@@ -117,19 +127,18 @@ public class OneKeyAdapter extends IBaseAdapter {
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
         }
+        viewHolder.editText.setTag(position);
         if (editMode){
             viewHolder.checkbox.setVisibility(View.VISIBLE);
         }else{
             viewHolder.checkbox.setVisibility(View.GONE);
         }
         final EditText editText = viewHolder.editText;
-        ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap().get(String.valueOf(bean.getProductID()));
+        ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
         if (basicBean != null){
             viewHolder.nameTv.setText(basicBean.getName());
-            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
-        }
-        if (!countMap.containsKey(bean.getProductID())){
-            countMap.put(bean.getProductID(),bean.getPresetQty());
+            if (basicBean.getImage() != null)
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
         }
         Integer proId = bean.getProductID();
         String count = String.valueOf(countMap.get(proId));
@@ -145,7 +154,9 @@ public class OneKeyAdapter extends IBaseAdapter {
                 final Integer pId = bean.getProductID();
                 int count = countMap.get(pId);
                 if (count > 1){
+                    ischange = true;
                     editText.setText(String.valueOf(--count));
+                    ischange = false;
                     countMap.put(pId,count);
                 }else{
                     countMap.remove(pId);
@@ -165,17 +176,12 @@ public class OneKeyAdapter extends IBaseAdapter {
                 if (count >= 9999){
                     ToastUtil.show(mContext,"最大只支持到9999");
                 }else{
+                    ischange = true;
                     editText.setText(String.valueOf(++count));
+                    ischange = false;
                     countMap.put(pId,Integer.valueOf(count));
                 }
                 callback.countChanged();
-            }
-        });
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-
             }
         });
         viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

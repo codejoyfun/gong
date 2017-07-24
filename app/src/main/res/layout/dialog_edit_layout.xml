@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:background="#66000000"
+    android:id="@+id/dialog_main"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:background="#FFFFFF"
+        android:clickable="true"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="43dp"
+            android:text="黑鱼(大型)"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:textColor="#2E2E2E"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E5E5E5"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="69dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="商品数量"
+                android:textColor="#2E2E2E"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:id="@+id/editLL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/input_minus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:src="@drawable/input_minus" />
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/acet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_bg"
+                    android:gravity="center"
+                    android:inputType="numberDecimal"
+                    android:maxLength="4"
+                    android:textColor="#2E2E2E" />
+
+                <ImageButton
+                    android:id="@+id/input_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:src="@drawable/input_add" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E5E5E5"/>
+        <RelativeLayout
+            android:id="@+id/twoUnitRL"
+            android:layout_width="match_parent"
+            android:layout_height="69dp"
+            android:paddingRight="15dp"
+            android:paddingLeft="20dp">
+            <TextView android:layout_width="wrap_content"
+                android:id="@+id/keyTv"
+                android:layout_height="wrap_content"
+                android:textColor="#2E2E2E"
+                android:textSize="14sp"
+                android:layout_centerVertical="true"
+                android:text="商品重量"/>
+            <TextView
+                android:id="@+id/unitTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:textColor="#999999"
+                android:textSize="14sp"
+                android:text="斤"/>
+            <EditText
+                android:id="@+id/unitValue"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@id/unitTv"
+                android:layout_toRightOf="@id/keyTv"
+                android:layout_marginRight="12dp"
+                android:background="@null"
+                android:textSize="14sp"
+                android:inputType="numberDecimal"
+                android:textColor="#2E2E2E"
+                android:gravity="right|center_vertical"
+                android:text="0"/>
+        </RelativeLayout>
+        <Button
+            android:id="@+id/sureBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#9ACC35"
+            android:text="确认"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+</RelativeLayout>

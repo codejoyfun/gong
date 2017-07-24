@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -29,13 +30,18 @@ import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditRepertoryResult;
+import com.runwise.supply.repertory.entity.NewAdd;
+import com.runwise.supply.repertory.entity.UpdateData;
 import com.runwise.supply.view.NoWatchEditText;
 import com.runwise.supply.view.swipmenu.SwipeMenu;
 import com.runwise.supply.view.swipmenu.SwipeMenuCreator;
 import com.runwise.supply.view.swipmenu.SwipeMenuItem;
 import com.runwise.supply.view.swipmenu.SwipeMenuListView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -78,6 +84,25 @@ public class EditRepertoryListFragment extends NetWorkFragment {
         pullListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                EditRepertoryResult.InventoryBean.ListBean bean = adapter.getList().remove(position);
+                bean.setChecked(true);
+                int findIndex = 0;
+                boolean findIt = false;
+                for (int i = 0; i< adapter.getList().size(); i++){
+                    EditRepertoryResult.InventoryBean.ListBean entity = adapter.getList().get(i);
+                    if(entity.getType() == 1) {
+                        findIndex = i;
+                        findIt = true;
+                        break;
+                    }
+                }
+                if(findIt) {
+                    adapter.getList().add(findIndex,bean);
+                }
+                else {
+                    adapter.getList().add(bean);
+                }
+                adapter.notifyDataSetChanged();
                 return false;
             }
         });
@@ -97,7 +122,9 @@ public class EditRepertoryListFragment extends NetWorkFragment {
         else {
             dataList = typeList;
         }
-
+        for(EditRepertoryResult.InventoryBean.ListBean bean : dataList) {
+            bean.setEditNum(bean.getActual_qty());
+        }
     }
 
     @Override
@@ -109,7 +136,33 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     public void onDataSynEvent(SearchKeyWork event) {
         adapter.setData(findArrayByWord(event.getKeyWork()));
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdate(UpdateData updateData) {
+        if(updateData.getType() != type) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+    //添加新商品
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddNewBean(NewAdd newBean) {
+        List<EditRepertoryResult.InventoryBean.ListBean> newProductList = newBean.getNewProductList();
+        if(type == DataType.ALL || newProductList.get(0).getProduct().getStock_type().equals(type.getType())) {
+            boolean isOtherView = false;
+            for(EditRepertoryResult.InventoryBean.ListBean bean:adapter.getList()) {
+                if(bean.getType() == 1) {
+                    isOtherView = true;
+                    break;
+                }
+            }
+            if(!isOtherView) {
+                EditRepertoryResult.InventoryBean.ListBean otherBean = new EditRepertoryResult.InventoryBean.ListBean();
+                otherBean.setType(1);
+                adapter.getList().add(otherBean);
+            }
+            adapter.getList().addAll(newProductList);
+            adapter.notifyDataSetChanged();
+        }
+    }
     //返回当前标签下名称包含的
     private List<EditRepertoryResult.InventoryBean.ListBean> findArrayByWord(String word) {
         keyWork = word;
@@ -134,11 +187,14 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
+    public List<EditRepertoryResult.InventoryBean.ListBean> getFinalDataList() {
+        return adapter.getList();
+    }
 
-    public class ProductAdapter extends IBaseAdapter<EditRepertoryResult.InventoryBean.ListBean>{
+    public class ProductAdapter extends IBaseAdapter<EditRepertoryResult.InventoryBean.ListBean> implements ListAdapter {
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder = null;
+            final ViewHolder viewHolder;
             int viewType = getItemViewType(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
@@ -170,9 +226,30 @@ public class EditRepertoryListFragment extends NetWorkFragment {
 
                         @Override
                         public void afterTextChanged(Editable editable) {
-
+                            if(!TextUtils.isEmpty(editable.toString())) {
+                                bean.setEditNum(Integer.parseInt(editable.toString()));
+                                if(bean.getEditNum() == bean.getActual_qty()) {
+                                    viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
+                                }
+                                else{
+                                    viewHolder.editText.setTextColor(Color.parseColor("#444444"));
+                                }
+                                UpdateData updateData = new UpdateData();
+                                updateData.setType(type);
+                                EventBus.getDefault().post(updateData);
+                            }
+                            else{
+                                bean.setEditNum(0);
+                            }
                         }
                     });
+                    if(bean.getEditNum() == bean.getActual_qty()) {
+                        viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
+                    }
+                    else{
+                        viewHolder.editText.setTextColor(Color.parseColor("#444444"));
+                    }
+                    viewHolder.editText.setText(bean.getEditNum()+"");
                     EditRepertoryResult.InventoryBean.ListBean.ProductBean productBean = bean.getProduct();
                     if (productBean != null){
                         if(!TextUtils.isEmpty(keyWork)) {
@@ -190,18 +267,43 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                         viewHolder.content.setText(productBean.getUnit());
                         FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
                     }
-                    viewHolder.value.setText(bean.getActual_qty()+"");
-//                    viewHolder.uom.setText(bean.getUom());
+                    viewHolder.value.setText("库存" + bean.getActual_qty()+"");
+                    ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProduct().getId()));
+                    if(basicBean != null) {
+                        viewHolder.uom.setText(basicBean.getUom());
+                    }
+                    else {
+                        viewHolder.uom.setText("");
+                    }
                     viewHolder.dateNumber.setText(bean.getLot_num());
                     viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
+                    if(bean.isChecked()) {
+                        viewHolder.rootLayout.setBackgroundColor(Color.parseColor("#fefce8"));
+                    }
+                    else {
+                        viewHolder.rootLayout.setBackgroundColor(Color.parseColor("#ffffff"));
+                    }
                     break;
             }
             return convertView;
         }
+        @Override
+        public boolean isEnabled(int position){
+            EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+            if(bean.getType() == 0) {
+                return true;
+            }
+            return false;
+        }
+        @Override
+        public boolean areAllItemsEnabled(){
+            return false;
+        }
 
         @Override
         public int getItemViewType(int position) {
-            return 0;
+            EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+            return bean.getType();
         }
 
         @Override

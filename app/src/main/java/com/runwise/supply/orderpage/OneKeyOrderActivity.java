@@ -383,7 +383,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         double totalMoney = 0;
         List<DefaultPBean> list = adapter.getList();
         for (DefaultPBean bean : list){
-            int count = adapter.getCountMap().get(bean.getProductID());
+            int count = adapter.getCountMap().get(Integer.valueOf(bean.getProductID()));
             totalNum += count;
             totalMoney += count*bean.getPriceUnit();
         }

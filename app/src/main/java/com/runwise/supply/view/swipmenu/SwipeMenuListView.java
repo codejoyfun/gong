@@ -36,6 +36,8 @@ public class SwipeMenuListView extends ListView {
 	private Interpolator mCloseInterpolator;
 	private Interpolator mOpenInterpolator;
 
+	private SwipeMenuAdapter swipeMenuAdapter;
+
 	public SwipeMenuListView(Context context) {
 		super(context);
 		init();
@@ -56,30 +58,35 @@ public class SwipeMenuListView extends ListView {
 		MAX_Y = dp2px(MAX_Y);
 		mTouchState = TOUCH_STATE_NONE;
 	}
+	private class mSwipeMenuAdapter extends SwipeMenuAdapter{
+		public mSwipeMenuAdapter(Context context, ListAdapter adapter) {
+			super(context, adapter);
+		}
+
+		@Override
+		public void createMenu(SwipeMenu menu) {
+			if (mMenuCreator != null) {
+				mMenuCreator.create(menu);
+			}
+		}
+		@Override
+		public void onItemClick(SwipeMenuView view, SwipeMenu menu,
+		int index) {
+			boolean flag = false;
+			if (mOnMenuItemClickListener != null) {
+				flag = mOnMenuItemClickListener.onMenuItemClick(
+						view.getPosition(), menu, index);
+			}
+			if (mTouchView != null && !flag) {
+				mTouchView.smoothCloseMenu();
+			}
+		}
+	}
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
-		super.setAdapter(new SwipeMenuAdapter(getContext(), adapter) {
-			@Override
-			public void createMenu(SwipeMenu menu) {
-				if (mMenuCreator != null) {
-					mMenuCreator.create(menu);
-				}
-			}
-
-			@Override
-			public void onItemClick(SwipeMenuView view, SwipeMenu menu,
-					int index) {
-				boolean flag = false;
-				if (mOnMenuItemClickListener != null) {
-					flag = mOnMenuItemClickListener.onMenuItemClick(
-							view.getPosition(), menu, index);
-				}
-				if (mTouchView != null && !flag) {
-					mTouchView.smoothCloseMenu();
-				}
-			}
-		});
+		swipeMenuAdapter = new mSwipeMenuAdapter(this.getContext(),adapter);
+		super.setAdapter(swipeMenuAdapter);
 	}
 
 	public void setCloseInterpolator(Interpolator interpolator) {
@@ -117,7 +124,9 @@ public class SwipeMenuListView extends ListView {
 			mTouchState = TOUCH_STATE_NONE;
 
 			mTouchPosition = pointToPosition((int) ev.getX(), (int) ev.getY());
-
+			if(!swipeMenuAdapter.isEnabled(mTouchPosition)){
+				return super.onTouchEvent(ev);
+			}
 			if (mTouchPosition == oldPos && mTouchView != null
 					&& mTouchView.isOpen()) {
 				mTouchState = TOUCH_STATE_X;

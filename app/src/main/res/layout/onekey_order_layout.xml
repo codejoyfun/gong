@@ -12,6 +12,7 @@
         ptr:ptrAnimationStyle="flip"
         android:background="#f5f5f5"
         android:divider="@null"
+        android:paddingBottom="55dp"
         android:layout_below="@id/title_bar"
         />
     <ImageView

@@ -19,9 +19,13 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.business.MainRepertoryFragment;
 import com.runwise.supply.firstpage.LoginedFirstFragment;
+import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.MineFragment;
@@ -63,12 +67,20 @@ public class MainActivity extends NetWorkActivity {
 
         @Override
         public void run() {
+            DbUtils dbUtils = DbUtils.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
             HashMap<String,ProductBasicList.ListBean> map = new HashMap<>();
             for (ProductBasicList.ListBean bean : basicList){
                 map.put(String.valueOf(bean.getProductID()),bean);
+                //同时存到dB里面
+                try {
+                    dbUtils.saveOrUpdate(bean);
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
             }
             ProductBasicUtils.setBasicMap(map);
+
         }
     }
     private CaptureClient.Listener mListener= new CaptureClient.Listener()
@@ -106,8 +118,6 @@ public class MainActivity extends NetWorkActivity {
 //        CaptureClient mClient = new CaptureClient();
 //        mClient.setListener(mListener);
 //        mClient.connect();
-        //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
-        queryProductList();
     }
 
     @TargetApi(23)
@@ -134,8 +144,8 @@ public class MainActivity extends NetWorkActivity {
         //TODO:这里根据登录状态，设置不同的页面进去
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
         if (!isLogined()){
-//            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
+            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
+//            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
             mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
@@ -147,8 +157,6 @@ public class MainActivity extends NetWorkActivity {
         }
         mTabHost.getTabWidget().setDividerDrawable(null);
 
-    }
-    public void replaceTabPage(){
     }
     private boolean isLogined() {
         return false;
@@ -201,7 +209,8 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
+        queryProductList();
     }
     @Override
     protected void onStop() {
@@ -284,5 +293,11 @@ public class MainActivity extends NetWorkActivity {
     private void queryProductList() {
         Object request = null;
         sendConnection("/gongfu/v2/product/list/",request, QUERY_ALL,false, ProductBasicList.class);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void requestBasicProduct(UserLoginEvent event){
+        if (ProductBasicUtils.getBasicArr().size() == 0){
+            queryProductList();
+        }
     }
 }

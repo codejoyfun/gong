@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -16,18 +17,21 @@ import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.repertory.entity.EditRepertoryResult;
+import com.runwise.supply.repertory.entity.EditRequest;
 
 /**
  * 库存盘点
  */
 public class EditRepertoryListActivity extends NetWorkActivity{
 	private final int PRODUCT_GET = 1;
+	private final int PRODUCT_COMMIT = 2;
 
 	private List<Fragment> fragments = new ArrayList<Fragment>();
 	@ViewInject(R.id.tabs_rg)
@@ -51,6 +55,8 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 	@ViewInject(R.id.tab4)
 	private RadioButton tab4;
 	FragmentTabAdapter tabAdapter;
+
+	private EditRepertoryListFragment allFragment;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,6 +80,36 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 				break;
 			//提交
 			case R.id.right_layout:
+                if(allFragment != null) {
+					dialog.setModel(CustomDialog.BOTH);
+					dialog.setLeftBtnListener("取消",null);
+					dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+						@Override
+						public void doClickButton(Button btn, CustomDialog dialog) {
+							EditRequest editRequest = new EditRequest();
+							editRequest.setId(Integer.parseInt(getIntent().getStringExtra("id")));
+							editRequest.setState("done");
+							List<EditRepertoryResult.InventoryBean.ListBean> finalDataList = allFragment.getFinalDataList();
+							List<EditRequest.ProductBean> editListBean = new ArrayList<>();
+							for(EditRepertoryResult.InventoryBean.ListBean bean : finalDataList) {
+								if(bean.getType() == 0) {
+									EditRequest.ProductBean productBean = new EditRequest.ProductBean();
+									productBean.setProduct_id(bean.getProduct().getId());
+									productBean.setId(bean.getId());
+									productBean.setActual_qty(bean.getEditNum());
+									productBean.setLot_id(bean.getLot_id()+"");
+									productBean.setLot_num(bean.getLot_num());
+									editListBean.add(productBean);
+								}
+
+							}
+							editRequest.setInventory_lines(editListBean);
+							sendConnection("/gongfu/shop/inventory/state",editRequest,PRODUCT_COMMIT,true, EditRepertoryResult.class);
+						}
+					});
+					dialog.setMessage("盘点成功，确认更新库存?");
+					dialog.show();
+				}
 				break;
 		}
 
@@ -87,7 +123,7 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 				List<EditRepertoryResult.InventoryBean.ListBean> list = repertoryResult.getInventory().getList();
 
 				Bundle bundle = new Bundle();
-				EditRepertoryListFragment allFragment = new EditRepertoryListFragment();
+				allFragment = new EditRepertoryListFragment();
 				allFragment.type = DataType.ALL;
 				allFragment.setArguments(bundle);
 				allFragment.setData(list);
@@ -140,6 +176,12 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 						}
 					}
 				});
+				break;
+			case PRODUCT_COMMIT:
+				ToastUtil.show(mContext,"盘点成功");
+				Intent intent = new Intent(mContext,EditRepertoryFinishActivity.class);
+				startActivity(intent);
+				finish();
 				break;
 		}
 	}

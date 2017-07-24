@@ -27,7 +27,10 @@ import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.repertory.entity.EditHotResult;
+import com.runwise.supply.repertory.entity.EditRepertoryResult;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -46,7 +49,7 @@ public class SearchListFragment extends NetWorkFragment {
     public  DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-        private List<RepertoryEntity.ListBean> dataList;
+    private List<EditHotResult.LotInProductListBean> dataList;
     private String keyWork;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,22 @@ public class SearchListFragment extends NetWorkFragment {
         adapter = new ProductAdapter();
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
-
+        adapter.setData(dataList);
+        loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+    }
+    public void setData(List<EditHotResult.LotInProductListBean> dataList) {
+        List<EditHotResult.LotInProductListBean> typeList = new ArrayList<>();
+        for (EditHotResult.LotInProductListBean bean : dataList){
+            if (bean.getProduct().getStock_type().equals(type.getType())){
+                typeList.add(bean);
+            }
+        }
+        if(type == DataType.ALL) {
+            this.dataList = dataList;
+        }
+        else {
+            this.dataList = typeList;
+        }
     }
     @Override
     protected int createViewByLayoutId() {
@@ -62,35 +80,18 @@ public class SearchListFragment extends NetWorkFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataSynEvent(RepertoryEntity event) {
-        List<RepertoryEntity.ListBean> typeList = new ArrayList<>();
-        for (RepertoryEntity.ListBean bean : event.getList()){
-            if (bean.getProduct().getStock_type().equals(type.getType())){
-                typeList.add(bean);
-            }
-        }
-        if(type == DataType.ALL) {
-            dataList = event.getList();
-        }
-        else {
-            dataList = typeList;
-        }
-        adapter.setData(dataList);
-        loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(SearchKeyWork event) {
         adapter.setData(findArrayByWord(event.getKeyWork()));
     }
 
     //返回当前标签下名称包含的
-    private List<RepertoryEntity.ListBean> findArrayByWord(String word) {
+    private List<EditHotResult.LotInProductListBean> findArrayByWord(String word) {
         keyWork = word;
-        List<RepertoryEntity.ListBean> findList = new ArrayList<>();
+        List<EditHotResult.LotInProductListBean> findList = new ArrayList<>();
         if(TextUtils.isEmpty(word)) {
             return dataList;
         }
-        for (RepertoryEntity.ListBean bean : dataList){
+        for (EditHotResult.LotInProductListBean bean : dataList){
             if (bean.getProduct().getName().contains(word)) {
                 findList.add(bean);
             }
@@ -108,7 +109,7 @@ public class SearchListFragment extends NetWorkFragment {
 
     }
 
-    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean>{
+    public class ProductAdapter extends IBaseAdapter<EditHotResult.LotInProductListBean>{
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -121,8 +122,8 @@ public class SearchListFragment extends NetWorkFragment {
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final RepertoryEntity.ListBean bean =  mList.get(position);
-            RepertoryEntity.ListBean.ProductBean productBean = bean.getProduct();
+            final EditHotResult.LotInProductListBean bean =  mList.get(position);
+            EditHotResult.LotInProductListBean.ProductBean productBean = bean.getProduct();
             if (productBean != null){
                 if(!TextUtils.isEmpty(keyWork)) {
                     int index = productBean.getName().indexOf(keyWork);
@@ -140,7 +141,7 @@ public class SearchListFragment extends NetWorkFragment {
                 viewHolder.addBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        EventBus.getDefault().post(bean);
                     }
                 });
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());

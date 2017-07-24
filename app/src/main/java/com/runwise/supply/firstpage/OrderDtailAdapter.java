@@ -56,7 +56,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         OrderResponse.ListBean.LinesBean bean = productList.get(position);
         int pId = bean.getProductID();
         ViewHolder vh = (ViewHolder)holder;
-        ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap().get(String.valueOf(pId));
+        ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
         if (basicBean != null && basicBean.getImage() != null){
             FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
         }

@@ -1,5 +1,13 @@
 package com.runwise.supply.orderpage.entity;
 
+import com.lidroid.xutils.db.annotation.Column;
+import com.lidroid.xutils.db.annotation.Finder;
+import com.lidroid.xutils.db.annotation.Foreign;
+import com.lidroid.xutils.db.annotation.Id;
+import com.lidroid.xutils.db.annotation.NoAutoIncrement;
+import com.lidroid.xutils.db.annotation.Unique;
+import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
+
 import java.util.List;
 
 /**
@@ -28,13 +36,30 @@ public class ProductBasicList {
          * unit : 大于3斤/条
          * productID : 7
          */
-
+        @Column
         private String name;
+        @Column
+        private boolean isTwoUnit;
+        @Column
+        private boolean settlePrice;
+        @Column
+        private String uom;
+        @Column
+        private String settleUomId;
+        @Column
+        private double price;
+        @Foreign(column = "imageID", foreign = "id")
         private ImageBean image;
+        @Column
         private String barcode;
+        @Column
         private String defaultCode;
+        @Column
         private String stockType;
+        @Column
         private String unit;
+        @Id
+        @NoAutoIncrement
         private int productID;
 
         public String getName() {
@@ -43,6 +68,46 @@ public class ProductBasicList {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public boolean isTwoUnit() {
+            return isTwoUnit;
+        }
+
+        public void setTwoUnit(boolean twoUnit) {
+            isTwoUnit = twoUnit;
+        }
+
+        public boolean isSettlePrice() {
+            return settlePrice;
+        }
+
+        public void setSettlePrice(boolean settlePrice) {
+            this.settlePrice = settlePrice;
+        }
+
+        public String getUom() {
+            return uom;
+        }
+
+        public void setUom(String uom) {
+            this.uom = uom;
+        }
+
+        public String getSettleUomId() {
+            return settleUomId;
+        }
+
+        public void setSettleUomId(String settleUomId) {
+            this.settleUomId = settleUomId;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
         }
 
         public ImageBean getImage() {
@@ -93,50 +158,6 @@ public class ProductBasicList {
             this.productID = productID;
         }
 
-        public static class ImageBean {
-            /**
-             * imageMedium : /gongfu/image/product/8/image_medium/
-             * image : /gongfu/image/product/8/image/
-             * imageSmall : /gongfu/image/product/8/image_small/
-             * imageID : 8
-             */
 
-            private String imageMedium;
-            private String image;
-            private String imageSmall;
-            private int imageID;
-
-            public String getImageMedium() {
-                return imageMedium;
-            }
-
-            public void setImageMedium(String imageMedium) {
-                this.imageMedium = imageMedium;
-            }
-
-            public String getImage() {
-                return image;
-            }
-
-            public void setImage(String image) {
-                this.image = image;
-            }
-
-            public String getImageSmall() {
-                return imageSmall;
-            }
-
-            public void setImageSmall(String imageSmall) {
-                this.imageSmall = imageSmall;
-            }
-
-            public int getImageID() {
-                return imageID;
-            }
-
-            public void setImageID(int imageID) {
-                this.imageID = imageID;
-            }
-        }
     }
 }

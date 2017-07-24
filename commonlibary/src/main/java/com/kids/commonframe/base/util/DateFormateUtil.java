@@ -254,6 +254,9 @@ public class DateFormateUtil {
 		}
 	}
 	public static SpannableString getLaterFormat(String timeStr) {
+		if(TextUtils.isEmpty(timeStr)) {
+			return new SpannableString("");
+		}
 		//2017-10-03 11:25:03
 		final Calendar calend = dateFormatFromString(timeStr, DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
 		Calendar today = Calendar.getInstance();
