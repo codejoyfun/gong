@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#FFFFFF"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/returnTv"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="17sp"
+        android:gravity="center"
+        android:textColor="#2E2E2E"
+        android:text="申请退货"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#E5E5E5"
+        />
+    <TextView
+        android:id="@+id/replaceTv"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="17sp"
+        android:gravity="center"
+        android:textColor="#2E2E2E"
+        android:text="申请换货"/>
+    <TextView
+        android:id="@+id/cancleTv"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="17sp"
+        android:gravity="center"
+        android:background="#EDEDED"
+        android:textColor="#2E2E2E"
+        android:text="取消"/>
+</LinearLayout>

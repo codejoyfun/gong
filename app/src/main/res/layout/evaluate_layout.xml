@@ -79,6 +79,7 @@
                     android:textSize="15sp" />
 
                 <RatingBar
+                    android:id="@+id/serviceRb"
                     style="@style/RatingBarStyle2"
                     android:layout_width="wrap_content"
                     android:layout_height="24dp"
@@ -92,7 +93,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="15dp">
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="15dp">
                 <CheckBox
                     android:id="@+id/cb1"
                     android:layout_width="wrap_content"
@@ -129,6 +132,7 @@
             </LinearLayout>
 
             <EditText
+                android:id="@+id/serviceEt"
                 android:layout_width="match_parent"
                 android:layout_height="74dp"
                 android:layout_marginLeft="15dp"
@@ -243,6 +247,7 @@
 
             </android.support.v7.widget.RecyclerView>
             <EditText
+                android:id="@+id/qualityEt"
                 android:layout_width="match_parent"
                 android:layout_height="74dp"
                 android:layout_marginLeft="15dp"

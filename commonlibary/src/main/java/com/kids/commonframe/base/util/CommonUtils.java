@@ -3,6 +3,7 @@ package com.kids.commonframe.base.util;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -984,5 +985,19 @@ public class CommonUtils {
 		returnMap.put(MONEY_VALUE,formatSb.toString());
 		return returnMap;
 
+	}
+	/**
+	 * 得到资源文件中图片的Uri
+	 * @param context 上下文对象
+	 * @param id 资源id
+	 * @return Uri
+	 */
+	public static Uri getUriFromDrawableRes(Context context, int id) {
+		Resources resources = context.getResources();
+		String path = ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+				+ resources.getResourcePackageName(id) + "/"
+				+ resources.getResourceTypeName(id) + "/"
+				+ resources.getResourceEntryName(id);
+		return Uri.parse(path);
 	}
 }
