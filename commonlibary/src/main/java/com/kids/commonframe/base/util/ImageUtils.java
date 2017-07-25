@@ -201,6 +201,7 @@ public class ImageUtils {
 		}
 		return paramString;
 	}
+
 	/**
 	 * 压缩图片 使用默认大小，返回缩放路径
 	 */

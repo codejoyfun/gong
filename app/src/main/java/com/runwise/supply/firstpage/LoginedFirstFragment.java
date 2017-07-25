@@ -63,7 +63,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private TextView lastWeekBuy;
     private TextView lastMonthBuy;
     private TextView unPayMoney;
-    private boolean isLoadFirst = true;
 
     public LoginedFirstFragment() {
     }
@@ -102,14 +101,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                //下拉刷新:轮播图+统计表+列表内容
-                requestData();
+                //下拉刷新:只刷新列表内容
+                requestData(true);
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
             }
         });
+        requestData(false);
     }
 
     @Override
@@ -117,15 +117,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         super.onResume();
         if (!SPUtils.isLogin(mContext)){
             this.switchContent(this,new UnLoginedFirstFragment());
-        }else
-            requestData();
+        }
     }
 
     //一次性加载全部，无分页
-    private void requestData() {
+    private void requestData(boolean isOnlyLoadList) {
         Object request = null;
-        if (isLoadFirst){
-            isLoadFirst = false;        //只加载一次
+        if (!isOnlyLoadList){
             LunboRequest lbRequest = new LunboRequest("餐户端");
             sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
             sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
@@ -162,7 +160,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 BaseEntity.ResultBean resultBean3= result.getResult();
                 if("A0006".equals(resultBean3.getState())){
                     ToastUtil.show(mContext,"取消成功");
-                    requestData();
+                    requestData(true);
                 }
                 break;
         }
@@ -217,6 +215,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case UPLOAD:
                 Intent uIntent = new Intent(mContext,UploadPayedPicActivity.class);
+                int ordereId = ((OrderResponse.ListBean)adapter.getItem(position)).getOrderID();
+                uIntent.putExtra("orderid",ordereId);
                 startActivity(uIntent);
                 break;
             case TALLY:
