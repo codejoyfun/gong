@@ -113,6 +113,7 @@ public class UploadPayedPicActivity extends NetWorkActivity {
                 Uri imageUri = CommonUtils.getUriFromDrawableRes(mContext,R.drawable.icon_payorder);
                 itemHolder.addIb.setImageResource(R.drawable.icon_payorder);
                 itemHolder.deleteIv.setVisibility(View.INVISIBLE);
+                itemHolder.sdv.setVisibility(View.INVISIBLE);
                 itemHolder.addIb.setVisibility(View.VISIBLE);
                 itemHolder.addIb.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -161,6 +162,7 @@ public class UploadPayedPicActivity extends NetWorkActivity {
                     }
                 });
             }else{
+                itemHolder.sdv.setVisibility(View.VISIBLE);
                 itemHolder.addIb.setVisibility(View.INVISIBLE);
                 itemHolder.deleteIv.setVisibility(View.VISIBLE);
                 Uri uri = Uri.fromFile(new File(content));
