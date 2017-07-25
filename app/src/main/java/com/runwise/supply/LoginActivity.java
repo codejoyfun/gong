@@ -72,6 +72,7 @@ public class  LoginActivity extends NetWorkActivity {
 	private RemListAdapter remListAdapter;
 	private LoginRequest loginRequest;
 
+	private DbUtils mDb;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -112,7 +113,7 @@ public class  LoginActivity extends NetWorkActivity {
 			}
 		});
 
-		DbUtils mDb = DbUtils.create(this);
+		mDb = DbUtils.create(this);
 		try {
 			List<RemUser> userList = mDb.findAll(Selector.from(RemUser.class).orderBy("id",true));
 			if(userList != null && !userList.isEmpty()) {
@@ -124,7 +125,7 @@ public class  LoginActivity extends NetWorkActivity {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		mDb.close();
 	}
 
 	@OnClick(R.id.login_pop_btn)
@@ -140,6 +141,7 @@ public class  LoginActivity extends NetWorkActivity {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		mDb.close();
 	}
 
 	private boolean isEmpty() {
@@ -204,19 +206,20 @@ public class  LoginActivity extends NetWorkActivity {
 					return;
 				}
 				if (remPassword.isChecked()) {
-					DbUtils mDb = DbUtils.create(this);
+					 mDb = DbUtils.create(this);
 					try {
 						RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", loginRequest.getLogin())));
 						if (rem != null) {
 							mDb.delete(rem);
 						}
-						rem = new RemUser();
-						rem.setUserName(loginRequest.getLogin());
-						rem.setPassword(loginRequest.getPassword());
-						mDb.save(rem);
+						RemUser newRem = new RemUser();
+						newRem.setUserName(loginRequest.getLogin());
+						newRem.setPassword(loginRequest.getPassword());
+						mDb.save(newRem);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+					mDb.close();
 				}
 				GlobalApplication.getInstance().saveUserInfo(userInfoData);
 				ToastUtil.show(mContext,"登录成功");
@@ -285,6 +288,9 @@ public class  LoginActivity extends NetWorkActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		targerIntent = null;
+//		if(mDb != null) {
+//			mDb.close();
+//		}
 	}
 
 	@Override

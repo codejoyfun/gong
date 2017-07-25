@@ -161,6 +161,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
             }
             adapter.getList().addAll(newProductList);
             adapter.notifyDataSetChanged();
+            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
         }
     }
     //返回当前标签下名称包含的
