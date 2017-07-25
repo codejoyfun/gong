@@ -21,7 +21,6 @@
             android:textSize="14sp"
             android:textColor="#a2a2a2"
             android:text="fewfew"
-            android:maxLines="1"
             android:drawablePadding="6dp"
             android:gravity="center"
             />
@@ -35,6 +34,7 @@
             android:layout_weight="4"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             >
             <TextView
                 android:id="@+id/name"

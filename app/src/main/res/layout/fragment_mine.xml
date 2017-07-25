@@ -53,7 +53,7 @@
                     android:textColor="#ffff"
                     android:textSize="@dimen/bottom_tab_font_size"
                     android:layout_marginTop="6dp"
-                    android:text="电话"
+                    android:text=""
                     />
 
             </LinearLayout>

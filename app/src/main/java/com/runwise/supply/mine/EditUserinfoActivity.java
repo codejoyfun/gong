@@ -74,6 +74,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
     private final int REQUEST_UPDATE_SEX = 12;
     private final int REQUEST_UPDATE_PHONENUMBER = 13;
     private final int REQUEST_UPLOAD_IMAGEFILE = 14;
+    private final int REQUEST_LOGINOUT = 15;
 
     private final int RET_CAMERA = 101;
     private final int RET_GALLERY = 102;
@@ -108,17 +109,18 @@ public class EditUserinfoActivity extends NetWorkActivity {
         capTempPhotoUrl = Uri.fromFile(new File(CommonUtils.getCachePath(mContext),"temp.jpg"));
         userInfo = GlobalApplication.getInstance().loadUserInfo();
 
-        FrecoFactory.getInstance(this).disPlay(userHead,Constant.BASE_URL + userInfo.getAvatarUrl());
-        userInfoName.setText(userInfo.getUsername());
-        userInfoId.setText(userInfo.getLogin());
-        if (TextUtils.isEmpty(userInfo.getRegion())) {
-            userInfoPlace.setText("暂无");
+        if( userInfo != null) {
+            FrecoFactory.getInstance(this).disPlay(userHead, Constant.BASE_URL + userInfo.getAvatarUrl());
+            userInfoName.setText(userInfo.getUsername());
+            userInfoId.setText(userInfo.getLogin());
+            if (TextUtils.isEmpty(userInfo.getRegion())) {
+                userInfoPlace.setText("暂无");
+            } else {
+                userInfoPlace.setText(userInfo.getRegion());
+            }
+            userInfoStore.setText(userInfo.getStreet());
+            userInfoPhone.setText(userInfo.getMobile());
         }
-        else{
-            userInfoPlace.setText(userInfo.getRegion());
-        }
-        userInfoStore.setText(userInfo.getStreet());
-        userInfoPhone.setText(userInfo.getMobile());
         this.setTitleText(true,"个人信息");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
     }
@@ -133,6 +135,12 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 Fresco.getImagePipeline().evictFromCache(updateImgUri);
                 FrecoFactory.getInstance(this).disPlay(userHead, updateImgUri);
                 dismissUploadDialog("头像上传成功!");
+                break;
+            case REQUEST_LOGINOUT:
+                SPUtils.loginOut(mContext);
+                //退出登录
+                EventBus.getDefault().post(new UserLogoutEvent());
+                finish();
                 break;
         }
 
@@ -320,10 +328,8 @@ public class EditUserinfoActivity extends NetWorkActivity {
             public void onItemClick(View view) {
                 switch (view.getId()) {
                     case 0:
-                        SPUtils.loginOut(mContext);
-                        //退出登录
-                        EventBus.getDefault().post(new UserLogoutEvent());
-                        finish();
+                        Object param = null;
+                        sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
                         break;
                 }
                 mLogoutDialog.dismiss();

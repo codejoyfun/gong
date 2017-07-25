@@ -73,6 +73,7 @@
                         android:textColorHint="#b7b7b7"
                         android:textSize="14sp"
                         android:layout_marginRight="12dp"
+                        android:singleLine="true"
                         />
                     <ImageView
                         android:id="@+id/login_pop_btn"
@@ -120,6 +121,7 @@
                     android:inputType="textPassword"
                     android:maxLength="16"
                     android:drawablePadding="6dp"
+                    android:singleLine="true"
                     />
                 <CheckBox
                     android:id="@+id/teacher_reg_password_see"
