@@ -20,6 +20,7 @@ import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.kids.commonframe.base.util.SPUtils;
 
 /**
  * 所有facebook freco加载顶图片都应用该类
@@ -140,6 +141,7 @@ public class FrecoFactory {
         draweeView.setController(draweeController);
     }
     private void initFresco(){
+        String sign = (String) SPUtils.get(mContext,"sign","");
         DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(mContext)
                 .setBaseDirectoryPath(mContext.getFilesDir())
                 .setBaseDirectoryName("image_cache")
@@ -148,7 +150,7 @@ public class FrecoFactory {
                 .setMaxCacheSizeOnVeryLowDiskSpace(2 * ByteConstants.MB)
                 .build();
         ImagePipelineConfig config = ImagePipelineConfig.newBuilder(mContext)
-                .setNetworkFetcher(new ElnImageDownloaderFetcher())
+                .setNetworkFetcher(new ElnImageDownloaderFetcher(sign))
                 .setMainDiskCacheConfig(diskCacheConfig).build();
         Fresco.initialize(mContext, config);
     }

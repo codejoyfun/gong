@@ -23,9 +23,11 @@ public class ElnImageDownloaderFetcher extends HttpUrlConnectionNetworkFetcher {
     public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5000;
     public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
     private final ExecutorService mExecutorService;
+    private String sign;
 
-    public ElnImageDownloaderFetcher() {
+    public ElnImageDownloaderFetcher(String sign) {
         mExecutorService = Executors.newFixedThreadPool(NUM_NETWORK_THREADS);
+        this.sign = sign;
     }
 
     @Override
@@ -82,6 +84,7 @@ public class ElnImageDownloaderFetcher extends HttpUrlConnectionNetworkFetcher {
         conn.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
         conn.setReadTimeout(DEFAULT_HTTP_READ_TIMEOUT);
         conn.setRequestProperty("X-Odoo-Db", "LBZ20170607");
+        conn.setRequestProperty("Cookie", sign);
         return conn;
     }
 }
