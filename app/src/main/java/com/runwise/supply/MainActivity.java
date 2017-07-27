@@ -18,6 +18,7 @@ import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
@@ -211,7 +212,9 @@ public class MainActivity extends NetWorkActivity {
     protected void onResume() {
         super.onResume();
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
-        queryProductList();
+        if (SPUtils.isLogin(mContext)){
+            queryProductList();
+        }
     }
     @Override
     protected void onStop() {

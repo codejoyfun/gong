@@ -5,8 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.kids.commonframe.base.util.CommonUtils;
 import com.runwise.supply.R;
 
 import java.util.ArrayList;
@@ -17,12 +19,14 @@ import java.util.List;
  */
 
 public class TimeLineAdapter extends RecyclerView.Adapter {
+    private Context context;
     private LayoutInflater inflater;
     private List<String> traceList = new ArrayList();
     private static final int TYPE_TOP = 0x0000;
     private static final int TYPE_NORMAL= 0x0001;
 
     public TimeLineAdapter(Context context, List list) {
+        this.context = context;
         inflater = LayoutInflater.from(context);
         this.traceList = list;
     }
@@ -41,11 +45,17 @@ public class TimeLineAdapter extends RecyclerView.Adapter {
             // 字体颜色加深
             itemHolder.tvAcceptTime.setTextColor(0xff666666);
             itemHolder.tvAcceptStation.setTextColor(0xff666666);
+            itemHolder.tvAcceptStation.setTextSize(14);
+            itemHolder.tvAcceptTime.setTextSize(14);
             itemHolder.tvDot.setBackgroundResource(R.drawable.timeline_dot_first);
+            itemHolder.itemLL.getLayoutParams().height = CommonUtils.dip2px(context,28);
         } else if (getItemViewType(position) == TYPE_NORMAL) {
             itemHolder.tvTopLine.setVisibility(View.VISIBLE);
             itemHolder.tvAcceptTime.setTextColor(0xff999999);
             itemHolder.tvAcceptStation.setTextColor(0xff999999);
+            itemHolder.tvAcceptStation.setTextSize(12);
+            itemHolder.tvAcceptTime.setTextSize(12);
+            itemHolder.itemLL.getLayoutParams().height = CommonUtils.dip2px(context,21);
             itemHolder.tvDot.setBackgroundResource(R.drawable.timeline_dot_normal);
         }
         if (position == traceList.size() - 1){
@@ -76,10 +86,12 @@ public class TimeLineAdapter extends RecyclerView.Adapter {
     }
     public  class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvAcceptTime, tvAcceptStation;
+        public LinearLayout itemLL;
         public TextView tvTopLine, tvDot;
         public TextView tvDownLine;
         public ViewHolder(View itemView) {
             super(itemView);
+            itemLL = (LinearLayout)itemView.findViewById(R.id.itemLL);
             tvAcceptTime = (TextView) itemView.findViewById(R.id.tvAcceptTime);
             tvAcceptStation = (TextView) itemView.findViewById(R.id.tvAcceptStation);
             tvTopLine = (TextView) itemView.findViewById(R.id.tvTopLine);
