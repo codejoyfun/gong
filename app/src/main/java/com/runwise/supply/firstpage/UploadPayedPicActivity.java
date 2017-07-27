@@ -34,6 +34,7 @@ import com.kids.commonframe.base.util.ImageUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomBottomDialog;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -58,13 +59,15 @@ import java.util.UUID;
  * Created by libin on 2017/7/23.
  */
 
-public class UploadPayedPicActivity extends NetWorkActivity {
+public class UploadPayedPicActivity extends NetWorkActivity implements UploadInterface{
     //上传图片通用类
     private final static int RET_CAMERA = 101;
     private final static int RET_GALLERY = 102;
     private final static int CROP_CODE = 103;
     private final static int UPLOAD_FILE = 104;
     private static final int ATTACHMENTLIST = 105;
+    private static final int ATTACHMENTDELETE = 106;
+
     private static final String ADDBUTTON = "ADD";
     @ViewInject(R.id.recyclerView)
     private RecyclerView recyclerView;
@@ -76,6 +79,7 @@ public class UploadPayedPicActivity extends NetWorkActivity {
     private Uri updateImgUri;
     private int uploadCount;
     private int orderId;
+    private int currentDelete;      //记录当前要删除的位置
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +103,7 @@ public class UploadPayedPicActivity extends NetWorkActivity {
         }
         setTitleLeftIcon(true,R.drawable.nav_back);
         adapter = new UploadAdapter(mContext,picList);
+        adapter.setDeleteCallback(this);
         GridLayoutManager mgr=new GridLayoutManager(this,3);
         recyclerView.setLayoutManager(mgr);
         recyclerView.setAdapter(adapter);
@@ -119,7 +124,19 @@ public class UploadPayedPicActivity extends NetWorkActivity {
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
-                finish();
+                if (adapter.isModifyMode){
+                    dialog.setMessage("确认取消修改");
+                    dialog.setMessageGravity();
+                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            finish();
+                        }
+                    });
+                    dialog.show();
+                }else{
+                    finish();
+                }
                 break;
             case R.id.uploadBtn:
                 //发送上传请求
@@ -134,6 +151,9 @@ public class UploadPayedPicActivity extends NetWorkActivity {
                 upLoadBtn.setVisibility(View.VISIBLE);
                 upLoadBtn.setText("确认修改");
                 adapter.setModifyMode(true);
+                if (picList.size() < 3){
+                    picList.add(ADDBUTTON);
+                }
                 adapter.notifyDataSetChanged();
                 break;
         }
@@ -179,7 +199,10 @@ public class UploadPayedPicActivity extends NetWorkActivity {
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case UPLOAD_FILE:
-                uploadCount++;
+//                uploadCount++;
+                dismissIProgressDialog();
+                ToastUtil.show(mContext,"上传成功");
+                finish();
                 break;
             case ATTACHMENTLIST:
                 StringBuffer url = new StringBuffer(Constant.BASE_URL);
@@ -194,24 +217,79 @@ public class UploadPayedPicActivity extends NetWorkActivity {
                 }
                 adapter.notifyDataSetChanged();
                 return;
+            case ATTACHMENTDELETE:
+                //删除成功了，从本地集合中删除
+                ToastUtil.show(mContext,"删除成功");
+                picList.remove(currentDelete);
+                if (picList.size() < 3){
+                    picList.add(ADDBUTTON);
+                }
+                adapter.notifyDataSetChanged();
+                break;
         }
-        dismissIProgressDialog();
-        ToastUtil.show(mContext,"上传成功");
-        finish();
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
+
+    @Override
+    public void deleteClick(final int position) {
+        if (picList.size() > position){
+           //本地图片随便删
+            //删除请求
+            dialog.setMessage("确认删除图片");
+            dialog.setMessageGravity();
+            dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    if (picList.get(position).contains(Constant.BASE_URL)){
+                        currentDelete = position;
+                        deletePicRequest(position);
+                    }else{
+                        //本地的随便删除
+                        picList.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                }
+            });
+            dialog.show();
+
+
+
+        }
+    }
+
+    private void deletePicRequest(int position) {
+        String attachmentUrl = picList.get(position);
+        int index = attachmentUrl.lastIndexOf("/");
+        String attachmentId = attachmentUrl.substring(index);
+        StringBuffer sb = new StringBuffer("/gongfu/attachment");
+        sb.append(attachmentId).append("/delete/");
+        Object request = null;
+        sendConnection(sb.toString(),request,ATTACHMENTDELETE,true,BaseEntity.ResultBean.class);
+    }
+
     public class UploadAdapter extends RecyclerView.Adapter{
+        private UploadInterface deleteCallback;
         private LayoutInflater inflater;
+
+        public void setDeleteCallback(UploadInterface deleteCallback) {
+            this.deleteCallback = deleteCallback;
+        }
+
         //存放本地图片地址，或者网络地址
         private List<String> datas = new ArrayList<>();
         private boolean isModifyMode = false;        //默认不在修改模式下
 
         public void setModifyMode(boolean modifyMode) {
             isModifyMode = modifyMode;
+        }
+
+        public boolean isModifyMode() {
+            return isModifyMode;
         }
 
         public UploadAdapter(Context context, List<String> datas) {
@@ -231,12 +309,8 @@ public class UploadPayedPicActivity extends NetWorkActivity {
             itemHolder.deleteIv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (picList.size() > position){
-                        picList.remove(position);
-                        if (!picList.contains(ADDBUTTON) && picList.size() < 3){
-                            picList.add(ADDBUTTON);
-                        }
-                        notifyDataSetChanged();
+                    if (deleteCallback != null){
+                        deleteCallback.deleteClick(position);
                     }
                 }
             });
