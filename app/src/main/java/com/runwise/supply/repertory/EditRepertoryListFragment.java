@@ -192,147 +192,147 @@ public class EditRepertoryListFragment extends NetWorkFragment {
         return adapter.getList();
     }
 
-    public class ProductAdapter extends IBaseAdapter<EditRepertoryResult.InventoryBean.ListBean> implements ListAdapter {
-        @Override
-        protected View getExView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder viewHolder;
-            int viewType = getItemViewType(position);
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                switch (viewType) {
-                    case 0:
-                        convertView = View.inflate(mContext, R.layout.edit_repertory_layout_item, null);
-                        ViewUtils.inject(viewHolder,convertView);
-                        break;
-                    case 1:
-                        convertView = View.inflate(mContext, R.layout.edit_repertory_text_list, null);
-                        break;
+        public class ProductAdapter extends IBaseAdapter<EditRepertoryResult.InventoryBean.ListBean> implements ListAdapter {
+            @Override
+            protected View getExView(int position, View convertView, ViewGroup parent) {
+                final ViewHolder viewHolder;
+                int viewType = getItemViewType(position);
+                if (convertView == null) {
+                    viewHolder = new ViewHolder();
+                    switch (viewType) {
+                        case 0:
+                            convertView = View.inflate(mContext, R.layout.edit_repertory_layout_item, null);
+                            ViewUtils.inject(viewHolder,convertView);
+                            break;
+                        case 1:
+                            convertView = View.inflate(mContext, R.layout.edit_repertory_text_list, null);
+                            break;
+                    }
+                    convertView.setTag(viewHolder);
                 }
-                convertView.setTag(viewHolder);
-            }
-            else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-            final EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
-            switch (viewType){
-                case 0:
-                    viewHolder.editText.removeTextChangedListener();
-                    viewHolder.editText.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        }
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        }
+                else {
+                    viewHolder = (ViewHolder) convertView.getTag();
+                }
+                final EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+                switch (viewType){
+                    case 0:
+                        viewHolder.editText.removeTextChangedListener();
+                        viewHolder.editText.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
 
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-                            if(!TextUtils.isEmpty(editable.toString())) {
-                                bean.setEditNum(Integer.parseInt(editable.toString()));
-                                if(bean.getEditNum() == bean.getActual_qty()) {
-                                    viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+                                if(!TextUtils.isEmpty(editable.toString())) {
+                                    bean.setEditNum(Integer.parseInt(editable.toString()));
+                                    if(bean.getEditNum() == bean.getActual_qty()) {
+                                        viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
+                                    }
+                                    else{
+                                        viewHolder.editText.setTextColor(Color.parseColor("#444444"));
+                                    }
+                                    UpdateData updateData = new UpdateData();
+                                    updateData.setType(type);
+                                    EventBus.getDefault().post(updateData);
                                 }
                                 else{
-                                    viewHolder.editText.setTextColor(Color.parseColor("#444444"));
+                                    bean.setEditNum(0);
                                 }
-                                UpdateData updateData = new UpdateData();
-                                updateData.setType(type);
-                                EventBus.getDefault().post(updateData);
                             }
-                            else{
-                                bean.setEditNum(0);
-                            }
+                        });
+                        if(bean.getEditNum() == bean.getActual_qty()) {
+                            viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
                         }
-                    });
-                    if(bean.getEditNum() == bean.getActual_qty()) {
-                        viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
-                    }
-                    else{
-                        viewHolder.editText.setTextColor(Color.parseColor("#444444"));
-                    }
-                    viewHolder.editText.setText(bean.getEditNum()+"");
-                    EditRepertoryResult.InventoryBean.ListBean.ProductBean productBean = bean.getProduct();
-                    if (productBean != null){
-                        if(!TextUtils.isEmpty(keyWork)) {
-                            int index = productBean.getName().indexOf(keyWork);
-                            if(index != -1) {
-                                SpannableString spannStr = new SpannableString(productBean.getName());
-                                spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#6bb400")), index, index + keyWork.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                viewHolder.name.setText(spannStr);
+                        else{
+                            viewHolder.editText.setTextColor(Color.parseColor("#444444"));
+                        }
+                        viewHolder.editText.setText(bean.getEditNum()+"");
+                        EditRepertoryResult.InventoryBean.ListBean.ProductBean productBean = bean.getProduct();
+                        if (productBean != null){
+                            if(!TextUtils.isEmpty(keyWork)) {
+                                int index = productBean.getName().indexOf(keyWork);
+                                if(index != -1) {
+                                    SpannableString spannStr = new SpannableString(productBean.getName());
+                                    spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#6bb400")), index, index + keyWork.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    viewHolder.name.setText(spannStr);
+                                }
                             }
+                            else {
+                                viewHolder.name.setText(productBean.getName());
+                            }
+                            viewHolder.number.setText(productBean.getDefault_code() + " | ");
+                            viewHolder.content.setText(productBean.getUnit());
+                            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
+                        }
+                        viewHolder.value.setText("库存" + bean.getActual_qty()+"");
+                        ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProduct().getId()));
+                        if(basicBean != null) {
+                            viewHolder.uom.setText(basicBean.getUom());
                         }
                         else {
-                            viewHolder.name.setText(productBean.getName());
+                            viewHolder.uom.setText("");
                         }
-                        viewHolder.number.setText(productBean.getDefault_code() + " | ");
-                        viewHolder.content.setText(productBean.getUnit());
-                        FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
-                    }
-                    viewHolder.value.setText("库存" + bean.getActual_qty()+"");
-                    ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProduct().getId()));
-                    if(basicBean != null) {
-                        viewHolder.uom.setText(basicBean.getUom());
-                    }
-                    else {
-                        viewHolder.uom.setText("");
-                    }
-                    viewHolder.dateNumber.setText(bean.getLot_num());
-                    viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
-                    if(bean.isChecked()) {
-                        viewHolder.rootLayout.setBackgroundColor(Color.parseColor("#fefce8"));
-                    }
-                    else {
-                        viewHolder.rootLayout.setBackgroundColor(Color.parseColor("#ffffff"));
-                    }
-                    break;
+                        viewHolder.dateNumber.setText(bean.getLot_num());
+                        viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
+                        if(bean.isChecked()) {
+                            viewHolder.rootLayout.setBackgroundColor(Color.parseColor("#fefce8"));
+                        }
+                        else {
+                            viewHolder.rootLayout.setBackgroundColor(Color.parseColor("#ffffff"));
+                        }
+                        break;
+                }
+                return convertView;
             }
-            return convertView;
-        }
-        @Override
-        public boolean isEnabled(int position){
-            EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
-            if(bean.getType() == 0) {
-                return true;
+            @Override
+            public boolean isEnabled(int position){
+                EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+                if(bean.getType() == 0) {
+                    return true;
+                }
+                return false;
             }
-            return false;
-        }
-        @Override
-        public boolean areAllItemsEnabled(){
-            return false;
-        }
+            @Override
+            public boolean areAllItemsEnabled(){
+                return false;
+            }
 
-        @Override
-        public int getItemViewType(int position) {
-            EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
-            return bean.getType();
-        }
+            @Override
+            public int getItemViewType(int position) {
+                EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+                return bean.getType();
+            }
 
-        @Override
-        public int getViewTypeCount() {
-            return 2;
-        }
+            @Override
+            public int getViewTypeCount() {
+                return 2;
+            }
 
-        class ViewHolder {
-            @ViewInject(R.id.name)
-            TextView            name;
-            @ViewInject(R.id.productImage)
-            SimpleDraweeView    sDv;
-            @ViewInject(R.id.number)
-            TextView            number;
-            @ViewInject(R.id.content)
-            TextView content;
-            @ViewInject(R.id.value)
-            TextView         value;
-            @ViewInject(R.id.uom)
-            TextView         uom;
-            @ViewInject(R.id.dateNumber)
-            TextView         dateNumber;
-            @ViewInject(R.id.dateLate)
-            TextView            dateLate;
-            @ViewInject(R.id.editText)
-            NoWatchEditText editText;
-            @ViewInject(R.id.rootLayout)
-            View rootLayout;
+            class ViewHolder {
+                @ViewInject(R.id.name)
+                TextView            name;
+                @ViewInject(R.id.productImage)
+                SimpleDraweeView    sDv;
+                @ViewInject(R.id.number)
+                TextView            number;
+                @ViewInject(R.id.content)
+                TextView content;
+                @ViewInject(R.id.value)
+                TextView         value;
+                @ViewInject(R.id.uom)
+                TextView         uom;
+                @ViewInject(R.id.dateNumber)
+                TextView         dateNumber;
+                @ViewInject(R.id.dateLate)
+                TextView            dateLate;
+                @ViewInject(R.id.editText)
+                NoWatchEditText editText;
+                @ViewInject(R.id.rootLayout)
+                View rootLayout;
+            }
         }
-    }
 }

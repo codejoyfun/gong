@@ -314,7 +314,17 @@ public class NetWorkHelper<T extends BaseEntity> {
 			} catch (UnsupportedEncodingException e) {
 				parsed = new String(response.data);
 			}
-			LogUtils.e(parsed);
+			if(parsed.length() > 4000) {
+				for(int i=0;i<parsed.length();i+=4000){
+					if(i+4000<parsed.length())
+						LogUtils.e(parsed.substring(i, i+4000));
+					else
+						LogUtils.e(parsed.substring(i, parsed.length()));
+				}
+			}
+			else {
+				LogUtils.e(parsed);
+			}
 			T resultObj = null;
 			if ( newWorkCallBack != null ) {
 				resultObj = newWorkCallBack.onParse( where , BaseEntity.class ,parsed);

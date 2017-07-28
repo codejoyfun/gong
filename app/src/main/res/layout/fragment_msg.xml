@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/base_background_color"
     android:orientation="vertical"
     android:paddingTop="@dimen/status_bar_padding_top"
     >
-
     <include
-        android:id="@+id/sex_tittle"
+        android:id="@+id/titleLayout"
         layout="@layout/common_title_bar" />
-    <ListView
-        android:id="@+id/typeListView"
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pullListView"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="#dcdcdc"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:listSelector="#0000"
+        ptr:ptrAnimationStyle="flip"
+        />
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_below="@id/titleLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:dividerHeight="1px"
-        android:divider="#e9e8eb"
+        android:visibility="gone"
         />
-
-</LinearLayout>
+</RelativeLayout>
