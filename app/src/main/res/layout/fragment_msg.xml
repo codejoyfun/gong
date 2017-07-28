@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="@color/base_background_color"
     android:orientation="vertical"
-    android:paddingTop="@dimen/status_bar_padding_top"
     >
     <include
         android:id="@+id/titleLayout"
