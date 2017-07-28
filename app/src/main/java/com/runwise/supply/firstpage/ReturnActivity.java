@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.text.TextUtilsCompat;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,6 +69,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
     private Map<String,ReturnBean> countMap = new HashMap<>();
     private int currentEditCount = 0;            //当前弹窗的写入的可退数量
     private ReturnBean currentRb;               //当前弹窗的rb
+    private boolean isCountChange;              //用来避免，输入退货监听的再次执行
 
     public Map<String, ReturnBean> getCountMap() {
         return countMap;
@@ -125,12 +130,19 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         while (iterator.hasNext()){
             String key = (String) iterator.next();
             ReturnBean rb = countMap.get(key);
+            if (rb.getReturnCount() == 0){
+                continue;
+            }
             ReturnRequest.ProductsBean  rsb = new ReturnRequest.ProductsBean();
             rsb.setProduct_id(Integer.valueOf(key));
             rsb.setQty(rb.getReturnCount());
             rsb.setReason(rb.getNote());
             list.add(rsb);
 
+        }
+        if (list.size() == 0){
+            ToastUtil.show(mContext,"请先选择退货数量");
+            return;
         }
         rr.setProducts(list);
         StringBuffer sb = new StringBuffer("/gongfu//v2/order/");
@@ -151,7 +163,10 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             }
         });
         final EditText editText = (EditText)dialogView.findViewById(R.id.editText);
+        isCountChange = true;
         editText.setText("0");
+        editText.setSelection(1);
+        isCountChange = false;
         ImageButton input_minus = (ImageButton)dialogView.findViewById(R.id.input_minus);
         ImageButton input_add = (ImageButton)dialogView.findViewById(R.id.input_add);
         final CheckBox cb1 = (CheckBox)dialogView.findViewById(R.id.cb1);
@@ -165,7 +180,9 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 if (currentRb != null){
                     if (currentEditCount < currentRb.getMaxReturnCount()){
                         currentEditCount++;
+                        isCountChange = true;
                         editText.setText(currentEditCount+"");
+                        isCountChange = false;
                         editText.setSelection(String.valueOf(currentEditCount).length());
                     }else{
                         ToastUtil.show(mContext,"数量不能超过"+currentRb.getMaxReturnCount());
@@ -179,8 +196,47 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 if (currentEditCount > 0){
                     currentEditCount--;
                 }
+                isCountChange = true;
                 editText.setText(currentEditCount+"");
+                isCountChange = false;
                 editText.setSelection(String.valueOf(currentEditCount).length());
+            }
+        });
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!isCountChange){
+                    int maxCanReturnCount = currentRb.getMaxReturnCount();
+                    int currentCount = TextUtils.isEmpty(s.toString()) ? 0 : Integer.valueOf(s.toString());
+                    if (currentCount > maxCanReturnCount){
+                        ToastUtil.show(mContext,"退货数量不能超过"+maxCanReturnCount);
+                        int beginCount;
+                        if (countMap.get(String.valueOf(currentRb.getpId())) != null){
+                            beginCount = countMap.get(String.valueOf(currentRb.getpId())).getReturnCount();
+                        }else{
+                            beginCount = 0;
+                        }
+                        isCountChange = true;
+                        editText.setText(String.valueOf(beginCount));
+                        editText.setSelection(String.valueOf(beginCount).length());
+                        isCountChange = false;
+                        return;
+                    }else{
+                        isCountChange = true;
+                        editText.setText(String.valueOf(currentCount));
+                        editText.setSelection(String.valueOf(currentCount).length());
+                        isCountChange = false;
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
         cb1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -228,10 +284,17 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         sureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentRb != null && !editText.getText().toString().equals("0")){
-                    currentRb.setReturnCount(Integer.valueOf(editText.getText().toString()));
-                    currentRb.setNote(questionEt.getText().toString());
-                    countMap.put(String.valueOf(currentRb.getpId()),currentRb);
+                if (currentRb != null){
+                    //这里有个删除的动作
+                    if (Integer.valueOf(editText.getText().toString()) == 0){
+                        if (countMap.containsKey(String.valueOf(currentRb.getpId()))){
+                            countMap.remove(String.valueOf(currentRb.getpId()));
+                        }
+                    }else{
+                        currentRb.setReturnCount(Integer.valueOf(editText.getText().toString()));
+                        currentRb.setNote(questionEt.getText().toString());
+                        countMap.put(String.valueOf(currentRb.getpId()),currentRb);
+                    }
                     //更新fragment列表内容
                     EventBus.getDefault().post(new ReturnEvent());
                 }
@@ -260,6 +323,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
     @Override
     public void returnBtnClick(ReturnBean rb) {
         currentRb = rb;
+        //同时
         if (!mPopWindow.isShowing()){
             View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
             mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);

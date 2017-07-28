@@ -320,7 +320,6 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         loadingTv.setVisibility(View.INVISIBLE);
         setTitleText(true,"自助下单");
         setTitleLeftIcon(true,R.drawable.nav_back);
-        setTitleRightText(true,"编辑");
         pullListView.setVisibility(View.INVISIBLE);
         adapter = new OneKeyAdapter(mContext);
         adapter.setCallback(this);
@@ -336,6 +335,7 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
 //                requestDefalutProduct();
 //            }
 //        },2000);
+        setTitleEditShow();
         allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -354,6 +354,19 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             }
         });
     }
+
+    private void setTitleEditShow() {
+        if (adapter.getCount() == 0){
+            setTitleRightText(false,"编辑");
+            self_help_rl.setVisibility(View.VISIBLE);
+            pullListView.setVisibility(View.INVISIBLE);
+        }else{
+            setTitleRightText(true,"编辑");
+            self_help_rl.setVisibility(View.INVISIBLE);
+            pullListView.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void requestDefalutProduct(){
         ///gongfu/v2/shop/preset/product/list
         Object request = null;
@@ -382,6 +395,11 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             case DEFAULT_TYPE:
                 DefaultProductData data = (DefaultProductData) resultBean.getData();
                 adapter.setData(data.getList());
+                if (adapter.getCount() == 0){
+                    setTitleRightText(false,"编辑");
+                }else{
+                    setTitleRightText(false,"编辑");
+                }
                 break;
             case COMMIT_TYPE:
                 ToastUtil.show(mContext,"下单成功");
@@ -414,6 +432,8 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
         totalMoneyTv.setText(totalMoney+"元");
         totalNumTv.setText(totalNum+"件");
+        setTitleEditShow();
+
     }
 
     @Override
@@ -462,6 +482,7 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     self_help_rl.setVisibility(View.VISIBLE);
                     bottom_bar.setVisibility(View.INVISIBLE);
                 }
+                setTitleEditShow();
                 break;
         }
     }

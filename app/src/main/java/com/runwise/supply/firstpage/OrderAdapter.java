@@ -58,6 +58,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder = (ViewHolder)convertView.getTag();
         }
         final LinearLayout tlLL = viewHolder.timelineLL;
+        final ImageButton downArrow = viewHolder.arrowBtn;
         final RecyclerView recyclerView =  viewHolder.recyclerView;
         final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
         viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
@@ -71,9 +72,12 @@ public class OrderAdapter extends IBaseAdapter {
                     //只有点击时，才去放timeline的内容
                     setTimeLineContent(bean,recyclerView);
                     tlLL.setVisibility(View.VISIBLE);
+                    downArrow.setImageResource(R.drawable.login_btn_dropup);
                 }else{
                     tlLL.setVisibility(View.GONE);
+                    downArrow.setImageResource(R.drawable.login_btn_dropdown);
                 }
+
             }
         });
         viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
@@ -102,9 +106,11 @@ public class OrderAdapter extends IBaseAdapter {
         if (expandMap.get(Integer.valueOf(position)) != null && expandMap.get(Integer.valueOf(position)).booleanValue()){
             viewHolder.timelineLL.setVisibility(View.VISIBLE);
             //重刷一次，免得重复
+            downArrow.setImageResource(R.drawable.login_btn_dropup);
             setTimeLineContent(bean,recyclerView);
         }else{
             viewHolder.timelineLL.setVisibility(View.GONE);
+            downArrow.setImageResource(R.drawable.login_btn_dropdown);
         }
         if (!expandMap.containsKey(Integer.valueOf(position))){
             expandMap.put(Integer.valueOf(position),Boolean.valueOf(false));

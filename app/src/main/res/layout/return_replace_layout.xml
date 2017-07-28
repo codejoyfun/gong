@@ -16,14 +16,17 @@
         android:layout_height="0.5dp"
         android:background="#E5E5E5"
         />
+
     <TextView
         android:id="@+id/replaceTv"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:textSize="17sp"
         android:gravity="center"
+        android:text="申请换货"
         android:textColor="#2E2E2E"
-        android:text="申请换货"/>
+        android:visibility="gone"
+        android:textSize="17sp" />
+
     <TextView
         android:id="@+id/cancleTv"
         android:layout_width="match_parent"
