@@ -72,6 +72,7 @@ public class OrderDetailActivity extends NetWorkActivity{
     private Button rightBtn;
     @ViewInject(R.id.bottom_bar)
     private RelativeLayout bottom_bar;
+    private boolean isHasAttachment;        //默认无凭证
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -102,7 +103,7 @@ public class OrderDetailActivity extends NetWorkActivity{
         replaceTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtil.show(mContext,"换货");
+                ToastUtil.show(mContext,"暂不支持");
             }
         });
         cancleTv.setOnClickListener(new View.OnClickListener() {
@@ -166,8 +167,12 @@ public class OrderDetailActivity extends NetWorkActivity{
                 uploadBtn.setVisibility(View.VISIBLE);
                 if (bean.getHasAttachment() == 0){
                     payStateValue.setText("未有支付凭证");
+                    uploadBtn.setText("上传凭证");
+                    isHasAttachment = false;
                 }else{
                     payStateValue.setText("已上传支付凭证");
+                    uploadBtn.setText("查看凭证");
+                    isHasAttachment = true;
                 }
                 //同时，显示右上角，申请售后
                 setTitleRightText(true,"申请售后");
@@ -212,7 +217,7 @@ public class OrderDetailActivity extends NetWorkActivity{
         return false;
     }
 
-    @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,
+    @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,R.id.uploadBtn,
             R.id.freezeBtn,R.id.dryBtn,R.id.gotoStateBtn,R.id.rightBtn,R.id.rightBtn2})
     public void btnClick(View view){
         switch (view.getId()){
@@ -266,6 +271,14 @@ public class OrderDetailActivity extends NetWorkActivity{
                 }else if(rightBtn.getText().toString().equals("售后订单")){
 
                 }
+                break;
+            case R.id.uploadBtn:
+                //凭证
+                Intent intent3 = new Intent(mContext,UploadPayedPicActivity.class);
+                intent3.putExtra("orderid",bean.getOrderID());
+                intent3.putExtra("ordername",bean.getName());
+                intent3.putExtra("hasattachment",isHasAttachment);
+                startActivity(intent3);
                 break;
         }
     }

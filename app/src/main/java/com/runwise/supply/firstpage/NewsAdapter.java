@@ -1,6 +1,7 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,13 @@ public class NewsAdapter extends IBaseAdapter {
         NewsResponse.ListBean bean = (NewsResponse.ListBean)getItem(position);
         viewHolder.titleTv.setText(bean.getTitle());
         FrecoFactory.getInstance(context).disPlay(viewHolder.imgIv,Constant.BASE_URL + bean.getAvatorUrl());
-        viewHolder.fromTv.setText(bean.getTagsList().toString());
+        String tags = bean.getTagsList().toString();
+        if (!TextUtils.isEmpty(tags)){
+            String newTags = tags.replaceAll("[\\[\\]]","");
+            viewHolder.fromTv.setText(newTags);
+        }else{
+            viewHolder.fromTv.setText("");
+        }
         return convertView;
     }
 

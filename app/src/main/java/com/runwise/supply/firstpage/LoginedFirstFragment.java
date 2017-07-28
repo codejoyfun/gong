@@ -216,7 +216,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case UPLOAD:
                 Intent uIntent = new Intent(mContext,UploadPayedPicActivity.class);
                 int ordereId = ((OrderResponse.ListBean)adapter.getItem(position)).getOrderID();
+                String orderNmae = ((OrderResponse.ListBean)adapter.getItem(position)).getName();
                 uIntent.putExtra("orderid",ordereId);
+                uIntent.putExtra("ordername",orderNmae);
                 startActivity(uIntent);
                 break;
             case TALLY:
