@@ -228,28 +228,24 @@ public class DateFormateUtil {
 			return "";
 		}
 		// 24小时内：几分钟前。。。，超过24小时：4月11日 20:20， 历史年份：2014年4月12日；
-		final Calendar calend = Calendar.getInstance();
-		calend.setTimeInMillis(Long.parseLong(time)*1000);
-		Date newtime = new Date();
-		newtime.setTime(Long.parseLong(time) * 1000);
+		final Calendar calend = dateFormatFromString(time,
+				DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
+		Date newtime = string2Date(time,
+				DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
 		if (isToday(calend)) {
 			long nm = 1000 * 60;
 			long minPoor = getMinPoor(newtime, new Date());
 			if (minPoor < nm) {
 //				long second = minPoor / 1000;
 				return  "刚刚";
-			}
-			else if (minPoor < 60 * nm) {
+			} else if (minPoor < 60 * nm) {
 				return minPoor / nm + "分钟前";
-			}
-			else {
+			} else {
 				return (minPoor / nm) / 60 + "小时前";
 			}
-		}
-		else if (isCurrentYear(calend)) {
+		} else if (isCurrentYear(calend)) {
 			return dateFormatFromCalender(calend, "MM月dd日 HH:mm");
-		}
-		else {
+		} else {
 			return dateFormatFromCalender(calend, "yyyy年MM月dd日 HH:mm");
 		}
 	}

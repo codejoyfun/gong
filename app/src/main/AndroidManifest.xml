@@ -454,7 +454,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme"
             />
+
         <activity android:name=".mine.AccountsDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".message.MessageDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
+
+        <activity android:name=".message.SystemMsgDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             />

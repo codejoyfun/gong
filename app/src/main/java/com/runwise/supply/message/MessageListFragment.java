@@ -1,6 +1,5 @@
-package com.runwise.supply.mine;
+package com.runwise.supply.message;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -12,36 +11,26 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.message.RequestDetlActivity;
-import com.runwise.supply.mine.entity.OrderEntity;
-import com.runwise.supply.mine.entity.OrderList;
+import com.runwise.supply.mine.OrderDataType;
 import com.runwise.supply.mine.entity.OrderResult;
-import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 /**
- * 我的分期
+ * 聊天信息
  */
-public class OrderListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
+public class MessageListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
@@ -196,81 +185,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder = (ViewHolder) convertView.getTag();
             }
             OrderResult.ListBean bean = mList.get(position);
-            //待确认
-            if("draft".equals(bean.getState())) {
-                holder.payStatus.setText("待确认");
-                holder.payBtn.setVisibility(View.VISIBLE);
-                holder.payBtn.setText("取消订单");
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_1_tocertain);
-                holder.payBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.setMessage("您确定要取消订单吗?");
-                        dialog.setModel(CustomDialog.BOTH);
-                        dialog.setLeftBtnListener("不取消了",null);
-                        dialog.setRightBtnListener("取消订单", new CustomDialog.DialogListener() {
-                            @Override
-                            public void doClickButton(Button btn, CustomDialog dialog) {
 
-                            }
-                        });
-                        dialog.show();
-                    }
-                });
-            }
-            //已确认
-            else if("sale".equals(bean.getState())) {
-                holder.payBtn.setVisibility(View.GONE);
-                holder.payStatus.setText("已确认");
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_2_certain);
-            }
-            //已发货
-            else if("peisong".equals(bean.getState())) {
-                holder.payStatus.setText("已发货");
-                holder.payBtn.setVisibility(View.VISIBLE);
-                holder.payBtn.setText("收货");
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_3_delivering);
-                holder.payBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
-                });
-            }
-            //已收货
-            else if("done".equals(bean.getState())) {
-                holder.payStatus.setText("已收货");
-                holder.payBtn.setVisibility(View.GONE);
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_2_certain);
-            }
-            //已评价
-            else if("rated".equals(bean.getState())) {
-                holder.payStatus.setText("已评价");
-                holder.payBtn.setVisibility(View.GONE);
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_5_rated);
-            }
-            //已取消cancel
-            else{
-                holder.payStatus.setText("订单关闭");
-                holder.payBtn.setVisibility(View.VISIBLE);
-                holder.payBtn.setText("删除订单");
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_6_closed);
-                holder.payBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.setMessage("您确定要取消订单吗?");
-                        dialog.setModel(CustomDialog.BOTH);
-                        dialog.setLeftBtnListener("不删除了",null);
-                        dialog.setRightBtnListener("删除订单", new CustomDialog.DialogListener() {
-                            @Override
-                            public void doClickButton(Button btn, CustomDialog dialog) {
-
-                            }
-                        });
-                        dialog.show();
-                    }
-                });
-            }
             holder.payTitle.setText(bean.getName());
             holder.payDate.setText(bean.getEstimated_date());
             holder.patSum.setText("共"+bean.getAmount()+"件商品");

@@ -118,6 +118,8 @@ public class MainActivity extends NetWorkActivity {
 //        CaptureClient mClient = new CaptureClient();
 //        mClient.setListener(mListener);
 //        mClient.connect();
+        //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
+        queryProductList();
     }
 
     @TargetApi(23)
@@ -210,8 +212,8 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
-        queryProductList();
+//        //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
+//        queryProductList();
     }
     @Override
     protected void onStop() {
