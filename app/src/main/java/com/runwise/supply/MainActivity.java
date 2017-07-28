@@ -34,6 +34,7 @@ import com.runwise.supply.orderpage.OrderFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;

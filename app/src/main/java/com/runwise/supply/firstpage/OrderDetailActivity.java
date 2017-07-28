@@ -14,6 +14,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -21,6 +22,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,14 +92,28 @@ public class OrderDetailActivity extends NetWorkActivity{
         returnTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //跳转到退换流程
-                Intent intent = new Intent(OrderDetailActivity.this,ReturnActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("order", bean);
-                intent.putExtras(bundle);
-                startActivity(intent);
-                bDialog.dismiss();
-                finish();
+                //跳转到退换流程：如果超过7天,不支持退货
+                if (isMoreThanReturnData()){
+                    dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");
+                    dialog.setMessageGravity();
+                    dialog.setModel(CustomDialog.RIGHT);
+                    dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+
+                        }
+                    });
+                    dialog.show();
+                    bDialog.dismiss();
+                }else{
+                    Intent intent = new Intent(OrderDetailActivity.this,ReturnActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("order", bean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    bDialog.dismiss();
+                    finish();
+                }
             }
         });
         replaceTv.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +128,10 @@ public class OrderDetailActivity extends NetWorkActivity{
                 bDialog.dismiss();
             }
         });
+    }
+
+    private boolean isMoreThanReturnData() {
+        return TimeUtils.isMoreThan7Days(bean.getDoneDatetime());
     }
 
     @Override

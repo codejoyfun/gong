@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import com.kids.commonframe.base.util.DateFormateUtil;
 import com.lidroid.xutils.util.LogUtils;
 
+import org.w3c.dom.Text;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -386,5 +388,19 @@ public class TimeUtils {
 			return  true;
 		}
 		return false;
+	}
+	public static boolean isMoreThan7Days(String timeStr) {
+		if (TextUtils.isEmpty(timeStr)){
+			return false;
+		}
+		long time = getFormatTime(timeStr);
+		Calendar calendar = Calendar.getInstance();  //得到日历
+		calendar.setTime(new Date());//把当前时间赋给日历
+		calendar.add(Calendar.DAY_OF_MONTH, -7);  //设置为7天前
+		Date before7days = calendar.getTime();   //得到7天前的时间
+		if (before7days.getTime() < time){
+			return false;
+		}
+		return true;
 	}
 }
