@@ -283,6 +283,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         switch (where){
             case RECEIVE:
                 Intent intent = new Intent(mContext,ReceiveSuccessActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order",lbean);
+               intent.putExtras(bundle);
                 startActivity(intent);
                 finish();
                 break;

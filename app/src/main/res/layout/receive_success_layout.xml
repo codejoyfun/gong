@@ -9,7 +9,7 @@
         android:id="@+id/icon"
         android:layout_width="125dp"
         android:layout_height="125dp"
-        android:src="@drawable/pic_survey"
+        android:src="@drawable/default_receivedsuccess"
         android:scaleType="centerCrop"
         android:layout_below="@id/title_bar"
         android:layout_marginTop="71dp"

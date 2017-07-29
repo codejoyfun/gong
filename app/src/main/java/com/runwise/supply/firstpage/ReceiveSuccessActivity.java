@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -7,12 +8,14 @@ import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 
 /**
  * Created by libin on 2017/7/19.
  */
 
 public class ReceiveSuccessActivity extends BaseActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +30,10 @@ public class ReceiveSuccessActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.orderBtn:
-                ToastUtil.show(mContext,"跳转到评价订单");
+                Bundle bundle = getIntent().getExtras();
+                Intent intent = new Intent(mContext,EvaluateActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
                 break;
             case R.id.uploadBtn:
                 ToastUtil.show(mContext,"跳转到上传凭证");
