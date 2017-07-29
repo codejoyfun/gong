@@ -26,6 +26,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
@@ -47,6 +48,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private static final int FROMSTART = 0;
     private static final int FROMEND = 1;
     private static final int FROMLB = 2;
+    private static final String LOGIN_FRAGMENT = "loginFragment";
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -118,9 +120,18 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         super.onResume();
         //判断登录状态,进行fragment的切换
         if (SPUtils.isLogin(mContext)){
-            switchContent(this,new LoginedFirstFragment());
-        }else
+            MainActivity ma = (MainActivity) getActivity();
+            if (ma.getCurrentTabIndex() == 0){
+                switchContent(this,new LoginedFirstFragment());
+            }
+        }else{
+            //如果之前有登录fragment，这里就得隐藏它
+            LoginedFirstFragment fragment = (LoginedFirstFragment) getFragmentManager().findFragmentByTag(LOGIN_FRAGMENT);
+            if (fragment != null && fragment.isVisible()){
+                getFragmentManager().beginTransaction().hide(fragment).show(this).commit();
+            }
             requestData(true);
+        }
     }
 
     private void requestData(boolean isStart) {
@@ -233,7 +244,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         if (from != to) {
             FragmentTransaction mTransaction = mManager.beginTransaction();
             if (!to.isAdded()) {
-                mTransaction.hide(from).add(R.id.realtabcontent, to);
+                mTransaction.hide(from).add(R.id.realtabcontent, to,LOGIN_FRAGMENT);
 
             } else
                 mTransaction.hide(from).show(to);

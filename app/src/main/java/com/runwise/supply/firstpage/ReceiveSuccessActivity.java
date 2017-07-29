@@ -16,28 +16,36 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 
 public class ReceiveSuccessActivity extends BaseActivity {
 
+    private OrderResponse.ListBean bean;
+    private Bundle bundle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.receive_success_layout);
         setTitleText(true,"收货成功");
         setTitleLeftIcon(true,R.drawable.nav_closed);
+        bundle = getIntent().getExtras();
+        bean = bundle.getParcelable("order");
     }
     @OnClick({R.id.title_iv_left,R.id.orderBtn,R.id.uploadBtn})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
-                finish();
                 break;
             case R.id.orderBtn:
-                Bundle bundle = getIntent().getExtras();
                 Intent intent = new Intent(mContext,EvaluateActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 break;
             case R.id.uploadBtn:
-                ToastUtil.show(mContext,"跳转到上传凭证");
+                Intent uIntent = new Intent(mContext,UploadPayedPicActivity.class);
+                uIntent.putExtra("orderid",bean.getOrderID());
+                uIntent.putExtra("ordername",bean.getName());
+                uIntent.putExtra("hasattachment",false);
+                startActivity(uIntent);
                 break;
         }
+        finish();
     }
 }

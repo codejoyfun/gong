@@ -27,6 +27,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
@@ -116,7 +117,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void onResume() {
         super.onResume();
         if (!SPUtils.isLogin(mContext)){
-            this.switchContent(this,new UnLoginedFirstFragment());
+            MainActivity ma = (MainActivity) getActivity();
+            if (ma.getCurrentTabIndex() == 0)
+                this.switchContent(this,new UnLoginedFirstFragment());
         }
     }
 

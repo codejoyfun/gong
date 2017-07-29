@@ -309,4 +309,7 @@ public class MainActivity extends NetWorkActivity {
             queryProductList();
         }
     }
+    public int getCurrentTabIndex(){
+        return mTabHost.getCurrentTab();
+    }
 }
