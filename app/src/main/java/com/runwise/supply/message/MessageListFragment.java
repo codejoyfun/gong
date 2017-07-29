@@ -43,7 +43,6 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
-    public OrderDataType orderDataType;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,19 +85,6 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         PageRequest request = new PageRequest();
         request.setLimit(limit);
         request.setPz(page);
-        switch (orderDataType) {
-            case BENZHOU:
-                request.setStart(TimeUtils.getThisWeekStart());
-                request.setEnd(TimeUtils.getCurrentDate());
-                break;
-            case SHANGZHOU:
-                request.setStart(TimeUtils.getPerWeekStart());
-                request.setEnd(TimeUtils.getPerWeekEnd());
-                break;
-            case GENGZAO:
-                request.setEnd(TimeUtils.getPerWeekStart());
-                break;
-        }
         sendConnection("/gongfu/order/list",request,where,showDialog,OrderResult.class);
     }
 

@@ -1,5 +1,6 @@
 package com.runwise.supply.message;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -124,8 +125,8 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     }
     private List<MessageListEntity> handlerMessageList(MessageResult endResult) {
         List<MessageListEntity> messageList = new ArrayList<>();
-         List<MessageResult.OrderBean> orderList = endResult.getOrder();
-         List<MessageResult.ChannelBean> channelList = endResult.getChannel();
+        List<MessageResult.OrderBean> orderList = endResult.getOrder();
+        List<MessageResult.ChannelBean> channelList = endResult.getChannel();
         if(channelList != null) {
             for(MessageResult.ChannelBean channelBean:channelList) {
                 MessageListEntity bean = new MessageListEntity();
@@ -152,21 +153,17 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        OrderEntity bean = (OrderEntity)parent.getAdapter().getItem(position);
-//        Intent intent = new Intent(mContext, IWebViewActivity.class);
-//        intent.putExtra(WebViewActivity.WEB_TITLE,bean.getTitle());
-//        if (bean.getOrder_status() == 1 ) {
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getApply_info_url());
-//            startActivity(intent);
-//        }
-//        else if(bean.getOrder_status() == 11) {
-//            Intent dealIntent = new Intent(this,RequestDetlActivity.class);
-//            startActivity(dealIntent);
-//        }
-//        else{
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getPeriod_url());
-//            startActivity(intent);
-//        }
+        MessageListEntity bean = (MessageListEntity)parent.getAdapter().getItem(position);
+        if(bean.getType() == 1) {
+            Intent dealIntent = new Intent(mContext,SystemMsgDetailActivity.class);
+            dealIntent.putExtra("id",bean.getChannelBean().getId()+"");
+            dealIntent.putExtra("name",bean.getChannelBean().getName());
+            startActivity(dealIntent);
+        }
+        else{
+            Intent dealIntent = new Intent(mContext,MessageDetailActivity.class);
+            startActivity(dealIntent);
+        }
     }
 
     @Override
@@ -249,7 +246,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     if("缺货通知".equals(channelBean.getName())) {
                         viewHolder.msgIcon.setImageResource(R.drawable.notify_stockout);
                     }
-                    else if("系统升级".equals(channelBean.getName())) {
+                    else if("系统升级".equals(channelBean.getName()) || "系统维护".equals(channelBean.getName())) {
                         viewHolder.msgIcon.setImageResource(R.drawable.notify_system);
                     }
                     else if("缓存上传".equals(channelBean.getName())) {
