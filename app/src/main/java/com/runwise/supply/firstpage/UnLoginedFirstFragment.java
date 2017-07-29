@@ -54,6 +54,8 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
+    @ViewInject(R.id.header)
+    private View headView;
 
     private LayoutInflater layoutInflater;
     private ConvenientBanner banner;
@@ -85,7 +87,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             }
         });
         //表头：放轮播+统计表
-        View headView = layoutInflater.inflate(R.layout.unlogin_head_layout,null);
+//        View headView = layoutInflater.inflate(R.layout.unlogin_head_layout,null);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
         //通过图片比例，计算banner大小 375:175 = w:x
         int height = 175 * CommonUtils.getScreenWidth(mContext) / 375;
@@ -101,7 +103,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         recyclerView.setAdapter(sAdapter);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
-        pullListView.getRefreshableView().addHeaderView(headView);
+//        pullListView.getRefreshableView().addHeaderView(headView);
         nAdapter = new NewsAdapter(mContext);
         pullListView.setAdapter(nAdapter);
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

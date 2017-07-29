@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:listSelector="#0000"
         ptr:ptrAnimationStyle="flip"
-        android:background="#f5f5f5"
+        android:background="#FFFFFF"
         android:divider="@null"
         android:paddingBottom="55dp"
         android:layout_below="@id/title_bar"

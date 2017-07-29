@@ -29,10 +29,12 @@ import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import me.shaohui.bottomdialog.BottomDialog;
@@ -425,10 +427,15 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         int totalNum = 0;
         double totalMoney = 0;
         List<DefaultPBean> list = adapter.getList();
-        for (DefaultPBean bean : list){
-            int count = adapter.getCountMap().get(bean.getProductID());
-            totalNum += count;
-            totalMoney += count*bean.getPriceUnit();
+        HashMap pbMap = ProductBasicUtils.getBasicMap(mContext);
+        if (pbMap != null && pbMap.size() > 0){
+            for (DefaultPBean bean : list){
+                ProductBasicList.ListBean lb = (ProductBasicList.ListBean) pbMap.get(String.valueOf(bean.getProductID()));
+                double price = lb.getPrice();
+                int count = adapter.getCountMap().get(bean.getProductID());
+                totalNum += count;
+                totalMoney += count*price;
+            }
         }
         totalMoneyTv.setText(totalMoney+"元");
         totalNumTv.setText(totalNum+"件");

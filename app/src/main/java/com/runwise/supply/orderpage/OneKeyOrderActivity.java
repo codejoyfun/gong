@@ -33,6 +33,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import me.shaohui.bottomdialog.BottomDialog;
@@ -423,6 +424,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                        Integer count = pro.getCount();
                        DefaultPBean bean = new DefaultPBean();
                        bean.setProductID(proId);
+                       bean.getPriceUnit();
                        newList.add(bean);
                        adapter.getCountMap().put(proId,count);
                    }

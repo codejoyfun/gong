@@ -57,6 +57,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout       loadingLayout;
+    @ViewInject(R.id.header)
+    private View headView;
 
     private LayoutInflater      layoutInflater;
     private ConvenientBanner    banner;
@@ -76,7 +78,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         //表头：放轮播+统计表
-        View headView = layoutInflater.inflate(R.layout.logined_head_layout,null);
+//        View headView = layoutInflater.inflate(R.layout.logined_head_layout,null);
         lastWeekBuy = (TextView) headView.findViewById(R.id.lastWeekBuy);
         lastMonthBuy = (TextView)headView.findViewById(R.id.lastMonthBuy);
         unPayMoney = (TextView)headView.findViewById(R.id.unPayAccount);
@@ -85,7 +87,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         int height = 175 * CommonUtils.getScreenWidth(mContext) / 375;
         banner.getLayoutParams().height = height;
 
-        pullListView.getRefreshableView().addHeaderView(headView);
+//        pullListView.getRefreshableView().addHeaderView(headView);
         adapter = new OrderAdapter(mContext,this);
         pullListView.setAdapter(adapter);
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

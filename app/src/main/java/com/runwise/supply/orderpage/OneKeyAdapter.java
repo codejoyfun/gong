@@ -80,6 +80,7 @@ public class OneKeyAdapter extends IBaseAdapter {
                 countMap.put(((DefaultPBean)bean).getProductID(),((DefaultPBean)bean).getPresetQty());
             }
         }
+        callback.countChanged();
     }
 
     @Override
@@ -139,15 +140,15 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.nameTv.setText(basicBean.getName());
             if (basicBean.getImage() != null)
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+            StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
+            sb.append("  ").append(basicBean.getUnit()).append("\n").append(basicBean.getPrice()).append("元/").append(basicBean.getUom());
+            viewHolder.contentTv.setText(sb.toString());
         }
         Integer proId = bean.getProductID();
         String count = String.valueOf(countMap.get(proId));
         ischange = true;
         editText.setText(count);
         ischange = false;
-        StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-        sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getUom());
-        viewHolder.contentTv.setText(sb.toString());
         viewHolder.mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,9 +205,6 @@ public class OneKeyAdapter extends IBaseAdapter {
                 }
             }
         });
-        if (position == mList.size() - 1){
-           callback.countChanged();
-        }
         if (selectArr.contains(bean)){
             viewHolder.checkbox.setChecked(true);
         }else{
