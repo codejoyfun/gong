@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -21,12 +20,11 @@ import com.runwise.supply.LauncherActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.business.entity.CollectResponse;
 import com.runwise.supply.business.entity.Item;
+import com.runwise.supply.tools.AndroidWorkaround;
 import com.runwise.supply.tools.ShareUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**

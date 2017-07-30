@@ -105,16 +105,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //下拉刷新:只刷新列表内容
-                requestData(true);
+                requestList();
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
             }
         });
-        requestData(false);
+        requestDashBoard();
+        requestLB();
+        pullListView.setRefreshing(true);
     }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -126,15 +127,19 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     }
 
     //一次性加载全部，无分页
-    private void requestData(boolean isOnlyLoadList) {
+    private void requestList() {
         Object request = null;
-        if (!isOnlyLoadList){
-            LunboRequest lbRequest = new LunboRequest("餐户端");
-            sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
-            sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
-        }
-        sendConnection("/gongfu/v2/orders/undone/detail",request,FROMORDER,true, OrderResponse.class);
+        sendConnection("/gongfu/v2/orders/undone/detail",request,FROMORDER,false, OrderResponse.class);
 
+    }
+    private void requestLB(){
+        Object request = null;
+        LunboRequest lbRequest = new LunboRequest("餐户端");
+        sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
+    }
+    private void requestDashBoard(){
+        Object request = null;
+        sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
     }
 
     @Override
@@ -165,7 +170,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 BaseEntity.ResultBean resultBean3= result.getResult();
                 if("A0006".equals(resultBean3.getState())){
                     ToastUtil.show(mContext,"取消成功");
-                    requestData(true);
+                    requestList();
                 }
                 break;
         }
@@ -209,6 +214,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case CANCLE:
                 dialog.setTitle("提示");
                 dialog.setMessage("确认取消订单?");
+                dialog.setMessageGravity();
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {

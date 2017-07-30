@@ -36,14 +36,13 @@ import com.runwise.supply.R;
 import com.runwise.supply.business.entity.DealerDetailRequest;
 import com.runwise.supply.business.entity.DealerDetainResponse;
 import com.runwise.supply.business.entity.ImagesBean;
+import com.runwise.supply.tools.AndroidWorkaround;
 import com.runwise.supply.tools.ShareUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import io.vov.vitamio.utils.Log;
 
 /**
  * Created by libin on 2017/1/9.

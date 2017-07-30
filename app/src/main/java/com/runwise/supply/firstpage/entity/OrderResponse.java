@@ -23,7 +23,11 @@ public class OrderResponse {
 
     public static class ListBean implements Parcelable{
         /**
-         * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,"deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,"saleOrderProductID":822,"lotIDs":["42"],"stockType":"lengcanghuo","settleAmount":5,"lotList":[{"lotPk":"82242","lotID":42,"name":"Z201707051792","qty":5}],"productUomQty":5}]
+         * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,
+         * "deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,
+         * "saleOrderProductID":822,"lotIDs":["42"],"stockType":"lengcanghuo",
+         * "settleAmount":5,"lotList":[{"lotPk":"82242","lotID":42,
+         * "name":"Z201707051792","qty":5}],"productUomQty":5}]
          * amountTotal : 40.0
          * endUnloadDatetime : 2017-07-14 11:13:16
          * estimatedDate : 2017-07-15

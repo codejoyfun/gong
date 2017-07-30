@@ -129,7 +129,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.senderTv.setText("未指派");
         }
         StringBuffer sb = new StringBuffer("共");
-        sb.append(bean.getAmount()).append("件商品");
+        sb.append((int)bean.getAmount()).append("件商品");
         viewHolder.countTv.setText(sb.toString());
         viewHolder.moneyTv.setText(bean.getAmountTotal()+"");
         StringBuffer drawableSb = new StringBuffer("state_restaurant_");

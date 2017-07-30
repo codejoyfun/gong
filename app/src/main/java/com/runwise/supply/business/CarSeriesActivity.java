@@ -10,22 +10,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.baidu.mapapi.map.Text;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.LauncherActivity;
@@ -33,12 +28,11 @@ import com.runwise.supply.R;
 import com.runwise.supply.business.entity.CarSeriesResponse;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.business.entity.SeriesRequest;
-import com.runwise.supply.message.DividePayStep1Activity;
+import com.runwise.supply.tools.AndroidWorkaround;
 import com.runwise.supply.tools.ShareUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
