@@ -115,6 +115,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
                 startActivity(intent);
             }
         });
+        requestLB();
     }
 
     @Override
@@ -132,20 +133,19 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             if (fragment != null && fragment.isVisible()){
                 getFragmentManager().beginTransaction().hide(fragment).show(this).commit();
             }
-            requestData(true);
+           pullListView.setRefreshing(true);
         }
     }
+    private void requestLB(){
+        //只在首次加载轮播图+统计表
+        LunboRequest lbRequest = new LunboRequest("餐户端");
+        sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,true,LunboResponse.class);
 
+    }
     private void requestData(boolean isStart) {
         int loadType;
         String loadStr;
         NewsRequest newsRequest = null;
-        if (isLoadFirst){
-            isLoadFirst = false;
-            //只在首次加载轮播图+统计表
-            LunboRequest lbRequest = new LunboRequest("餐户端");
-            sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
-        }
         if (isStart){
             loadType = FROMSTART;
             loadStr = "/gongfu/v2/wechat/news";
@@ -154,7 +154,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             loadStr = "/gongfu/v2/wechat/more";
             newsRequest = new NewsRequest(lastNewsId);
         }
-        sendConnection(loadStr,newsRequest,loadType,true,NewsResponse.class);
+        sendConnection(loadStr,newsRequest,loadType,false,NewsResponse.class);
     }
 
     @Override
