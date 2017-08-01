@@ -2,13 +2,14 @@ package com.runwise.supply.message.entity;
 
 import com.kids.commonframe.base.BaseEntity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by mychao on 2017/7/28.
  */
 
-public class MessageResult extends BaseEntity.ResultBean{
+public class MessageResult extends BaseEntity.ResultBean implements Serializable{
 
     private List<OrderBean> order;
     private List<ChannelBean> channel;
@@ -29,7 +30,7 @@ public class MessageResult extends BaseEntity.ResultBean{
         this.channel = channel;
     }
 
-    public static class OrderBean {
+    public static class OrderBean implements Serializable{
         /**
          * orderID : 285
          * state : done
@@ -214,7 +215,7 @@ public class MessageResult extends BaseEntity.ResultBean{
             this.loading_time = loading_time;
         }
 
-        public static class WaybillBean {
+        public static class WaybillBean  implements Serializable{
             /**
              * id : 9
              */
@@ -230,7 +231,7 @@ public class MessageResult extends BaseEntity.ResultBean{
             }
         }
 
-        public static class LastMessageBean {
+        public static class LastMessageBean  implements Serializable{
             /**
              * body : 🌝
              * id : 26945
@@ -295,7 +296,7 @@ public class MessageResult extends BaseEntity.ResultBean{
                 this.author_id = author_id;
             }
 
-            public static class AuthorIdBean {
+            public static class AuthorIdBean implements Serializable{
                 /**
                  * avatar_url : /gongfu/user/avatar/18/2145901519106070062.png
                  * id : 27

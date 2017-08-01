@@ -93,7 +93,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
     @Override
     protected int createViewByLayoutId() {
-        return R.layout.fragment_msg;
+        return R.layout.fragment_msg_list;
     }
 
     @Override
@@ -162,6 +162,8 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         }
         else{
             Intent dealIntent = new Intent(mContext,MessageDetailActivity.class);
+            MessageResult.OrderBean orderBean = bean.getOrderBean();
+            dealIntent.putExtra("orderBean",orderBean);
             startActivity(dealIntent);
         }
     }

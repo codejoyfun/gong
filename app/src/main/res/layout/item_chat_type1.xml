@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#f5f5f5"
+    android:paddingBottom="8dp"
+    >
+    <TextView
+        android:id="@+id/chatTimeLeft"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:textColor="#999999"
+        android:text="2012-12-1"
+        android:layout_marginTop="8dp"
+        />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        >
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/chatHeadLeft"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            fresco:placeholderImage="@drawable/cvrs_customerservice"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:viewAspectRatio="1"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="12dp"
+            />
+        <TextView
+            android:id="@+id/chatContextLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="260dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:background="@drawable/msg_context_bg"
+            android:textColor="#051b2a"
+            android:text="1234wefewfewfewfewfewfewfwefew"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:lineSpacingExtra="6dp"
+            />
+    </LinearLayout>
+</LinearLayout>
