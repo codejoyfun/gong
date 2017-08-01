@@ -36,11 +36,13 @@ import com.runwise.supply.firstpage.entity.DashBoardResponse;
 import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,6 +54,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int FROMLB = 1;
     private static final int FROMDB = 2;
     private static final int CANCEL = 3;        //取消订单
+    private static final int FROMRETURN = 4;
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -66,6 +69,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private TextView lastWeekBuy;
     private TextView lastMonthBuy;
     private TextView unPayMoney;
+    private List orderList = new ArrayList<>();
 
     public LoginedFirstFragment() {
     }
@@ -93,12 +97,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(mContext,OrderDetailActivity.class);
-                Bundle bundle = new Bundle();
-                OrderResponse.ListBean bean = (OrderResponse.ListBean) adapterView.getAdapter().getItem(i);
-                bundle.putParcelable("order",bean);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                //根据点击的position，确定是退货还是正常订单
+                if (adapter.getItemViewType(i) == adapter.TYPE_ORDER){
+                    Intent intent = new Intent(mContext,OrderDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapterView.getAdapter().getItem(i);
+                    bundle.putParcelable("order",bean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }else if(adapter.getItemViewType(i) == adapter.TYPE_RETURN){
+
+                }
             }
         });
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -126,10 +135,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         }
     }
 
-    //一次性加载全部，无分页
+    //一次性加载全部，无分页,先加载退货单，然后跟着正常订单
     private void requestList() {
         Object request = null;
-        sendConnection("/gongfu/v2/orders/undone/detail",request,FROMORDER,false, OrderResponse.class);
+        sendConnection("/gongfu/v2/return_order/undone/",request,FROMRETURN,false,ReturnOrderBean.class);
 
     }
     private void requestLB(){
@@ -153,7 +162,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FROMORDER:
                 BaseEntity.ResultBean resultBean= result.getResult();
                 OrderResponse response = (OrderResponse) resultBean.getData();
-                adapter.setData(response.getList());
+                int addIndex = orderList.size();
+                orderList.addAll(addIndex,response.getList());
+                adapter.setOrderCount(response.getList().size());
+                adapter.setData(orderList);
                 pullListView.onRefreshComplete();
                 break;
             case FROMLB:
@@ -172,6 +184,16 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     ToastUtil.show(mContext,"取消成功");
                     requestList();
                 }
+                break;
+            case FROMRETURN:
+                BaseEntity.ResultBean resultBean4= result.getResult();
+                ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
+                orderList.clear();
+                orderList.addAll(rob.getList());
+                adapter.setReturnCount(orderList.size());
+                adapter.setData(orderList);
+                Object request = null;
+                sendConnection("/gongfu/v2/order/undone_orders/",request,FROMORDER,false, OrderResponse.class);
                 break;
         }
     }
