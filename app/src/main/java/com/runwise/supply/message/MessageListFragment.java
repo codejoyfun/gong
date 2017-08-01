@@ -236,7 +236,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
             case REQUEST_DEN:
                 MsgListResult endResult = (MsgListResult)result.getResult();
                 if (endResult.getList() != null && !endResult.getList().isEmpty()) {
-                    adapter.appendToTop(endResult.getList());
+                    adapter.appendData(endResult.getList());
 //                    pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 }
 //                else {
