@@ -116,15 +116,16 @@
                 android:visibility="gone"
                 android:textColor="#2E2E2E"
                 />
-            <Button
+            <TextView
                 android:id="@+id/uploadBtn"
                 android:layout_width="86dp"
                 android:layout_height="31dp"
                 android:text="上传凭证"
+                android:gravity="center"
                 android:visibility="gone"
                 android:layout_alignParentRight="true"
                 android:layout_alignBottom="@id/payStateTv"
-                android:background="@drawable/firstpage_do_circle"
+                android:background="@drawable/orderdetail_do_circle"
                 />
         </RelativeLayout>
         <View

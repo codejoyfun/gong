@@ -113,6 +113,8 @@ public class OrderAdapter extends IBaseAdapter {
                         action = OrderDoAction.RECEIVE;
                     }else if("上传支付凭证".equals(doAction)){
                         action = OrderDoAction.UPLOAD;
+                    }else if("查看支付凭证".equals(doAction)){
+                        action = OrderDoAction.LOOK;
                     }else if("评价".equals(doAction)){
                         action = OrderDoAction.RATE;
                     }
@@ -135,7 +137,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.timeTv.setText(bean.getEstimatedTime());
             viewHolder.stateTv.setText(OrderState.getValueByName(bean.getState()));
             viewHolder.stateTv.setTextColor(Color.parseColor("#333333"));
-            if (bean.getWaybill() != null && bean.getWaybill() != null){
+            if (bean.getWaybill() != null && bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null){
                 viewHolder.carNumTv.setText(bean.getWaybill().getDeliverVehicle().getLicensePlate());
             }else{
                 viewHolder.carNumTv.setText("未指派");
@@ -158,8 +160,12 @@ public class OrderAdapter extends IBaseAdapter {
             }
             String doString = getDoBtnTextByState(bean);
             if (!TextUtils.isEmpty(doString)){
-                viewHolder.doBtn.setVisibility(View.VISIBLE);
-                viewHolder.doBtn.setText(doString);
+                if (doString.equals("已评价")){
+                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+                }else{
+                    viewHolder.doBtn.setVisibility(View.VISIBLE);
+                    viewHolder.doBtn.setText(doString);
+                }
             }else{
                 viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
@@ -228,9 +234,14 @@ public class OrderAdapter extends IBaseAdapter {
             }
 
         }else if(bean.getState().equals(OrderState.DONE.getName())){
-            btnText = "上传支付凭证";
+            if (bean.getHasAttachment() != 0){
+                btnText = "查看支付凭证";
+            }else{
+                btnText = "上传支付凭证";
+            }
+
         }else if(bean.getState().equals(OrderState.RATED.getName())){
-            btnText = "评价";
+            btnText = "已评价";
         }
         return btnText;
     }

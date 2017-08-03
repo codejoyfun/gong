@@ -33,6 +33,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -437,7 +438,9 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 totalMoney += count*price;
             }
         }
-        totalMoneyTv.setText(totalMoney+"元");
+        DecimalFormat df = new DecimalFormat("#.00");
+        String formatMoney = df.format(totalMoney);
+        totalMoneyTv.setText(formatMoney+"元");
         totalNumTv.setText(totalNum+"件");
         setTitleEditShow();
 

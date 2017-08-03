@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -56,7 +57,7 @@ public class OrderDetailActivity extends NetWorkActivity{
     @ViewInject(R.id.payStateValue)
     private TextView payStateValue;
     @ViewInject(R.id.uploadBtn)
-    private Button uploadBtn;
+    private TextView uploadBtn;
     @ViewInject(R.id.receivtTv)
     private TextView receivtTv;
     @ViewInject(R.id.returnTv)
@@ -176,8 +177,16 @@ public class OrderDetailActivity extends NetWorkActivity{
             }else if (bean.getState().equals("done")){
                 state = "订单已收货";
                 tip = "收货人："+bean.getReceiveUserName();
-                rightBtn.setText("评价");
-                rightBtn2.setText("售后订单");
+                if (TextUtils.isEmpty(bean.getAppraisalUserName())){
+                    rightBtn.setText("评价");
+                    rightBtn2.setText("售后订单");
+                }else{
+                    //已评价，只显示一个按钮
+                    rightBtn.setText("售后订单");
+                    rightBtn2.setVisibility(View.INVISIBLE);
+                }
+
+
             }else if(bean.getState().equals("rated")){
                 state = "订单已评价";
                 rightBtn.setText("售后订单");

@@ -98,17 +98,18 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //根据点击的position，确定是退货还是正常订单
-                if (adapter.getItemViewType(i) == adapter.TYPE_ORDER){
+                int realPosition = (int)l;
+                if (adapter.getItemViewType(realPosition) == adapter.TYPE_ORDER){
                     Intent intent = new Intent(mContext,OrderDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapterView.getAdapter().getItem(i);
+                    OrderResponse.ListBean bean = (OrderResponse.ListBean) orderList.get(realPosition);
                     bundle.putParcelable("order",bean);
                     intent.putExtras(bundle);
                     startActivity(intent);
-                }else if(adapter.getItemViewType(i) == adapter.TYPE_RETURN){
+                }else if(adapter.getItemViewType(realPosition) == adapter.TYPE_RETURN){
                     Intent intent = new Intent(mContext,ReturnDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) adapterView.getAdapter().getItem(i);
+                    ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) orderList.get(realPosition);
                     bundle.putParcelable("return",bean);
                     intent.putExtras(bundle);
                     startActivity(intent);
@@ -195,7 +196,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
                 orderList.clear();
                 orderList.addAll(rob.getList());
-                adapter.setReturnCount(orderList.size());
+                adapter.setReturnCount(rob.getList().size());
                 adapter.setData(orderList);
                 Object request = null;
                 sendConnection("/gongfu/v2/order/undone_orders/",request,FROMORDER,false, OrderResponse.class);
@@ -258,6 +259,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 uIntent.putExtra("orderid",ordereId);
                 uIntent.putExtra("ordername",orderNmae);
                 startActivity(uIntent);
+                break;
+            case LOOK:
+//                hasattachment
+                Intent lIntent = new Intent(mContext,UploadPayedPicActivity.class);
+                int ordereId2 = ((OrderResponse.ListBean)adapter.getItem(position)).getOrderID();
+                String orderNmae2 = ((OrderResponse.ListBean)adapter.getItem(position)).getName();
+                lIntent.putExtra("orderid",ordereId2);
+                lIntent.putExtra("ordername",orderNmae2);
+                lIntent.putExtra("hasattachment",true);
+                startActivity(lIntent);
+
                 break;
             case TALLY:
                 break;

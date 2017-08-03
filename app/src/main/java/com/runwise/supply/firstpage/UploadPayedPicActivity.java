@@ -221,7 +221,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                 //删除成功了，从本地集合中删除
                 ToastUtil.show(mContext,"删除成功");
                 picList.remove(currentDelete);
-                if (picList.size() < 3){
+                if (picList.size() < 3 && !picList.contains(ADDBUTTON)){
                     picList.add(ADDBUTTON);
                 }
                 adapter.notifyDataSetChanged();
