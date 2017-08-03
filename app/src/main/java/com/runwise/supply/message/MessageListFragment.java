@@ -1,31 +1,45 @@
 package com.runwise.supply.message;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.DateUtils;
-import android.view.LayoutInflater;
+import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.util.DateFormateUtil;
+import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.mine.OrderDataType;
-import com.runwise.supply.mine.entity.OrderResult;
-import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.message.entity.MessageListEntity;
+import com.runwise.supply.message.entity.MessageResult;
+import com.runwise.supply.message.entity.MsgListResult;
+import com.runwise.supply.message.entity.MsgSendRequest;
 
 /**
  * 聊天信息
@@ -34,40 +48,99 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
+    private static final int REQUEST_SEND = 4;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
-    private CarInfoListAdapter adapter;
-    private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
+    private MsgListAdapter adapter;
+    private PullToRefreshBase.OnRefreshListener mOnRefreshListener2;
 
     private int page = 1;
+
+    @ViewInject(R.id.editText)
+    private EditText editText;
+
+    @ViewInject(R.id.chatIcon)
+    private ImageView         chatIcon;
+    @ViewInject(R.id.chatName)
+    private  TextView         chatName;
+    @ViewInject(R.id.chatTime)
+    private  TextView         chatTime;
+    @ViewInject(R.id.chatStatus)
+    private TextView         chatStatus;
+    @ViewInject(R.id.chatContext)
+    private  TextView            chatContext;
+    @ViewInject(R.id.sendMsgBtn)
+    private TextView sendMsgBtn;
+    private MessageResult.OrderBean orderBean;
+
+    public int type;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        orderBean = (MessageResult.OrderBean) this.getActivity().getIntent().getSerializableExtra("orderBean");
+        //待确认
+        if("draft".equals(orderBean.getState())) {
+            chatStatus.setText("待确认");
+            chatIcon.setImageResource(R.drawable.state_restaurant_1_tocertain);
+        }
+        //已确认
+        else if("sale".equals(orderBean.getState())) {
+            chatStatus.setText("已确认");
+            chatIcon.setImageResource(R.drawable.state_restaurant_2_certain);
+        }
+        //已发货
+        else if("peisong".equals(orderBean.getState())) {
+            chatStatus.setText("已发货");
+            chatIcon.setImageResource(R.drawable.state_restaurant_3_delivering);
+        }
+        //已收货
+        else if("done".equals(orderBean.getState())) {
+            chatStatus.setText("已收货");
+            chatIcon.setImageResource(R.drawable.state_restaurant_2_certain);
+        }
+        //已评价
+        else if("rated".equals(orderBean.getState())) {
+            chatStatus.setText("已评价");
+            chatIcon.setImageResource(R.drawable.state_restaurant_5_rated);
+        }
+        //已取消cancel
+        else{
+            chatStatus.setText("订单关闭");
+            chatIcon.setImageResource(R.drawable.state_restaurant_6_closed);
+        }
+        chatName.setText(orderBean.getName());
+        chatTime.setText(orderBean.getEstimated_time());
+        chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
+
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
-        pullListView.setMode(PullToRefreshBase.Mode.BOTH);
+        pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         pullListView.setOnItemClickListener(this);
 
-        adapter = new CarInfoListAdapter();
+        adapter = new MsgListAdapter();
 
         if(mOnRefreshListener2 == null){
-            mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener<ListView>() {
                 @Override
-                public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                    String label = DateUtils.formatDateTime(mContext, System.currentTimeMillis(),
-                            DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
-                    refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-                    page = 1;
-                    requestData(false, REQUEST_START, page, 10);
-                }
-
-                @Override
-                public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                public void onRefresh(PullToRefreshBase<ListView> refreshView) {
                     requestData(false, REQUEST_DEN, (++page), 10);
+
+//                @Override
+//                public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+//                    String label = DateUtils.formatDateTime(mContext, System.currentTimeMillis(),
+//                            DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+//                    refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+//                    page = 1;
+//                    requestData(false, REQUEST_START, page, 10);
+//                }
+//
+//                @Override
+//                public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+//                    requestData(false, REQUEST_DEN, (++page), 10);
                 }
             };
 
@@ -75,9 +148,36 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        loadingLayout.setStatusLoading();
+//        loadingLayout.setStatusLoading();
         requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
+        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String msgText = editText.getText().toString();
+                if(orderBean != null) {
+                    sendMessage(orderBean.getId(),msgText);
+                }
+            }
+        });
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(TextUtils.isEmpty(editable.toString())) {
+                    sendMsgBtn.setEnabled(false);
+                }
+                else{
+                    sendMsgBtn.setEnabled(true);
+                }
+            }
+        });
     }
 
 
@@ -85,7 +185,33 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         PageRequest request = new PageRequest();
         request.setLimit(limit);
         request.setPz(page);
-        sendConnection("/gongfu/order/list",request,where,showDialog,OrderResult.class);
+
+//        http://develop.runwise.cn/gongfu/message/order/293/list 在线客服
+
+        //  http://develop.runwise.cn/gongfu/message/waybill/132/293/list 配送员
+        if(orderBean != null) {
+            switch (type) {
+                case 0:
+                    int orderId = orderBean.getId();
+                    request.setOrder_id(orderId);
+                    sendConnection("/gongfu/message/order/" + orderId + "/list", request, where, showDialog, MsgListResult.class);
+                    break;
+                case 1:
+                    MessageResult.OrderBean.WaybillBean wayBill = orderBean.getWaybill();
+                    if(wayBill != null && wayBill.getId() != 0) {
+                        int oId = orderBean.getId();
+                        int bId = wayBill.getId();
+                        request.setOrder_id(oId);
+                        request.setWaybill_id(bId);
+                        sendConnection("/gongfu/message/waybill/"+bId+"/" + oId + "/list", request, where, showDialog, MsgListResult.class);
+                    }
+                    else{
+                        ToastUtil.show(mContext,"该订单没有配送员，暂时不能聊天");
+                    }
+                    break;
+            }
+
+        }
     }
 
 
@@ -93,26 +219,34 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
-                OrderResult mainListResult = (OrderResult)result.getResult();
+                MsgListResult mainListResult = (MsgListResult)result.getResult();
                 adapter.setData(mainListResult.getList());
-//                mainListResult.getEntities().get(0).setOrder_status(11);
-                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
-                pullListView.onRefreshComplete(Integer.MAX_VALUE);
+//                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+//                pullListView.onRefreshComplete(Integer.MAX_VALUE);
+                pullListView.onRefreshComplete();
+                if(adapter.getCount() >0) {
+                    pullListView.getRefreshableView().setSelection(adapter.getCount() - 1);
+                }
                 break;
-            case REQUEST_START:
-                OrderResult startResult = (OrderResult)result.getResult();
-                adapter.setData(startResult.getList());
-                pullListView.onRefreshComplete(Integer.MAX_VALUE);
-                break;
+//            case REQUEST_START:
+//                MsgListResult startResult = (MsgListResult)result.getResult();
+////                adapter.setData(startResult.getList());
+//                pullListView.onRefreshComplete(Integer.MAX_VALUE);
+//                break;
             case REQUEST_DEN:
-                OrderResult endResult = (OrderResult)result.getResult();
+                MsgListResult endResult = (MsgListResult)result.getResult();
                 if (endResult.getList() != null && !endResult.getList().isEmpty()) {
                     adapter.appendData(endResult.getList());
-                    pullListView.onRefreshComplete(Integer.MAX_VALUE);
+//                    pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 }
-                else {
-                    pullListView.onRefreshComplete(adapter.getCount());
-                }
+//                else {
+//                    pullListView.onRefreshComplete(adapter.getCount());
+//                }
+                pullListView.onRefreshComplete();
+                break;
+            case REQUEST_SEND:
+                requestData(false, REQUEST_MAIN, 1, 10);
+                editText.setText("");
                 break;
         }
     }
@@ -145,7 +279,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
 
     @Override
     protected int createViewByLayoutId() {
-        return R.layout.activity_collection_list;
+        return R.layout.activity_chatmsg_list;
     }
 
     @Override
@@ -155,44 +289,133 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         requestData(false, REQUEST_MAIN, page, 10);
     }
 
-
-    public class CarInfoListAdapter extends IBaseAdapter<OrderResult.ListBean> {
+    public void sendMessage(int orderId,String common) {
+        MsgSendRequest msgSendRequest = new MsgSendRequest();
+        msgSendRequest.setOrder_id(orderId);
+        msgSendRequest.setComment(common);
+        switch (type) {
+            case 0:
+                sendConnection("/gongfu/message/order/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                break;
+            case 1:
+                MessageResult.OrderBean.WaybillBean wayBill = orderBean.getWaybill();
+                if(wayBill != null && wayBill.getId() != 0) {
+                    int bId = wayBill.getId();
+                    msgSendRequest.setWaybill_id(bId);
+//                    http://develop.runwise.cn/gongfu/message/waybill/132/293/write
+                    sendConnection("/gongfu/message/waybill/" + bId + "/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                }
+                else {
+                    ToastUtil.show(mContext,"该订单没有配送员，暂时不能聊天");
+                }
+                break;
+        }
+    }
+    public class MsgListAdapter extends IBaseAdapter<MsgListResult.ListBean> {
         @Override
-        protected View getExView(int position, View convertView,
-                                 ViewGroup parent) {
-            ViewHolder holder = null;
+        protected View getExView(int position, View convertView, ViewGroup parent) {
+            final ViewHolder viewHolder;
+            int viewType = getItemViewType(position);
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_step_pay, null);
-                holder = new ViewHolder();
-                ViewUtils.inject(holder,convertView);
-                convertView.setTag(holder);
+                viewHolder = new ViewHolder();
+                switch (viewType) {
+                    case 0:
+                        convertView = View.inflate(mContext, R.layout.item_chat_type1, null);
+                        break;
+                    case 1:
+                        convertView = View.inflate(mContext, R.layout.item_chat_type2, null);
+                        break;
+                }
+                ViewUtils.inject(viewHolder,convertView);
+                convertView.setTag(viewHolder);
             }
             else {
-                holder = (ViewHolder) convertView.getTag();
+                viewHolder = (ViewHolder) convertView.getTag();
             }
-            OrderResult.ListBean bean = mList.get(position);
+            final MsgListResult.ListBean bean =  mList.get(position);
+            switch (viewType) {
+                case 0:
+                    if(bean.getFaq() != null && !bean.getFaq().isEmpty()) {
+                        viewHolder.chatContextLeft.setText(bean.getBody()+"\n");
+                        for(int i = 0; i < bean.getFaq().size(); i++ ){
+                            final MsgListResult.ListBean.FaqBean faq = bean.getFaq().get(i);
+                            SpannableString spannableString = null;
+                            if( i == bean.getFaq().size() -1) {
+                                spannableString = new SpannableString(faq.getQuestion());
+                            }
+                            else{
+                                spannableString = new SpannableString(faq.getQuestion() + "\n");
+                            }
+                            spannableString.setSpan(new ClickableSpan() {
+                                @Override
+                                public void updateDrawState(TextPaint ds) {
+                                    ds.setColor(getResources().getColor(R.color.base_color));       //设置文件颜色
+                                }
+                                @Override
+                                public void onClick(View widget) {
+                                    int orderId = orderBean.getId();
+                                    sendMessage(orderId,faq.getQuestion());
+                                }
+                            }, 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            viewHolder.chatContextLeft.append(spannableString);
+                        }
+                        viewHolder.chatContextLeft.setHighlightColor(Color.TRANSPARENT);
+                        viewHolder.chatContextLeft.setMovementMethod(LinkMovementMethod.getInstance());
+                    }
+                    else{
+                        viewHolder.chatContextLeft.setText(bean.getBody());
+                    }
+                    viewHolder.chatTimeLeft.setText(DateFormateUtil.InfoClassShowdateFormat(bean.getDate()));
+                    Uri uri = null;
+                    switch (type) {
+                        case 0:
+                            uri = Uri.parse("res:///" + R.drawable.cvrs_customerservice);
+                            break;
+                        case 1:
+                            uri = Uri.parse("res:///" + R.drawable.comment_profilephoto);
+                            break;
+                    }
+                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.chatHeadLeft,uri);
+                    break;
 
-            holder.payTitle.setText(bean.getName());
-            holder.payDate.setText(bean.getEstimated_date());
-            holder.patSum.setText("共"+bean.getAmount()+"件商品");
-            holder.payMoney.setText(bean.getAmountTotal()+"");
+                case 1:
+                    if( bean.getAuthor_id() != null) {
+                        FrecoFactory.getInstance(mContext).disPlay(viewHolder.chatHeadRight, Constant.BASE_URL + bean.getAuthor_id().getAvatar_url());
+                    }
+                    viewHolder.chatContextRight.setText(bean.getBody());
+                    viewHolder.chatTimeRight.setText(DateFormateUtil.InfoClassShowdateFormat(bean.getDate()));
+                    break;
+            }
             return convertView;
         }
+        @Override
+        public int getItemViewType(int position) {
+            MsgListResult.ListBean bean =  mList.get(position);
+            if("question".equals(bean.getModel()) || "answer".equals(bean.getModel())) {
+                return 0;
+            }
+            return 1;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
         class ViewHolder {
-            @ViewInject(R.id.payTitle)
-            TextView payTitle;
-            @ViewInject(R.id.payStatus)
-            TextView payStatus;
-            @ViewInject(R.id.payDate)
-            TextView payDate;
-            @ViewInject(R.id.patSum)
-            TextView patSum;
-            @ViewInject(R.id.payMoney)
-            TextView payMoney;
-            @ViewInject(R.id.payBtn)
-            TextView payBtn;
-            @ViewInject(R.id.orderStatus)
-            ImageView orderStatus;
+            @ViewInject(R.id.chatHeadLeft)
+            SimpleDraweeView chatHeadLeft;
+            @ViewInject(R.id.chatContextLeft)
+            TextView chatContextLeft;
+            @ViewInject(R.id.chatTimeLeft)
+            TextView chatTimeLeft;
+
+            @ViewInject(R.id.chatHeadRight)
+            SimpleDraweeView        chatHeadRight;
+            @ViewInject(R.id.chatContextRight)
+            TextView         chatContextRight;
+            @ViewInject(R.id.chatTimeRight)
+            TextView chatTimeRight;
         }
     }
 }
