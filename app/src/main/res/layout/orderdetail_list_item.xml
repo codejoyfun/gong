@@ -46,10 +46,11 @@
         android:layout_width="wrap_content"
         android:layout_height="22dp"
         android:textSize="12sp"
-        android:text="20斤"
-        android:layout_alignRight="@id/countLL"
-        android:layout_below="@id/countLL"
-        android:textColor="#2E2E2E"/>
+        android:text=""
+        android:textColor="#2E2E2E"
+        android:layout_below="@+id/countLL"
+        android:layout_alignRight="@+id/countLL"
+        android:layout_alignEnd="@+id/countLL" />
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"

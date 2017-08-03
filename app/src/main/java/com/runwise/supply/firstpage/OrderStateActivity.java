@@ -17,6 +17,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderStateLine;
+import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public class OrderStateActivity extends NetWorkActivity {
     private RecyclerView recyclerView;
     private StateAdatper adatper;
     private List<OrderStateLine> datas = new ArrayList<>();
-    private String deliverPhone;  //默认没有
+    private String deliverPhone;        //默认没有
+    private boolean isReturnMode;       //退货单模式,默认是处于订单模式下
     private BottomDialog dialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -49,7 +51,12 @@ public class OrderStateActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_state_line_layout);
-        setTitleText(true,"订单状态");
+        isReturnMode = getIntent().getBooleanExtra("mode",false);
+        if (isReturnMode){
+            setTitleText(true,"退货单状态");
+        }else{
+            setTitleText(true,"订单状态");
+        }
         setTitleLeftIcon(true,R.drawable.nav_back);
         setTitleRigthIcon(true,R.drawable.nav_contract);
         //从上个页面获取数据
@@ -103,56 +110,97 @@ public class OrderStateActivity extends NetWorkActivity {
     }
     private void setOrderTracker() {
         Bundle bundle = getIntent().getExtras();
-        OrderResponse.ListBean bean = bundle.getParcelable("order");
-        //从bean里面拼各种内容
-        if (bean == null){
-            ToastUtil.show(mContext,"网络异常，请退出重新加载");
-            return;
-        }
-        ArrayList<String> trackers = (ArrayList<String>) bean.getStateTracker();
-        for (String str : trackers){
-            OrderStateLine osl = new OrderStateLine();
-            String[] pieces = str.split(" ");
-            StringBuffer timeSb = new StringBuffer();
-            String state = "";
-            StringBuffer content = new StringBuffer();
-            if (pieces.length >= 3){
-                state = pieces[2];
-                timeSb.append(pieces[0]).append(pieces[1]);
-            }
-            osl.setState(state);
-            osl.setTime(timeSb.toString());
-            if (str.contains("已评价")){
-                content.append("评价员：").append(bean.getAppraisalUserName())
-                        .append(",如有问题请联系客服");
-            }else if(str.contains("已收货")){
-                content.append("收货员：").append(bean.getReceiveUserName());
-            }else if(str.contains("已点货")){
-                content.append("点货员：").append(bean.getTallyingUserName());
-            }else if(str.contains("已发货")){
-                content.append("车牌号：");
-                if (bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null ){
-                    if (bean.getWaybill().getDeliverUser().getMobile() != null){
-                        deliverPhone = bean.getWaybill().getDeliverUser().getMobile();
-                    }
-                    content.append(bean.getWaybill().getDeliverVehicle().getLicensePlate())
-                            .append("\n").append("配送员：").append(bean.getWaybill().getDeliverUser().getName())
-                            .append(bean.getWaybill().getDeliverUser().getMobile()).append("\n")
-                            .append("预计到达时间：").append(bean.getEstimatedTime());
-                }else{
-                    content.append("暂未分配");
+        if (isReturnMode){
+            ReturnOrderBean.ListBean bean = bundle.getParcelable("return");
+            ArrayList<String> trackers = (ArrayList<String>) bean.getStateTracker();
+            for (String str : trackers) {
+                OrderStateLine osl = new OrderStateLine();
+                String[] pieces = str.split(" ");
+                StringBuffer timeSb = new StringBuffer();
+                String state = "";
+                StringBuffer content = new StringBuffer();
+                if (pieces.length >= 3) {
+                    state = pieces[2];
+                    timeSb.append(pieces[0]).append(pieces[1]);
                 }
-            }else if(str.contains("已确认")){
-                content.append("正在为您挑拣商品");
-            }else if(str.contains("已修改")){
-                content.append("共").append(bean.getDeliveredQty()).append("件商品,")
-                        .append("¥").append(bean.getAmountTotal());
-            }else if(str.contains("已提交")){
-                content.append("订单号：").append(bean.getName());
+                osl.setState(state);
+                osl.setTime(timeSb.toString());
+                if (bean.getState().equals("process")) {
+                    //退货中...
+                    if (bean.getDriver() != null) {
+                        //订单审核通过
+                        content.append("请等待取货员上门取货").append("\n")
+                                .append("车牌号：").append("\n")
+                                .append("取货员：").append("\n")
+                                .append("预计取货时间：").append(bean.getLoadingDate());
+                    } else {
+                        //订单已提交
+                        content.append("订单号：").append(bean.getOrderID()).append("\n")
+                                .append("退货商品：").append(bean.getAmount()).append("件，共")
+                                .append(bean.getAmountTotal()).append("元").append("\n");
+                    }
+                } else {
+                    //退货成功
+                    content.append("退货成功，退货商品：").append(bean.getAmount()).append("件，共")
+                            .append(bean.getAmountTotal()).append("元");
+                }
+                osl.setContent(content.toString());
+                datas.add(osl);
             }
-            osl.setContent(content.toString());
-            datas.add(osl);
+
+        }else{
+            OrderResponse.ListBean bean = bundle.getParcelable("order");
+            //从bean里面拼各种内容
+            if (bean == null){
+                ToastUtil.show(mContext,"网络异常，请退出重新加载");
+                return;
+            }
+            ArrayList<String> trackers = (ArrayList<String>) bean.getStateTracker();
+            for (String str : trackers){
+                OrderStateLine osl = new OrderStateLine();
+                String[] pieces = str.split(" ");
+                StringBuffer timeSb = new StringBuffer();
+                String state = "";
+                StringBuffer content = new StringBuffer();
+                if (pieces.length >= 3){
+                    state = pieces[2];
+                    timeSb.append(pieces[0]).append(pieces[1]);
+                }
+                osl.setState(state);
+                osl.setTime(timeSb.toString());
+                if (str.contains("已评价")){
+                    content.append("评价员：").append(bean.getAppraisalUserName())
+                            .append(",如有问题请联系客服");
+                }else if(str.contains("已收货")){
+                    content.append("收货员：").append(bean.getReceiveUserName());
+                }else if(str.contains("已点货")){
+                    content.append("点货员：").append(bean.getTallyingUserName());
+                }else if(str.contains("已发货")){
+                    content.append("车牌号：");
+                    if (bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null ){
+                        if (bean.getWaybill().getDeliverUser().getMobile() != null){
+                            deliverPhone = bean.getWaybill().getDeliverUser().getMobile();
+                        }
+                        content.append(bean.getWaybill().getDeliverVehicle().getLicensePlate())
+                                .append("\n").append("配送员：").append(bean.getWaybill().getDeliverUser().getName())
+                                .append(bean.getWaybill().getDeliverUser().getMobile()).append("\n")
+                                .append("预计到达时间：").append(bean.getEstimatedTime());
+                    }else{
+                        content.append("暂未分配");
+                    }
+                }else if(str.contains("已确认")){
+                    content.append("正在为您挑拣商品");
+                }else if(str.contains("已修改")){
+                    content.append("共").append(bean.getDeliveredQty()).append("件商品,")
+                            .append("¥").append(bean.getAmountTotal());
+                }else if(str.contains("已提交")){
+                    content.append("订单号：").append(bean.getName());
+                }
+                osl.setContent(content.toString());
+                datas.add(osl);
+            }
         }
+
         adatper = new StateAdatper(mContext,datas);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adatper);

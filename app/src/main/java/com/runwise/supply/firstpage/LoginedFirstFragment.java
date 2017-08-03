@@ -106,7 +106,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     intent.putExtras(bundle);
                     startActivity(intent);
                 }else if(adapter.getItemViewType(i) == adapter.TYPE_RETURN){
-
+                    Intent intent = new Intent(mContext,ReturnDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) adapterView.getAdapter().getItem(i);
+                    bundle.putParcelable("return",bean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
             }
         });

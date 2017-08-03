@@ -41,7 +41,7 @@ public class ProductBasicList {
         @Column
         private boolean isTwoUnit;
         @Column
-        private boolean settlePrice;
+        private float settlePrice;
         @Column
         private String uom;
         @Column
@@ -78,11 +78,11 @@ public class ProductBasicList {
             isTwoUnit = twoUnit;
         }
 
-        public boolean isSettlePrice() {
+        public float getSettlePrice() {
             return settlePrice;
         }
 
-        public void setSettlePrice(boolean settlePrice) {
+        public void setSettlePrice(float settlePrice) {
             this.settlePrice = settlePrice;
         }
 

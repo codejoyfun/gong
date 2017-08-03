@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:background="#FFFFFF"
@@ -28,6 +28,7 @@
             android:layout_alignLeft="@id/orderStateTv"
             />
         <TextView
+            android:id="@+id/dateTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="04-30"
@@ -47,4 +48,3 @@
             android:drawableRight="@drawable/orderdetail_greenarrow"
             android:layout_alignBaseline="@id/tipTv"/>
     </RelativeLayout>
-</merge>

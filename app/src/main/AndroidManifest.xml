@@ -502,6 +502,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme"
             />
+        <activity android:name=".firstpage.ReturnDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImageTranslucentTheme"
+            />
     </application>
 
 </manifest>

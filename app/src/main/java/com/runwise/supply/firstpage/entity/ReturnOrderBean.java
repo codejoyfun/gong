@@ -1,5 +1,8 @@
 package com.runwise.supply.firstpage.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
@@ -18,7 +21,10 @@ public class ReturnOrderBean{
         this.list = list;
     }
 
-    public static class ListBean {
+    public static class ListBean implements Parcelable{
+        public ListBean() {
+        }
+
         /**
          * orderID : 561
          * doneDate :
@@ -58,6 +64,35 @@ public class ReturnOrderBean{
         private Object driveMobile;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+
+        protected ListBean(Parcel in) {
+            orderID = in.readInt();
+            doneDate = in.readString();
+            name = in.readString();
+            isTwoUnit = in.readByte() != 0;
+            doneDtate = in.readString();
+            createDate = in.readString();
+            createUser = in.readString();
+            amount = in.readDouble();
+            amountTotal = in.readDouble();
+            state = in.readString();
+            isDispatch = in.readByte() != 0;
+            returnOrderID = in.readInt();
+            lines = in.createTypedArrayList(LinesBean.CREATOR);
+            stateTracker = in.createStringArrayList();
+        }
+
+        public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
+            @Override
+            public ListBean createFromParcel(Parcel in) {
+                return new ListBean(in);
+            }
+
+            @Override
+            public ListBean[] newArray(int size) {
+                return new ListBean[size];
+            }
+        };
 
         public int getOrderID() {
             return orderID;
@@ -203,7 +238,33 @@ public class ReturnOrderBean{
             this.stateTracker = stateTracker;
         }
 
-        public static class LinesBean {
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(orderID);
+            dest.writeString(doneDate);
+            dest.writeString(name);
+            dest.writeByte((byte) (isTwoUnit ? 1 : 0));
+            dest.writeString(doneDtate);
+            dest.writeString(createDate);
+            dest.writeString(createUser);
+            dest.writeDouble(amount);
+            dest.writeDouble(amountTotal);
+            dest.writeString(state);
+            dest.writeByte((byte) (isDispatch ? 1 : 0));
+            dest.writeInt(returnOrderID);
+            dest.writeTypedList(lines);
+            dest.writeStringList(stateTracker);
+        }
+
+        public static class LinesBean implements Parcelable{
+            public LinesBean() {
+            }
+
             /**
              * productUom : 条
              * priceUnit : 8.0
@@ -235,6 +296,35 @@ public class ReturnOrderBean{
             private double productUomQty;
             private List<String> lotIDs;
             private List<LotListBean> lotList;
+
+            protected LinesBean(Parcel in) {
+                productUom = in.readString();
+                priceUnit = in.readDouble();
+                tax = in.readDouble();
+                discount = in.readDouble();
+                deliveredQty = in.readDouble();
+                priceSubtotal = in.readDouble();
+                productID = in.readInt();
+                saleOrderProductID = in.readInt();
+                pickupWeight = in.readDouble();
+                pickupNum = in.readDouble();
+                stockType = in.readString();
+                productUomQty = in.readDouble();
+                lotIDs = in.createStringArrayList();
+                lotList = in.createTypedArrayList(LotListBean.CREATOR);
+            }
+
+            public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {
+                @Override
+                public LinesBean createFromParcel(Parcel in) {
+                    return new LinesBean(in);
+                }
+
+                @Override
+                public LinesBean[] newArray(int size) {
+                    return new LinesBean[size];
+                }
+            };
 
             public String getProductUom() {
                 return productUom;
@@ -348,7 +438,33 @@ public class ReturnOrderBean{
                 this.lotList = lotList;
             }
 
-            public static class LotListBean {
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeString(productUom);
+                dest.writeDouble(priceUnit);
+                dest.writeDouble(tax);
+                dest.writeDouble(discount);
+                dest.writeDouble(deliveredQty);
+                dest.writeDouble(priceSubtotal);
+                dest.writeInt(productID);
+                dest.writeInt(saleOrderProductID);
+                dest.writeDouble(pickupWeight);
+                dest.writeDouble(pickupNum);
+                dest.writeString(stockType);
+                dest.writeDouble(productUomQty);
+                dest.writeStringList(lotIDs);
+                dest.writeTypedList(lotList);
+            }
+
+            public static class LotListBean implements Parcelable{
+                public LotListBean() {
+                }
+
                 /**
                  * lotPk : 31042
                  * lotID : 42
@@ -358,6 +474,36 @@ public class ReturnOrderBean{
                 private String lotPk;
                 private int lotID;
                 private double qty;
+
+                protected LotListBean(Parcel in) {
+                    lotPk = in.readString();
+                    lotID = in.readInt();
+                    qty = in.readDouble();
+                }
+
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
+                    dest.writeString(lotPk);
+                    dest.writeInt(lotID);
+                    dest.writeDouble(qty);
+                }
+
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
+
+                public static final Creator<LotListBean> CREATOR = new Creator<LotListBean>() {
+                    @Override
+                    public LotListBean createFromParcel(Parcel in) {
+                        return new LotListBean(in);
+                    }
+
+                    @Override
+                    public LotListBean[] newArray(int size) {
+                        return new LotListBean[size];
+                    }
+                };
 
                 public String getLotPk() {
                     return lotPk;
