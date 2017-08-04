@@ -31,7 +31,7 @@ public class ReturnOrderBean{
          * name : RSO247
          * isTwoUnit : false
          * doneDtate :
-         * driver : null
+         * driver : ""
          * createDate : 2017-07-31 18:15:19
          * createUser : 胡勇
          * lines : [{"productUom":"条","priceUnit":8,"tax":17,"discount":0,"deliveredQty":2,"priceSubtotal":16,"productID":13,"saleOrderProductID":310,"lotIDs":["42"],"pickupWeight":0,"pickupNum":0,"stockType":"lengcanghuo","lotList":[{"lotPk":"31042","lotID":42,"qty":3}],"productUomQty":2}]
@@ -39,10 +39,10 @@ public class ReturnOrderBean{
          * amountTotal : 18.72
          * state : process
          * loadingDate : null
-         * vehicle : null
+         * vehicle : ""
          * isDispatch : false
          * returnOrderID : 247
-         * driveMobile : null
+         * driveMobile : ""
          * stateTracker : ["2017-07-31 18:15 退货单退货中"]
          */
 
@@ -51,19 +51,20 @@ public class ReturnOrderBean{
         private String name;
         private boolean isTwoUnit;
         private String doneDtate;
-        private Object driver;
+        private String driver;
         private String createDate;
         private String createUser;
         private double amount;
         private double amountTotal;
         private String state;
-        private Object loadingDate;
-        private Object vehicle;
+        private String loadingDate;
+        private String vehicle;
         private boolean isDispatch;
         private int returnOrderID;
-        private Object driveMobile;
+        private String driveMobile;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+
 
         protected ListBean(Parcel in) {
             orderID = in.readInt();
@@ -71,13 +72,17 @@ public class ReturnOrderBean{
             name = in.readString();
             isTwoUnit = in.readByte() != 0;
             doneDtate = in.readString();
+            driver = in.readString();
             createDate = in.readString();
             createUser = in.readString();
             amount = in.readDouble();
             amountTotal = in.readDouble();
             state = in.readString();
+            loadingDate = in.readString();
+            vehicle = in.readString();
             isDispatch = in.readByte() != 0;
             returnOrderID = in.readInt();
+            driveMobile = in.readString();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
         }
@@ -134,11 +139,11 @@ public class ReturnOrderBean{
             this.doneDtate = doneDtate;
         }
 
-        public Object getDriver() {
+        public String getDriver() {
             return driver;
         }
 
-        public void setDriver(Object driver) {
+        public void setDriver(String driver) {
             this.driver = driver;
         }
 
@@ -182,19 +187,19 @@ public class ReturnOrderBean{
             this.state = state;
         }
 
-        public Object getLoadingDate() {
+        public String getLoadingDate() {
             return loadingDate;
         }
 
-        public void setLoadingDate(Object loadingDate) {
+        public void setLoadingDate(String loadingDate) {
             this.loadingDate = loadingDate;
         }
 
-        public Object getVehicle() {
+        public String getVehicle() {
             return vehicle;
         }
 
-        public void setVehicle(Object vehicle) {
+        public void setVehicle(String vehicle) {
             this.vehicle = vehicle;
         }
 
@@ -214,11 +219,11 @@ public class ReturnOrderBean{
             this.returnOrderID = returnOrderID;
         }
 
-        public Object getDriveMobile() {
+        public String getDriveMobile() {
             return driveMobile;
         }
 
-        public void setDriveMobile(Object driveMobile) {
+        public void setDriveMobile(String driveMobile) {
             this.driveMobile = driveMobile;
         }
 
@@ -250,16 +255,21 @@ public class ReturnOrderBean{
             dest.writeString(name);
             dest.writeByte((byte) (isTwoUnit ? 1 : 0));
             dest.writeString(doneDtate);
+            dest.writeString(driver);
             dest.writeString(createDate);
             dest.writeString(createUser);
             dest.writeDouble(amount);
             dest.writeDouble(amountTotal);
             dest.writeString(state);
+            dest.writeString(loadingDate);
+            dest.writeString(vehicle);
             dest.writeByte((byte) (isDispatch ? 1 : 0));
             dest.writeInt(returnOrderID);
+            dest.writeString(driveMobile);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
         }
+
 
         public static class LinesBean implements Parcelable{
             public LinesBean() {

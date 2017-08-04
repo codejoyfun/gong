@@ -127,11 +127,11 @@ public class OrderStateActivity extends NetWorkActivity {
                 osl.setTime(timeSb.toString());
                 if (bean.getState().equals("process")) {
                     //退货中...
-                    if (bean.getDriver() != null) {
+                    if (!TextUtils.isEmpty(bean.getDriver()) && !TextUtils.isEmpty(bean.getDriveMobile())) {
                         //订单审核通过
                         content.append("请等待取货员上门取货").append("\n")
-                                .append("车牌号：").append("\n")
-                                .append("取货员：").append("\n")
+                                .append("车牌号：").append(bean.getDriveMobile()).append("\n")
+                                .append("取货员：").append(bean.getDriver()).append("\n")
                                 .append("预计取货时间：").append(bean.getLoadingDate());
                     } else {
                         //订单已提交

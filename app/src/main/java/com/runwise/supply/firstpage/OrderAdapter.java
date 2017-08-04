@@ -182,6 +182,16 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(bean.getAmountTotal()+"");
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
+            if (!TextUtils.isEmpty(bean.getDriveMobile())){
+                viewHolder.carNumTv.setText(bean.getDriveMobile());
+            }else{
+                viewHolder.carNumTv.setText("未指派");
+            }
+            if (!TextUtils.isEmpty(bean.getDriver())){
+                viewHolder.senderTv.setText(bean.getDriver());
+            }else{
+                viewHolder.senderTv.setText("未指派");
+            }
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
