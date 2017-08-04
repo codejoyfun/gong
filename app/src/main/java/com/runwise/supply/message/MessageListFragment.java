@@ -242,7 +242,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
 //                else {
 //                    pullListView.onRefreshComplete(adapter.getCount());
 //                }
-                pullListView.onRefreshComplete();
+                pullListView. onRefreshComplete();
                 break;
             case REQUEST_SEND:
                 requestData(false, REQUEST_MAIN, 1, 10);

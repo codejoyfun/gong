@@ -86,10 +86,9 @@ public class RegisterActivity extends NetWorkActivity {
 //				LoginRespone loginRespone = (LoginRespone) result;
 //				LoginResult loginResult = loginRespone.getData();
 //				SPUtils.put(this,"sign",loginResult.getUser_token());
-				UserLoginEvent loginEvent = new UserLoginEvent();
-//				loginEvent.setUserInfo(loginRespone);
-				loginEvent.setIntent(targerIntent);
-				EventBus.getDefault().post(loginEvent);
+//				UserLoginEvent loginEvent = new UserLoginEvent();
+//				loginEvent.setIntent(targerIntent);
+//				EventBus.getDefault().post(loginEvent);
 //				UserInfo userInfo = new UserInfo(loginResult.getMember_id());
 //				userInfo.setPhone(phonNumber);
 //				GlobalApplication.getInstance().saveUserInfo(userInfo);
@@ -130,7 +129,7 @@ public class RegisterActivity extends NetWorkActivity {
 			return;
 		}
 		RegisterRequest paramBean = new RegisterRequest(phone,name,mEmail.getText().toString(),mCompony.getText().toString());
-		this.sendConnection("/gongfu/v2/authenticate",paramBean , REGISTER, true, RegisterData.class);
+		this.sendConnection("/gongfu/v2/potential_users",paramBean , REGISTER, true, RegisterData.class);
 	}
 
 
