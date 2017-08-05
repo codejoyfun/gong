@@ -118,19 +118,19 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
-                OrderResult mainListResult = (OrderResult)result.getResult();
+                OrderResult mainListResult = (OrderResult)result.getResult().getData();
                 adapter.setData(mainListResult.getList());
 //                mainListResult.getEntities().get(0).setOrder_status(11);
                 loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
-                OrderResult startResult = (OrderResult)result.getResult();
+                OrderResult startResult = (OrderResult)result.getResult().getData();
                 adapter.setData(startResult.getList());
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
-                OrderResult endResult = (OrderResult)result.getResult();
+                OrderResult endResult = (OrderResult)result.getResult().getData();
                 if (endResult.getList() != null && !endResult.getList().isEmpty()) {
                     adapter.appendData(endResult.getList());
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);

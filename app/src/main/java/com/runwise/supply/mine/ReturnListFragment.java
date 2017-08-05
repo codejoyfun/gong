@@ -215,6 +215,10 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
                 holder.payStatus.setText("已退货");
                 holder.orderStatus.setImageResource(R.drawable.state_delivery_7_return);
             }
+           else  {
+              holder.payStatus.setText("已退货");
+              holder.orderStatus.setImageResource(R.drawable.state_delivery_7_return);
+          }
 
             holder.payTitle.setText(bean.getName());
             holder.payDate.setText(bean.getLoadingDate());
