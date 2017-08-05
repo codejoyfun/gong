@@ -25,6 +25,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.RepertoryEntity;
@@ -217,6 +218,20 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                 switch (viewType){
                     case 0:
                         viewHolder.editText.removeTextChangedListener();
+//                        viewHolder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//                            @Override
+//                            public void onFocusChange(View view, boolean b) {
+//                                if(b) {
+////                                    viewHolder.editText.setText("");
+//                                    LogUtils.e("得到");
+//                                }
+//                                else {
+////                                    viewHolder.editText.setText(bean.getEditNum()+"");
+//                                    LogUtils.e("失去");
+//
+//                                }
+//                            }
+//                        });
                         viewHolder.editText.addTextChangedListener(new TextWatcher() {
                             @Override
                             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

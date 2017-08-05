@@ -118,7 +118,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
             } else {
                 userInfoPlace.setText(userInfo.getRegion());
             }
-            userInfoStore.setText(userInfo.getStreet());
+            userInfoStore.setText(userInfo.getMendian());
             userInfoPhone.setText(userInfo.getMobile());
         }
         this.setTitleText(true,"个人信息");

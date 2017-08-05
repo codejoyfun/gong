@@ -33,6 +33,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.business.entity.SearchRequest;
 import com.runwise.supply.business.entity.SearchResponse;
 import com.runwise.supply.mine.RepertoryFragment;
+import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.tools.HistoryUtils;
 
@@ -73,8 +74,9 @@ public class DealerSearchActivity extends BaseActivity{
             @Override
             public void afterTextChanged(Editable editable) {
                 String searchText = editable.toString();
-                SearchKeyWork bean = new SearchKeyWork();
+                SearchKeyAct bean = new SearchKeyAct();
                 bean.setKeyWork(searchText);
+                bean.setActName(DealerSearchActivity.class.getSimpleName());
                 EventBus.getDefault().post(bean);
             }
         });

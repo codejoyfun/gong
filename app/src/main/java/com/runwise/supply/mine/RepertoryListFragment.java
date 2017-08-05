@@ -31,7 +31,9 @@ import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.business.DealerSearchActivity;
 import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductActivity;
@@ -92,8 +94,10 @@ public class RepertoryListFragment extends NetWorkFragment {
         loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataSynEvent(SearchKeyWork event) {
-        adapter.setData(findArrayByWord(event.getKeyWork()));
+    public void onDataSynEvent(SearchKeyAct event) {
+        if(mContext.getClass().getSimpleName().equals(event.getActName())) {
+            adapter.setData(findArrayByWord(event.getKeyWork()));
+        }
     }
 
     //返回当前标签下名称包含的
