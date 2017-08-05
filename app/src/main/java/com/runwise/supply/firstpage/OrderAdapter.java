@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
@@ -72,6 +73,9 @@ public class OrderAdapter extends IBaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
             ViewUtils.inject(viewHolder,convertView);
             convertView.setTag(viewHolder);
+            if (!GlobalApplication.getInstance().getCanSeePrice()){
+                viewHolder.priceLL.setVisibility(View.GONE);
+            }
         }else{
             viewHolder = (ViewHolder)convertView.getTag();
         }
@@ -281,6 +285,8 @@ public class OrderAdapter extends IBaseAdapter {
         LinearLayout timelineLL;
         @ViewInject(R.id.recyclerView)
         RecyclerView recyclerView;
+        @ViewInject(R.id.priceLL)
+        LinearLayout priceLL;
     }
 
     private void setTimeLineContent(List<String> stList, RecyclerView recyclerView){

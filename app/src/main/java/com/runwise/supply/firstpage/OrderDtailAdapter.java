@@ -15,6 +15,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -68,7 +69,11 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         if (basicBean != null){
             vh.name.setText(basicBean.getName());
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-            sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+            sb.append("  ").append(basicBean.getUnit());
+            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if (canSeePrice){
+                sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+            }
             vh.content.setText(sb.toString());
         }else{
             vh.name.setText("");

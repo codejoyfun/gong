@@ -19,6 +19,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.DataType;
@@ -77,6 +78,8 @@ public class OrderDetailActivity extends NetWorkActivity{
     @ViewInject(R.id.bottom_bar)
     private RelativeLayout bottom_bar;
     private boolean isHasAttachment;        //默认无凭证
+    @ViewInject(R.id.priceLL)
+    private View priceLL;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -154,6 +157,10 @@ public class OrderDetailActivity extends NetWorkActivity{
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        if (!canSeePrice){
+            priceLL.setVisibility(View.GONE);
+        }
         updateUI();
     }
     private void updateUI() {

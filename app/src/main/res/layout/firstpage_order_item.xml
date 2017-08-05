@@ -44,61 +44,77 @@
         android:layout_alignBottom="@id/img"
         android:layout_alignLeft="@id/orderNumTv"
         android:id="@+id/orderTimeTv"/>
-    <ImageView
-        android:id="@+id/icon1"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/orderTimeTv"
         android:layout_marginTop="17dp"
         android:layout_alignLeft="@id/orderNumTv"
-        android:src="@drawable/icon_item"/>
-    <ImageView
-        android:id="@+id/icon2"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_below="@id/icon1"
-        android:layout_marginTop="7dp"
-        android:layout_alignLeft="@id/orderNumTv"
-        android:src="@drawable/icon_price"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="下单商品数量"
-        android:textSize="14sp"
-        android:textColor="#333333"
-        android:layout_alignBottom="@id/icon1"
-        android:layout_toRightOf="@id/icon1"
-        android:layout_marginLeft="7dp"
-        android:id="@+id/countTv"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="下单金额"
-        android:textSize="14sp"
-        android:textColor="#333333"
-        android:layout_alignTop="@id/icon2"
-        android:layout_toRightOf="@id/icon2"
-        android:layout_marginLeft="7dp"
-        android:id="@+id/moneyTv"/>
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/icon1"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+
+                android:src="@drawable/icon_item"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下单商品数量"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:layout_alignBottom="@id/icon1"
+                android:layout_toRightOf="@id/icon1"
+                android:layout_marginLeft="7dp"
+                android:id="@+id/countTv"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/priceLL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/icon2"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/icon_price"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下单金额"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:layout_marginLeft="7dp"
+                android:id="@+id/moneyTv"/>
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#E5E5E5"
+        android:layout_below="@id/ll1"
+        android:layout_marginTop="15dp"
+        />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="28dp"
         android:id="@+id/doBtn"
         android:textColor="#333333"
         android:textSize="14sp"
+        android:layout_above="@+id/line"
         android:layout_marginRight="15dp"
         android:layout_alignParentRight="true"
-        android:layout_alignBottom="@+id/icon2"
         android:background="@drawable/firstpage_do_circle"
         android:text="点货"/>
-    <View
-        android:id="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#E5E5E5"
-        android:layout_below="@id/moneyTv"
-        android:layout_marginTop="15dp"
-        />
     <LinearLayout
         android:id="@+id/arrowArea"
         android:layout_width="match_parent"

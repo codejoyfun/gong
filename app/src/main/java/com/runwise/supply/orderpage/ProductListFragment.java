@@ -26,6 +26,7 @@ import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -59,7 +60,7 @@ public class ProductListFragment extends NetWorkFragment {
     public static HashMap<String, Integer> getCountMap() {
         return countMap;
     }
-
+    private boolean canSeePrice = true;             //默认价格中可见
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +73,7 @@ public class ProductListFragment extends NetWorkFragment {
 //        }
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
 
     }
     @Override
@@ -246,17 +248,19 @@ public class ProductListFragment extends NetWorkFragment {
             if (basicBean != null){
                 viewHolder.name.setText(basicBean.getName());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append(basicBean.getUnit());
-                if (bean.isIsTwoUnit()){
-                    sb.append("\n¥")
-                            .append(bean.getSettlePrice())
-                            .append("元/")
-                            .append(bean.getSettleUomId());
-                }else{
-                    sb.append("\n¥")
-                            .append(bean.getPrice())
-                            .append("元/")
-                            .append(bean.getUom());
+                sb.append("  ").append(basicBean.getUnit());
+                if (canSeePrice){
+                    if (bean.isIsTwoUnit()){
+                        sb.append("\n¥")
+                                .append(bean.getSettlePrice())
+                                .append("元/")
+                                .append(bean.getSettleUomId());
+                    }else{
+                        sb.append("\n¥")
+                                .append(bean.getPrice())
+                                .append("元/")
+                                .append(bean.getUom());
+                    }
                 }
                 viewHolder.content.setText(sb.toString());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());

@@ -19,6 +19,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -141,7 +142,11 @@ public class OneKeyAdapter extends IBaseAdapter {
             if (basicBean.getImage() != null)
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-            sb.append("  ").append(basicBean.getUnit()).append("\n").append(basicBean.getPrice()).append("元/").append(basicBean.getUom());
+            sb.append("  ").append(basicBean.getUnit());
+            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if (canSeePrice){
+                sb.append("\n").append(basicBean.getPrice()).append("元/").append(basicBean.getUom());
+            }
             viewHolder.contentTv.setText(sb.toString());
         }
         Integer proId = bean.getProductID();
