@@ -23,6 +23,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
@@ -356,6 +357,10 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 isInitiative = true;
             }
         });
+        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        if (!canSeePrice){
+            totalMoneyTv.setVisibility(View.GONE);
+        }
     }
 
     private void setTitleEditShow() {

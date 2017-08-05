@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -12,6 +13,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -42,6 +44,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
     private TextView countTv;
     @ViewInject(R.id.ygMoneyTv)
     private TextView ygMoneyTv;
+    @ViewInject(R.id.priceLL)
+    private LinearLayout priceLL;
 
 
     @Override
@@ -56,6 +60,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
     }
 
     private void initViews() {
+        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        if (!canSeePrice){
+            priceLL.setVisibility(View.GONE);
+        }
         dateTv.setVisibility(View.INVISIBLE);
         adapter = new ReturnDetailAdapter(mContext);
         LinearLayoutManager mgr = new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false);
