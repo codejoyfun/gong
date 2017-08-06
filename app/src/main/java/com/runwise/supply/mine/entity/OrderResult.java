@@ -8,7 +8,7 @@ import java.util.List;
  * Created by myChaoFile on 17/1/19.
  */
 
-public class OrderResult extends BaseEntity.ResultBean{
+public class OrderResult{
     private List<ListBean> list;
     public List<ListBean> getList() {
         return list;
