@@ -35,6 +35,7 @@ public class GlobalApplication extends MultiDexApplication {
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
 
+
     }
     public static GlobalApplication getInstance() {
         return instance;
