@@ -265,21 +265,12 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                 switch (viewType) {
                     case 0:
                         convertView = View.inflate(mContext, R.layout.item_msg_type2, null);
-                        ViewUtils.inject(viewHolder,convertView);
                         break;
                     case 1:
                         convertView = View.inflate(mContext, R.layout.item_msg_type1, null);
-                        ViewUtils.inject(viewHolder,convertView);
-                        if(bean.isFirstItem()) {
-                            ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).bottomMargin = CommonUtils.dip2px(mContext, 16);
-                            ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).leftMargin = 0;
-                        }
-                        else {
-                            ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).bottomMargin = 0;
-                            ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).leftMargin = CommonUtils.dip2px(mContext, 12);
-                        }
                         break;
                 }
+                ViewUtils.inject(viewHolder,convertView);
                 convertView.setTag(viewHolder);
             }
             else {
@@ -339,6 +330,14 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     break;
 
                 case 1:
+                    if(bean.isFirstItem()) {
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).bottomMargin = CommonUtils.dip2px(mContext, 16);
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).leftMargin = 0;
+                    }
+                    else {
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).bottomMargin = 0;
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).leftMargin = CommonUtils.dip2px(mContext, 12);
+                    }
                     MessageResult.ChannelBean channelBean = bean.getChannelBean();
                     viewHolder.msgName.setText(channelBean.getName());
                     if("缺货通知".equals(channelBean.getName())) {
