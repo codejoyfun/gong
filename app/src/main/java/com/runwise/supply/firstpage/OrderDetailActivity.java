@@ -42,6 +42,8 @@ public class OrderDetailActivity extends NetWorkActivity{
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
     private OrderDtailAdapter adapter;
+    @ViewInject(R.id.dateTv)
+    private TextView dateTv;
     @ViewInject(R.id.recyclerView)
     private RecyclerView recyclerView;
     @ViewInject(R.id.orderStateTv)
@@ -201,6 +203,7 @@ public class OrderDetailActivity extends NetWorkActivity{
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);
+            dateTv.setText(bean.getCreateDate());
             //支付凭证在收货流程后，才显示
             if (bean.getState().equals("rated") || bean.getState().equals("done")){
                 payStateTv.setVisibility(View.VISIBLE);
@@ -263,7 +266,7 @@ public class OrderDetailActivity extends NetWorkActivity{
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
-
+                finish();
                 break;
             case R.id.allBtn:
                 //切换页签到全部上面

@@ -251,12 +251,12 @@ public class ProductListFragment extends NetWorkFragment {
                 sb.append("  ").append(basicBean.getUnit());
                 if (canSeePrice){
                     if (bean.isIsTwoUnit()){
-                        sb.append("\n¥")
+                        sb.append("  ¥")
                                 .append(bean.getSettlePrice())
                                 .append("元/")
                                 .append(bean.getSettleUomId());
                     }else{
-                        sb.append("\n¥")
+                        sb.append("  ¥")
                                 .append(bean.getPrice())
                                 .append("元/")
                                 .append(bean.getUom());
