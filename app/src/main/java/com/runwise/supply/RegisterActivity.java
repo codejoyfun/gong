@@ -15,6 +15,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -25,6 +26,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CheckUtil;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -83,17 +85,17 @@ public class RegisterActivity extends NetWorkActivity {
 	public void onSuccess(BaseEntity result, int where) {
 		switch (where) {
 			case REGISTER:
-//				LoginRespone loginRespone = (LoginRespone) result;
-//				LoginResult loginResult = loginRespone.getData();
-//				SPUtils.put(this,"sign",loginResult.getUser_token());
-//				UserLoginEvent loginEvent = new UserLoginEvent();
-//				loginEvent.setIntent(targerIntent);
-//				EventBus.getDefault().post(loginEvent);
-//				UserInfo userInfo = new UserInfo(loginResult.getMember_id());
-//				userInfo.setPhone(phonNumber);
-//				GlobalApplication.getInstance().saveUserInfo(userInfo);
-				ToastUtil.show(mContext,"注册成功");
-				this.finish();
+				dialog.setCancelable(false);
+				dialog.setModel(CustomDialog.BOTH);
+				dialog.setMessageGravity();
+				dialog.setMessage("非常感谢，您的注册申请已收到，供鲜生客服代表会尽快与您联系");
+				dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+					@Override
+					public void doClickButton(Button btn, CustomDialog dialog) {
+						finish();
+					}
+				});
+				dialog.show();
 				break;
 		}
 	}

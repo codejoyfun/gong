@@ -15,12 +15,15 @@ import android.widget.FrameLayout;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.business.entity.DealerEnity;
 import com.runwise.supply.business.entity.DealerRequest;
@@ -40,6 +43,8 @@ import java.util.List;
  */
 public class MainRepertoryFragment extends NetWorkFragment {
     private final int REQUEST_EXIT = 1;
+    @ViewInject(R.id.tipLayout)
+    private View tipLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +53,13 @@ public class MainRepertoryFragment extends NetWorkFragment {
         setTitleRightText(true,"盘点");
         FragmentManager manager = this.getActivity().getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.contextLayout,new RepertoryFragment()).commitAllowingStateLoss();
+        boolean isLogin = SPUtils.isLogin(mContext);
+        if(isLogin) {
+            tipLayout.setVisibility(View.GONE);
+        }
+        else{
+            tipLayout.setVisibility(View.VISIBLE);
+        }
     }
     @OnClick(R.id.left_layout)
     public void leftClick(View view){
@@ -55,10 +67,39 @@ public class MainRepertoryFragment extends NetWorkFragment {
     }
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
-        Object parma = null;
-        sendConnection("/gongfu/shop/inventory/list",parma,REQUEST_EXIT,true, CheckResult.class);
-
+        boolean isLogin = SPUtils.isLogin(mContext);
+        if(isLogin) {
+            Object parma = null;
+            sendConnection("/gongfu/shop/inventory/list", parma, REQUEST_EXIT, true, CheckResult.class);
+        }
+        else{
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            startActivity(intent);
+        }
     }
+    @OnClick({R.id.tipLayout,R.id.closeTip})
+    public void loginTipLayout(View view){
+        switch (view.getId()) {
+            case R.id.tipLayout:
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.closeTip:
+                tipLayout.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    @Override
+    public void onUserLogin(UserLoginEvent userLoginEvent) {
+        tipLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onUserLoginout() {
+        tipLayout.setVisibility(View.VISIBLE);
+    }
+
     @Override
     protected int createViewByLayoutId() {
         return R.layout.fragment_business;

@@ -8,6 +8,7 @@ public class MessageListEntity {
     private int type;
     private MessageResult.ChannelBean channelBean;
     private MessageResult.OrderBean orderBean;
+    private boolean firstItem;
 
     public int getType() {
         return type;
@@ -31,5 +32,13 @@ public class MessageListEntity {
 
     public void setOrderBean(MessageResult.OrderBean orderBean) {
         this.orderBean = orderBean;
+    }
+
+    public boolean isFirstItem() {
+        return firstItem;
+    }
+
+    public void setFirstItem(boolean firstItem) {
+        this.firstItem = firstItem;
     }
 }

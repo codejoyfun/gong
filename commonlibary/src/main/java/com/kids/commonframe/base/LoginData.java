@@ -6,6 +6,7 @@ package com.kids.commonframe.base;
 
 public class LoginData {
     private String isSuccess;
+    private String mobile;
     private UserInfo user;
 
     public String getIsSuccess() {
@@ -22,5 +23,13 @@ public class LoginData {
 
     public void setUser(UserInfo user) {
         this.user = user;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }

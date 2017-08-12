@@ -69,7 +69,10 @@ public class RepertoryListFragment extends NetWorkFragment {
         adapter = new ProductAdapter();
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
-
+        if(dataList != null) {
+          adapter.setData(dataList);
+          loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+      }
     }
     @Override
     protected int createViewByLayoutId() {
@@ -90,8 +93,10 @@ public class RepertoryListFragment extends NetWorkFragment {
         else {
             dataList = typeList;
         }
-        adapter.setData(dataList);
-        loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+        if(adapter != null) {
+            adapter.setData(dataList);
+            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(SearchKeyAct event) {

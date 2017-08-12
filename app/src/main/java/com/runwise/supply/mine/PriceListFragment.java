@@ -17,6 +17,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -33,12 +34,16 @@ import com.runwise.supply.mine.entity.MsgList;
 import com.runwise.supply.mine.entity.MsgResult;
 import com.runwise.supply.mine.entity.ProductData;
 import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 价目表
  */
-public class PriceListActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
+public class PriceListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
@@ -51,14 +56,10 @@ public class PriceListActivity extends NetWorkActivity implements AdapterView.On
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
+    public DataType type;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarEnabled();
-        StatusBarUtil.StatusBarLightMode(this);
-        setContentView(R.layout.activity_title_list);
-        this.setTitleText(true,"价目表");
-        this.setTitleLeftIcon(true,R.drawable.back_btn);
 
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
@@ -93,10 +94,6 @@ public class PriceListActivity extends NetWorkActivity implements AdapterView.On
         loadingLayout.setOnRetryClickListener(this);
     }
 
-    @OnClick(R.id.left_layout)
-    public void doBack(View view) {
-        this.finish();
-    }
 
     public void requestData (boolean showDialog,int where, int page,int limit) {
         PageRequest request = null;
@@ -105,13 +102,25 @@ public class PriceListActivity extends NetWorkActivity implements AdapterView.On
         sendConnection("/gongfu/v2/product/list",request,where,showDialog,ProductData.class);
     }
 
+    public List<ProductData.ListBean> handlerDataList(List<ProductData.ListBean> prodectList) {
+        if(type == DataType.ALL) {
+            return prodectList;
+        }
+        List<ProductData.ListBean> typeList = new ArrayList<>();
+        for (ProductData.ListBean bean : prodectList){
+            if (bean.getStockType().equals(type.getType())){
+                typeList.add(bean);
+            }
+        }
+        return typeList;
+    }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
                 ProductData mainListResult = (ProductData)result.getResult().getData();
-                adapter.setData(mainListResult.getList());
+                adapter.setData(handlerDataList(mainListResult.getList()));
                 loadingLayout.onSuccess(adapter.getCount(),"",R.drawable.news);
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
@@ -150,9 +159,10 @@ public class PriceListActivity extends NetWorkActivity implements AdapterView.On
         startActivity(intent);
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected int createViewByLayoutId() {
+        return R.layout.activity_notitle_list;
     }
 
     @Override

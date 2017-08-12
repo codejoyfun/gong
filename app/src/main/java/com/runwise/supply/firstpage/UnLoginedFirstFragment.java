@@ -120,25 +120,59 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             }
         });
         requestLB();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+
         //判断登录状态,进行fragment的切换
         if (SPUtils.isLogin(mContext)){
             MainActivity ma = (MainActivity) getActivity();
             if (ma.getCurrentTabIndex() == 0){
                 switchContent(this,new LoginedFirstFragment());
             }
-        }else{
+        }
+        else{
             //如果之前有登录fragment，这里就得隐藏它
             LoginedFirstFragment fragment = (LoginedFirstFragment) getFragmentManager().findFragmentByTag(LOGIN_FRAGMENT);
             if (fragment != null && fragment.isVisible()){
                 getFragmentManager().beginTransaction().hide(fragment).show(this).commit();
             }
-           pullListView.setRefreshing(true);
+            pullListView.setRefreshing(true);
         }
+    }
+
+    @Override
+    public void onUserLogin(UserLoginEvent userLoginEvent) {
+        MainActivity ma = (MainActivity) getActivity();
+        if (ma.getCurrentTabIndex() == 0){
+            switchContent(this,new LoginedFirstFragment());
+        }
+    }
+
+    @Override
+    public void onUserLoginout() {
+        LoginedFirstFragment fragment = (LoginedFirstFragment) getFragmentManager().findFragmentByTag(LOGIN_FRAGMENT);
+        if (fragment != null && fragment.isVisible()){
+            getFragmentManager().beginTransaction().hide(fragment).show(this).commit();
+        }
+        pullListView.setRefreshing(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        //判断登录状态,进行fragment的切换
+//        if (SPUtils.isLogin(mContext)){
+//            MainActivity ma = (MainActivity) getActivity();
+//            if (ma.getCurrentTabIndex() == 0){
+//                switchContent(this,new LoginedFirstFragment());
+//            }
+//        }else{
+//            //如果之前有登录fragment，这里就得隐藏它
+//            LoginedFirstFragment fragment = (LoginedFirstFragment) getFragmentManager().findFragmentByTag(LOGIN_FRAGMENT);
+//            if (fragment != null && fragment.isVisible()){
+//                getFragmentManager().beginTransaction().hide(fragment).show(this).commit();
+//            }
+//           pullListView.setRefreshing(true);
+//        }
     }
     private void requestLB(){
         //只在首次加载轮播图+统计表

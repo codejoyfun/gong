@@ -9,29 +9,41 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.DateFormateUtil;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
+import com.runwise.supply.mine.entity.CheckResult;
+import com.runwise.supply.mine.entity.RepertoryEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by mychao on 2017/7/14.
+ * 消息列表
  */
 
 public class MessageFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
@@ -47,11 +59,15 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
+
+    @ViewInject(R.id.tipLayout)
+    private View tipLayout;
+    private boolean isLogin,firstLaunch;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitleText(true,"消息");
-        this.setTitleRigthIcon(true,R.drawable.nav_service_message);
+//        this.setTitleRigthIcon(true,R.drawable.nav_service_message);
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -79,16 +95,67 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        loadingLayout.setStatusLoading();
-        requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
+        loadingLayout.setStatusLoading();
+
+        isLogin = SPUtils.isLogin(mContext);
+        if(isLogin) {
+            tipLayout.setVisibility(View.GONE);
+            requestData(false, REQUEST_MAIN, page, 10);
+        }
+        else{
+            tipLayout.setVisibility(View.VISIBLE);
+            buildData();
+        }
     }
 
-    public void requestData (boolean showDialog,int where, int page,int limit) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(firstLaunch && isLogin) {
+            pullListView.setRefreshing();
+        }
+        firstLaunch = true;
+    }
+
+    public void requestData (boolean showDialog, int where, int page, int limit) {
         PageRequest request = new PageRequest();
         request.setLimit(limit);
         request.setPz(page);
         sendConnection("/gongfu/message/list",request,where,showDialog,MessageResult.class);
+    }
+
+    public void buildData() {
+        String jsonStr = "{\"state\": \"A0006\", \"order\": [{\"is_today\": false, \"done_datetime\": \"\", \"create_date\": \"2017-08-04 18:58:59\", \"name\": \"SO565\", \"confirmation_date\": \"2017-08-04 18:59:31\", \"estimated_time\": \"2017-08-05 09:00:00\", \"waybill\": {\"user\": {\"mobile\": \"13737574564\", \"avatar_url\": \"/gongfu/user/avatar/12/-8754775316850759619.png\", \"name\": \"\\u51af\\u5efa\"}, \"vehicle\": {\"name\": \"Audi/A7/\\u54c8H123456\", \"license_plate\": \"\\u54c8H123456\"}, \"name\": \"PS20170804195\", \"id\": 195}, \"amount\": 4.0, \"end_unload_datetime\": false, \"last_message\": {}, \"state\": \"peisong\", \"order_type_id\": null, \"start_unload_datetime\": false, \"create_user_name\": \"\\u674e\\u6052\\u8fbe\", \"loading_time\": \"2017-08-05 09:30:00\", \"id\": 565, \"amount_total\": 58.5}], \"channel\": [{\"read\": false, \"last_message\": {\"body\": \"\\u5404\\u95e8\\u5e97\\u8bf7\\u6ce8\\u610f\\uff0c\\u201c\\u62cd\\u9ec4\\u74dc\\u201d\\u5c06\\u4f1a\\u4ece6\\u67088\\u53f7\\u52307\\u67081\\u53f7\\u671f\\u95f4\\u6682\\u505c\\u4f9b\\u5e94\\uff0c\\u8bf7\\u7559\\u610f\\uff0c\\u4e0d\\u4fbf\\u4e4b\\u5904\\u656c\\u8bf7\\u539f\\u8c05\\u3002\", \"id\": 14047, \"date\": \"2017-06-08 16:05:55\", \"seen\": true, \"model\": \"mail.channel\", \"author_id\": {\"avatar_url\": \"\", \"id\": 3, \"name\": \"Administrator\"}}, \"id\": 22, \"name\": \"\\u7f3a\\u8d27\\u901a\\u77e5\"}]}";
+        MessageResult repertoryEntity =  JSON.parseObject(jsonStr,MessageResult.class);
+        adapter.setData(handlerMessageList(repertoryEntity));
+        loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+        pullListView.onRefreshComplete(Integer.MAX_VALUE);
+    }
+
+    @Override
+    public void onUserLogin(UserLoginEvent userLoginEvent) {
+        tipLayout.setVisibility(View.GONE);
+        isLogin = true;
+        requestData(false, REQUEST_MAIN, page, 10);
+    }
+    @Override
+    public void onUserLoginout() {
+        tipLayout.setVisibility(View.VISIBLE);
+        isLogin = false;
+        buildData();
+    }
+    @OnClick({R.id.tipLayout,R.id.closeTip})
+    public void loginTipLayout(View view){
+        switch (view.getId()) {
+            case R.id.tipLayout:
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.closeTip:
+                tipLayout.setVisibility(View.GONE);
+                break;
+        }
     }
 
     @Override
@@ -128,15 +195,20 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         List<MessageResult.OrderBean> orderList = endResult.getOrder();
         List<MessageResult.ChannelBean> channelList = endResult.getChannel();
         if(channelList != null) {
-            for(MessageResult.ChannelBean channelBean:channelList) {
+            for( int i = 0; i< channelList.size(); i++) {
+                MessageResult.ChannelBean channelBean = channelList.get(i);
                 MessageListEntity bean = new MessageListEntity();
                 bean.setChannelBean(channelBean);
                 bean.setType(1);
+                if(i == channelList.size()-1) {
+                    bean.setFirstItem(true);
+                }
                 messageList.add(bean);
             }
         }
         if(orderList != null) {
-            for(MessageResult.OrderBean orderBean:orderList) {
+            for(int i = 0; i<orderList.size(); i++) {
+                MessageResult.OrderBean orderBean = orderList.get(i);
                 MessageListEntity bean = new MessageListEntity();
                 bean.setOrderBean(orderBean);
                 bean.setType(0);
@@ -153,18 +225,25 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MessageListEntity bean = (MessageListEntity)parent.getAdapter().getItem(position);
-        if(bean.getType() == 1) {
-            Intent dealIntent = new Intent(mContext,SystemMsgDetailActivity.class);
-            dealIntent.putExtra("id",bean.getChannelBean().getId()+"");
-            dealIntent.putExtra("name",bean.getChannelBean().getName());
-            startActivity(dealIntent);
+        boolean isLogin = SPUtils.isLogin(mContext);
+        if(isLogin) {
+            MessageListEntity bean = (MessageListEntity)parent.getAdapter().getItem(position);
+            if(bean.getType() == 1) {
+                Intent dealIntent = new Intent(mContext,SystemMsgDetailActivity.class);
+                dealIntent.putExtra("id",bean.getChannelBean().getId()+"");
+                dealIntent.putExtra("name",bean.getChannelBean().getName());
+                startActivity(dealIntent);
+            }
+            else{
+                Intent dealIntent = new Intent(mContext,MessageDetailActivity.class);
+                MessageResult.OrderBean orderBean = bean.getOrderBean();
+                dealIntent.putExtra("orderBean",orderBean);
+                startActivity(dealIntent);
+            }
         }
         else{
-            Intent dealIntent = new Intent(mContext,MessageDetailActivity.class);
-            MessageResult.OrderBean orderBean = bean.getOrderBean();
-            dealIntent.putExtra("orderBean",orderBean);
-            startActivity(dealIntent);
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -180,6 +259,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         protected View getExView(int position, View convertView, ViewGroup parent) {
             final ViewHolder viewHolder;
             int viewType = getItemViewType(position);
+            final MessageListEntity bean =  mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 switch (viewType) {
@@ -196,7 +276,6 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final MessageListEntity bean =  mList.get(position);
             switch (viewType) {
                 case 0:
                     MessageResult.OrderBean orderBean = bean.getOrderBean();
@@ -236,13 +315,29 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     if(orderBean.getLast_message() != null && !TextUtils.isEmpty(orderBean.getLast_message().getBody())) {
                         viewHolder.chatMsg.setVisibility(View.VISIBLE);
                         viewHolder.chatMsg.setText(orderBean.getLast_message().getBody());
+                        if(!orderBean.getLast_message().isSeen()) {
+                            viewHolder.chatUnRead.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            viewHolder.chatUnRead.setVisibility(View.GONE);
+                        }
                     }
                     else {
                         viewHolder.chatMsg.setVisibility(View.GONE);
+                        viewHolder.chatUnRead.setVisibility(View.GONE);
                     }
+
                     break;
 
                 case 1:
+                    if(bean.isFirstItem()) {
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).bottomMargin = CommonUtils.dip2px(mContext, 16);
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).leftMargin = 0;
+                    }
+                    else {
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).bottomMargin = 0;
+                        ((LinearLayout.LayoutParams) viewHolder.bottomLineView.getLayoutParams()).leftMargin = CommonUtils.dip2px(mContext, 12);
+                    }
                     MessageResult.ChannelBean channelBean = bean.getChannelBean();
                     viewHolder.msgName.setText(channelBean.getName());
                     if("缺货通知".equals(channelBean.getName())) {
@@ -256,6 +351,12 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     }
                     else {
                         viewHolder.msgIcon.setImageResource(R.drawable.notify_stockout);
+                    }
+                    if(!channelBean.isRead()) {
+                        viewHolder.msgUnRead.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        viewHolder.msgUnRead.setVisibility(View.GONE);
                     }
                     MessageResult.ChannelBean.LastMessageBeanX messageBeanX = channelBean.getLast_message();
                     viewHolder.msgTime.setText(DateFormateUtil.InfoClassShowdateFormat(messageBeanX.getDate()));
@@ -284,6 +385,10 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             TextView msgTime;
             @ViewInject(R.id.msgCotext)
             TextView msgCotext;
+            @ViewInject(R.id.msgUnRead)
+            View msgUnRead;
+            @ViewInject(R.id.bottomLineView)
+            View bottomLineView;
 
             @ViewInject(R.id.chatIcon)
             ImageView         chatIcon;
@@ -295,6 +400,8 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             TextView         chatStatus;
             @ViewInject(R.id.chatContext)
             TextView            chatContext;
+            @ViewInject(R.id.chatUnRead)
+            View            chatUnRead;
             @ViewInject(R.id.chatMsg)
             TextView chatMsg;
         }

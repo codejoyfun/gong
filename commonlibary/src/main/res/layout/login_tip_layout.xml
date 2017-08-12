@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#fdf9cf"
+    android:padding="6dp"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#cd9e5d"
+        android:textSize="15sp"
+        android:text="当前为示例数据，更多体验请注册"
+        android:gravity="left"
+        />
+    <ImageView
+        android:id="@+id/closeTip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/visitor_notice_btn_closed"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="8dp"
+        />
+</FrameLayout>

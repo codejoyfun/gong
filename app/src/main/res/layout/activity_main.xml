@@ -2,7 +2,6 @@
 <FrameLayout android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,7 +9,6 @@
         android:orientation="vertical"
         android:background="#eeeeee"
         >
-
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -46,7 +44,5 @@
                 >
             </android.support.v4.app.FragmentTabHost>
         </LinearLayout>
-
     </LinearLayout>
-    <include layout="@layout/show_big_viewpager_layout" />
 </FrameLayout>

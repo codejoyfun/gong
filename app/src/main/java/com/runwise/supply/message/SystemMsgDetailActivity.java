@@ -74,6 +74,11 @@ public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingL
         loadingLayout.setStatusLoading();
         requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
+
+
+//        URL	http://develop.runwise.cn/gongfu/message/channel/22/seen/
+        Object request = null;
+        sendConnection("/gongfu/message/channel/"+channelID+"/seen",request,22,false,null);
     }
     @OnClick(R.id.left_layout)
     public void doBack(View view) {

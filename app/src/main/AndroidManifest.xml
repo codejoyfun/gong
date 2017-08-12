@@ -433,7 +433,7 @@
         android:configChanges="keyboardHidden|orientation|screenSize"
         android:screenOrientation="portrait" />
         <activity
-            android:name=".mine.PriceListActivity"
+            android:name=".mine.PriceListFragment"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
@@ -465,9 +465,14 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".mine.PriceActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
         <activity android:name=".message.MessageDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
             />
 
         <activity android:name=".message.SystemMsgDetailActivity"
@@ -478,6 +483,15 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".LoginTipActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".LoginRelogActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
+
         <activity android:name=".repertory.EditRepertoryListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"

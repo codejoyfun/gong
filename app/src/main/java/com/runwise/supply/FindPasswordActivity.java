@@ -128,7 +128,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 				holdCode = true;
 				break;
 			case FIND_PASSWORD:
-				ToastUtil.show(mContext, "成功");
+				ToastUtil.show(mContext, "密码修改成功");
 				this.finish();
 				break;
 		}
@@ -204,8 +204,8 @@ public class FindPasswordActivity extends NetWorkActivity {
 			dialog.show();
 			return;
 		}
-		FindPwdRequest paramBean = new FindPwdRequest(phonNumber,code,password);
-		this.sendConnection("members/forget_pwd.json",paramBean ,FIND_PASSWORD, true, BaseEntity.class);
+		FindPwdRequest paramBean = new FindPwdRequest(code,phonNumber,password);
+		this.sendConnection("/gongfu/reset_password",paramBean ,FIND_PASSWORD, true, null);
 	}
 
 	@OnClick(R.id.teacher_reg_getcode)
