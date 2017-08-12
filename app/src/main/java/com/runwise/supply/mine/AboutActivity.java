@@ -2,9 +2,11 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.TextView;
 
+import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.HelperResult;
@@ -15,6 +17,7 @@ import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.tools.StatusBarUtil;
 
 
 /**
@@ -26,9 +29,12 @@ public class AboutActivity extends NetWorkActivity {
 //    private TextView appName;
     @ViewInject(R.id.appCode)
     private TextView appCode;
+    private long[] mHints = new long[7];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_about);
         this.setTitleText(true,"关于");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
@@ -53,7 +59,7 @@ public class AboutActivity extends NetWorkActivity {
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
-    @OnClick({R.id.left_layout})
+    @OnClick({R.id.left_layout,R.id.activity_about})
     public void doClickHandler(View view) {
         switch (view.getId()) {
 //            case R.id.versionLayout:
@@ -65,6 +71,16 @@ public class AboutActivity extends NetWorkActivity {
 //                break;
             case R.id.left_layout:
                 this.finish();
+                break;
+            case R.id.activity_about:
+            case R.id.scrollview:
+                //将mHints数组内的所有元素左移一个位置
+                System.arraycopy(mHints, 1, mHints, 0, mHints.length - 1);
+                //获得当前系统已经启动的时间
+                mHints[mHints.length - 1] = SystemClock.uptimeMillis();
+                if(SystemClock.uptimeMillis()-mHints[0]<=1500){
+                    startActivity(new Intent(this,ChangeHostActivity.class));
+                }
                 break;
         }
     }

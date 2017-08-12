@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -45,6 +46,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.Log;
+
 /**
  * Created by libin on 2017/7/13.
  */
@@ -70,6 +73,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private TextView lastMonthBuy;
     private TextView unPayMoney;
     private List orderList = new ArrayList<>();
+    private View rootView;
 
     public LoginedFirstFragment() {
     }
@@ -140,28 +144,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 this.switchContent(this,new UnLoginedFirstFragment());
         }
     }
-
-    //一次性加载全部，无分页,先加载退货单，然后跟着正常订单
-    private void requestList() {
-        Object request = null;
-        sendConnection("/gongfu/v2/return_order/undone/",request,FROMRETURN,false,ReturnOrderBean.class);
-
-    }
-    private void requestLB(){
-        Object request = null;
-        LunboRequest lbRequest = new LunboRequest("餐户端");
-        sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
-    }
-    private void requestDashBoard(){
-        Object request = null;
-        sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
-    }
-
     @Override
     protected int createViewByLayoutId() {
         return R.layout.fragment_logined_first;
     }
-
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
@@ -203,39 +189,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
         }
     }
-
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
-    private void updateLb(final List<ImagesBean> post_list) {
-        banner.setPages(new CBViewHolderCreator<BannerHolderView>() {
-            @Override
-            public BannerHolderView createHolder() {
-                return new BannerHolderView();
-            }
-        }, post_list)
-                .setPointViewVisible(true)
-//                .setPageIndicator(new Int[]{R.id.})
-                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
-                .startTurning(5000)
-                .setPageIndicator(new int[]{R.drawable.guidepage_circle_normal,R.drawable.guidepage_circle_highlight})
-                .setPointViewVisible(true)
-                .setManualPageable(true);  //设置手动影响;
-        banner.setCanLoop(true);
-        banner.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                ImagesBean bean = post_list.get(position);
-                if (bean != null && bean.getCover_url() != null){
-                    Intent intent = new Intent(mContext,PageDeatailActivity.class);
-                    intent.putExtra("url", Constant.BASE_URL + bean.getPost_url());
-                    startActivity(intent);
-                }
-            }
-        });
-    }
-
     @Override
     public void doAction(OrderDoAction action, final int position) {
         switch(action){
@@ -272,21 +229,92 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
                 break;
             case TALLY:
+                //点货，计入结算单位
+                Intent tIntent = new Intent(mContext,ReceiveActivity.class);
+                Bundle tBundle = new Bundle();
+                tBundle.putParcelable("order",(OrderResponse.ListBean)adapter.getItem(position));
+                tBundle.putInt("mode",1);
+                tIntent.putExtras(tBundle);
+                startActivity(tIntent);
                 break;
             case RATE:
                 break;
-            case RECEIVE:
+            case RECEIVE://正常收货
                 Intent intent = new Intent(mContext,ReceiveActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("order",(OrderResponse.ListBean)adapter.getItem(position));
+                bundle.putInt("mode",0);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                break;
+            case SETTLERECEIVE:
+                //点货，计入结算单位
+                Intent sIntent = new Intent(mContext,ReceiveActivity.class);
+                Bundle sBundle = new Bundle();
+                sBundle.putParcelable("order",(OrderResponse.ListBean)adapter.getItem(position));
+                sBundle.putInt("mode",2);
+                sIntent.putExtras(sBundle);
+                startActivity(sIntent);
+                break;
+            case SELFTALLY:
+                dialog.setMessageGravity();
+                dialog.setMessage("您已经点过货了，应由其他人完成收货");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+
+                    }
+                });
+                dialog.show();
                 break;
             default:
                 break;
         }
     }
 
+
+    //一次性加载全部，无分页,先加载退货单，然后跟着正常订单
+    private void requestList() {
+        Object request = null;
+        sendConnection("/gongfu/v2/return_order/undone/",request,FROMRETURN,false,ReturnOrderBean.class);
+
+    }
+    private void requestLB(){
+        Object request = null;
+        LunboRequest lbRequest = new LunboRequest("餐户端");
+        sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
+    }
+    private void requestDashBoard(){
+        Object request = null;
+        sendConnection("/gongfu/v2/shop/stock/dashboard",request,FROMDB,false,DashBoardResponse.class);
+    }
+    private void updateLb(final List<ImagesBean> post_list) {
+        banner.setPages(new CBViewHolderCreator<BannerHolderView>() {
+            @Override
+            public BannerHolderView createHolder() {
+                return new BannerHolderView();
+            }
+        }, post_list)
+                .setPointViewVisible(true)
+//                .setPageIndicator(new Int[]{R.id.})
+                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
+                .startTurning(5000)
+                .setPageIndicator(new int[]{R.drawable.guidepage_circle_normal,R.drawable.guidepage_circle_highlight})
+                .setPointViewVisible(true)
+                .setManualPageable(true);  //设置手动影响;
+        banner.setCanLoop(true);
+        banner.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                ImagesBean bean = post_list.get(position);
+                if (bean != null && bean.getCover_url() != null){
+                    Intent intent = new Intent(mContext,PageDeatailActivity.class);
+                    intent.putExtra("url", Constant.BASE_URL + bean.getPost_url());
+                    startActivity(intent);
+                }
+            }
+        });
+    }
     private void cancleOrderRequest(int position) {
         OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(position);
         StringBuffer urlSb = new StringBuffer("/gongfu/order/");

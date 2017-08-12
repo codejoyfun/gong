@@ -29,8 +29,10 @@ public class ProductBasicUtils {
             DbUtils dbUitls = DbUtils.create(context);
             try {
                 List<ProductBasicList.ListBean> list = dbUitls.findAll(ProductBasicList.ListBean.class);
-                for (ProductBasicList.ListBean bean : list){
-                    basicMap.put(String.valueOf(bean.getProductID()),bean);
+                if (list != null){
+                    for (ProductBasicList.ListBean bean : list){
+                        basicMap.put(String.valueOf(bean.getProductID()),bean);
+                    }
                 }
             } catch (DbException e) {
                 e.printStackTrace();

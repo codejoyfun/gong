@@ -120,7 +120,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             String endUploadTime = bean.getEndUnloadDatetime();
             StringBuffer sb = new StringBuffer("预计送达时间 ");
             sb.append(estimatTime)
-                    .append("\n")
+                    .append("   ")
                     .append("开始卸货时间 ")
                     .append(endUploadTime);
             timeTv.setText(sb.toString());

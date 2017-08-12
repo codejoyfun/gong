@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.webview.X5WebView;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -32,7 +33,7 @@ public class PageDeatailActivity extends NetWorkActivity {
         this.setTitleLeftIcon(true, R.drawable.back_btn);
         String url = getIntent().getStringExtra("url");
         Map<String, String > map = new HashMap<String, String>() ;
-        map.put("X-Odoo-Db", "LBZ20170607");
+        map.put("X-Odoo-Db", (String)SPUtils.get(mContext,"X-Odoo-Db","LBZ20170607"));
         webview.loadUrl(url,map);
     }
     @OnClick(R.id.title_iv_left)

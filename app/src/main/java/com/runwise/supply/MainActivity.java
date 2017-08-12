@@ -147,7 +147,6 @@ public class MainActivity extends NetWorkActivity {
             }
         });
     }
-
     private void initTabView() {
         //TODO:这里根据登录状态，设置不同的页面进去
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);

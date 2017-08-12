@@ -15,7 +15,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.view.ViewHelper;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,8 @@ import java.util.List;
  * 新手引导页
  * */
 public class NavigationActivity extends BaseActivity {
+	@ViewInject(R.id.bgIv)
+	private ImageView bgIv;
 	@ViewInject(R.id.navigation_vp)
 	private ViewPager viewPager;
 	private LayoutInflater inflater;
@@ -33,26 +40,34 @@ public class NavigationActivity extends BaseActivity {
 	private boolean isLast;
 	private int currentPosition;
 	private int currentPageScrollStatus;
+	private boolean isFromLeft = true;			//默认朝右滑
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navigation_main);
 		 inflater = LayoutInflater.from(this);
-		List<Integer> viewList = new ArrayList<Integer>();
+		final List<Integer> viewList = new ArrayList<Integer>();
 		viewList.add(R.drawable.guidepage_1);
 		viewList.add(R.drawable.guidepage_2);
 		viewList.add(R.drawable.guidepage_3);
+		bgIv.setImageResource(R.drawable.guidepage_1);
 		 adapter = new NavAdapter(viewList);
 		viewPager.setAdapter(adapter);
 		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				currentPosition = position;
-				if (currentPosition == 0) {
+//				adapter.animateView();
+				if (position == 0) {
 					isFirst = true;
-				}else if (currentPosition == adapter.getCount() - 1){
+				}else if (position == adapter.getCount() - 1){
 					isLast = true;
 				}
+				if (viewList.size() > position){
+					ViewHelper.setAlpha(bgIv,0.5f);
+					ViewPropertyAnimator.animate(bgIv).alpha(1).setDuration(700);
+					bgIv.setImageResource(viewList.get(position));
+				}
+				currentPosition = position;
 			}
 
 			@Override
@@ -72,6 +87,9 @@ public class NavigationActivity extends BaseActivity {
 //							NavigationActivity.this.finish();
 						}
 					}
+				}
+				if (positionOffsetPixels < 0){
+					isFromLeft = false;
 				}
 			}
 
@@ -109,6 +127,8 @@ public class NavigationActivity extends BaseActivity {
 		finish();
 	}
 	private class NavAdapter extends PagerAdapter {
+		TextView guidTitle;
+		TextView guidSubTitle;
 		private List<Integer> views = new ArrayList<Integer>();
 		public NavAdapter(List<Integer> views ) {
 			this.views = views;
@@ -123,9 +143,8 @@ public class NavigationActivity extends BaseActivity {
 			View mainView = inflater.inflate( R.layout.item_navigation, null);
 			ImageView imageView = (ImageView)mainView.findViewById(R.id.guid_bg);
 			TextView go = (TextView) mainView.findViewById(R.id.guid_go);
-			TextView guidTitle = (TextView) mainView.findViewById(R.id.guidTitle);
-			TextView guidSubTitle = (TextView) mainView.findViewById(R.id.guidSubTitle);
-
+			guidTitle = (TextView) mainView.findViewById(R.id.guidTitle);
+			guidSubTitle = (TextView) mainView.findViewById(R.id.guidSubTitle);
 			if ( arg1 == views.size()-1 ) {
 				go.setVisibility(View.VISIBLE);
 				go.setOnClickListener(new OnClickListener() {
@@ -152,8 +171,9 @@ public class NavigationActivity extends BaseActivity {
 					guidSubTitle.setText("稳定高效");
 					break;
 			}
-			imageView.setImageResource(views.get(arg1));
+//			imageView.setImageResource(views.get(arg1));
 			container.addView(mainView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			animateView();
 			return mainView;
 		}
 
@@ -183,6 +203,16 @@ public class NavigationActivity extends BaseActivity {
 		}
 		@Override
 		public void finishUpdate(View arg0) {
+
+		}
+		public void animateView(){
+			int toX = (CommonUtils.getScreenWidth(NavigationActivity.this) - CommonUtils.dip2px(mContext,100))/2;
+			int toX2 = (CommonUtils.getScreenWidth(NavigationActivity.this) - CommonUtils.dip2px(mContext,200))/2;
+			if (guidSubTitle != null && guidTitle != null){
+				ObjectAnimator.ofFloat(guidSubTitle,"translationX",0F,toX).setDuration(600).start();
+				ObjectAnimator.ofFloat(guidTitle,"translationX",0F,toX2).setDuration(400).start();
+			}
+			
 
 		}
 	}

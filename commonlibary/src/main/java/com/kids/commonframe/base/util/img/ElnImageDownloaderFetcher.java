@@ -1,10 +1,13 @@
 package com.kids.commonframe.base.util.img;
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.facebook.imagepipeline.producers.BaseProducerContextCallbacks;
 import com.facebook.imagepipeline.producers.FetchState;
 import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher;
+import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.config.GlobalConstant;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +27,12 @@ public class ElnImageDownloaderFetcher extends HttpUrlConnectionNetworkFetcher {
     public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
     private final ExecutorService mExecutorService;
     private String sign;
+    private Context context;
 
-    public ElnImageDownloaderFetcher(String sign) {
+    public ElnImageDownloaderFetcher(String sign, Context context) {
         mExecutorService = Executors.newFixedThreadPool(NUM_NETWORK_THREADS);
         this.sign = sign;
+        this.context = context;
     }
 
     @Override
@@ -83,7 +88,7 @@ public class ElnImageDownloaderFetcher extends HttpUrlConnectionNetworkFetcher {
         HttpURLConnection conn = (HttpURLConnection)(new URL(encodedUrl)).openConnection();
         conn.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
         conn.setReadTimeout(DEFAULT_HTTP_READ_TIMEOUT);
-        conn.setRequestProperty("X-Odoo-Db", "LBZ20170607");
+        conn.setRequestProperty("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
         conn.setRequestProperty("Cookie", sign);
         return conn;
     }

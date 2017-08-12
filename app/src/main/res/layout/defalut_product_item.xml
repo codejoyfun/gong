@@ -73,7 +73,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="11dp"
         android:layout_toRightOf="@+id/productImage"
-        android:layout_toEndOf="@+id/productImage" />
+        android:layout_toLeftOf="@+id/editLL" />
     <TextView
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -87,6 +87,18 @@
         android:layout_alignLeft="@id/name"
         android:layout_marginTop="5dp"
         android:layout_below="@id/name"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="x14"
+        android:textColor="#444444"
+        android:textSize="16sp"
+        android:layout_centerVertical="true"
+        android:id="@+id/countTv"
+        android:layout_marginRight="15dp"
+        android:visibility="invisible"
         />
 
 </RelativeLayout>

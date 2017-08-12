@@ -45,6 +45,8 @@ public class StatisticsAdapter extends RecyclerView.Adapter implements View.OnCl
         }else if(viewType == 3){
             rl3.setVisibility(View.VISIBLE);
         }
+        rl1.setOnClickListener(this);
+        rl2.setOnClickListener(this);
         rl3.setOnClickListener(this);
         ViewHolder vh = new ViewHolder(view);
         return vh;
@@ -98,8 +100,15 @@ public class StatisticsAdapter extends RecyclerView.Adapter implements View.OnCl
 
     @Override
     public void onClick(View view) {
-        if (itemListener != null){
-            itemListener.onItemClick();
+        switch (view.getId()){
+            case R.id.rl1:
+            case R.id.rl2:
+                itemListener.onItemClick(false);
+                break;
+            case R.id.rl3:
+                itemListener.onItemClick(true);
+                break;
+
         }
     }
 
@@ -115,6 +124,6 @@ public class StatisticsAdapter extends RecyclerView.Adapter implements View.OnCl
         }
     }
     public  interface StatisticsItemClickListener{
-        void onItemClick();
+        void onItemClick(boolean isGoLogin);
     }
 }

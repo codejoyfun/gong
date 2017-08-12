@@ -3,6 +3,7 @@ package com.kids.commonframe.base;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;

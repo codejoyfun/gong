@@ -33,21 +33,23 @@
         android:layout_marginTop="32dp"
         android:gravity="center"
         android:orientation="horizontal">
-        <Button
+        <TextView
             android:id="@+id/orderBtn"
             android:layout_width="110dp"
             android:layout_height="35dp"
             android:text="评价订单"
+            android:gravity="center"
             android:textColor="#333333"
             android:background="@drawable/upload_btn_circle"
             />
-        <Button
+        <TextView
             android:id="@+id/uploadBtn"
             android:layout_width="110dp"
             android:layout_height="35dp"
             android:text="上传支付凭证"
             android:layout_marginLeft="15dp"
             android:textColor="#333333"
+            android:gravity="center"
             android:background="@drawable/upload_btn_circle"
             />
     </LinearLayout>

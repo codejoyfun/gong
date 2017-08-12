@@ -5,5 +5,5 @@ package com.runwise.supply.firstpage;
  */
 
 public enum OrderDoAction {
-    CANCLE,TALLY,RECEIVE,UPLOAD,LOOK,RATE,DONE
+    CANCLE,TALLY,RECEIVE,UPLOAD,LOOK,RATE,DONE,SETTLERECEIVE,SELFTALLY
 }

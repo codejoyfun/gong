@@ -22,6 +22,7 @@ public class GlobalApplication extends MultiDexApplication {
      */
     private UserInfo mUserInfo;
     private String uid;
+    private String userName;
     private boolean canSeePrice;
     @Override
     public void onCreate() {
@@ -35,6 +36,7 @@ public class GlobalApplication extends MultiDexApplication {
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
 
+
     }
     public static GlobalApplication getInstance() {
         return instance;
@@ -46,6 +48,7 @@ public class GlobalApplication extends MultiDexApplication {
          mUserInfo = (UserInfo) SPUtils.readObject(this,"userInfo");
          if (mUserInfo != null) {
              uid = mUserInfo.getUid();
+             userName  = mUserInfo.getUsername();
              canSeePrice = mUserInfo.isCanSeePrice();
          }
 //         else {
@@ -63,7 +66,12 @@ public class GlobalApplication extends MultiDexApplication {
         }
         return uid;
     }
-
+    public String getUserName(){
+        if (TextUtils.isEmpty(userName)){
+            loadUserInfo();
+        }
+        return userName;
+    }
     /**
      * 获取用户能否看价格
      *

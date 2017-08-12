@@ -37,6 +37,7 @@ import me.shaohui.bottomdialog.BottomDialog;
  */
 
 public class OrderDetailActivity extends NetWorkActivity{
+    private static final int UPLOAD = 100;
     private OrderResponse.ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -262,7 +263,7 @@ public class OrderDetailActivity extends NetWorkActivity{
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
-                finish();
+
                 break;
             case R.id.allBtn:
                 //切换页签到全部上面
@@ -318,7 +319,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 intent3.putExtra("orderid",bean.getOrderID());
                 intent3.putExtra("ordername",bean.getName());
                 intent3.putExtra("hasattachment",isHasAttachment);
-                startActivity(intent3);
+                startActivityForResult(intent3,UPLOAD);
                 break;
         }
     }
@@ -372,4 +373,22 @@ public class OrderDetailActivity extends NetWorkActivity{
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case UPLOAD:
+                //来判断上传页有没有图片
+                if (resultCode == 200){
+                    isHasAttachment = data.getBooleanExtra("has",false);
+                    if (isHasAttachment){
+                        payStateValue.setText("已上传支付凭证");
+                        uploadBtn.setText("查看凭证");
+                    }else{
+                        payStateValue.setText("未有支付凭证");
+                        uploadBtn.setText("上传凭证");
+                    }
+                }
+                break;
+        }
+    }
 }

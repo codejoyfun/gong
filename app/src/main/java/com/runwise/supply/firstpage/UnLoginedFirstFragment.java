@@ -1,4 +1,5 @@
 package com.runwise.supply.firstpage;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
@@ -26,6 +27,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.business.BannerHolderView;
@@ -34,6 +36,7 @@ import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.NewsRequest;
 import com.runwise.supply.firstpage.entity.NewsResponse;
+import com.runwise.supply.mine.ChangeHostActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -65,6 +68,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private int lastNewsId;                     //缓存最旧的一条新闻id
     private boolean isLoadFirst = true;         //标记只加载一次
     private LinearLayoutManager layoutManager;
+    private long[] mHints = new long[7];
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -237,8 +241,20 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     }
     //TODO:点击更多示例，跳转到登录页面。
     @Override
-    public void onItemClick() {
-        ToastUtil.show(mContext,"点击了更多");
+    public void onItemClick(boolean isGoLogin) {
+        if (isGoLogin){
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            startActivity(intent);
+        }else{
+            //将mHints数组内的所有元素左移一个位置
+            System.arraycopy(mHints, 1, mHints, 0, mHints.length - 1);
+            //获得当前系统已经启动的时间
+            mHints[mHints.length - 1] = SystemClock.uptimeMillis();
+            if(SystemClock.uptimeMillis()-mHints[0]<=1500){
+                startActivity(new Intent(mContext,ChangeHostActivity.class));
+            }
+        }
+
     }
 
     public void switchContent(Fragment from, Fragment to) {
