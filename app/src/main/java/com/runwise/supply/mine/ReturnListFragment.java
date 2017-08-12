@@ -168,12 +168,12 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MsgEntity bean = (MsgEntity)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(mContext,MsgDetailActivity.class);
-        intent.putExtra("msgId",bean.getMessage_id());
-        bean.setIs_read("1");
-        adapter.notifyDataSetChanged();
-        startActivity(intent);
+//        MsgEntity bean = (MsgEntity)parent.getAdapter().getItem(position);
+//        Intent intent = new Intent(mContext,MsgDetailActivity.class);
+//        intent.putExtra("msgId",bean.getMessage_id());
+//        bean.setIs_read("1");
+//        adapter.notifyDataSetChanged();
+//        startActivity(intent);
     }
 
 
@@ -221,7 +221,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
           }
 
             holder.payTitle.setText(bean.getName());
-            holder.payDate.setText(bean.getLoadingDate());
+            holder.payDate.setText(bean.getCreateDate());
             holder.patSum.setText("共"+bean.getAmount()+"件商品");
             holder.payMoney.setText(bean.getAmountTotal()+"");
             return convertView;

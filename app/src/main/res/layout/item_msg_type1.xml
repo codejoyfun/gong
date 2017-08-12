@@ -71,6 +71,7 @@
                 android:textColor="#989898"
                 android:text="fewfew"
                    android:layout_marginTop="4dp"
+                android:singleLine="true"
                 />
         </LinearLayout>
 
