@@ -26,6 +26,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -34,6 +35,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.MessageListEntity;
@@ -77,10 +79,11 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     private MessageResult.OrderBean orderBean;
 
     public int type;
+    private UserInfo userInfo;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        userInfo = GlobalApplication.getInstance().loadUserInfo();
         orderBean = (MessageResult.OrderBean) this.getActivity().getIntent().getSerializableExtra("orderBean");
         //待确认
         if("draft".equals(orderBean.getState())) {
@@ -367,13 +370,18 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                     }
                     viewHolder.chatTimeLeft.setText(DateFormateUtil.InfoClassShowdateFormat(bean.getDate()));
                     Uri uri = null;
-                    switch (type) {
-                        case 0:
-                            uri = Uri.parse("res:///" + R.drawable.cvrs_customerservice);
-                            break;
-                        case 1:
-                            uri = Uri.parse("res:///" + R.drawable.comment_profilephoto);
-                            break;
+                    if(bean.getAuthor_id() != null && !TextUtils.isEmpty(bean.getAuthor_id().getAvatar_url())) {
+                        uri = Uri.parse(Constant.BASE_URL + bean.getAuthor_id().getAvatar_url());
+                    }
+                    else {
+                        switch (type) {
+                            case 0:
+                                uri = Uri.parse("res:///" + R.drawable.cvrs_customerservice);
+                                break;
+                            case 1:
+                                uri = Uri.parse("res:///" + R.drawable.comment_profilephoto);
+                                break;
+                        }
                     }
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.chatHeadLeft,uri);
                     break;
@@ -391,10 +399,10 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         @Override
         public int getItemViewType(int position) {
             MsgListResult.ListBean bean =  mList.get(position);
-            if("question".equals(bean.getModel()) || "answer".equals(bean.getModel())) {
-                return 0;
+            if( userInfo.getUsername().equals(String.valueOf(bean.getAuthor_id().getName()))) {
+                return 1;
             }
-            return 1;
+            return 0;
         }
 
         @Override

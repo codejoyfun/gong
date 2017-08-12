@@ -464,6 +464,7 @@
         <activity android:name=".message.MessageDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
             />
 
         <activity android:name=".message.SystemMsgDetailActivity"

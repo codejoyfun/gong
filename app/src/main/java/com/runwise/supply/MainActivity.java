@@ -52,13 +52,15 @@ import java.util.List;
 public class MainActivity extends NetWorkActivity {
     //缓存全部商品列表的标识
     private static final int QUERY_ALL = 1;
-    private int devicesConnected = -1;
+    private final int REQUEST_UNREAD = 2;
+
+//    private int devicesConnected = -1;
     private long mExitTime;
     @ViewInject(android.R.id.tabhost)
     private FragmentTabHost mTabHost;
     //未读小红点
     private TextView mMsgHite;
-    private UserInfo userInfo;
+//    private UserInfo userInfo;
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements  Runnable{
         private List<ProductBasicList.ListBean> basicList;
@@ -176,7 +178,9 @@ public class MainActivity extends NetWorkActivity {
             View subTabView = LayoutInflater.from(this).inflate(R.layout.main_tab_item, null);
             ImageView tabIv = (ImageView) subTabView.findViewById(R.id.tab_iv_icon);
             TextView tabTv = (TextView) subTabView.findViewById(R.id.tab_tv_name);
-            mMsgHite = (TextView) subTabView.findViewById(R.id.tv_hint);
+            if( R.string.tab_4 == tabNameRes) {
+                mMsgHite = (TextView) subTabView.findViewById(R.id.tv_hint);
+            }
             tabIv.setImageResource(bgRes);
             tabTv.setText(getString(tabNameRes));
             subTab.setIndicator(subTabView);
@@ -192,6 +196,9 @@ public class MainActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean= result.getResult();
                 ProductBasicList basicList = (ProductBasicList) resultBean.getData();
                 new Thread(new CachRunnale(basicList.getList())).start();
+                break;
+            case REQUEST_UNREAD:
+                mMsgHite.setVisibility(View.GONE);
                 break;
             default:
                 break;
@@ -242,7 +249,7 @@ public class MainActivity extends NetWorkActivity {
 
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+//        userInfo = GlobalApplication.getInstance().loadUserInfo();
     }
 
     @Override

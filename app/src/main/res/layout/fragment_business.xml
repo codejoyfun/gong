@@ -9,6 +9,9 @@
     <include
         layout="@layout/common_title_bar"
         />
+    <include
+        android:id="@+id/tipLayout"
+        layout="@layout/login_tip_layout"></include>
     <FrameLayout
         android:id="@+id/contextLayout"
         android:layout_width="match_parent"

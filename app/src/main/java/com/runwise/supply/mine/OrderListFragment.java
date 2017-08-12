@@ -272,7 +272,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 });
             }
             holder.payTitle.setText(bean.getName());
-            holder.payDate.setText(bean.getEstimated_date());
+            holder.payDate.setText(bean.getCreateDate());
             holder.patSum.setText("共"+bean.getAmount()+"件商品");
             holder.payMoney.setText(bean.getAmountTotal()+"");
             return convertView;
