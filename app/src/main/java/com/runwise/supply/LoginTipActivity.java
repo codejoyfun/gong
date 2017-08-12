@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.Text;
 import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.mine.CheckActivity;
@@ -46,12 +47,23 @@ public class LoginTipActivity extends BaseActivity {
                 finish();
                 break;
             case  R.id.finishBtn:
-                Intent intent = new Intent(mContext, LoginRelogActivity.class);
-                intent.putExtra("mobel",mobel);
-                if (UserUtils.checkLogin(intent,this)) {
-                    startActivity(intent);
-                }
-                finish();
+                dialog.setTitle("确认手机号码");
+                dialog.setMessage("我们将发送短信到这个号码：\n"+CommonUtils.heandlerMobel(mobel));
+                dialog.setMessageGravity();
+                dialog.setModel(CustomDialog.BOTH);
+                dialog.setLeftBtnListener("取消",null);
+                dialog.setRightBtnListener("确定", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        Intent intent = new Intent(mContext, LoginRelogActivity.class);
+                        intent.putExtra("mobel",mobel);
+                        if (UserUtils.checkLogin(intent,LoginTipActivity.this)) {
+                            startActivity(intent);
+                        }
+                        finish();
+                    }
+                });
+                dialog.show();
                 break;
 
         }

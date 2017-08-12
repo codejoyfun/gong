@@ -11,7 +11,7 @@
         android:textColor="#cd9e5d"
         android:textSize="15sp"
         android:text="当前为示例数据，更多体验请注册"
-        android:gravity="center"
+        android:gravity="left"
         />
     <ImageView
         android:id="@+id/closeTip"
