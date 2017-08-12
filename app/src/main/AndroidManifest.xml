@@ -418,7 +418,8 @@
         <activity
             android:name=".orderpage.SelpHelpOrderActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".mine.MeRepertoryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

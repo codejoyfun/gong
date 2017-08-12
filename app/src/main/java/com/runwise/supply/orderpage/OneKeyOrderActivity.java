@@ -70,6 +70,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private Button deleteBtn;
     @ViewInject(R.id.allCb)
     private CheckBox allCb;
+    @ViewInject(R.id.allLL)
+    private LinearLayout allLL;
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
     //弹窗星期的View集合
@@ -146,6 +148,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
                     editMode = true;
                 }else{
+                    adapter.clearSelect();
                     this.setTitleRightText(true,"编辑");
                     ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
                     ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
@@ -313,23 +316,38 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 requestDefalutProduct();
             }
         },2000);
-        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        allLL.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isInitiative){
-                    if (isChecked){
-                        //adapter里面所有的选中
-                        setDeleteBtnOk(true);
-                        adapter.setAllSelect(true);
-                    }else{
-                        //清掉adapter里面所有选中的状态
-                        setDeleteBtnOk(false);
-                        adapter.setAllSelect(false);
-                    }
+            public void onClick(View v) {
+                isInitiative = false;
+                if (allCb.isChecked()){
+                    allCb.setChecked(false);
+                    setDeleteBtnOk(false);
+                    adapter.setAllSelect(false);
+                }else{
+                    allCb.setChecked(true);
+                    setDeleteBtnOk(true);
+                    adapter.setAllSelect(true);
                 }
-                isInitiative = true;
             }
         });
+//        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isInitiative){
+//                    if (isChecked){
+//                        //adapter里面所有的选中
+//                        setDeleteBtnOk(true);
+//                        adapter.setAllSelect(true);
+//                    }else{
+//                        //清掉adapter里面所有选中的状态
+//                        setDeleteBtnOk(false);
+//                        adapter.setAllSelect(false);
+//                    }
+//                }
+//                isInitiative = true;
+//            }
+//        });
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (!canSeePrice){
             totalMoneyTv.setVisibility(View.GONE);
