@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -114,7 +115,19 @@ public class OrderAdapter extends IBaseAdapter {
                     }else if("点货".equals(doAction)){
                         action = OrderDoAction.TALLY;
                     }else if("收货".equals(doAction)){
-                        action = OrderDoAction.RECEIVE;
+                        //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
+                        if (bean.isIsDoubleReceive()){
+                            String userName = GlobalApplication.getInstance().getUserName();
+                            if (bean.getTallyingUserName().equals(userName)){
+                                action = OrderDoAction.SELFTALLY;
+                            }else{
+                                action = OrderDoAction.SETTLERECEIVE;
+                            }
+                        }else{
+                            action = OrderDoAction.RECEIVE;
+                        }
+                        bean.getTallyingUserName();
+
                     }else if("上传支付凭证".equals(doAction)){
                         action = OrderDoAction.UPLOAD;
                     }else if("查看支付凭证".equals(doAction)){
@@ -239,11 +252,14 @@ public class OrderAdapter extends IBaseAdapter {
         }else if(bean.getState().equals(OrderState.PEISONG.getName())){
             if (bean.isIsDoubleReceive()){
                 if (bean.isIsFinishTallying()){
+                    //双人收货
                     btnText = "收货";
                 }else{
+                    //双人点货
                     btnText = "点货";
                 }
             }else{
+                //正常收货
                 btnText = "收货";
             }
 

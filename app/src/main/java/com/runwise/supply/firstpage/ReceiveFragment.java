@@ -51,13 +51,20 @@ public class ReceiveFragment extends BaseFragment{
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
     //存放该类型下用户输入的值
     private Map<String,ReceiveBean> countMap = new HashMap<>();
+    //收点货模式
+    private int mode;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ReceiveAdapter();
+        ReceiveActivity activity = (ReceiveActivity) getActivity();
+        adapter.isSettle = activity.isSettle();
+
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
         ArrayList<OrderResponse.ListBean.LinesBean> linesList = getArguments().getParcelableArrayList("datas");
+        mode = getArguments().getInt("mode");
+
         if (type == DataType.ALL){
             datas.addAll(linesList);
         }else {
@@ -86,6 +93,7 @@ public class ReceiveFragment extends BaseFragment{
     }
 
     public class ReceiveAdapter extends IBaseAdapter {
+        private boolean isSettle;       //是不是双单位
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -96,6 +104,12 @@ public class ReceiveFragment extends BaseFragment{
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
                 ViewUtils.inject(viewHolder, convertView);
+                //双人收货模式下，按钮隐藏
+                if (mode == 2){
+                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+                }else{
+                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+                }
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -106,11 +120,12 @@ public class ReceiveFragment extends BaseFragment{
                     ReceiveBean rb = new ReceiveBean();
                     if (basicBean != null){
                         rb.setName(basicBean.getName());
-                        rb.setCount((int)bean.getProductUomQty());
+//                        rb.setCount((int)bean.getProductUomQty());
+                        rb.setCount(0);
                         rb.setProductId(bean.getProductID());
-                        if (basicBean.isTwoUnit() && TextUtils.isEmpty(basicBean.getSettleUomId())){
+                        if (isSettle){
                             rb.setTwoUnit(true);
-                            rb.setUnit(basicBean.getUnit());
+                            rb.setUnit(basicBean.getSettleUomId());
                         }else{
                             rb.setTwoUnit(false);
                         }
@@ -129,20 +144,28 @@ public class ReceiveFragment extends BaseFragment{
                 sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 viewHolder.content.setText(sb.toString());
                 viewHolder.countTv.setText("/"+(int)bean.getProductUomQty()+basicBean.getUom());
-                if (basicBean.isTwoUnit() && TextUtils.isEmpty(basicBean.getSettleUomId())){
-                    //显示双单位信息
-                    viewHolder.weightTv.setText("0"+basicBean.getSettleUomId());
+                //优先用已输入的数据，没有，则用默认
+                if (mode == 2){
+                    viewHolder.receivedTv.setText(bean.getTallyingAmount()+"");
+                    viewHolder.weightTv.setText(bean.getSettleAmount()+basicBean.getSettleUomId());
                 }else{
-                    viewHolder.weightTv.setVisibility(View.INVISIBLE);
+                    if (countMap.containsKey(String.valueOf(bean.getProductID()))){
+                        ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
+                        viewHolder.receivedTv.setText(rb.getCount()+"");
+                        viewHolder.weightTv.setText(rb.getTwoUnitValue()+rb.getUnit());
+                    }else{
+                        viewHolder.receivedTv.setText("0");
+                        viewHolder.weightTv.setText("0"+basicBean.getSettleUomId());
+                    }
                 }
             }
-            if (countMap.containsKey(String.valueOf(bean.getProductID()))){
-                ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
-                viewHolder.receivedTv.setText(rb.getCount()+"");
+            //双单位是跟订单相关，所以拿订单里面的字段判断.
+            if (isSettle){
+                //显示双单位信息
+                viewHolder.weightTv.setVisibility(View.VISIBLE);
             }else{
-                viewHolder.receivedTv.setText("0");
+                viewHolder.weightTv.setVisibility(View.INVISIBLE);
             }
-
             return convertView;
         }
         class ViewHolder{

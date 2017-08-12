@@ -150,7 +150,7 @@ public class FrecoFactory {
                 .setMaxCacheSizeOnVeryLowDiskSpace(2 * ByteConstants.MB)
                 .build();
         ImagePipelineConfig config = ImagePipelineConfig.newBuilder(mContext)
-                .setNetworkFetcher(new ElnImageDownloaderFetcher(sign))
+                .setNetworkFetcher(new ElnImageDownloaderFetcher(sign,mContext))
                 .setMainDiskCacheConfig(diskCacheConfig).build();
         Fresco.initialize(mContext, config);
     }

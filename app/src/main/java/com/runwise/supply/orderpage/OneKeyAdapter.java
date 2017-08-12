@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -98,6 +99,8 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.mBtn = (ImageButton)convertView.findViewById(R.id.input_minus) ;
             viewHolder.aBtn = (ImageButton)convertView.findViewById(R.id.input_add);
             viewHolder.editText = (EditText)convertView.findViewById(R.id.editText);
+            viewHolder.countTv = (TextView)convertView.findViewById(R.id.countTv);
+            viewHolder.editLL = (LinearLayout)convertView.findViewById(R.id.editLL);
             convertView.setTag(viewHolder);
             viewHolder.editText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -132,10 +135,15 @@ public class OneKeyAdapter extends IBaseAdapter {
         viewHolder.editText.setTag(position);
         if (editMode){
             viewHolder.checkbox.setVisibility(View.VISIBLE);
+            viewHolder.editLL.setVisibility(View.VISIBLE);
+            viewHolder.countTv.setVisibility(View.INVISIBLE);
         }else{
+            viewHolder.editLL.setVisibility(View.INVISIBLE);
             viewHolder.checkbox.setVisibility(View.GONE);
+            viewHolder.countTv.setVisibility(View.VISIBLE);
         }
         final EditText editText = viewHolder.editText;
+        final TextView countTv = viewHolder.countTv;
         ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
         if (basicBean != null){
             viewHolder.nameTv.setText(basicBean.getName());
@@ -153,6 +161,7 @@ public class OneKeyAdapter extends IBaseAdapter {
         String count = String.valueOf(countMap.get(proId));
         ischange = true;
         editText.setText(count);
+        countTv.setText("x"+count);
         ischange = false;
         viewHolder.mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,6 +171,7 @@ public class OneKeyAdapter extends IBaseAdapter {
                 if (count > 1){
                     ischange = true;
                     editText.setText(String.valueOf(--count));
+                    countTv.setText("x"+String.valueOf(count));
                     ischange = false;
                     countMap.put(pId,count);
                 }else{
@@ -184,6 +194,7 @@ public class OneKeyAdapter extends IBaseAdapter {
                 }else{
                     ischange = true;
                     editText.setText(String.valueOf(++count));
+                    countTv.setText("x"+String.valueOf(count));
                     ischange = false;
                     countMap.put(pId,Integer.valueOf(count));
                 }
@@ -243,5 +254,7 @@ public class OneKeyAdapter extends IBaseAdapter {
         ImageButton mBtn;
         ImageButton aBtn;
         EditText editText;
+        TextView countTv;
+        LinearLayout editLL;
     }
 }

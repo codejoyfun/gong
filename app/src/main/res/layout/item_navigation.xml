@@ -2,8 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:background="#fefefe"
+    android:orientation="vertical"
     >
     <ImageView 
         android:id="@+id/guid_bg"
@@ -15,25 +14,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
         android:paddingTop="150dp"
         >
         <TextView
             android:id="@+id/guidTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:textSize="28sp"
+            android:textSize="32sp"
+            android:gravity="center"
             android:textColor="#2f393a"
             android:text="集中采购食材"
             />
         <TextView
             android:id="@+id/guidSubTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:gravity="center"
             android:textColor="#2f393a"
             android:text="质高价低"
             android:layout_marginTop="12dp"
+
             />
     </LinearLayout>
      <TextView 

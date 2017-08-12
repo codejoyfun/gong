@@ -9,6 +9,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.tools.StatusBarUtil;
 
 /**
  * Created by libin on 2017/7/19.
@@ -22,6 +23,8 @@ public class ReceiveSuccessActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.receive_success_layout);
         setTitleText(true,"收货成功");
         setTitleLeftIcon(true,R.drawable.nav_closed);

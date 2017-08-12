@@ -112,7 +112,14 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
             getAttachmentList();
         }
     }
+    public void showUpLoadBtn(boolean isShow){
+        if (isShow){
+            upLoadBtn.setVisibility(View.VISIBLE);
+        }else{
+            upLoadBtn.setVisibility(View.INVISIBLE);
+        }
 
+    }
     private void getAttachmentList() {
         Object request = null;
         StringBuffer urlSb = new StringBuffer("/gongfu/order/");
@@ -124,18 +131,18 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
-                if (adapter.isModifyMode){
+                if (adapter.isHasUnCommit()){
                     dialog.setMessage("确认取消修改");
                     dialog.setMessageGravity();
                     dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                         @Override
                         public void doClickButton(Button btn, CustomDialog dialog) {
-                            finish();
+                            goLastPage();
                         }
                     });
                     dialog.show();
                 }else{
-                    finish();
+                    goLastPage();
                 }
                 break;
             case R.id.uploadBtn:
@@ -148,8 +155,9 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                 break;
             case R.id.title_tv_rigth:
                 setTitleRightText(false,"");
-                upLoadBtn.setVisibility(View.VISIBLE);
-                upLoadBtn.setText("确认修改");
+                //上传按钮只有提交新图片后才有
+//                upLoadBtn.setVisibility(View.VISIBLE);
+//                upLoadBtn.setText("确认修改");
                 adapter.setModifyMode(true);
                 if (picList.size() < 3){
                     picList.add(ADDBUTTON);
@@ -157,6 +165,13 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                 adapter.notifyDataSetChanged();
                 break;
         }
+    }
+
+    private void goLastPage() {
+        Intent intent = new Intent();
+        intent.putExtra("has",adapter.hasNetPic);
+        setResult(200,intent);
+        finish();
     }
 
     private void uploadAttachmentRequest() {
@@ -202,6 +217,9 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
 //                uploadCount++;
                 dismissIProgressDialog();
                 ToastUtil.show(mContext,"上传成功");
+                Intent intent = new Intent();
+                intent.putExtra("has",true);
+                setResult(200,intent);
                 finish();
                 break;
             case ATTACHMENTLIST:
@@ -252,6 +270,17 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                         picList.remove(position);
                         adapter.notifyDataSetChanged();
                     }
+                    //如果没有本地图片，隐藏按钮
+                    boolean hasLocalPic = false;
+                    for (String path : picList){
+                        if (!path.contains(Constant.BASE_URL)){
+                            hasLocalPic = true;
+                            break;
+                        }
+                    }
+                    if (!hasLocalPic){
+                        showUpLoadBtn(false);
+                    }
 
                 }
             });
@@ -283,6 +312,12 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         //存放本地图片地址，或者网络地址
         private List<String> datas = new ArrayList<>();
         private boolean isModifyMode = false;        //默认不在修改模式下
+        private boolean hasUnCommit = false;        //有末提交的文件
+        private boolean hasNetPic = false;          //有存在的图片
+        public boolean isHasUnCommit() {
+            return hasUnCommit;
+        }
+
 
         public void setModifyMode(boolean modifyMode) {
             isModifyMode = modifyMode;
@@ -314,6 +349,10 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     }
                 }
             });
+            if (position == 0){
+                hasUnCommit = false;
+                hasNetPic = false;
+            }
             if (content.equals(ADDBUTTON)){
 //                Uri imageUri = CommonUtils.getUriFromDrawableRes(mContext,R.drawable.icon_payorder);
                 itemHolder.addIb.setImageResource(R.drawable.icon_payorder);
@@ -347,6 +386,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     }
                 });
             }else if(content.contains(Constant.BASE_URL)){
+                hasNetPic = true;
                 itemHolder.sdv.setVisibility(View.VISIBLE);
                 if (isModifyMode){
                     itemHolder.deleteIv.setVisibility(View.VISIBLE);
@@ -363,6 +403,10 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                 itemHolder.deleteIv.setVisibility(View.VISIBLE);
                 Uri uri = Uri.fromFile(new File(content));
                 FrecoFactory.getInstance(mContext).disPlay(itemHolder.sdv,uri);
+                //有没有需要提交的，肯定只有adapter知道，自已数据啥样
+                hasUnCommit = true;
+                //只有添加了本地图片，才用上传
+                showUpLoadBtn(true);
             }
         }
 

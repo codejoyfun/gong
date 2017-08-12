@@ -1,17 +1,20 @@
 package com.runwise.supply.firstpage;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.AppCompatEditText;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
@@ -29,6 +32,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
+import com.runwise.supply.firstpage.entity.ReceiveMode;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.firstpage.entity.ReceiveResponse;
 import com.runwise.supply.orderpage.DataType;
@@ -44,6 +48,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,7 +62,9 @@ import io.vov.vitamio.utils.Log;
  */
 
 public class ReceiveActivity extends NetWorkActivity implements DoActionCallback,CaptureClient.Listener{
-    private static final int RECEIVE = 1;           //收货
+    private static final int RECEIVE =      1;           //收货
+    private static final int TALLYING =     2;          //点货
+    private static final int DONE_TALLY =   3;          //第二个人完成点货
     @ViewInject(R.id.indicator)
     private SmartTabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -77,6 +84,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TextView titleTv;
     private AppCompatEditText edEt;
     private TextView unitTv;
+    private EditText unitValueTv;
     private RelativeLayout twoUnitRL;
     private int totalQty;           //预计总的商品总数
     private OrderResponse.ListBean lbean;
@@ -86,6 +94,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         return countMap;
     }
     private int devicesConnected = -1;
+    private int mode;               //当前页面的形态，总共三种：1点货，2双人收货，0正常收货
+    private boolean isSettle;       //是不是双单位订单
+
+    public boolean isSettle() {
+        return isSettle;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +107,17 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.receive_layout);
-        setTitleText(true,"收货");
-        setTitleLeftIcon(true,R.drawable.nav_back);
-        setTitleRightText(true,"完成");
         Bundle bundle = getIntent().getExtras();
         lbean = bundle.getParcelable("order");
+        isSettle = lbean.isIsTwoUnit();
+        mode = bundle.getInt("mode");
+        if(mode == 1 || mode == 2){
+            setTitleText(true,"点货");
+        }else{
+            setTitleText(true,"收货");
+        }
+        setTitleLeftIcon(true,R.drawable.nav_back);
+        setTitleRightText(true,"完成");
         if (lbean != null && lbean.getLines() != null){
             datas.addAll(lbean.getLines());
         }
@@ -137,13 +157,17 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         RelativeLayout rl = (RelativeLayout) dialogView.findViewById(R.id.dialog_main);
         mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT,true);
         mPopWindow.setContentView(dialogView);
+        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow.setFocusable(true);
         mPopWindow.setOutsideTouchable(true);
+//        fitPopupWindowOverStatusBar(true);  //全屏
         ImageButton input_minus = (ImageButton)dialogView.findViewById(R.id.input_minus);
         ImageButton input_add = (ImageButton)dialogView.findViewById(R.id.input_add);
         titleTv = (TextView)dialogView.findViewById(R.id.title);
         edEt  = (AppCompatEditText)dialogView.findViewById(R.id.acet);
-        unitTv = (TextView)dialogView.findViewById(R.id.unitValue);
+        unitTv = (TextView)dialogView.findViewById(R.id.unitTv);
+        unitValueTv = (EditText)dialogView.findViewById(R.id.unitValue);
         twoUnitRL = (RelativeLayout)dialogView.findViewById(R.id.twoUnitRL);
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,7 +204,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             public void onClick(View v) {
                 String pId = String.valueOf(bottomData.getProductId());
                 int count = Integer.valueOf(edEt.getText().toString());
+                double settleCount = TextUtils.isEmpty(unitValueTv.getText().toString()) ? 0 : Double.valueOf(unitValueTv.getText().toString());
                 bottomData.setCount(count);
+                bottomData.setTwoUnitValue(settleCount);    //双单位的值
                 countMap.put(pId,bottomData);
                 mPopWindow.dismiss();
                 //更新进度条
@@ -189,8 +215,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 EventBus.getDefault().post(new ReceiveProEvent());
             }
         });
-        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
-        mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     private void updatePbProgress() {
@@ -232,13 +256,24 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 if (!isSameReceiveCount()){
                     tip = "收货数量与订单不一致，是否确认收货?";
                 }
+                if (mode == 2){
+                    tip = "确认完成收货?";
+                }
                 dialog.setTitle("提示");
+                dialog.setMessageGravity();
                 dialog.setMessage(tip);
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
-                        //完成收货
-                        receiveProductRequest();
+                        //完成收货/点货／双人收货
+                        if (mode == 0){
+                            receiveProductRequest();
+                        }else if(mode == 1){
+                            tallyRequest();
+                        }else if(mode == 2){
+                            tallyDoneRequest();
+                        }
+
                     }
                 });
                 dialog.show();
@@ -246,7 +281,32 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
     }
 
+    private void tallyDoneRequest() {
+//        URL	http://develop.runwise.cn/gongfu/order/600/tallying/done/
+        StringBuffer sb = new StringBuffer("/gongfu/order/");
+        sb.append(lbean.getOrderID()).append("/tallying/done/");
+        sendConnection(sb.toString(),new Object(),DONE_TALLY,true,BaseEntity.ResultBean.class);
+    }
+
     private void receiveProductRequest() {
+        ReceiveRequest rr = new ReceiveRequest();
+        List<ReceiveRequest.ProductsBean> pbList = new ArrayList<>();
+        for (ReceiveBean bean : countMap.values()){
+            ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
+            pb.setProduct_id(bean.getProductId());
+            pb.setQty(bean.getCount());
+            pb.setHeight(bean.getTwoUnitValue());
+            pbList.add(pb);
+        }
+        rr.setProducts(pbList);
+        StringBuffer sb = new StringBuffer("/gongfu/order/");
+        sb.append(lbean.getOrderID()).append("/receive/");
+        sendConnection(sb.toString(),rr,RECEIVE,true, BaseEntity.ResultBean.class);
+
+    }
+    //点货接口{"products":[{"qty":5,"product_id":11,"height":2}]},
+    // URL	http://develop.runwise.cn/api/order/572/tallying/
+    private void tallyRequest(){
         ReceiveRequest rr = new ReceiveRequest();
         List<ReceiveRequest.ProductsBean> pbList = new ArrayList<>();
         for (ReceiveBean bean : countMap.values()){
@@ -257,12 +317,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             pbList.add(pb);
         }
         rr.setProducts(pbList);
-        StringBuffer sb = new StringBuffer("/gongfu/order/");
-        sb.append(lbean.getOrderID()).append("/receive/");
-        sendConnection(sb.toString(),rr,RECEIVE,true, BaseEntity.ResultBean.class);
+        StringBuffer sb = new StringBuffer("/api/order/");
+        sb.append(lbean.getOrderID()).append("/tallying/");
+        sendConnection(sb.toString(),rr,TALLYING,true, BaseEntity.ResultBean.class);
 
     }
-
     private boolean isSameReceiveCount() {
         for(OrderResponse.ListBean.LinesBean lb : datas){
             int qty = (int)lb.getProductUomQty();
@@ -289,6 +348,18 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startActivity(intent);
                 finish();
                 break;
+            case TALLYING:
+                ToastUtil.show(mContext,"点货成功");
+                finish();
+                break;
+            case DONE_TALLY:
+                Intent dIntent = new Intent(mContext,ReceiveSuccessActivity.class);
+                Bundle dBundle = new Bundle();
+                dBundle.putParcelable("order",lbean);
+                dIntent.putExtras(dBundle);
+                startActivity(dIntent);
+                finish();
+                break;
         }
 
     }
@@ -312,17 +383,27 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
             mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             titleTv.setText(bottomData.getName());
-            if (countMap.containsKey(bean.getProductId())){
-                ReceiveBean rb = countMap.get(bean.getProductId());
+            if (countMap.containsKey(String.valueOf(bean.getProductId()))){ //如果countMap里面有，则优先用countMap。
+                ReceiveBean rb = countMap.get(String.valueOf(bean.getProductId()));
                 edEt.setText(String.valueOf(rb.getCount()));
                 edEt.setSelection(String.valueOf(rb.getCount()).length());
+                unitTv.setText(rb.getUnit());
+                if (rb.getTwoUnitValue() == 0){
+                    unitValueTv.setText("");
+                }else{
+                    unitValueTv.setText(rb.getTwoUnitValue()+"");
+                }
+
             }else{
                 edEt.setText(bottomData.getCount()+"");
                 edEt.setSelection(String.valueOf(bottomData.getCount()).length());
+                unitTv.setText(bottomData.getUnit());
+//                unitValueTv.setText(bottomData.getTwoUnitValue()+"");
+                unitValueTv.setText("");
             }
-            unitTv.setText(bottomData.getUnit());
-            //第二单位
-            if (bottomData.isTwoUnit()){
+
+            //双人点货
+            if (isSettle){
                 twoUnitRL.setVisibility(View.VISIBLE);
             }else{
                 twoUnitRL.setVisibility(View.GONE);
@@ -356,6 +437,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             titleList.add("冻货");
             titleList.add("干货");
             Bundle bundle = new Bundle();
+            bundle.putInt("mode",mode); //mode:0正常收货，1点货，2双人收货
             if (datas != null && datas.size() > 0){
                 bundle.putParcelableArrayList("datas",datas);
             }
@@ -452,5 +534,19 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     private void print(String message) {
        ToastUtil.show(mContext,message);
+    }
+
+    public void fitPopupWindowOverStatusBar(boolean needFullScreen) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                Field mLayoutInScreen = PopupWindow.class.getDeclaredField("mLayoutInScreen");
+                mLayoutInScreen.setAccessible(true);
+                mLayoutInScreen.set(mPopWindow, needFullScreen);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
