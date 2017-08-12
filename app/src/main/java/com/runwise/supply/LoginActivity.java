@@ -204,6 +204,8 @@ public class  LoginActivity extends NetWorkActivity {
 				if("false".equals(loginData.getIsSuccess())) {
 					Intent intent = new Intent(mContext,LoginTipActivity.class);
 					intent.putExtra("mobel",loginData.getMobile());
+					intent.putExtra("username",loginRequest.getLogin());
+					intent.putExtra("pwd",loginRequest.getPassword());
 					startActivity(intent);
 					return;
 				}
@@ -297,7 +299,6 @@ public class  LoginActivity extends NetWorkActivity {
 
 	@Override
 	public void onUserLogin(UserLoginEvent userLoginEvent) {
-		super.onUserLogin(userLoginEvent);
 		this.finish();
 	}
 

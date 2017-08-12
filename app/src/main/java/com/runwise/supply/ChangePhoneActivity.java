@@ -22,6 +22,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.FindPwdRequest;
 import com.runwise.supply.entity.GetCodeRequest;
+import com.runwise.supply.entity.RequestPhone;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.io.Serializable;
@@ -96,7 +97,7 @@ public class ChangePhoneActivity extends NetWorkActivity {
 				holdCode = true;
 				break;
 			case FIND_PASSWORD:
-				ToastUtil.show(mContext, "成功");
+				ToastUtil.show(mContext, "修改成功");
 				this.finish();
 				break;
 		}
@@ -135,8 +136,8 @@ public class ChangePhoneActivity extends NetWorkActivity {
 			dialog.show();
 			return;
 		}
-		FindPwdRequest paramBean = new FindPwdRequest(phonNumber,code,"");
-		this.sendConnection("members/forget_pwd.json",paramBean ,FIND_PASSWORD, true, BaseEntity.class);
+		RequestPhone paramBean = new RequestPhone(code);
+		this.sendConnection("/gongfu/mobile",paramBean ,FIND_PASSWORD, true, null);
 	}
 
 	@OnClick(R.id.teacher_reg_getcode)

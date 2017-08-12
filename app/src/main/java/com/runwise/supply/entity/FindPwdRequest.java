@@ -5,38 +5,44 @@ package com.runwise.supply.entity;
  */
 
 public class FindPwdRequest{
-       private String phone;//	是	手机号
-        private String code;//	是	验证码
-        private String new_pwd;//	是	新密码
 
-    public FindPwdRequest(String mobile, String code, String password) {
-        this.phone = mobile;
-        this.code = code;
-        this.new_pwd = password;
+    public FindPwdRequest(String captcha, String mobile, String new_password) {
+        this.captcha = captcha;
+        this.mobile = mobile;
+        this.new_password = new_password;
     }
 
-    public String getPhone() {
-        return phone;
+    /**
+     * captcha : 894105
+     * mobile : 15330237269
+     * new_password : 123456
+     */
+
+    private String captcha;
+    private String mobile;
+    private String new_password;
+
+    public String getCaptcha() {
+        return captcha;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
     }
 
-    public String getNew_pwd() {
-        return new_pwd;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setNew_pwd(String new_pwd) {
-        this.new_pwd = new_pwd;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
-    public String getCode() {
-        return code;
+    public String getNew_password() {
+        return new_password;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setNew_password(String new_password) {
+        this.new_password = new_password;
     }
-
 }

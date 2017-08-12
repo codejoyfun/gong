@@ -23,6 +23,9 @@ public class LoginTipActivity extends BaseActivity {
     private Button finishBtn;
     @ViewInject(R.id.tipText)
     private TextView tipText;
+
+    private String username;
+    private String pwd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +33,8 @@ public class LoginTipActivity extends BaseActivity {
         setTitleText(false,"登陆验证");
         setTitleLeftIcon(true,R.drawable.nav_closed);
         mobel = this.getIntent().getStringExtra("mobel");
+        username = this.getIntent().getStringExtra("username");
+        pwd = this.getIntent().getStringExtra("pwd");
         if(TextUtils.isEmpty(mobel)) {
             finishBtn.setVisibility(View.GONE);
             tipText.setText("该账号已在其他设备登陆\n由于没有绑定手机，请联系客服");
@@ -57,6 +62,8 @@ public class LoginTipActivity extends BaseActivity {
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         Intent intent = new Intent(mContext, LoginRelogActivity.class);
                         intent.putExtra("mobel",mobel);
+                        intent.putExtra("username",username);
+                        intent.putExtra("pwd",pwd);
                         if (UserUtils.checkLogin(intent,LoginTipActivity.this)) {
                             startActivity(intent);
                         }

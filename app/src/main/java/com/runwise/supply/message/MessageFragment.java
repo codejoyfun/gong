@@ -315,7 +315,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     if(orderBean.getLast_message() != null && !TextUtils.isEmpty(orderBean.getLast_message().getBody())) {
                         viewHolder.chatMsg.setVisibility(View.VISIBLE);
                         viewHolder.chatMsg.setText(orderBean.getLast_message().getBody());
-                        if(orderBean.getLast_message().isSeen()) {
+                        if(!orderBean.getLast_message().isSeen()) {
                             viewHolder.chatUnRead.setVisibility(View.VISIBLE);
                         }
                         else {
@@ -352,7 +352,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     else {
                         viewHolder.msgIcon.setImageResource(R.drawable.notify_stockout);
                     }
-                    if(channelBean.isRead()) {
+                    if(!channelBean.isRead()) {
                         viewHolder.msgUnRead.setVisibility(View.VISIBLE);
                     }
                     else {

@@ -12,6 +12,9 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.ReLoginData;
+import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CheckUtil;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -20,7 +23,10 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.FindPwdRequest;
 import com.runwise.supply.entity.GetCodeRequest;
+import com.runwise.supply.entity.ReLoginRequest;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
 
@@ -31,6 +37,7 @@ import java.io.Serializable;
 public class LoginRelogActivity extends NetWorkActivity {
 	private static final int GET_CODE = 1;
 	private static final int FIND_PASSWORD = 2;
+	private static final int REQUEST_USERINFO = 3;
 	@ViewInject(R.id.teacher_reg_phone)
 	private TextView mPhonenNmber;
 	@ViewInject(R.id.teacher_reg_getcode)
@@ -42,6 +49,8 @@ public class LoginRelogActivity extends NetWorkActivity {
 
 	private boolean holdCode;
 	private String mobel;
+	private String username;
+	private String pwd;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,6 +58,9 @@ public class LoginRelogActivity extends NetWorkActivity {
 		StatusBarUtil.StatusBarLightMode(this);
 		setContentView(R.layout.activity_login_relog);
 		mobel = this.getIntent().getStringExtra("mobel");
+		username = this.getIntent().getStringExtra("username");
+		pwd = this.getIntent().getStringExtra("pwd");
+
 		mPhonenNmber.setText(CommonUtils.heandlerMobel(mobel));
 		this.setTitleText(false,"登陆冲突");
 		this.setTitleLeftIcon(true,R.drawable.back_btn);
@@ -93,7 +105,20 @@ public class LoginRelogActivity extends NetWorkActivity {
 				holdCode = true;
 				break;
 			case FIND_PASSWORD:
-				ToastUtil.show(mContext, "成功");
+				ReLoginData reLoginData = (ReLoginData)result.getResult().getData();
+				if("false".equals(reLoginData.getCheck())) {
+                  ToastUtil.show(mContext,"验证码错误");
+				}
+				else {
+					Object paramBean = null;
+					this.sendConnection("/gongfu/v2/user/information",paramBean ,REQUEST_USERINFO, true, UserInfo.class);
+				}
+				break;
+			case REQUEST_USERINFO:
+				UserInfo userInfo = (UserInfo)result.getResult().getData();
+				GlobalApplication.getInstance().saveUserInfo(userInfo);
+				ToastUtil.show(mContext,"登录成功");
+				EventBus.getDefault().post(new UserLoginEvent());
 				this.finish();
 				break;
 		}
@@ -132,8 +157,8 @@ public class LoginRelogActivity extends NetWorkActivity {
 			dialog.show();
 			return;
 		}
-		FindPwdRequest paramBean = new FindPwdRequest(mobel,code,"");
-		this.sendConnection("members/forget_pwd.json",paramBean ,FIND_PASSWORD, true, BaseEntity.class);
+		ReLoginRequest paramBean = new ReLoginRequest(username,mobel,code,pwd);
+		this.sendConnection("/gongfu/v2/check_captcha",paramBean ,FIND_PASSWORD, true, ReLoginData.class);
 	}
 
 	@OnClick(R.id.teacher_reg_getcode)

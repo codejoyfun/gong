@@ -25,6 +25,7 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.business.MainRepertoryFragment;
+import com.runwise.supply.entity.UnReadData;
 import com.runwise.supply.firstpage.LoginedFirstFragment;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.index.IndexFragment;
@@ -61,6 +62,7 @@ public class MainActivity extends NetWorkActivity {
     //未读小红点
     private TextView mMsgHite;
 //    private UserInfo userInfo;
+    private boolean isLogin;
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements  Runnable{
         private List<ProductBasicList.ListBean> basicList;
@@ -123,7 +125,8 @@ public class MainActivity extends NetWorkActivity {
 //        mClient.setListener(mListener);
 //        mClient.connect();
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
-        if (SPUtils.isLogin(mContext)){
+        isLogin = SPUtils.isLogin(mContext);
+        if (isLogin){
             queryProductList();
         }
     }
@@ -197,7 +200,13 @@ public class MainActivity extends NetWorkActivity {
                 new Thread(new CachRunnale(basicList.getList())).start();
                 break;
             case REQUEST_UNREAD:
-                mMsgHite.setVisibility(View.GONE);
+                UnReadData unReadData = (UnReadData)result.getResult().getData();
+                if(unReadData.getUnread()) {
+                    mMsgHite.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mMsgHite.setVisibility(View.GONE);
+                }
                 break;
             default:
                 break;
@@ -225,7 +234,11 @@ public class MainActivity extends NetWorkActivity {
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
 //        if (SPUtils.isLogin(mContext)){
 //            queryProductList();
-//        }
+//        }URL	http://develop.runwise.cn/gongfu/message/unread/
+        if (isLogin) {
+            Object request = null;
+            sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
+        }
     }
     @Override
     protected void onStop() {
@@ -248,11 +261,12 @@ public class MainActivity extends NetWorkActivity {
 
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
-//        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        isLogin = true;
     }
 
     @Override
     public void onUserLoginout() {
+        isLogin = false;
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN)
