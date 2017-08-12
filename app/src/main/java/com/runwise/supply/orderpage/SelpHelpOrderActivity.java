@@ -72,6 +72,8 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     private Button deleteBtn;
     @ViewInject(R.id.allCb)
     private CheckBox allCb;
+    @ViewInject(R.id.allLL)
+    private LinearLayout allLL;
     @ViewInject(R.id.self_help_rl)
     private RelativeLayout self_help_rl;
     //标记是否主动点击全部,默认是主动true
@@ -150,6 +152,8 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
                     editMode = true;
                 }else{
+                    //完成模式，清空上次选择的
+                    adapter.clearSelect();
                     this.setTitleRightText(true,"编辑");
                     ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
                     ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
@@ -340,23 +344,38 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
 //            }
 //        },2000);
         setTitleEditShow();
-        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        allLL.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isInitiative){
-                    if (isChecked){
-                        //adapter里面所有的选中
-                        setDeleteBtnOk(true);
-                        adapter.setAllSelect(true);
-                    }else{
-                        //清掉adapter里面所有选中的状态
-                        setDeleteBtnOk(false);
-                        adapter.setAllSelect(false);
-                    }
+            public void onClick(View v) {
+                isInitiative = false;
+                if (allCb.isChecked()){
+                    allCb.setChecked(false);
+                    setDeleteBtnOk(false);
+                    adapter.setAllSelect(false);
+                }else{
+                    allCb.setChecked(true);
+                    setDeleteBtnOk(true);
+                    adapter.setAllSelect(true);
                 }
-                isInitiative = true;
             }
         });
+//        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isInitiative){
+//                    if (isChecked){
+//                        //adapter里面所有的选中
+//                        setDeleteBtnOk(true);
+//                        adapter.setAllSelect(true);
+//                    }else{
+//                        //清掉adapter里面所有选中的状态
+//                        setDeleteBtnOk(false);
+//                        adapter.setAllSelect(false);
+//                    }
+//                }
+//                isInitiative = true;
+//            }
+//        });
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (!canSeePrice){
             totalMoneyTv.setVisibility(View.GONE);
@@ -369,7 +388,11 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             self_help_rl.setVisibility(View.VISIBLE);
             pullListView.setVisibility(View.INVISIBLE);
         }else{
-            setTitleRightText(true,"编辑");
+            if (editMode){
+                setTitleRightText(true,"完成");
+            }else{
+                setTitleRightText(true,"编辑");
+            }
             self_help_rl.setVisibility(View.INVISIBLE);
             pullListView.setVisibility(View.VISIBLE);
         }

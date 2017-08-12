@@ -111,24 +111,31 @@
         android:paddingLeft="15dp"
         android:layout_marginBottom="-55dp"
         android:paddingRight="15dp">
-        <CheckBox
-            android:id="@+id/allCb"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_alignParentLeft="true"
-            android:button="@drawable/product_selector"
-            android:layout_centerVertical="true"
-            />
-        <TextView
+        <LinearLayout
+            android:id="@+id/allLL"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="全选"
-            android:textSize="15sp"
-            android:layout_centerVertical="true"
-            android:textColor="#2E2E2E"
-            android:gravity="center_vertical"
-            android:layout_marginLeft="13dp"
-            android:layout_toRightOf="@id/allCb"/>
+            android:layout_alignParentLeft="true"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/allCb"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:button="@drawable/product_selector"
+                android:layout_centerVertical="true"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="全选"
+                android:textSize="15sp"
+                android:layout_centerVertical="true"
+                android:textColor="#2E2E2E"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="13dp"
+                />
+        </LinearLayout>
+
         <Button
             android:id="@+id/deleteBtn"
             android:layout_width="71dp"

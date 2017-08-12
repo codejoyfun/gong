@@ -237,6 +237,10 @@ public class OneKeyAdapter extends IBaseAdapter {
         }
         notifyDataSetChanged();
     }
+    public void clearSelect(){
+        selectArr.clear();
+        notifyDataSetChanged();
+    }
     public void deleteSelectItems(){
         //TODO:同时如果计数里面有值，也得一并清掉
         mList.removeAll(selectArr);
