@@ -21,6 +21,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
@@ -28,9 +29,16 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
+import com.runwise.supply.firstpage.EvaluateActivity;
+import com.runwise.supply.firstpage.OrderDetailActivity;
+import com.runwise.supply.firstpage.OrderDoAction;
+import com.runwise.supply.firstpage.ReceiveActivity;
+import com.runwise.supply.firstpage.entity.CancleRequest;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.RequestDetlActivity;
 import com.runwise.supply.mine.entity.OrderEntity;
 import com.runwise.supply.mine.entity.OrderList;
@@ -45,6 +53,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
+    private static final int CANCEL = 4;
+    private static final int DELETE_ORDER = 5;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -110,7 +120,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 request.setEnd(TimeUtils.getPerWeekStart());
                 break;
         }
-        sendConnection("/gongfu/order/list",request,where,showDialog,OrderResult.class);
+        sendConnection("/gongfu/order/list",request,where,showDialog,OrderResponse.class);
     }
 
 
@@ -118,19 +128,19 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
-                OrderResult mainListResult = (OrderResult)result.getResult().getData();
+                OrderResponse mainListResult = (OrderResponse)result.getResult().getData();
                 adapter.setData(mainListResult.getList());
 //                mainListResult.getEntities().get(0).setOrder_status(11);
                 loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
-                OrderResult startResult = (OrderResult)result.getResult().getData();
+                OrderResponse startResult = (OrderResponse)result.getResult().getData();
                 adapter.setData(startResult.getList());
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
-                OrderResult endResult = (OrderResult)result.getResult().getData();
+                OrderResponse endResult = (OrderResponse)result.getResult().getData();
                 if (endResult.getList() != null && !endResult.getList().isEmpty()) {
                     adapter.appendData(endResult.getList());
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);
@@ -138,6 +148,14 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 else {
                     pullListView.onRefreshComplete(adapter.getCount());
                 }
+                break;
+            case CANCEL:
+                requestData(true, REQUEST_MAIN, page, 10);
+                ToastUtil.show(mContext,"订单已取消");
+                break;
+            case DELETE_ORDER:
+                requestData(true, REQUEST_MAIN, page, 10);
+                ToastUtil.show(mContext,"订单已删除");
                 break;
         }
     }
@@ -150,21 +168,18 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        OrderEntity bean = (OrderEntity)parent.getAdapter().getItem(position);
-//        Intent intent = new Intent(mContext, IWebViewActivity.class);
-//        intent.putExtra(WebViewActivity.WEB_TITLE,bean.getTitle());
-//        if (bean.getOrder_status() == 1 ) {
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getApply_info_url());
-//            startActivity(intent);
-//        }
-//        else if(bean.getOrder_status() == 11) {
-//            Intent dealIntent = new Intent(this,RequestDetlActivity.class);
-//            startActivity(dealIntent);
-//        }
-//        else{
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getPeriod_url());
-//            startActivity(intent);
-//        }
+        OrderResponse.ListBean bean = (OrderResponse.ListBean)parent.getAdapter().getItem(position);
+        //待确认
+        if("draft".equals(bean.getState())) {
+
+        }
+        else{
+            Intent intent = new Intent(mContext,OrderDetailActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("order",bean);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
     }
 
 
@@ -180,8 +195,28 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
         requestData(false, REQUEST_MAIN, page, 10);
     }
 
+    /**
+     * 取消订单
+     */
+    private void cancleOrderRequest(OrderResponse.ListBean bean) {
+        StringBuffer urlSb = new StringBuffer("/gongfu/order/");
+        urlSb.append(bean.getOrderID()).append("/state");
+        CancleRequest request = new CancleRequest();
+        request.setState("cancel");
+        sendConnection(urlSb.toString(),request,CANCEL,true,BaseEntity.ResultBean.class);
+    }
+    /**
+     * 删除订单
+     */
+    private void deleteOrderRequest(OrderResponse.ListBean bean) {
+        StringBuffer urlSb = new StringBuffer("/gongfu/order/");
+        urlSb.append(bean.getOrderID()).append("/state");
+        CancleRequest request = new CancleRequest();
+        request.setState("deleted");
+        sendConnection(urlSb.toString(),request,DELETE_ORDER,true,BaseEntity.ResultBean.class);
+    }
 
-    public class CarInfoListAdapter extends IBaseAdapter<OrderResult.ListBean> {
+    public class CarInfoListAdapter extends IBaseAdapter<OrderResponse.ListBean> {
         @Override
         protected View getExView(int position, View convertView,
                                  ViewGroup parent) {
@@ -195,7 +230,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            OrderResult.ListBean bean = mList.get(position);
+           final OrderResponse.ListBean bean = mList.get(position);
             //待确认
             if("draft".equals(bean.getState())) {
                 holder.payStatus.setText("待确认");
@@ -211,7 +246,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                         dialog.setRightBtnListener("取消订单", new CustomDialog.DialogListener() {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
-
+                                cancleOrderRequest(bean);
                             }
                         });
                         dialog.show();
@@ -228,12 +263,62 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             else if("peisong".equals(bean.getState())) {
                 holder.payStatus.setText("已发货");
                 holder.payBtn.setVisibility(View.VISIBLE);
-                holder.payBtn.setText("收货");
+                String btnText;
+                if (bean.isIsDoubleReceive()){
+                    if (bean.isIsFinishTallying()){
+                        //双人收货
+                        btnText = "收货";
+                    }else{
+                        //双人点货
+                        btnText = "点货";
+                    }
+                }else{
+                    //正常收货
+                    btnText = "收货";
+                }
+                holder.payBtn.setText(btnText);
                 holder.orderStatus.setImageResource(R.drawable.state_restaurant_3_delivering);
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
+                        OrderDoAction action;
+                        if (bean.isIsDoubleReceive()){
+                            String userName = GlobalApplication.getInstance().getUserName();
+                            if (bean.getTallyingUserName().equals(userName)){
+                                action = OrderDoAction.SELFTALLY;
+                            }else{
+                                action = OrderDoAction.SETTLERECEIVE;
+                            }
+                        }
+                        else {
+                            action = OrderDoAction.RECEIVE;
+                        }
+                        switch (action) {
+                            case RECEIVE://正常收货
+                                Intent intent = new Intent(mContext,ReceiveActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putParcelable("order",bean);
+                                bundle.putInt("mode",0);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                                break;
+                            case SETTLERECEIVE:
+                                //点货，计入结算单位
+                                Intent sIntent = new Intent(mContext,ReceiveActivity.class);
+                                Bundle sBundle = new Bundle();
+                                sBundle.putParcelable("order",bean);
+                                sBundle.putInt("mode",2);
+                                sIntent.putExtras(sBundle);
+                                startActivity(sIntent);
+                                break;
+                            case SELFTALLY:
+                                dialog.setMessageGravity();
+                                dialog.setMessage("您已经点过货了，应由其他人完成收货");
+                                dialog.setRightBtnListener("确认", null);
+                                dialog.show();
+                                break;
+                        }
                     }
                 });
             }
@@ -247,7 +332,11 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        Intent intent2 = new Intent(mContext,EvaluateActivity.class);
+                        Bundle bundle2 = new Bundle();
+                        bundle2.putParcelable("order",bean);
+                        intent2.putExtras(bundle2);
+                        startActivity(intent2);
                     }
                 });
             }
@@ -272,7 +361,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                         dialog.setRightBtnListener("删除订单", new CustomDialog.DialogListener() {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
-
+                                deleteOrderRequest(bean);
                             }
                         });
                         dialog.show();

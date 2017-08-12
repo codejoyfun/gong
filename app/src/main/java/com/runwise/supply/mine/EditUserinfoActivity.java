@@ -130,6 +130,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
         switch (where) {
             case REQUEST_UPLOAD_IMAGEFILE:
                 UploadImg uploadImg = (UploadImg)result.getResult();
+                LogUtils.e(uploadImg.getAvatar_url());
                 userInfo.setAvatarUrl(uploadImg.getAvatar_url());
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
                 Fresco.getImagePipeline().evictFromCache(updateImgUri);
