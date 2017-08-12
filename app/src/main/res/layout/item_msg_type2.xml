@@ -22,8 +22,8 @@
           android:src="@drawable/notify_stockout" />
       <View
           android:id="@+id/chatUnRead"
-          android:layout_width="7dp"
-          android:layout_height="7dp"
+          android:layout_width="8dp"
+          android:layout_height="8dp"
           android:background="@drawable/red_shap"
           android:layout_centerVertical="true"
           android:visibility="gone"

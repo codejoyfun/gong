@@ -229,7 +229,7 @@ public class MineFragment extends NetWorkFragment {
                 break;
             //价目表
             case R.id.itemLayout_8:
-                intent = new Intent(mContext, PriceListActivity.class);
+                intent = new Intent(mContext, PriceActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
                 }

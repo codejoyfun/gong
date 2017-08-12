@@ -391,6 +391,20 @@ public class CommonUtils {
 		}
 		return size;
 	}
+
+	/**
+	 * 处理手机好加上星星
+	 * @return
+	 */
+	public static String heandlerMobel(String source) {
+		if(TextUtils.isEmpty(source)) {
+			return "";
+		}
+		String start = source.substring(0,3);
+		String end = source.substring(source.length()-4);
+		return start+"****"+end;
+	}
+
 	public static boolean deleteDir(File dir) {
 		if (dir.isDirectory()) {
 			String[] children = dir.list();

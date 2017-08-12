@@ -202,11 +202,13 @@ public class  LoginActivity extends NetWorkActivity {
 				LoginData loginData = (LoginData)resultBean.getData();
 				UserInfo userInfoData = loginData.getUser();
 				if("false".equals(loginData.getIsSuccess())) {
-                  ToastUtil.show(mContext,"登陆冲突，该账号已登陆");
+					Intent intent = new Intent(mContext,LoginTipActivity.class);
+					intent.putExtra("mobel",loginData.getMobile());
+					startActivity(intent);
 					return;
 				}
 				if (remPassword.isChecked()) {
-					 mDb = DbUtils.create(this);
+					mDb = DbUtils.create(this);
 					try {
 						RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", loginRequest.getLogin())));
 						if (rem != null) {

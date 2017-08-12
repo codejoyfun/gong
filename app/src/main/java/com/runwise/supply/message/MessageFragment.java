@@ -112,7 +112,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     @Override
     public void onResume() {
         super.onResume();
-        if(firstLaunch) {
+        if(firstLaunch && isLogin) {
             pullListView.setRefreshing();
         }
         firstLaunch = true;
@@ -402,7 +402,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             @ViewInject(R.id.chatContext)
             TextView            chatContext;
             @ViewInject(R.id.chatUnRead)
-            TextView            chatUnRead;
+            View            chatUnRead;
             @ViewInject(R.id.chatMsg)
             TextView chatMsg;
         }
