@@ -22,6 +22,7 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.AndroidWorkaround;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -83,6 +84,7 @@ public class OrderDetailActivity extends NetWorkActivity{
     private boolean isHasAttachment;        //默认无凭证
     @ViewInject(R.id.priceLL)
     private View priceLL;
+    private boolean isModifyOrder;          //可修改订单
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -226,6 +228,10 @@ public class OrderDetailActivity extends NetWorkActivity{
                 }
                 //同时，显示右上角，申请售后
                 setTitleRightText(true,"申请售后");
+                isModifyOrder = false;
+            }else if(bean.getState().equals(OrderState.DRAFT.getName())){
+                setTitleRightText(true,"修改");
+                isModifyOrder = true;
             }
             //订单信息
             orderNumTv.setText(bean.getName());
@@ -296,10 +302,19 @@ public class OrderDetailActivity extends NetWorkActivity{
                 startActivity(intent);
                 break;
             case R.id.title_tv_rigth:
-                if (!bDialog.isVisible()){
-                    bDialog.show();
+                if (isModifyOrder){
+                    Intent mIntent = new Intent(this,OrderModifyActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putParcelable("order", bean);
+                    mIntent.putExtras(mBundle);
+                    startActivity(mIntent);
+                    finish();
                 }else{
-                    bDialog.dismiss();
+                    if (!bDialog.isVisible()){
+                        bDialog.show();
+                    }else{
+                        bDialog.dismiss();
+                    }
                 }
                 break;
             case R.id.rightBtn:

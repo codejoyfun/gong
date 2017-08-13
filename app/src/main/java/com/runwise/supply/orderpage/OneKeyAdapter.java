@@ -60,7 +60,7 @@ public class OneKeyAdapter extends IBaseAdapter {
         this.selectArr = selectArr;
     }
 
-    interface OneKeyInterface{
+    public interface OneKeyInterface{
         void countChanged();
         //选择的类型,0没选，1全选,2部分选
         void selectClicked(SELECTTYPE selectType);
