@@ -153,7 +153,7 @@ public class OneKeyAdapter extends IBaseAdapter {
             sb.append("  ").append(basicBean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
             if (canSeePrice){
-                sb.append("\n").append(basicBean.getPrice()).append("元/").append(basicBean.getUom());
+                sb.append("  ").append(basicBean.getPrice()).append("元/").append(basicBean.getUom());
             }
             viewHolder.contentTv.setText(sb.toString());
         }

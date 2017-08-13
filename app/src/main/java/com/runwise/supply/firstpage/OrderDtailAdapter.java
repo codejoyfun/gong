@@ -3,6 +3,7 @@ package com.runwise.supply.firstpage;
 import android.content.Context;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,17 @@ import java.util.List;
 
 public class OrderDtailAdapter extends RecyclerView.Adapter{
     private Context context;
+    private boolean hasReturn;          //是否有退货，默认没有
+    private boolean isTwoUnit;           //双单位,有值就显示
+
+    public void setHasReturn(boolean hasReturn) {
+        this.hasReturn = hasReturn;
+    }
+
+    public void setTwoUnit(boolean twoUnit) {
+        isTwoUnit = twoUnit;
+    }
+
     private List<OrderResponse.ListBean.LinesBean> productList = new ArrayList();
 
     public OrderDtailAdapter(Context context) {
@@ -63,9 +75,14 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         }
         int puq = (int)bean.getProductUomQty();
         int dq = (int)bean.getDeliveredQty();
-        vh.oldPriceTv.setText("x"+dq);
+        if (hasReturn){
+            vh.oldPriceTv.setText("x"+dq);
+            vh.oldPriceTv.setVisibility(View.VISIBLE);
+        }else{
+            vh.oldPriceTv.setVisibility(View.INVISIBLE);
+        }
         vh.nowPriceTv.setText("x"+puq);
-        vh.weightTv.setText(bean.getSettleAmount()+"");
+
         if (basicBean != null){
             vh.name.setText(basicBean.getName());
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
@@ -75,6 +92,12 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
                 sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
             }
             vh.content.setText(sb.toString());
+            if (isTwoUnit){
+                vh.weightTv.setText(bean.getSettleAmount()+basicBean.getSettleUomId());
+                vh.weightTv.setVisibility(View.VISIBLE);
+            }else{
+                vh.weightTv.setVisibility(View.INVISIBLE);
+            }
         }else{
             vh.name.setText("");
         }

@@ -17,46 +17,48 @@
             android:background="#FFFFFF"
             android:paddingRight="15dp"
             android:paddingTop="15dp">
-            <TextView
-                android:id="@+id/orderNumTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SO345345345"
-                android:textColor="#2E2E2E"
-                android:textSize="16sp"
-                android:layout_alignParentLeft="true"
-                />
-            <TextView
-                android:id="@+id/receivtTv"
-                android:layout_width="26dp"
-                android:layout_height="14dp"
-                android:text="实收"
-                android:layout_alignTop="@id/orderNumTv"
-                android:layout_toRightOf="@id/orderNumTv"
-                android:layout_marginLeft="5dp"
-                android:textSize="9sp"
-                android:textColor="#FA5900"
-                android:gravity="center"
-                android:background="@drawable/receive_circle"/>
-            <TextView
-                android:id="@+id/returnTv"
-                android:layout_width="18dp"
-                android:layout_height="14dp"
-                android:text="退"
-                android:layout_alignTop="@id/orderNumTv"
-                android:layout_toRightOf="@id/receivtTv"
-                android:layout_marginLeft="5dp"
-                android:textSize="9sp"
-                android:textColor="#FA5900"
-                android:gravity="center"
-                android:background="@drawable/receive_circle"/>
+           <LinearLayout
+               android:id="@+id/orderLL"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:gravity="center_vertical"
+               android:layout_alignParentLeft="true">
+               <TextView
+                   android:id="@+id/orderNumTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="SO345345345"
+                   android:textColor="#2E2E2E"
+                   android:textSize="16sp"
+                   />
+               <TextView
+                   android:id="@+id/receivtTv"
+                   android:layout_width="26dp"
+                   android:layout_height="14dp"
+                   android:text="实收"
+                   android:layout_marginLeft="5dp"
+                   android:textSize="9sp"
+                   android:textColor="#FA5900"
+                   android:gravity="center"
+                   android:background="@drawable/receive_circle"/>
+               <TextView
+                   android:id="@+id/returnTv"
+                   android:layout_width="18dp"
+                   android:layout_height="14dp"
+                   android:text="退"
+                   android:layout_marginLeft="5dp"
+                   android:textSize="9sp"
+                   android:textColor="#FA5900"
+                   android:gravity="center"
+                   android:background="@drawable/receive_circle"/>
+           </LinearLayout>
             <TextView
                 android:id="@+id/buyerTv"
                 android:layout_width="wrap_content"
                 android:layout_height="26dp"
                 android:text="下单人员："
                 android:gravity="center_vertical"
-                android:layout_below="@id/orderNumTv"
+                android:layout_below="@id/orderLL"
                 android:textSize="14sp"
                 android:textColor="#999999"
                 android:layout_marginTop="5dp"

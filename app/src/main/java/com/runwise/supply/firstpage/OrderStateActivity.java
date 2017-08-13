@@ -121,7 +121,11 @@ public class OrderStateActivity extends NetWorkActivity {
                 StringBuffer content = new StringBuffer();
                 if (pieces.length >= 3) {
                     state = pieces[2];
-                    timeSb.append(pieces[0]).append(pieces[1]);
+                    if (pieces[0].length() == 10){
+                        timeSb.append(pieces[0].substring(5)).append(" ").append(pieces[1]);
+                    }else{
+                        timeSb.append(pieces[0]).append(" ").append(pieces[1]);
+                    }
                 }
                 osl.setState(state);
                 osl.setTime(timeSb.toString());
@@ -164,7 +168,12 @@ public class OrderStateActivity extends NetWorkActivity {
                 StringBuffer content = new StringBuffer();
                 if (pieces.length >= 3){
                     state = pieces[2];
-                    timeSb.append(pieces[0]).append(pieces[1]);
+                    if (pieces[0].length() == 10){
+                        timeSb.append(pieces[0].substring(5)).append(" ").append(pieces[1]);
+                    }else{
+                        timeSb.append(pieces[0]).append(" ").append(pieces[1]);
+                    }
+
                 }
                 osl.setState(state);
                 osl.setTime(timeSb.toString());
