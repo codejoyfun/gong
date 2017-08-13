@@ -156,6 +156,12 @@ public class OrderDetailActivity extends NetWorkActivity{
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("order");
         adapter = new OrderDtailAdapter(mContext);
+        if (bean.getHasReturn() != 0){
+            adapter.setHasReturn(true);
+        }
+        if (bean.isIsTwoUnit()){
+            adapter.setTwoUnit(true);
+        }
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -234,7 +240,7 @@ public class OrderDetailActivity extends NetWorkActivity{
             if (isRealReceive()){
                 receivtTv.setVisibility(View.VISIBLE);
             }else{
-                receivtTv.setVisibility(View.INVISIBLE);
+                receivtTv.setVisibility(View.GONE);
             }
             //商品数量/预估金额
             ygMoneyTv.setText(bean.getAmountTotal()+"元");

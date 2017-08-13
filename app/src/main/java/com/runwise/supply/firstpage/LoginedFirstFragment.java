@@ -238,6 +238,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 startActivity(tIntent);
                 break;
             case RATE:
+                //评价
+                Intent rIntent = new Intent(mContext,EvaluateActivity.class);
+                OrderResponse.ListBean bean = (OrderResponse.ListBean) orderList.get(position);
+                Bundle rBundle = new Bundle();
+                rBundle.putParcelable("order",bean);
+                rIntent.putExtras(rBundle);
+                startActivity(rIntent);
                 break;
             case RECEIVE://正常收货
                 Intent intent = new Intent(mContext,ReceiveActivity.class);

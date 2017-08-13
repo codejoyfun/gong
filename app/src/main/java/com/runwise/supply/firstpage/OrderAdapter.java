@@ -151,7 +151,16 @@ public class OrderAdapter extends IBaseAdapter {
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
             }
             viewHolder.titleTv.setText(bean.getName());
-            viewHolder.timeTv.setText(bean.getEstimatedTime());
+            //派单前，派单后，用户收货后
+            StringBuffer etSb = new StringBuffer();
+            if (bean.getState().equals(OrderState.DRAFT.getName()) || bean.getState().equals(OrderState.SALE.getName())){
+                etSb.append("预计").append(bean.getEstimatedDate()).append("送达");
+            }else if(bean.getState().equals(OrderState.PEISONG.getName())){
+                etSb.append("预计").append(bean.getEstimatedTime()).append("送达");
+            }else{
+                etSb.append(bean.getDoneDatetime()).append("已送达");
+            }
+            viewHolder.timeTv.setText(etSb.toString());
             viewHolder.stateTv.setText(OrderState.getValueByName(bean.getState()));
             viewHolder.stateTv.setTextColor(Color.parseColor("#333333"));
             if (bean.getWaybill() != null && bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null){
@@ -264,12 +273,12 @@ public class OrderAdapter extends IBaseAdapter {
             }
 
         }else if(bean.getState().equals(OrderState.DONE.getName())){
-            if (bean.getHasAttachment() != 0){
-                btnText = "查看支付凭证";
-            }else{
-                btnText = "上传支付凭证";
-            }
-
+//            if (bean.getHasAttachment() != 0){
+//                btnText = "查看支付凭证";
+//            }else{
+//                btnText = "上传支付凭证";
+//            }
+            btnText = "评价";
         }else if(bean.getState().equals(OrderState.RATED.getName())){
             btnText = "已评价";
         }
