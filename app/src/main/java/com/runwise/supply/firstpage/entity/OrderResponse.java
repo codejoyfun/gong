@@ -74,6 +74,8 @@ public class OrderResponse {
         private String tallyingUserName;
         private boolean isDoubleReceive;
         private StoreBean store;
+        //退货记录里加的字段，貌似收货人
+        private String  driver;
         private double settleAmountTotal;
         private WaybillBean waybill;
         private int hasAttachment;
@@ -98,6 +100,7 @@ public class OrderResponse {
         protected ListBean(Parcel in) {
             amountTotal = in.readDouble();
             endUnloadDatetime = in.readString();
+            driver = in.readString();
             estimatedDate = in.readString();
             isTwoUnit = in.readByte() != 0;
             hasReturn = in.readInt();
@@ -154,6 +157,14 @@ public class OrderResponse {
 
         public void setEndUnloadDatetime(String endUnloadDatetime) {
             this.endUnloadDatetime = endUnloadDatetime;
+        }
+
+        public String getDriver() {
+            return driver;
+        }
+
+        public void setDriver(String driver) {
+            this.driver = driver;
         }
 
         public String getEstimatedDate() {
@@ -396,6 +407,7 @@ public class OrderResponse {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeDouble(amountTotal);
+            dest.writeString(driver);
             dest.writeString(endUnloadDatetime);
             dest.writeString(estimatedDate);
             dest.writeByte((byte) (isTwoUnit ? 1 : 0));

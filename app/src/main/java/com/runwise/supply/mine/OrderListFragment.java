@@ -47,7 +47,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 /**
- * 我的分期
+ * 我的订单
  */
 public class OrderListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;

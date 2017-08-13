@@ -120,7 +120,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
                         }
                         else{
                             dialog.setModel(CustomDialog.LEFT);
-                            dialog.setMessage("当前正在盘点中,无法创建新的盘点单");
+                            dialog.setMessage("当前"+bean.getCreate_partner().getName()+"正在盘点中,无法创建新的盘点单");
                             dialog.setLeftBtnListener("我知道了", null);
                             dialog.show();
                         }
