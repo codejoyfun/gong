@@ -194,7 +194,15 @@ public class OrderDetailActivity extends NetWorkActivity{
                 rightBtn.setText("收货");
             }else if (bean.getState().equals("done")){
                 state = "订单已收货";
-                tip = "收货人："+bean.getReceiveUserName();
+
+                String recdiveName = bean.getReceiveUserName();
+                tip = "收货人："+ recdiveName;
+
+                //TODO:退货单没有收货人姓名，暂时处理
+                if(TextUtils.isEmpty(recdiveName)) {
+                    tip = "已退货";
+                    state = "订单已退货";
+                }
                 if (TextUtils.isEmpty(bean.getAppraisalUserName())){
                     rightBtn.setText("评价");
                     rightBtn2.setText("售后订单");

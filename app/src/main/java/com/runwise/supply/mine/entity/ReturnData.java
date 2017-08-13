@@ -1,5 +1,7 @@
 package com.runwise.supply.mine.entity;
 
+import com.runwise.supply.firstpage.entity.OrderResponse;
+
 import java.util.List;
 
 /**
@@ -7,40 +9,40 @@ import java.util.List;
  */
 
 public class ReturnData {
-    private List<AllListBean> lastWeekList;
-    private List<AllListBean> thisWeekList;
-    private List<AllListBean> allList;
-    private List<AllListBean> earlierList;
+    private List<OrderResponse.ListBean> lastWeekList;
+    private List<OrderResponse.ListBean> thisWeekList;
+    private List<OrderResponse.ListBean> allList;
+    private List<OrderResponse.ListBean> earlierList;
 
-    public List<AllListBean> getLastWeekList() {
+    public List<OrderResponse.ListBean> getLastWeekList() {
         return lastWeekList;
     }
 
-    public void setLastWeekList(List<AllListBean> lastWeekList) {
+    public void setLastWeekList(List<OrderResponse.ListBean> lastWeekList) {
         this.lastWeekList = lastWeekList;
     }
 
-    public List<AllListBean> getThisWeekList() {
+    public List<OrderResponse.ListBean> getThisWeekList() {
         return thisWeekList;
     }
 
-    public void setThisWeekList(List<AllListBean> thisWeekList) {
+    public void setThisWeekList(List<OrderResponse.ListBean> thisWeekList) {
         this.thisWeekList = thisWeekList;
     }
 
-    public List<AllListBean> getAllList() {
+    public List<OrderResponse.ListBean> getAllList() {
         return allList;
     }
 
-    public void setAllList(List<AllListBean> allList) {
+    public void setAllList(List<OrderResponse.ListBean> allList) {
         this.allList = allList;
     }
 
-    public List<AllListBean> getEarlierList() {
+    public List<OrderResponse.ListBean> getEarlierList() {
         return earlierList;
     }
 
-    public void setEarlierList(List<AllListBean> earlierList) {
+    public void setEarlierList(List<OrderResponse.ListBean> earlierList) {
         this.earlierList = earlierList;
     }
 

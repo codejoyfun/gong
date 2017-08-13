@@ -150,7 +150,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 List< EditRepertoryResult.InventoryBean.ListBean> newProductList = new ArrayList<>();
                 for (EditHotResult.LotInProductListBean.LotListBean logBean : addProductAdapter.getList()){
                     //现在只添加手动添加的
-                    if (!TextUtils.isEmpty(logBean.getLot_num())) {
+                    if (!TextUtils.isEmpty(logBean.getLot_num()) && logBean.getSum() != 0 ) {
                         EditRepertoryResult.InventoryBean.ListBean bean = new EditRepertoryResult.InventoryBean.ListBean();
                         bean.setLife_end_date(logBean.getLife_end_date());
                         bean.setTheoretical_qty(logBean.getSum());

@@ -28,6 +28,8 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
+import com.runwise.supply.firstpage.OrderDetailActivity;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.mine.entity.MsgEntity;
 import com.runwise.supply.mine.entity.MsgList;
 import com.runwise.supply.mine.entity.MsgResult;
@@ -60,7 +62,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
 
     private int page = 1;
     public OrderDataType orderDataType;
-    private List<ReturnData.AllListBean> allList;
+    private List<OrderResponse.ListBean> allList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,12 +170,12 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        MsgEntity bean = (MsgEntity)parent.getAdapter().getItem(position);
-//        Intent intent = new Intent(mContext,MsgDetailActivity.class);
-//        intent.putExtra("msgId",bean.getMessage_id());
-//        bean.setIs_read("1");
-//        adapter.notifyDataSetChanged();
-//        startActivity(intent);
+        OrderResponse.ListBean bean = (OrderResponse.ListBean)parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext,OrderDetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("order",bean);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
 
@@ -190,7 +192,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
     }
 
 
-    public class CarInfoListAdapter extends IBaseAdapter<ReturnData.AllListBean> {
+    public class CarInfoListAdapter extends IBaseAdapter<OrderResponse.ListBean> {
         @Override
         protected View getExView(int position, View convertView,
                                  ViewGroup parent) {
@@ -204,7 +206,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
             else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            ReturnData.AllListBean bean = mList.get(position);
+            OrderResponse.ListBean bean = mList.get(position);
 
           if("process".equals(bean.getState())) {
                 holder.payStatus.setText("退货中");
