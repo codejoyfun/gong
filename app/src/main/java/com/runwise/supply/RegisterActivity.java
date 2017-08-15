@@ -86,7 +86,7 @@ public class RegisterActivity extends NetWorkActivity {
 		switch (where) {
 			case REGISTER:
 				dialog.setCancelable(false);
-				dialog.setModel(CustomDialog.BOTH);
+				dialog.setModel(CustomDialog.RIGHT);
 				dialog.setMessageGravity();
 				dialog.setMessage("非常感谢，您的注册申请已收到，供鲜生客服代表会尽快与您联系");
 				dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
