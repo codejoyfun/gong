@@ -144,24 +144,7 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     finish();
                 break;
             case R.id.title_tv_rigth:
-                if (!editMode){
-                    this.setTitleRightText(true,"完成");
-                    this.setTitleLeftIcon(true,R.drawable.nav_add);
-                    select_bar.setVisibility(View.VISIBLE);
-                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
-                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
-                    editMode = true;
-                }else{
-                    //完成模式，清空上次选择的
-                    adapter.clearSelect();
-                    this.setTitleRightText(true,"编辑");
-                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
-                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
-                    this.setTitleLeftIcon(true,R.drawable.nav_back);
-                    editMode = false;
-                }
-                adapter.setEditMode(editMode);
-                adapter.notifyDataSetChanged();
+                switchEditMode();
                 break;
             case R.id.onekeyBtn:
                 //下单按钮
@@ -208,6 +191,27 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             default:
                 break;
         }
+    }
+    //切换编辑模式
+    private void switchEditMode() {
+        if (!editMode){
+            this.setTitleRightText(true,"完成");
+            this.setTitleLeftIcon(true,R.drawable.nav_add);
+            select_bar.setVisibility(View.VISIBLE);
+            ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
+            ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
+            editMode = true;
+        }else{
+            //完成模式，清空上次选择的
+            adapter.clearSelect();
+            this.setTitleRightText(true,"编辑");
+            ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
+            ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
+            this.setTitleLeftIcon(true,R.drawable.nav_back);
+            editMode = false;
+        }
+        adapter.setEditMode(editMode);
+        adapter.notifyDataSetChanged();
     }
 
     private void setDeleteBtnOk(boolean isOk) {
@@ -522,6 +526,15 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
                 setTitleEditShow();
                 break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (editMode){
+            switchEditMode();
+        }else{
+            finish();
         }
     }
 }

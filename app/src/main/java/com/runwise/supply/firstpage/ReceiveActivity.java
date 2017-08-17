@@ -240,7 +240,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         switch (view.getId()){
             case R.id.title_iv_left:
                 dialog.setTitle("提示");
-                dialog.setMessage("确认取消收货?");
+                if(mode == 1 || mode == 2){
+                    dialog.setMessage("确认取消点货?");
+                }else{
+                    dialog.setMessage("确认取消收货?");
+                }
+                dialog.setMessageGravity();
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {

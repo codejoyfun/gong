@@ -21,6 +21,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.OrderChangedEvent;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.OneKeyAdapter;
 import com.runwise.supply.orderpage.ProductActivity;
@@ -32,6 +33,8 @@ import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -139,6 +142,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         switch (where){
             case COMMIT_TYPE:
                 ToastUtil.show(mContext,"订单修改成功");
+                EventBus.getDefault().post(new OrderChangedEvent());
                 finish();
                 break;
         }

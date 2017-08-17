@@ -102,6 +102,7 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.countTv = (TextView)convertView.findViewById(R.id.countTv);
             viewHolder.editLL = (LinearLayout)convertView.findViewById(R.id.editLL);
             convertView.setTag(viewHolder);
+            final EditText edittext = viewHolder.editText;
             viewHolder.editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -112,8 +113,12 @@ public class OneKeyAdapter extends IBaseAdapter {
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (!ischange) {
                         Integer num;
-                        if (TextUtils.isEmpty(s)){
-                            num = 0;
+                        if (TextUtils.isEmpty(s) || Integer.valueOf(s.toString()) == 0){
+                            num = 1;
+                            ischange = true;
+                            edittext.setText("1");
+                            ischange = false;
+                            ToastUtil.show(mContext,"超出最小范围了~");
                         }else{
                             num = Integer.valueOf(s.toString());
                         }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -140,23 +141,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     finish();
                 break;
             case R.id.title_tv_rigth:
-                if (!editMode){
-                    this.setTitleRightText(true,"完成");
-                    this.setTitleLeftIcon(true,R.drawable.nav_add);
-                    select_bar.setVisibility(View.VISIBLE);
-                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
-                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
-                    editMode = true;
-                }else{
-                    adapter.clearSelect();
-                    this.setTitleRightText(true,"编辑");
-                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
-                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
-                    this.setTitleLeftIcon(true,R.drawable.nav_back);
-                    editMode = false;
-                }
-                adapter.setEditMode(editMode);
-                adapter.notifyDataSetChanged();
+                switchEditMode();
                 break;
             case R.id.onekeyBtn:
                 //下单按钮
@@ -183,6 +168,29 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             default:
                 break;
         }
+    }
+
+    private void switchEditMode() {
+        //强制隐藏键盘
+        InputMethodManager imm = (InputMethodManager) getSystemService(mContext.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(allLL.getWindowToken(), 0); //强制隐藏键盘
+        if (!editMode){
+            this.setTitleRightText(true,"完成");
+            this.setTitleLeftIcon(true,R.drawable.nav_add);
+            select_bar.setVisibility(View.VISIBLE);
+            ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
+            ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
+            editMode = true;
+        }else{
+            adapter.clearSelect();
+            this.setTitleRightText(true,"编辑");
+            ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
+            ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
+            this.setTitleLeftIcon(true,R.drawable.nav_back);
+            editMode = false;
+        }
+        adapter.setEditMode(editMode);
+        adapter.notifyDataSetChanged();
     }
 
     private void setDeleteBtnOk(boolean isOk) {
@@ -466,5 +474,13 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                }
                break;
        }
+    }
+    @Override
+    public void onBackPressed() {
+        if (editMode){
+            switchEditMode();
+        }else{
+            finish();
+        }
     }
 }
