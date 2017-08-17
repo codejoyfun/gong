@@ -1,8 +1,10 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -24,6 +26,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +41,7 @@ public class OrderAdapter extends IBaseAdapter {
     protected static final int TYPE_RETURN = 1;       //退货单
     public interface DoActionInterface{
         void doAction(OrderDoAction action,int postion);
+        void call(String phone);
     }
     private DoActionInterface callback;
     private Context context;
@@ -173,6 +177,14 @@ public class OrderAdapter extends IBaseAdapter {
             }else{
                 viewHolder.senderTv.setText("未指派");
             }
+            viewHolder.callIb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!TextUtils.isEmpty(bean.getWaybill().getDeliverUser().getMobile())){
+                        callback.call(bean.getWaybill().getDeliverUser().getMobile());
+                    }
+                }
+            });
             StringBuffer sb = new StringBuffer("共");
             sb.append((int)bean.getAmount()).append("件商品");
             viewHolder.countTv.setText(sb.toString());
@@ -202,14 +214,14 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.titleTv.setText(bean.getName());
             viewHolder.stateTv.setText("退货中");
             viewHolder.stateTv.setTextColor(Color.parseColor("#FA694D"));
-            viewHolder.timeTv.setText("待安排配送员取货");
+            viewHolder.timeTv.setText(TimeUtils.getMMddHHmm(bean.getCreateDate()));
             StringBuffer sb = new StringBuffer("共");
             sb.append((int)bean.getAmount()).append("件商品");
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(bean.getAmountTotal()+"");
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
             if (!TextUtils.isEmpty(bean.getDriveMobile())){
-                viewHolder.carNumTv.setText(bean.getDriveMobile());
+                viewHolder.carNumTv.setText(bean.getVehicle());
             }else{
                 viewHolder.carNumTv.setText("未指派");
             }
@@ -218,6 +230,14 @@ public class OrderAdapter extends IBaseAdapter {
             }else{
                 viewHolder.senderTv.setText("未指派");
             }
+            viewHolder.callIb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!TextUtils.isEmpty(bean.getDriveMobile())){
+                        callback.call(bean.getDriveMobile());
+                    }
+                }
+            });
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -246,6 +266,7 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.timelineLL.setVisibility(View.GONE);
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
             }
+
         }
 
 
@@ -312,6 +333,9 @@ public class OrderAdapter extends IBaseAdapter {
         RecyclerView recyclerView;
         @ViewInject(R.id.priceLL)
         LinearLayout priceLL;
+        @ViewInject(R.id.callIb)
+        ImageButton callIb;
+
     }
 
     private void setTimeLineContent(List<String> stList, RecyclerView recyclerView){

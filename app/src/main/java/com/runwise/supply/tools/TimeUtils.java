@@ -183,6 +183,16 @@ public class TimeUtils {
 			return date;
 		}
 	}
+	public static String getMMddHHmm(String date){
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		try {
+			Date sDate = ft.parse(date);
+			return ft2.format(sDate);
+		} catch (ParseException e) {
+			return date;
+		}
+	}
 	/**
 	 * 计算宝宝年龄
 	 *
