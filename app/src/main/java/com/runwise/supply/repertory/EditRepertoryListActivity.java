@@ -97,14 +97,16 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 									productBean.setProduct_id(bean.getProduct().getId());
 									productBean.setId(bean.getId());
 									productBean.setActual_qty(bean.getEditNum());
-									productBean.setLot_id(bean.getLot_id()+"");
+									productBean.setLot_id(bean.getLot_id());
 									productBean.setLot_num(bean.getLot_num());
 									editListBean.add(productBean);
 								}
 
 							}
 							editRequest.setInventory_lines(editListBean);
-							sendConnection("/gongfu/shop/inventory/state",editRequest,PRODUCT_COMMIT,true, EditRepertoryResult.class);
+
+//							sendConnection("/gongfu/shop/inventory/state",editRequest,PRODUCT_COMMIT,true, EditRepertoryResult.class);
+							sendConnection("/gongfu/api/inventory/state",editRequest,PRODUCT_COMMIT,true, EditRepertoryResult.class);
 						}
 					});
 					dialog.setMessage("盘点成功，确认更新库存?");

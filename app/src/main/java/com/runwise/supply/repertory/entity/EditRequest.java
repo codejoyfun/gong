@@ -39,7 +39,7 @@ public class EditRequest {
         private int product_id;
         private int id;
         private int actual_qty;
-        private String lot_id;
+        private int lot_id;
         private String lot_num;
 
         public int getProduct_id() {
@@ -66,11 +66,11 @@ public class EditRequest {
             this.actual_qty = actual_qty;
         }
 
-        public String getLot_id() {
+        public int getLot_id() {
             return lot_id;
         }
 
-        public void setLot_id(String lot_id) {
+        public void setLot_id(int lot_id) {
             this.lot_id = lot_id;
         }
 
