@@ -36,6 +36,7 @@ import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.firstpage.EvaluateActivity;
 import com.runwise.supply.firstpage.OrderDetailActivity;
 import com.runwise.supply.firstpage.OrderDoAction;
+import com.runwise.supply.firstpage.OrderModifyActivity;
 import com.runwise.supply.firstpage.ReceiveActivity;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -171,7 +172,17 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
         OrderResponse.ListBean bean = (OrderResponse.ListBean)parent.getAdapter().getItem(position);
         //待确认
         if("draft".equals(bean.getState())) {
+//            Intent mIntent = new Intent(mContext,OrderModifyActivity.class);
+//            Bundle mBundle = new Bundle();
+//            mBundle.putParcelable("order", bean);
+//            mIntent.putExtras(mBundle);
+//            startActivity(mIntent);
 
+            Intent intent = new Intent(mContext,OrderDetailActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("order",bean);
+            intent.putExtras(bundle);
+            startActivity(intent);
         }
         else{
             Intent intent = new Intent(mContext,OrderDetailActivity.class);
