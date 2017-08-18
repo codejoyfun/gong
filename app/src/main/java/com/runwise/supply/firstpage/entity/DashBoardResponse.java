@@ -12,6 +12,7 @@ public class DashBoardResponse {
      * adventNum : 0
      * maturityValue : 0
      * adventValue : 125.8
+     * adventNum: 0
      */
 
     private int maturityNum;

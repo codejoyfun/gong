@@ -1,10 +1,16 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +77,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private OrderAdapter        adapter;
     private TextView lastWeekBuy;
     private TextView lastMonthBuy;
+    private TextView unPayAccount;
     private TextView unPayMoney;
+    private TextView lqCountTv;
+    private TextView dqCountTv;
     private List orderList = new ArrayList<>();
     private View rootView;
 
@@ -89,8 +98,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //        View headView = layoutInflater.inflate(R.layout.logined_head_layout,null);
         lastWeekBuy = (TextView) headView.findViewById(R.id.lastWeekBuy);
         lastMonthBuy = (TextView)headView.findViewById(R.id.lastMonthBuy);
+        unPayAccount = (TextView)headView.findViewById(R.id.unPayAccount);
         unPayMoney = (TextView)headView.findViewById(R.id.unPayAccount);
+        lqCountTv = (TextView)headView.findViewById(R.id.lqCountTv);
+        dqCountTv = (TextView)headView.findViewById(R.id.dqCountTv);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
+
         //通过图片比例，计算banner大小 375:175 = w:x
         int height = 175 * CommonUtils.getScreenWidth(mContext) / 375;
         banner.getLayoutParams().height = height;
@@ -167,8 +180,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FROMDB:
                 BaseEntity.ResultBean resultBean2= result.getResult();
                 DashBoardResponse dbResponse = (DashBoardResponse) resultBean2.getData();
-                DecimalFormat df   = new DecimalFormat("######0.00");
-                lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
+                updateDashBoard(dbResponse);
                 break;
             case CANCEL:
                 BaseEntity.ResultBean resultBean3= result.getResult();
@@ -189,6 +201,24 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
         }
     }
+
+    private void updateDashBoard(DashBoardResponse dbResponse) {
+        DecimalFormat df   = new DecimalFormat("#.##");
+        lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
+        int adventNum = dbResponse.getAdventNum();
+        int maturityNum = dbResponse.getMaturityNum();
+        double adventValue = dbResponse.getAdventValue();
+        double maturityValue = dbResponse.getMaturityValue();
+        lastMonthBuy.setText("¥"+df.format(adventValue));
+        unPayAccount.setText("¥"+df.format(maturityValue));
+        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
+        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        lqCountTv.setText(ssLq);
+        SpannableString ssDq = new SpannableString("到期食材"+maturityNum+"件");
+        ssDq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(maturityNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        dqCountTv.setText(ssDq);
+    }
+
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
@@ -277,6 +307,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             default:
                 break;
         }
+    }
+
+    @Override
+    public void call(String phone) {
+        if (TextUtils.isEmpty(phone)){
+            ToastUtil.show(mContext,"尚未指派");
+            return;
+        }
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phone));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
 
