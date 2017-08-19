@@ -312,5 +312,17 @@ public class SPUtils {
         }
         return false;
     }
+    /**
+     * 是否是第一次运行
+     * @param context
+     * @return
+     */
+    public static boolean firstLaunchInfo(Context context) {
+        if(TextUtils.isEmpty((String)SPUtils.get(context,"firstlaunch1",""))) {
+            SPUtils.put(context,"firstlaunch1","first");
+            return true;
+        }
+        return false;
+    }
 
 }

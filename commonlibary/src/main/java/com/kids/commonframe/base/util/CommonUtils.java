@@ -63,6 +63,7 @@ public class CommonUtils {
 	public static final String MONEY_VALUE = "money";
 	public static final String MONEY_UNIT = "unit";
 
+
 	public static boolean isAppAlive(Context context) {
 		ActivityManager activityManager = (ActivityManager) context
 				.getSystemService(Context.ACTIVITY_SERVICE);

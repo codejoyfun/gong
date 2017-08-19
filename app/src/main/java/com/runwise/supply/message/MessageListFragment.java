@@ -45,6 +45,7 @@ import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.message.entity.MsgListResult;
 import com.runwise.supply.message.entity.MsgSendRequest;
+import com.runwise.supply.tools.UserUtils;
 
 /**
  * 聊天信息
@@ -88,36 +89,8 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         super.onCreate(savedInstanceState);
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         orderBean = (MessageResult.OrderBean) this.getActivity().getIntent().getSerializableExtra("orderBean");
-        //待确认
-        if("draft".equals(orderBean.getState())) {
-            chatStatus.setText("待确认");
-            chatIcon.setImageResource(R.drawable.state_restaurant_1_tocertain);
-        }
-        //已确认
-        else if("sale".equals(orderBean.getState())) {
-            chatStatus.setText("已确认");
-            chatIcon.setImageResource(R.drawable.state_restaurant_2_certain);
-        }
-        //已发货
-        else if("peisong".equals(orderBean.getState())) {
-            chatStatus.setText("已发货");
-            chatIcon.setImageResource(R.drawable.state_restaurant_3_delivering);
-        }
-        //已收货
-        else if("done".equals(orderBean.getState())) {
-            chatStatus.setText("已收货");
-            chatIcon.setImageResource(R.drawable.state_restaurant_2_certain);
-        }
-        //已评价
-        else if("rated".equals(orderBean.getState())) {
-            chatStatus.setText("已评价");
-            chatIcon.setImageResource(R.drawable.state_restaurant_5_rated);
-        }
-        //已取消cancel
-        else{
-            chatStatus.setText("订单关闭");
-            chatIcon.setImageResource(R.drawable.state_restaurant_6_closed);
-        }
+        UserUtils.setOrderStatus(orderBean.getState(),chatStatus,chatIcon);
+
         chatName.setText(orderBean.getName());
         chatTime.setText(orderBean.getEstimated_time());
         chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
@@ -289,7 +262,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.no_network);
+        loadingLayout.onFailure(errMsg);
     }
 
     @Override

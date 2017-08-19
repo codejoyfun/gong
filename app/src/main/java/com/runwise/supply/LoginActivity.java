@@ -26,6 +26,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.ViewUtils;
@@ -226,11 +227,18 @@ public class  LoginActivity extends NetWorkActivity {
 					mDb.close();
 				}
 				GlobalApplication.getInstance().saveUserInfo(userInfoData);
-				ToastUtil.show(mContext,"登录成功");
+//				ToastUtil.show(mContext,"登录成功");
 				//@libin added
 				EventBus.getDefault().post(new UserLoginEvent());
-				if (targerIntent != null) {
-					startActivity(targerIntent);
+				if(SPUtils.firstLaunchInfo(mContext)) {
+					InfoActivity.targerIntent = targerIntent;
+					Intent intent = new Intent(this,InfoActivity.class);
+					startActivity(intent);
+				}
+				else {
+					if (targerIntent != null) {
+						startActivity(targerIntent);
+					}
 				}
 				this.finish();
 				break;
