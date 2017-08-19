@@ -35,9 +35,12 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
+import com.runwise.supply.firstpage.OrderDetailActivity;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.message.entity.MsgListResult;
@@ -181,6 +184,35 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                 }
             }
         });
+    }
+    @OnClick(R.id.titleLayout)
+    public void doOrderClick(View view) {
+        OrderResponse.ListBean bean = new OrderResponse.ListBean();
+        bean.setOrderID(orderBean.getId());
+        bean.setState(orderBean.getState());
+        bean.setCreateDate(orderBean.getCreate_date());
+        bean.setName(orderBean.getName());
+        if (orderBean.getWaybill() != null) {
+            OrderResponse.ListBean.WaybillBean waybillBean = new OrderResponse.ListBean.WaybillBean();
+            waybillBean.setWaybillID(orderBean.getWaybill().getId());
+            bean.setWaybill(waybillBean);
+        }
+        bean.setAmount(orderBean.getAmount());
+        bean.setAmountTotal(orderBean.getAmount_total());
+//        bean.setIsToday(orderBean.getTa);
+        bean.setDoneDatetime(orderBean.getDone_datetime());
+        bean.setConfirmationDate(orderBean.getConfirmation_date());
+        bean.setEstimatedTime(orderBean.getEstimated_time());
+        bean.setEndUnloadDatetime(orderBean.getEnd_unload_datetime());
+        bean.setStartUnloadDatetime(orderBean.getStart_unload_datetime());
+        bean.setCreateUserName(orderBean.getCreate_user_name());
+        bean.setLoadingTime(orderBean.getLoading_time());
+
+        Intent intent = new Intent(mContext,OrderDetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("order",bean);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
 
@@ -399,7 +431,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         @Override
         public int getItemViewType(int position) {
             MsgListResult.ListBean bean =  mList.get(position);
-            if( userInfo.getUsername().equals(String.valueOf(bean.getAuthor_id().getName()))) {
+            if( userInfo.getUsername() == null || userInfo.getUsername().equals(String.valueOf(bean.getAuthor_id().getName()))) {
                 return 1;
             }
             return 0;

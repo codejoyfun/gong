@@ -28,6 +28,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.business.BannerHolderView;
@@ -277,6 +278,23 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             default:
                 break;
         }
+    }
+
+    @Override
+    public void call(String phone) {
+        final String number = GlobalApplication.getInstance().loadUserInfo().getCompanyHotLine();
+        dialog.setModel(CustomDialog.BOTH);
+        dialog.setTitle("联系客服");
+        dialog.setMessageGravity();
+        dialog.setMessage(number);
+        dialog.setLeftBtnListener("取消",null);
+        dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+            @Override
+            public void doClickButton(Button btn, CustomDialog dialog) {
+                CommonUtils.callNumber(mContext,number);
+            }
+        });
+        dialog.show();
     }
 
 
