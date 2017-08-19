@@ -180,9 +180,13 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.callIb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!TextUtils.isEmpty(bean.getWaybill().getDeliverUser().getMobile())){
+                    if (bean != null && bean.getWaybill() !=  null && bean.getWaybill().getDeliverUser()!= null
+                            && bean.getWaybill().getDeliverUser().getMobile() != null){
                         callback.call(bean.getWaybill().getDeliverUser().getMobile());
+                    }else{
+                        callback.call(null);
                     }
+
                 }
             });
             StringBuffer sb = new StringBuffer("共");
@@ -235,6 +239,8 @@ public class OrderAdapter extends IBaseAdapter {
                 public void onClick(View v) {
                     if (!TextUtils.isEmpty(bean.getDriveMobile())){
                         callback.call(bean.getDriveMobile());
+                    }else{
+                        callback.call(null);
                     }
                 }
             });

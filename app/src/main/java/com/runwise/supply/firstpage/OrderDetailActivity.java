@@ -89,60 +89,11 @@ public class OrderDetailActivity extends NetWorkActivity{
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
                 public void bindView(View v) {
-                    initViews(v);
+                    initDialogViews(v);
                 }
             }).setLayoutRes(R.layout.return_replace_layout)
             .setCancelOutside(true)
             .setDimAmount(0.5f);
-
-    private void initViews(View v) {
-        TextView returnTv = (TextView) v.findViewById(R.id.returnTv);
-        TextView replaceTv = (TextView)v.findViewById(R.id.replaceTv);
-        TextView cancleTv = (TextView)v.findViewById(R.id.cancleTv);
-        returnTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //跳转到退换流程：如果超过7天,不支持退货
-                if (isMoreThanReturnData()){
-                    dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");
-                    dialog.setMessageGravity();
-                    dialog.setModel(CustomDialog.RIGHT);
-                    dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
-                        @Override
-                        public void doClickButton(Button btn, CustomDialog dialog) {
-
-                        }
-                    });
-                    dialog.show();
-                    bDialog.dismiss();
-                }else{
-                    Intent intent = new Intent(OrderDetailActivity.this,ReturnActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("order", bean);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    bDialog.dismiss();
-                    finish();
-                }
-            }
-        });
-        replaceTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToastUtil.show(mContext,"暂不支持");
-            }
-        });
-        cancleTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bDialog.dismiss();
-            }
-        });
-    }
-
-    private boolean isMoreThanReturnData() {
-        return TimeUtils.isMoreThan7Days(bean.getDoneDatetime());
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,112 +124,6 @@ public class OrderDetailActivity extends NetWorkActivity{
             priceLL.setVisibility(View.GONE);
         }
         updateUI();
-    }
-    private void updateUI() {
-        if (bean != null){
-            String state = "";
-            String tip = "";
-            if (bean.getState().equals("draft")){
-                state = "订单已提交";
-                tip = "订单号："+bean.getName();
-                //底部只有"取消订单"
-                rightBtn.setText("取消订单");
-                rightBtn2.setVisibility(View.INVISIBLE);
-            }else if(bean.getState().equals("sale")){
-                state = "订单已确认";
-                tip = "正在为您挑拣商品";
-                bottom_bar.setVisibility(View.GONE);
-            }else if(bean.getState().equals("peisong")){
-                state = "订单已发货";
-                tip = "预计发达时间："+bean.getEstimatedTime();
-                rightBtn.setText("收货");
-            }else if (bean.getState().equals("done")){
-                state = "订单已收货";
-
-                String recdiveName = bean.getReceiveUserName();
-                tip = "收货人："+ recdiveName;
-
-                //TODO:退货单没有收货人姓名，暂时处理
-                if(TextUtils.isEmpty(recdiveName)) {
-                    tip = "已退货";
-                    state = "订单已退货";
-                }
-                if (TextUtils.isEmpty(bean.getAppraisalUserName())){
-                    rightBtn.setText("评价");
-                    rightBtn2.setText("售后订单");
-                }else{
-                    //已评价，只显示一个按钮
-                    rightBtn.setText("售后订单");
-                    rightBtn2.setVisibility(View.INVISIBLE);
-                }
-
-
-            }else if(bean.getState().equals("rated")){
-                state = "订单已评价";
-                rightBtn.setText("售后订单");
-            }
-            orderStateTv.setText(state);
-            tipTv.setText(tip);
-            dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
-            //支付凭证在收货流程后，才显示
-            if (bean.getState().equals("rated") || bean.getState().equals("done")){
-                payStateTv.setVisibility(View.VISIBLE);
-                payStateValue.setVisibility(View.VISIBLE);
-                uploadBtn.setVisibility(View.VISIBLE);
-                if (bean.getHasAttachment() == 0){
-                    payStateValue.setText("未有支付凭证");
-                    uploadBtn.setText("上传凭证");
-                    isHasAttachment = false;
-                }else{
-                    payStateValue.setText("已上传支付凭证");
-                    uploadBtn.setText("查看凭证");
-                    isHasAttachment = true;
-                }
-                //同时，显示右上角，申请售后
-                setTitleRightText(true,"申请售后");
-                isModifyOrder = false;
-            }else if(bean.getState().equals(OrderState.DRAFT.getName())){
-                setTitleRightText(true,"修改");
-                isModifyOrder = true;
-            }
-            //订单信息
-            orderNumTv.setText(bean.getName());
-            buyerValue.setText(bean.getCreateUserName());
-            orderTimeValue.setText(bean.getCreateDate());
-            if (bean.getHasReturn() == 0){
-                returnTv.setVisibility(View.INVISIBLE);
-            }else{
-                returnTv.setVisibility(View.VISIBLE);
-            }
-            //实收判断
-            if (isRealReceive()){
-                receivtTv.setVisibility(View.VISIBLE);
-            }else{
-                receivtTv.setVisibility(View.GONE);
-            }
-            //商品数量/预估金额
-            ygMoneyTv.setText(bean.getAmountTotal()+"元");
-            countTv.setText(bean.getAmount()+"件");
-            //设置list
-            listDatas = bean.getLines();
-            adapter.setProductList(listDatas);
-            //默认线在全部上
-            int padding = (CommonUtils.getScreenWidth(this)/4 - CommonUtils.dip2px(mContext,36))/2;
-            indexLine.setTranslationX(padding);
-
-        }
-    }
-    //实收代表收货数量和原本下单数量不相等
-    private boolean isRealReceive() {
-        List<OrderResponse.ListBean.LinesBean> listBeanArr =  bean.getLines();
-        if (listBeanArr != null){
-            for (OrderResponse.ListBean.LinesBean lBean : listBeanArr){
-                if (lBean.getDeliveredQty() !=lBean.getProductUomQty()){
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,R.id.uploadBtn,
@@ -356,6 +201,179 @@ public class OrderDetailActivity extends NetWorkActivity{
         }
     }
 
+    @Override
+    public void onSuccess(BaseEntity result, int where) {
+
+    }
+
+    @Override
+    public void onFailure(String errMsg, BaseEntity result, int where) {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case UPLOAD:
+                //来判断上传页有没有图片
+                if (resultCode == 200){
+                    isHasAttachment = data.getBooleanExtra("has",false);
+                    if (isHasAttachment){
+                        payStateValue.setText("已上传支付凭证");
+                        uploadBtn.setText("查看凭证");
+                    }else{
+                        payStateValue.setText("未有支付凭证");
+                        uploadBtn.setText("上传凭证");
+                    }
+                }
+                break;
+        }
+    }
+
+    private void initDialogViews(View v) {
+        TextView returnTv = (TextView) v.findViewById(R.id.returnTv);
+        TextView replaceTv = (TextView)v.findViewById(R.id.replaceTv);
+        TextView cancleTv = (TextView)v.findViewById(R.id.cancleTv);
+        returnTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //跳转到退换流程：如果超过7天,不支持退货
+                if (isMoreThanReturnData()){
+                    dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");
+                    dialog.setMessageGravity();
+                    dialog.setModel(CustomDialog.RIGHT);
+                    dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+
+                        }
+                    });
+                    dialog.show();
+                    bDialog.dismiss();
+                }else{
+                    Intent intent = new Intent(OrderDetailActivity.this,ReturnActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("order", bean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    bDialog.dismiss();
+                    finish();
+                }
+            }
+        });
+        replaceTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtil.show(mContext,"暂不支持");
+            }
+        });
+        cancleTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bDialog.dismiss();
+            }
+        });
+    }
+
+    private boolean isMoreThanReturnData() {
+        return TimeUtils.isMoreThan7Days(bean.getDoneDatetime());
+    }
+
+    private void updateUI() {
+        if (bean != null){
+            String state = "";
+            String tip = "";
+            if (bean.getState().equals("draft")){
+                state = "订单已提交";
+                tip = "订单号："+bean.getName();
+                //底部只有"取消订单"
+                rightBtn.setText("取消订单");
+                rightBtn2.setVisibility(View.INVISIBLE);
+            }else if(bean.getState().equals("sale")){
+                state = "订单已确认";
+                tip = "正在为您挑拣商品";
+                bottom_bar.setVisibility(View.GONE);
+            }else if(bean.getState().equals("peisong")){
+                state = "订单已发货";
+                tip = "预计发达时间："+bean.getEstimatedTime();
+                rightBtn.setText("收货");
+            }else if (bean.getState().equals("done")){
+                state = "订单已收货";
+
+                String recdiveName = bean.getReceiveUserName();
+                tip = "收货人："+ recdiveName;
+
+                //TODO:退货单没有收货人姓名，暂时处理
+                if(TextUtils.isEmpty(recdiveName)) {
+                    tip = "已退货";
+                    state = "订单已退货";
+                }
+                if (TextUtils.isEmpty(bean.getAppraisalUserName())){
+                    rightBtn.setText("评价");
+                    rightBtn2.setVisibility(View.INVISIBLE);
+                }else{
+                    //已评价，只显示一个按钮
+                    rightBtn.setVisibility(View.INVISIBLE);
+                    rightBtn2.setVisibility(View.INVISIBLE);
+                }
+
+
+            }else if(bean.getState().equals("rated")){
+                state = "订单已评价";
+                rightBtn.setText("售后订单");
+            }
+            orderStateTv.setText(state);
+            tipTv.setText(tip);
+            dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
+            //支付凭证在收货流程后，才显示
+            if (bean.getState().equals("rated") || bean.getState().equals("done")){
+                payStateTv.setVisibility(View.VISIBLE);
+                payStateValue.setVisibility(View.VISIBLE);
+                uploadBtn.setVisibility(View.VISIBLE);
+                if (bean.getHasAttachment() == 0){
+                    payStateValue.setText("未有支付凭证");
+                    uploadBtn.setText("上传凭证");
+                    isHasAttachment = false;
+                }else{
+                    payStateValue.setText("已上传支付凭证");
+                    uploadBtn.setText("查看凭证");
+                    isHasAttachment = true;
+                }
+                //同时，显示右上角，申请售后
+                setTitleRightText(true,"申请售后");
+                isModifyOrder = false;
+            }else if(bean.getState().equals(OrderState.DRAFT.getName())){
+                setTitleRightText(true,"修改");
+                isModifyOrder = true;
+            }
+            //订单信息
+            orderNumTv.setText(bean.getName());
+            buyerValue.setText(bean.getCreateUserName());
+            orderTimeValue.setText(bean.getCreateDate());
+            if (bean.getHasReturn() == 0){
+                returnTv.setVisibility(View.INVISIBLE);
+            }else{
+                returnTv.setVisibility(View.VISIBLE);
+            }
+            //实收判断
+            if (isRealReceive()){
+                receivtTv.setVisibility(View.VISIBLE);
+            }else{
+                receivtTv.setVisibility(View.GONE);
+            }
+            //商品数量/预估金额
+            ygMoneyTv.setText(bean.getAmountTotal()+"元");
+            countTv.setText((int)bean.getAmount()+"件");
+            //设置list
+            listDatas = bean.getLines();
+            adapter.setProductList(listDatas);
+            //默认线在全部上
+            int padding = (CommonUtils.getScreenWidth(this)/4 - CommonUtils.dip2px(mContext,36))/2;
+            indexLine.setTranslationX(padding);
+
+        }
+    }
+
     private void switchTabBy(DataType type) {
         int padding = (CommonUtils.getScreenWidth(this)/4 - CommonUtils.dip2px(mContext,36))/2;
         int tabWidth = CommonUtils.getScreenWidth(this)/4;
@@ -395,32 +413,16 @@ public class OrderDetailActivity extends NetWorkActivity{
 
     }
 
-    @Override
-    public void onSuccess(BaseEntity result, int where) {
-
-    }
-
-    @Override
-    public void onFailure(String errMsg, BaseEntity result, int where) {
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
-            case UPLOAD:
-                //来判断上传页有没有图片
-                if (resultCode == 200){
-                    isHasAttachment = data.getBooleanExtra("has",false);
-                    if (isHasAttachment){
-                        payStateValue.setText("已上传支付凭证");
-                        uploadBtn.setText("查看凭证");
-                    }else{
-                        payStateValue.setText("未有支付凭证");
-                        uploadBtn.setText("上传凭证");
-                    }
+    //实收代表收货数量和原本下单数量不相等
+    private boolean isRealReceive() {
+        List<OrderResponse.ListBean.LinesBean> listBeanArr =  bean.getLines();
+        if (listBeanArr != null){
+            for (OrderResponse.ListBean.LinesBean lBean : listBeanArr){
+                if (lBean.getDeliveredQty() !=lBean.getProductUomQty()){
+                    return true;
                 }
-                break;
+            }
         }
+        return false;
     }
 }

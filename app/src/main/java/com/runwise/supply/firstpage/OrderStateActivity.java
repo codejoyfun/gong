@@ -18,6 +18,8 @@ import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderStateLine;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.message.MessageDetailActivity;
+import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
@@ -29,22 +31,24 @@ import me.shaohui.bottomdialog.BottomDialog;
  * Created by libin on 2017/7/16.
  */
 
-public class OrderStateActivity extends NetWorkActivity {
+public class OrderStateActivity extends NetWorkActivity implements View.OnClickListener{
     @ViewInject(R.id.recyclerView)
     private RecyclerView recyclerView;
     private StateAdatper adatper;
     private List<OrderStateLine> datas = new ArrayList<>();
     private String deliverPhone;        //默认没有
     private boolean isReturnMode;       //退货单模式,默认是处于订单模式下
-    private BottomDialog dialog = BottomDialog.create(getSupportFragmentManager())
+    private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
                 public void bindView(View v) {
-                    initViews(v);
+                    initDialogViews(v);
                 }
             }).setLayoutRes(R.layout.state_line_bottom_dialog)
             .setCancelOutside(false)
             .setDimAmount(0.5f);
+    //不管是订单或是退货单，给这个bean赋值，便于调到,在线客服页面。
+    private MessageResult.OrderBean orderBean = new MessageResult.OrderBean();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +70,8 @@ public class OrderStateActivity extends NetWorkActivity {
     private void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_rigth:
-                if (!dialog.isVisible()){
-                    dialog.show();
+                if (!bDialog.isVisible()){
+                    bDialog.show();
                 }
                 break;
             case R.id.title_iv_left:
@@ -75,7 +79,7 @@ public class OrderStateActivity extends NetWorkActivity {
                 break;
         }
     }
-    private void initViews(View view){
+    private void initDialogViews(View view){
         Button serviceBtn = (Button) view.findViewById(R.id.serviceBtn);
         Button deliverBtn = (Button) view.findViewById(R.id.deliverBtn);
         Button onlineServiceBtn = (Button) view.findViewById(R.id.onlineServiceBtn);
@@ -83,35 +87,20 @@ public class OrderStateActivity extends NetWorkActivity {
         if (TextUtils.isEmpty(deliverPhone)){
             deliverBtn.setVisibility(View.GONE);
         }
-        serviceBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                Uri data = Uri.parse("tel:" + "02037574563");
-                intent.setData(data);
-                startActivity(intent);
-            }
-        });
-        deliverBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                Uri data = Uri.parse("tel:" + deliverPhone);
-                intent.setData(data);
-                startActivity(intent);
-            }
-        });
-        cancleBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+        serviceBtn.setOnClickListener(this);
+        deliverBtn.setOnClickListener(this);
+        cancleBtn.setOnClickListener(this);
+        onlineServiceBtn.setOnClickListener(this);
     }
     private void setOrderTracker() {
         Bundle bundle = getIntent().getExtras();
         if (isReturnMode){
             ReturnOrderBean.ListBean bean = bundle.getParcelable("return");
+            orderBean.setId(bean.getOrderID());
+            orderBean.setAmount((int)bean.getAmount());
+            orderBean.setAmount_total((int)bean.getAmountTotal());
+            orderBean.setState(bean.getState());
+            orderBean.setName(bean.getName());
             ArrayList<String> trackers = (ArrayList<String>) bean.getStateTracker();
             for (String str : trackers) {
                 OrderStateLine osl = new OrderStateLine();
@@ -154,6 +143,17 @@ public class OrderStateActivity extends NetWorkActivity {
 
         }else{
             OrderResponse.ListBean bean = bundle.getParcelable("order");
+            orderBean.setId(bean.getOrderID());
+            orderBean.setAmount((int) bean.getAmount());
+            orderBean.setAmount_total(bean.getAmountTotal());
+            orderBean.setState(bean.getState());
+            orderBean.setName(bean.getName());
+            orderBean.setEstimated_time(bean.getEstimatedTime());
+            if (bean.getWaybill() != null){
+                MessageResult.OrderBean.WaybillBean wb = new MessageResult.OrderBean.WaybillBean();
+                wb.setId(bean.getWaybill().getWaybillID());
+                orderBean.setWaybill(wb);
+            }
             //从bean里面拼各种内容
             if (bean == null){
                 ToastUtil.show(mContext,"网络异常，请退出重新加载");
@@ -223,5 +223,32 @@ public class OrderStateActivity extends NetWorkActivity {
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.serviceBtn:
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                Uri data = Uri.parse("tel:" + "02037574563");
+                intent.setData(data);
+                startActivity(intent);
+                break;
+            case R.id.deliverBtn:
+                Intent intent2 = new Intent(Intent.ACTION_DIAL);
+                Uri data2 = Uri.parse("tel:" + deliverPhone);
+                intent2.setData(data2);
+                startActivity(intent2);
+                break;
+            case R.id.cancleBtn:
+                bDialog.dismiss();
+                break;
+            case R.id.onlineServiceBtn:
+                //跳转到在线客服
+                Intent dealIntent = new Intent(mContext,MessageDetailActivity.class);
+                dealIntent.putExtra("orderBean",orderBean);
+                startActivity(dealIntent);
+                break;
+        }
     }
 }

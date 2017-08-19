@@ -64,10 +64,6 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         chatFragment1 = new MessageListFragment();
-//        String carId = getIntent().getStringExtra("carid");
-        Bundle bundle = new Bundle();
-//        bundle.putString("carid",carId);
-        chatFragment1.setArguments(bundle);
         chatFragment1.type = 0;
         fragmentTransaction.add(R.id.fragmentContainer, chatFragment1);
         currentFragment = chatFragment1;
