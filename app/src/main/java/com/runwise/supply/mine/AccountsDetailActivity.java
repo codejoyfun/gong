@@ -152,12 +152,12 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MsgEntity bean = (MsgEntity)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(mContext,MsgDetailActivity.class);
-        intent.putExtra("msgId",bean.getMessage_id());
-        bean.setIs_read("1");
-        adapter.notifyDataSetChanged();
-        startActivity(intent);
+//        MsgEntity bean = (MsgEntity)parent.getAdapter().getItem(position);
+//        Intent intent = new Intent(mContext,MsgDetailActivity.class);
+//        intent.putExtra("msgId",bean.getMessage_id());
+//        bean.setIs_read("1");
+//        adapter.notifyDataSetChanged();
+//        startActivity(intent);
     }
 
     @Override
