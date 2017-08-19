@@ -19,6 +19,7 @@ import com.kids.commonframe.base.view.CustomBottomDialog;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.tools.StatusBarUtil;
 
@@ -116,7 +117,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
                     public void onItemClick(View view) {
                         switch (view.getId()) {
                             case 0:
-                                final String number = "111111";
+                                final String number = GlobalApplication.getInstance().loadUserInfo().getCompanyHotLine();
                                 dialog.setModel(CustomDialog.BOTH);
                                 dialog.setTitle("联系客服");
                                 dialog.setMessageGravity();
@@ -133,7 +134,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
                             case 1:
                                 final String number1 = "111111";
                                 dialog.setModel(CustomDialog.BOTH);
-                                dialog.setTitle("联系客服");
+                                dialog.setTitle("联系配送员");
                                 dialog.setMessageGravity();
                                 dialog.setMessage(number1);
                                 dialog.setLeftBtnListener("取消",null);
