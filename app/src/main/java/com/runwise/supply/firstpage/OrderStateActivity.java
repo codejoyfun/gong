@@ -139,7 +139,7 @@ public class OrderStateActivity extends NetWorkActivity {
                                 .append("预计取货时间：").append(bean.getLoadingDate());
                     } else {
                         //订单已提交
-                        content.append("订单号：").append(bean.getOrderID()).append("\n")
+                        content.append("退货单号：").append(bean.getName()).append("\n")
                                 .append("退货商品：").append(bean.getAmount()).append("件，共")
                                 .append(bean.getAmountTotal()).append("元").append("\n");
                     }

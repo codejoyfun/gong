@@ -108,7 +108,7 @@ public class ReceiveFragment extends BaseFragment{
                 if (mode == 2){
                     viewHolder.doBtn.setVisibility(View.INVISIBLE);
                 }else{
-                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+                    viewHolder.doBtn.setVisibility(View.VISIBLE);
                 }
                 convertView.setTag(viewHolder);
             } else {

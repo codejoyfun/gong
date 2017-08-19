@@ -219,7 +219,7 @@ public class OrderDetailActivity extends NetWorkActivity{
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);
-            dateTv.setText(bean.getCreateDate());
+            dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
             //支付凭证在收货流程后，才显示
             if (bean.getState().equals("rated") || bean.getState().equals("done")){
                 payStateTv.setVisibility(View.VISIBLE);
