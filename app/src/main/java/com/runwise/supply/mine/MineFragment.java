@@ -198,7 +198,6 @@ public class MineFragment extends NetWorkFragment {
                 break;
             //退货记录
             case R.id.itemLayout_3:
-//                sendConnection("welcome/system.json",null,REQUEST_SYSTEM,true, SystemInfoResult.class);
                 intent = new Intent(mContext, ReturnActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
@@ -236,14 +235,32 @@ public class MineFragment extends NetWorkFragment {
             case R.id.itemLayout_8:
                 intent = new Intent(mContext, PriceActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
-                    startActivity(intent);
+                    if(GlobalApplication.getInstance().getCanSeePrice()) {
+                        startActivity(intent);
+                    }
+                    else{
+                        dialog.setModel(CustomDialog.RIGHT);
+                        dialog.setMessageGravity();
+                        dialog.setMessage("您没有查看的权限");
+                        dialog.setRightBtnListener("知道啦",null);
+                        dialog.show();
+                    }
                 }
                 break;
             //对账单
             case R.id.itemLayout_9:
                 intent = new Intent(mContext, AccountsListActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
-                    startActivity(intent);
+                    if(GlobalApplication.getInstance().getCanSeePrice()) {
+                        startActivity(intent);
+                    }
+                    else{
+                        dialog.setModel(CustomDialog.RIGHT);
+                        dialog.setMessageGravity();
+                        dialog.setMessage("您没有查看的权限");
+                        dialog.setRightBtnListener("知道啦",null);
+                        dialog.show();
+                    }
                 }
                 break;
         }

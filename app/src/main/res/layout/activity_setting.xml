@@ -62,7 +62,52 @@
                 android:layout_alignParentBottom="true"
                 />
         </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/setItemLayout_6"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/white_btn_selector"
+            >
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e8eae7"
+                />
+            <ImageView
+                android:id="@+id/setItemIcon_6"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="14dp"
+                android:clickable="true"
+                android:src="@drawable/tabbar_order_highlight"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="用户协议"
+                android:textColor="#3e3e3e"
+                android:textSize="@dimen/bottom_tab_font_size"
+                android:layout_toRightOf="@id/setItemIcon_6"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/more_img"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e8eae7"
+                android:layout_alignParentBottom="true"
+                />
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/setItemLayout_2"

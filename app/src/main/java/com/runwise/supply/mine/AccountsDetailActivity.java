@@ -37,8 +37,8 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
 
-    @ViewInject(R.id.loadingLayout)
-    private LoadingLayout loadingLayout;
+//    @ViewInject(R.id.loadingLayout)
+//    private LoadingLayout loadingLayout;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private CheckOrderAdapter adapter;
@@ -87,8 +87,8 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
         pullListView.setAdapter(adapter);
         page = 1;
 //        requestData(false, REQUEST_MAIN, page, 10);
-        loadingLayout.setStatusLoading();
-        loadingLayout.setOnRetryClickListener(this);
+//        loadingLayout.setStatusLoading();
+//        loadingLayout.setOnRetryClickListener(this);
 
         CheckOrderData.BankStatementBean bean = (CheckOrderData.BankStatementBean)this.getIntent().getSerializableExtra("bean");
         adapter.setData(bean.getOrders());
@@ -120,7 +120,7 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
             case REQUEST_MAIN:
                 CheckOrderData mainListResult = (CheckOrderData)result.getResult().getData();
 //                adapter.setData(mainListResult.getBankStatement());
-                loadingLayout.onSuccess(adapter.getCount(),"暂无对账单",R.drawable.default_ico_nonepayorder);
+//                loadingLayout.onSuccess(adapter.getCount(),"暂无对账单",R.drawable.default_ico_nonepayorder);
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
@@ -146,7 +146,7 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         ToastUtil.show(mContext,errMsg);
-        loadingLayout.onFailure("",R.drawable.no_network);
+//        loadingLayout.onFailure("",R.drawable.no_network);
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
     }
 
@@ -167,7 +167,7 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
 
     @Override
     public void retryOnClick(View view) {
-        loadingLayout.setStatusLoading();
+//        loadingLayout.setStatusLoading();
         page = 1;
         requestData(false, REQUEST_MAIN, page, 10);
     }

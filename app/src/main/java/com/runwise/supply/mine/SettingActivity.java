@@ -21,6 +21,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.ChangePwdActivity;
 import com.runwise.supply.IWebViewActivity;
+import com.runwise.supply.InfoActivity;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.UrlResult;
@@ -71,7 +72,7 @@ public class SettingActivity extends NetWorkActivity {
 
 
 
-    @OnClick({R.id.setItemLayout_1,R.id.setItemLayout_2,R.id.setItemLayout_3,R.id.setItemLayout_4,R.id.setItemLayout_5,R.id.exit_user,R.id.left_layout})
+    @OnClick({R.id.setItemLayout_1,R.id.setItemLayout_2,R.id.setItemLayout_3,R.id.setItemLayout_4,R.id.setItemLayout_5,R.id.setItemLayout_6,R.id.exit_user,R.id.left_layout})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -104,6 +105,11 @@ public class SettingActivity extends NetWorkActivity {
             //关于我们
             case R.id.setItemLayout_5:
                 intent = new Intent(mContext,AboutActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.setItemLayout_6:
+                intent = new Intent(mContext,InfoActivity.class);
+                intent.putExtra("hide",true);
                 startActivity(intent);
                 break;
             //返回

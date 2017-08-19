@@ -285,7 +285,12 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
                     viewHolder.chatName.setText(orderBean.getName());
                     viewHolder.chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));
-                    viewHolder.chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
+                    if(GlobalApplication.getInstance().getCanSeePrice()) {
+                        viewHolder.chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
+                    }
+                    else {
+                        viewHolder.chatContext.setText("共"+orderBean.getAmount()+"件商品");
+                    }
                     if(orderBean.getLast_message() != null && !TextUtils.isEmpty(orderBean.getLast_message().getBody())) {
                         viewHolder.chatMsg.setVisibility(View.VISIBLE);
                         viewHolder.chatMsg.setText(orderBean.getLast_message().getBody());

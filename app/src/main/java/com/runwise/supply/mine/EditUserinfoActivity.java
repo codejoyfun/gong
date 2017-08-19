@@ -139,6 +139,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
+                GlobalApplication.getInstance().cleanUesrInfo();
                 //退出登录
                 EventBus.getDefault().post(new UserLogoutEvent());
                 finish();

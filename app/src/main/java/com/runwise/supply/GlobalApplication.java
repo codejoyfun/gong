@@ -35,8 +35,6 @@ public class GlobalApplication extends MultiDexApplication {
         FileDownloader.init(this);
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
-
-
     }
     public static GlobalApplication getInstance() {
         return instance;
@@ -77,9 +75,14 @@ public class GlobalApplication extends MultiDexApplication {
      *
      */
     public boolean getCanSeePrice(){
-        loadUserInfo();
-        return canSeePrice;
+        if(mUserInfo == null) {
+            loadUserInfo();
+        }
+        return mUserInfo.isCanSeePrice();
+    }
 
+    public void cleanUesrInfo() {
+        mUserInfo = null;
     }
     public void setUid(String uid) {
         this.uid = uid;

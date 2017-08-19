@@ -23,10 +23,19 @@ public class InfoActivity extends BaseActivity {
     @ViewInject(R.id.nextBtn)
     private Button nextBtn;
     public static Intent targerIntent;
+    boolean hide;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
+        hide = this.getIntent().getBooleanExtra("hide",false);
+        this.setTitleText(true,"用户协议");
+        if(hide) {
+            this.setTitleLeftIcon(true,R.drawable.back_btn);
+        }
+        else {
+            this.setTitleLeftIcon(false,R.drawable.back_btn);
+        }
         String text = "欢迎您与供鲜生商城经营者（详见定义条款）共同签署本《供鲜生商城平台服务协议》（下称“本协议“）并使用供鲜生商城平台服务！\n" +
                 "您在申请注册流程时应当认真阅读本协议。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款、法律适用和争议解决条款。\n" +
                 "当您按照注册页面提示填写信息、阅读本协议且完成全部注册程序后，即表示您已充分阅读、理解并接受本协议的全部内容，并与供鲜生商城达成一致，成为供鲜生商城平台“用户”。阅读本协议的过程中，如果您不同意本协议或其中任何条款约定，您应立即停止注册程序。\n" +
@@ -96,6 +105,10 @@ public class InfoActivity extends BaseActivity {
                 "11.1本协议构成双方对本协议之约定事项及其他有关事宜的完整协议，除本协议规定的之外，未赋予本协议各方其他权利。\n" +
                 "11.2本协议中的任何条款无论因何种原因被视为完全或部分无效或不具有执行力，该条应视为可分的，不影响本协议的任何其余条款的有效性、约束力及可执行性。";
         context.setText(text);
+        if(hide) {
+            nextBtn.setVisibility(View.GONE);
+            checkBox.setVisibility(View.GONE);
+        }
         nextBtn.setEnabled(false);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -110,7 +123,7 @@ public class InfoActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.nextBtn})
+    @OnClick({R.id.nextBtn,R.id.left_layout})
     public void doFinish(View view) {
         switch (view.getId()) {
             case R.id.nextBtn:
@@ -119,11 +132,19 @@ public class InfoActivity extends BaseActivity {
                 }
                 finish();
                 break;
+            case R.id.left_layout:
+                if(hide) {
+                    finish();
+                }
+                break;
 
         }
     }
 
     @Override
     public void onBackPressed() {
+        if (hide) {
+            finish();
+        }
     }
 }
