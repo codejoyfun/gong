@@ -115,6 +115,9 @@ public class TimeUtils {
 
 	@SuppressLint("SimpleDateFormat")
 	public static String formatDate2(String date) {
+		if(TextUtils.isEmpty(date)) {
+			return "";
+		}
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 		SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd");
 		try {
@@ -164,6 +167,9 @@ public class TimeUtils {
 	}
 
 	public static String getTimeStamps3(String date) {
+		if(TextUtils.isEmpty(date)) {
+			return "";
+		}
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd");
 		try {

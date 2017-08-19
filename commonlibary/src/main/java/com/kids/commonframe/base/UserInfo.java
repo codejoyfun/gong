@@ -54,6 +54,7 @@ public class UserInfo implements Serializable{
     private boolean customerServicePhone;
     private boolean clerk;
     private boolean canSeePrice;
+    private String companyHotLine;
 
     public String getUsername() {
         return username;
@@ -93,6 +94,14 @@ public class UserInfo implements Serializable{
 
     public void setDeliveryPunctualityRate(double deliveryPunctualityRate) {
         this.deliveryPunctualityRate = deliveryPunctualityRate;
+    }
+
+    public String getCompanyHotLine() {
+        return companyHotLine;
+    }
+
+    public void setCompanyHotLine(String companyHotLine) {
+        this.companyHotLine = companyHotLine;
     }
 
     public String getAvatarUrl() {

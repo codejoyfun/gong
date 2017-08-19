@@ -37,6 +37,7 @@ import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -295,22 +296,37 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                         viewHolder.chatIcon.setImageResource(R.drawable.state_restaurant_3_delivering);
                     }
                     //已收货
-                    else if("done".equals(orderBean.getState())) {
-                        viewHolder.chatStatus.setText("已收货");
-                        viewHolder.chatIcon.setImageResource(R.drawable.state_restaurant_2_certain);
-                    }
+                    //退货returnOrders
+//                    else if("done".equals(orderBean.getState())) {
+//                        viewHolder.chatStatus.setText("已收货");
+//                        viewHolder.chatIcon.setImageResource(R.drawable.state_restaurant_2_certain);
+//                    }
                     //已评价
                     else if("rated".equals(orderBean.getState())) {
                         viewHolder.chatStatus.setText("已评价");
                         viewHolder.chatIcon.setImageResource(R.drawable.state_restaurant_5_rated);
                     }
+                    //退货中
+                    if("process".equals(orderBean.getState())) {
+                        viewHolder.chatStatus.setText("退货中");
+                        viewHolder.chatIcon.setImageResource(R.drawable.state_delivery_7_return);
+                    }
+                    //已退货
+                    else if("done".equals(orderBean.getState())) {
+                        viewHolder.chatStatus.setText("已退货");
+                        viewHolder.chatIcon.setImageResource(R.drawable.state_delivery_7_return);
+                    }
                     //已取消cancel
-                    else{
+                    else if("cancel".equals(orderBean.getState())){
+                        viewHolder.chatStatus.setText("订单关闭");
+                        viewHolder.chatIcon.setImageResource(R.drawable.state_restaurant_6_closed);
+                    }
+                    else {
                         viewHolder.chatStatus.setText("订单关闭");
                         viewHolder.chatIcon.setImageResource(R.drawable.state_restaurant_6_closed);
                     }
                     viewHolder.chatName.setText(orderBean.getName());
-                    viewHolder.chatTime.setText(orderBean.getEstimated_time());
+                    viewHolder.chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));
                     viewHolder.chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
                     if(orderBean.getLast_message() != null && !TextUtils.isEmpty(orderBean.getLast_message().getBody())) {
                         viewHolder.chatMsg.setVisibility(View.VISIBLE);

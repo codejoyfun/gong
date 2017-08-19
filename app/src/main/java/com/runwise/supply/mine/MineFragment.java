@@ -58,6 +58,7 @@ public class MineFragment extends NetWorkFragment {
     private TextView zhiliangStr;
     @ViewInject(R.id.zhiliangImg)
     private ImageView zhiliangImg;
+    String number = "02037574563";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,7 +158,11 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.cellIcon:
-                final String number = "111111";
+                if(isLogin) {
+                    if(userInfo != null) {
+                        number = userInfo.getCompanyHotLine();
+                    }
+                }
                 dialog.setModel(CustomDialog.BOTH);
                 dialog.setTitle("联系客服");
                 dialog.setMessageGravity();
