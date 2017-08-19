@@ -318,7 +318,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             return;
         }
         dialog.setModel(CustomDialog.BOTH);
-        dialog.setTitle("联系客服");
+        dialog.setTitle("联系配送员");
         dialog.setMessageGravity();
         dialog.setMessage(phone);
         dialog.setLeftBtnListener("取消",null);
