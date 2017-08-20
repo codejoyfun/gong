@@ -40,6 +40,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.firstpage.OrderDetailActivity;
+import com.runwise.supply.firstpage.ReturnDetailActivity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
@@ -180,13 +181,22 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         bean.setStartUnloadDatetime(orderBean.getStart_unload_datetime());
         bean.setCreateUserName(orderBean.getCreate_user_name());
         bean.setLoadingTime(orderBean.getLoading_time());
-
-        Intent intent = new Intent(mContext,OrderDetailActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("order",bean);
-        bundle.putInt("orderid",orderBean.getId());
-        intent.putExtras(bundle);
-        startActivity(intent);
+        //退货中  已退货
+//        if("process".equals(orderBean.getState()) || "done".equals(orderBean.getState())) {
+//            Intent intent = new Intent(mContext,ReturnDetailActivity.class);
+//            Bundle bundle = new Bundle();
+//            bundle.putInt("returnid", orderBean.getId());
+//            intent.putExtras(bundle);
+//            startActivity(intent);
+//        }
+//        else {
+//            Intent intent = new Intent(mContext, OrderDetailActivity.class);
+//            Bundle bundle = new Bundle();
+//            bundle.putParcelable("order", bean);
+//            bundle.putInt("orderid", orderBean.getId());
+//            intent.putExtras(bundle);
+//            startActivity(intent);
+//        }
     }
 
 

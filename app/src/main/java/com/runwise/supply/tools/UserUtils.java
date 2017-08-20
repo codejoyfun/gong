@@ -76,9 +76,9 @@ public class UserUtils {
             label.setText("订单关闭");
             icon.setImageResource(R.drawable.state_restaurant_6_closed);
         }
-        else {
-            label.setText("订单关闭");
-            icon.setImageResource(R.drawable.state_restaurant_6_closed);
-        }
+//        else {
+//            label.setText("订单关闭");
+//            icon.setImageResource(R.drawable.state_restaurant_6_closed);
+//        }
     }
 }
