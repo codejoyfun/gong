@@ -156,11 +156,13 @@ public class OrderDetailActivity extends NetWorkActivity{
                 switchTabBy(DataType.DRY);
                 break;
             case R.id.gotoStateBtn:
-                Intent intent = new Intent(this,OrderStateActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("order", bean);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                if (bean != null){
+                    Intent intent = new Intent(this,OrderStateActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("order", bean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
                 break;
             case R.id.title_tv_rigth:
                 if (isModifyOrder){
@@ -197,40 +199,48 @@ public class OrderDetailActivity extends NetWorkActivity{
                         dialog.show();
                         break;
                     case TALLY:
-                        Intent tIntent = new Intent(mContext,ReceiveActivity.class);
-                        Bundle tBundle = new Bundle();
-                        tBundle.putParcelable("order",bean);
-                        tBundle.putInt("mode",1);
-                        tIntent.putExtras(tBundle);
-                        startActivity(tIntent);
+                        if (bean != null){
+                            Intent tIntent = new Intent(mContext,ReceiveActivity.class);
+                            Bundle tBundle = new Bundle();
+                            tBundle.putParcelable("order",bean);
+                            tBundle.putInt("mode",1);
+                            tIntent.putExtras(tBundle);
+                            startActivity(tIntent);
+                        }
                         break;
                     case TALLYING:
-                        String name = bean.getTallyingUserName();
-                        dialog.setMessageGravity();
-                        dialog.setMessage(name+"正在点货");
-                        dialog.setModel(CustomDialog.RIGHT);
-                        dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
-                            @Override
-                            public void doClickButton(Button btn, CustomDialog dialog) {
-                                dialog.dismiss();
-                            }
-                        });
-                        dialog.show();
+                        if (bean != null){
+                            String name = bean.getTallyingUserName();
+                            dialog.setMessageGravity();
+                            dialog.setMessage(name+"正在点货");
+                            dialog.setModel(CustomDialog.RIGHT);
+                            dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+                                @Override
+                                public void doClickButton(Button btn, CustomDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            dialog.show();
+                        }
                         break;
                     case RATE:
-                        Intent rIntent = new Intent(mContext,EvaluateActivity.class);
-                        Bundle rBundle = new Bundle();
-                        rBundle.putParcelable("order",bean);
-                        rIntent.putExtras(rBundle);
-                        startActivity(rIntent);
+                        if (bean != null){
+                            Intent rIntent = new Intent(mContext,EvaluateActivity.class);
+                            Bundle rBundle = new Bundle();
+                            rBundle.putParcelable("order",bean);
+                            rIntent.putExtras(rBundle);
+                            startActivity(rIntent);
+                        }
                         break;
                     case RECEIVE://正常收货
-                        Intent reIntent = new Intent(mContext,ReceiveActivity.class);
-                        Bundle reBundle = new Bundle();
-                        reBundle.putParcelable("order",bean);
-                        reBundle.putInt("mode",0);
-                        reIntent.putExtras(reBundle);
-                        startActivity(reIntent);
+                        if (bean != null){
+                            Intent reIntent = new Intent(mContext,ReceiveActivity.class);
+                            Bundle reBundle = new Bundle();
+                            reBundle.putParcelable("order",bean);
+                            reBundle.putInt("mode",0);
+                            reIntent.putExtras(reBundle);
+                            startActivity(reIntent);
+                        }
                         break;
                     case SETTLERECEIVE:
                         //点货，计入结算单位
@@ -272,11 +282,13 @@ public class OrderDetailActivity extends NetWorkActivity{
                 break;
             case R.id.uploadBtn:
                 //凭证
-                Intent intent3 = new Intent(mContext,UploadPayedPicActivity.class);
-                intent3.putExtra("orderid",bean.getOrderID());
-                intent3.putExtra("ordername",bean.getName());
-                intent3.putExtra("hasattachment",isHasAttachment);
-                startActivityForResult(intent3,UPLOAD);
+                if (bean != null){
+                    Intent intent3 = new Intent(mContext,UploadPayedPicActivity.class);
+                    intent3.putExtra("orderid",bean.getOrderID());
+                    intent3.putExtra("ordername",bean.getName());
+                    intent3.putExtra("hasattachment",isHasAttachment);
+                    startActivityForResult(intent3,UPLOAD);
+                }
                 break;
         }
     }
