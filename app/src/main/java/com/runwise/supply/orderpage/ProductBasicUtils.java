@@ -20,8 +20,15 @@ import java.util.List;
 public class ProductBasicUtils {
     //productId -> 基本信息对象,便于后续使用查询
     private static HashMap<String,ProductBasicList.ListBean> basicMap = new HashMap<>();
-    //便于搜索条件
     private static List<ProductBasicList.ListBean> basicArr = new ArrayList<>();
+
+    public static List<ProductBasicList.ListBean> getBasicArr() {
+        return basicArr;
+    }
+
+    public static void setBasicArr(List<ProductBasicList.ListBean> basicArr) {
+        ProductBasicUtils.basicArr = basicArr;
+    }
 
     public static HashMap<String, ProductBasicList.ListBean> getBasicMap(Context context) {
         //如果缓存中没有，去DB查一遍
@@ -45,12 +52,14 @@ public class ProductBasicUtils {
     public static void setBasicMap(HashMap<String, ProductBasicList.ListBean> basicMap) {
         ProductBasicUtils.basicMap = basicMap;
     }
-
-    public static List<ProductBasicList.ListBean> getBasicArr() {
-        return basicArr;
-    }
-
-    public static void setBasicArr(List<ProductBasicList.ListBean> basicArr) {
-        ProductBasicUtils.basicArr = basicArr;
+    public static void clearCache(Context context){
+        basicMap.clear();
+        basicArr.clear();
+        DbUtils dbUitls = DbUtils.create(context);
+        try {
+            dbUitls.dropDb();
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
     }
 }

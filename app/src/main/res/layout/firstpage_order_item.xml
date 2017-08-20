@@ -104,14 +104,15 @@
         android:layout_below="@id/ll1"
         android:layout_marginTop="15dp"
         />
-    <Button
-        android:layout_width="wrap_content"
+    <TextView
+        android:layout_width="80dp"
         android:layout_height="28dp"
         android:id="@+id/doBtn"
         android:textColor="#333333"
         android:textSize="14sp"
         android:layout_above="@+id/line"
         android:layout_marginRight="15dp"
+        android:gravity="center"
         android:layout_alignParentRight="true"
         android:background="@drawable/firstpage_do_circle"
         android:text="点货"/>

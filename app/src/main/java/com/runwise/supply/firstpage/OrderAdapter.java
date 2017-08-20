@@ -47,6 +47,7 @@ public class OrderAdapter extends IBaseAdapter {
     private Context context;
     private int returnCount;            //退货单数量
     private int orderCount;             //正常订单数量
+    private String userName;            //初始化缓存起来
 
     public void setReturnCount(int returnCount) {
         this.returnCount = returnCount;
@@ -65,6 +66,7 @@ public class OrderAdapter extends IBaseAdapter {
     public OrderAdapter(Context context,DoActionInterface callback) {
         this.context = context;
         this.callback = callback;
+        userName = GlobalApplication.getInstance().getUserName();
     }
 
     @Override
@@ -113,11 +115,18 @@ public class OrderAdapter extends IBaseAdapter {
                 public void onClick(View v) {
                     //根据状态进行不同的逻辑处理
                     OrderDoAction action = null;
-                    String doAction = ((Button)v).getText().toString();
+                    String doAction = ((TextView)v).getText().toString();
                     if ("取消订单".equals(doAction)){
                         action = OrderDoAction.CANCLE;
                     }else if("点货".equals(doAction)){
-                        action = OrderDoAction.TALLY;
+                        //如果有人在点货，则弹窗提示
+                        if (TextUtils.isEmpty(bean.getTallyingUserName()) || userName.equals(bean.getTallyingUserName())){
+                            action = OrderDoAction.TALLY;
+                        }else{
+                            //有人正在点货
+                            action = OrderDoAction.TALLYING;
+                        }
+
                     }else if("收货".equals(doAction)){
                         //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
                         if (bean.isIsDoubleReceive()){
@@ -326,7 +335,7 @@ public class OrderAdapter extends IBaseAdapter {
         @ViewInject(R.id.stateTv)
         TextView stateTv;
         @ViewInject(R.id.doBtn)
-        Button doBtn;
+        TextView doBtn;
         @ViewInject(R.id.arrowBtn)
         ImageButton arrowBtn;
         @ViewInject(R.id.carNumTv)

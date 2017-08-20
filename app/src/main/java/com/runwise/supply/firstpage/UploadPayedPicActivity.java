@@ -11,6 +11,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
@@ -60,13 +62,13 @@ import java.util.UUID;
  */
 
 public class UploadPayedPicActivity extends NetWorkActivity implements UploadInterface{
-    //上传图片通用类
     private final static int RET_CAMERA = 101;
     private final static int RET_GALLERY = 102;
     private final static int CROP_CODE = 103;
     private final static int UPLOAD_FILE = 104;
     private static final int ATTACHMENTLIST = 105;
     private static final int ATTACHMENTDELETE = 106;
+    private int upLoadCount = 0;                //上传计数，因为传图片是分开传的。只能粗略估计成功与否
 
     private static final String ADDBUTTON = "ADD";
     @ViewInject(R.id.recyclerView)
@@ -80,6 +82,18 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
     private int uploadCount;
     private int orderId;
     private int currentDelete;      //记录当前要删除的位置
+    private Handler mHandler = new Handler(){};
+    private Runnable mRunnalbe = new Runnable(){
+        @Override
+        public void run() {
+            dismissIProgressDialog();
+            ToastUtil.show(mContext,"网络超时，可能上传失败，请查看确认");
+            Intent intent = new Intent();
+            intent.putExtra("has",true);
+            setResult(200,intent);
+            finish();
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +116,8 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
             }
         }
         setTitleLeftIcon(true,R.drawable.nav_back);
-        adapter = new UploadAdapter(mContext,picList);
+        adapter = new UploadAdapter(mContext);
+        adapter.setDatas(picList);
         adapter.setDeleteCallback(this);
         GridLayoutManager mgr=new GridLayoutManager(this,3);
         recyclerView.setLayoutManager(mgr);
@@ -214,13 +229,20 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case UPLOAD_FILE:
-//                uploadCount++;
-                dismissIProgressDialog();
-                ToastUtil.show(mContext,"上传成功");
-                Intent intent = new Intent();
-                intent.putExtra("has",true);
-                setResult(200,intent);
-                finish();
+                //@libin，因为上传接口暂支持单张，只能简单用次数统计。这里加个延时，如果超过5秒，则认为失败，提示用户
+                uploadCount++;
+                if (uploadCount == 1 && uploadCount < adapter.getLocalPic()){
+                    mHandler.postDelayed(mRunnalbe,5000);
+                }
+                if (uploadCount == adapter.getLocalPic()){
+                    mHandler.removeCallbacks(mRunnalbe);
+                    dismissIProgressDialog();
+                    ToastUtil.show(mContext,"上传成功");
+                    Intent intent = new Intent();
+                    intent.putExtra("has",true);
+                    setResult(200,intent);
+                    finish();
+                }
                 break;
             case ATTACHMENTLIST:
                 StringBuffer url = new StringBuffer(Constant.BASE_URL);
@@ -233,7 +255,10 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                         picList.add(urlString);
                     }
                 }
-                adapter.notifyDataSetChanged();
+                if (picList.size() < 3){
+                    picList.add(ADDBUTTON);
+                }
+                adapter.setDatas(picList);
                 return;
             case ATTACHMENTDELETE:
                 //删除成功了，从本地集合中删除
@@ -242,7 +267,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                 if (picList.size() < 3 && !picList.contains(ADDBUTTON)){
                     picList.add(ADDBUTTON);
                 }
-                adapter.notifyDataSetChanged();
+                adapter.setDatas(picList);
                 break;
         }
     }
@@ -268,7 +293,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     }else{
                         //本地的随便删除
                         picList.remove(position);
-                        adapter.notifyDataSetChanged();
+                        adapter.setDatas(picList);
                     }
                     //如果没有本地图片，隐藏按钮
                     boolean hasLocalPic = false;
@@ -327,9 +352,16 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
             return isModifyMode;
         }
 
-        public UploadAdapter(Context context, List<String> datas) {
-            this.datas = datas;
+        public UploadAdapter(Context context) {
             inflater = LayoutInflater.from(context);
+        }
+
+        public void setDatas(List<String> datas) {
+            this.datas.clear();
+            if (datas != null){
+                this.datas.addAll(datas);
+            }
+            notifyDataSetChanged();
         }
 
         @Override
@@ -414,6 +446,16 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         public int getItemCount() {
             return datas.size();
         }
+        //含有网络图片的张数
+        public int getLocalPic(){
+            int localCount = 0;
+            for (String path : datas){
+                if (!path.contains(Constant.BASE_URL) && !path.equals(ADDBUTTON)){
+                    localCount++;
+                }
+            }
+            return localCount;
+        }
     }
 
     public  class ViewHolder extends RecyclerView.ViewHolder {
@@ -484,7 +526,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     }
                     break;
             }
-            adapter.notifyDataSetChanged();
+            adapter.setDatas(picList);
         }
     }
 

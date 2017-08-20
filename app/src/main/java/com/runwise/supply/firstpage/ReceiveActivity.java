@@ -29,6 +29,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
@@ -62,9 +63,11 @@ import io.vov.vitamio.utils.Log;
  */
 
 public class ReceiveActivity extends NetWorkActivity implements DoActionCallback,CaptureClient.Listener{
-    private static final int RECEIVE =      1;           //收货
-    private static final int TALLYING =     2;          //点货
-    private static final int DONE_TALLY =   3;          //第二个人完成点货
+    private static final int RECEIVE =      100;           //收货
+    private static final int TALLYING =     200;          //点货
+    private static final int DONE_TALLY =   300;          //第二个人完成点货
+    private static final int BEGIN_TALLY =  400;           //开始点货
+    private static final int END_TALLY =    500;           //退出点货
     @ViewInject(R.id.indicator)
     private SmartTabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -131,6 +134,13 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //        mClient = new CaptureClient();
 //        mClient.setListener(this);
 //        mClient.connect();
+        if (mode == 1){
+            //开始点货
+            String userName = GlobalApplication.getInstance().getUserName();
+            if (TextUtils.isEmpty(userName) || !userName.equals(lbean.getTallyingUserName())){
+                startOrEndTally(true);
+            }
+        }
     }
 
     @Override
@@ -249,7 +259,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
-                        finish();
+                       if (mode == 1){
+                           startOrEndTally(false);
+                       }else{
+                           finish();
+                       }
+
                     }
                 });
                 dialog.show();
@@ -283,6 +298,20 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 });
                 dialog.show();
                 break;
+        }
+    }
+
+    private void startOrEndTally(boolean isBegin) {
+        showIProgressDialog();
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/api/order/");
+        sb.append(lbean.getOrderID());
+        if (isBegin){
+            sb.append("/tallying/begin/");
+            sendConnection(sb.toString(),request,BEGIN_TALLY,true,BaseEntity.ResultBean.class);
+        }else{
+            sb.append("/tallying/cancel/");
+            sendConnection(sb.toString(),request,END_TALLY,true,BaseEntity.ResultBean.class);
         }
     }
 
@@ -365,6 +394,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startActivity(dIntent);
                 finish();
                 break;
+            case BEGIN_TALLY:
+                break;
+            case END_TALLY:
+                finish();
+                break;
         }
 
     }
@@ -374,6 +408,13 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         switch (where){
             case RECEIVE:
                 ToastUtil.show(mContext,errMsg);
+                break;
+            case BEGIN_TALLY:
+                ToastUtil.show(mContext,"网络异常，请稍侯再试");
+                finish();
+                break;
+            case END_TALLY:
+                ToastUtil.show(mContext,"网络异常，请稍侯再试");
                 break;
         }
 
@@ -552,6 +593,24 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mode == 1){
+            dialog.setTitle("提示");
+            dialog.setMessage("确认取消点货?");
+            dialog.setMessageGravity();
+            dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    startOrEndTally(false);
+                }
+            });
+            dialog.show();
+        }else{
+            super.onBackPressed();
         }
     }
 }
