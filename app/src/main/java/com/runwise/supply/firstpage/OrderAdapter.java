@@ -47,7 +47,6 @@ public class OrderAdapter extends IBaseAdapter {
     private Context context;
     private int returnCount;            //退货单数量
     private int orderCount;             //正常订单数量
-    private String userName;            //初始化缓存起来
 
     public void setReturnCount(int returnCount) {
         this.returnCount = returnCount;
@@ -66,7 +65,6 @@ public class OrderAdapter extends IBaseAdapter {
     public OrderAdapter(Context context,DoActionInterface callback) {
         this.context = context;
         this.callback = callback;
-        userName = GlobalApplication.getInstance().getUserName();
     }
 
     @Override
@@ -114,40 +112,8 @@ public class OrderAdapter extends IBaseAdapter {
                 @Override
                 public void onClick(View v) {
                     //根据状态进行不同的逻辑处理
-                    OrderDoAction action = null;
                     String doAction = ((TextView)v).getText().toString();
-                    if ("取消订单".equals(doAction)){
-                        action = OrderDoAction.CANCLE;
-                    }else if("点货".equals(doAction)){
-                        //如果有人在点货，则弹窗提示
-                        if (TextUtils.isEmpty(bean.getTallyingUserName()) || userName.equals(bean.getTallyingUserName())){
-                            action = OrderDoAction.TALLY;
-                        }else{
-                            //有人正在点货
-                            action = OrderDoAction.TALLYING;
-                        }
-
-                    }else if("收货".equals(doAction)){
-                        //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
-                        if (bean.isIsDoubleReceive()){
-                            String userName = GlobalApplication.getInstance().getUserName();
-                            if (bean.getTallyingUserName().equals(userName)){
-                                action = OrderDoAction.SELFTALLY;
-                            }else{
-                                action = OrderDoAction.SETTLERECEIVE;
-                            }
-                        }else{
-                            action = OrderDoAction.RECEIVE;
-                        }
-                        bean.getTallyingUserName();
-
-                    }else if("上传支付凭证".equals(doAction)){
-                        action = OrderDoAction.UPLOAD;
-                    }else if("查看支付凭证".equals(doAction)){
-                        action = OrderDoAction.LOOK;
-                    }else if("评价".equals(doAction)){
-                        action = OrderDoAction.RATE;
-                    }
+                    OrderDoAction action = OrderActionUtils.getDoActionByText(doAction,bean);
                     if (callback != null){
                         callback.doAction(action,position);
                     }
@@ -209,7 +175,7 @@ public class OrderAdapter extends IBaseAdapter {
             }else{
                 viewHolder.imgIv.setImageResource(getResIdByDrawableName(drawableSb.toString()));
             }
-            String doString = getDoBtnTextByState(bean);
+            String doString = OrderActionUtils.getDoBtnTextByState(bean);
             if (!TextUtils.isEmpty(doString)){
                 if (doString.equals("已评价")){
                     viewHolder.doBtn.setVisibility(View.INVISIBLE);
@@ -286,39 +252,6 @@ public class OrderAdapter extends IBaseAdapter {
 
 
         return convertView;
-    }
-
-    private String getDoBtnTextByState(OrderResponse.ListBean bean) {
-        String btnText = null;
-        if (bean.getState().equals(OrderState.DRAFT.getName())){
-            btnText = "取消订单";
-        }else if(bean.getState().equals(OrderState.SALE.getName())){
-            //不做任务事情，返回null,隐藏此按钮
-        }else if(bean.getState().equals(OrderState.PEISONG.getName())){
-            if (bean.isIsDoubleReceive()){
-                if (bean.isIsFinishTallying()){
-                    //双人收货
-                    btnText = "收货";
-                }else{
-                    //双人点货
-                    btnText = "点货";
-                }
-            }else{
-                //正常收货
-                btnText = "收货";
-            }
-
-        }else if(bean.getState().equals(OrderState.DONE.getName())){
-//            if (bean.getHasAttachment() != 0){
-//                btnText = "查看支付凭证";
-//            }else{
-//                btnText = "上传支付凭证";
-//            }
-            btnText = "评价";
-        }else if(bean.getState().equals(OrderState.RATED.getName())){
-            btnText = "已评价";
-        }
-        return btnText;
     }
 
     public class ViewHolder{

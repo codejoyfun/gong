@@ -14,6 +14,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderStateLine;
@@ -129,13 +130,18 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                     } else {
                         //订单已提交
                         content.append("退货单号：").append(bean.getName()).append("\n")
-                                .append("退货商品：").append(bean.getAmount()).append("件，共")
-                                .append(bean.getAmountTotal()).append("元").append("\n");
+                                .append("退货商品：").append(bean.getAmount()).append("件");
+                        if (GlobalApplication.getInstance().getCanSeePrice()){
+                            content.append("，共").append(bean.getAmountTotal()).append("元").append("\n");
+                        }
                     }
                 } else {
                     //退货成功
-                    content.append("退货成功，退货商品：").append(bean.getAmount()).append("件，共")
-                            .append(bean.getAmountTotal()).append("元");
+                    content.append("退货成功，退货商品：").append(bean.getAmount()).append("件");
+                    if (GlobalApplication.getInstance().getCanSeePrice()){
+                        content.append("，共").append(bean.getAmountTotal()).append("元");
+                    }
+
                 }
                 osl.setContent(content.toString());
                 datas.add(osl);
@@ -200,8 +206,10 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 }else if(str.contains("已确认")){
                     content.append("正在为您挑拣商品");
                 }else if(str.contains("已修改")){
-                    content.append("共").append(bean.getDeliveredQty()).append("件商品,")
-                            .append("¥").append(bean.getAmountTotal());
+                    content.append("共").append(bean.getDeliveredQty()).append("件商品");
+                    if (GlobalApplication.getInstance().getCanSeePrice()){
+                        content.append("，¥").append(bean.getAmountTotal());
+                    }
                 }else if(str.contains("已提交")){
                     content.append("订单号：").append(bean.getName());
                 }

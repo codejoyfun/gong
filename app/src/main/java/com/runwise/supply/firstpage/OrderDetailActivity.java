@@ -21,6 +21,8 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.OrderDetailResponse;
+import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.orderpage.DataType;
@@ -39,6 +41,8 @@ import me.shaohui.bottomdialog.BottomDialog;
 
 public class OrderDetailActivity extends NetWorkActivity{
     private static final int UPLOAD = 100;
+    private static final int DETAIL = 1;          //网络请求
+    private static final int CANCEL = 2;
     private OrderResponse.ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -85,6 +89,7 @@ public class OrderDetailActivity extends NetWorkActivity{
     @ViewInject(R.id.priceLL)
     private View priceLL;
     private boolean isModifyOrder;          //可修改订单
+    private int orderId;                    //如果有orderId, 需要重新刷新
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -107,14 +112,8 @@ public class OrderDetailActivity extends NetWorkActivity{
         setTitleText(true,"订单详情");
         setTitleLeftIcon(true,R.drawable.nav_back);
         Bundle bundle = getIntent().getExtras();
-        bean = bundle.getParcelable("order");
         adapter = new OrderDtailAdapter(mContext);
-        if (bean.getHasReturn() != 0){
-            adapter.setHasReturn(true);
-        }
-        if (bean.isIsTwoUnit()){
-            adapter.setTwoUnit(true);
-        }
+        orderId = bundle.getInt("orderid",0);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -123,7 +122,16 @@ public class OrderDetailActivity extends NetWorkActivity{
         if (!canSeePrice){
             priceLL.setVisibility(View.GONE);
         }
-        updateUI();
+        if (orderId != 0){
+            //需要自己刷新
+            Object request = null;
+            StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+            sb.append(orderId).append("/");
+            sendConnection(sb.toString(),request,DETAIL,true, OrderDetailResponse.class);
+        }else{
+            bean = bundle.getParcelable("order");
+            updateUI();
+        }
     }
 
     @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,R.id.uploadBtn,
@@ -172,23 +180,95 @@ public class OrderDetailActivity extends NetWorkActivity{
                 break;
             case R.id.rightBtn:
                 Intent intent2;
-                if (rightBtn.getText().toString().equals("收货")){
-                    intent2 = new Intent(mContext,ReceiveActivity.class);
-                    Bundle bundle2 = new Bundle();
-                    bundle2.putParcelable("order",bean);
-                    intent2.putExtras(bundle2);
-                    startActivity(intent2);
-                    finish();
-                }else if(rightBtn.getText().toString().equals("评价")){
-                    intent2 = new Intent(mContext,EvaluateActivity.class);
-                    Bundle bundle2 = new Bundle();
-                    bundle2.putParcelable("order",bean);
-                    intent2.putExtras(bundle2);
-                    startActivity(intent2);
-                    finish();
-                }else if(rightBtn.getText().toString().equals("售后订单")){
-
+                OrderDoAction action = OrderActionUtils.getDoActionByText(rightBtn.getText().toString(),bean);
+                switch(action){
+                    case CANCLE:
+                        dialog.setTitle("提示");
+                        dialog.setMessage("确认取消订单?");
+                        dialog.setMessageGravity();
+                        dialog.setModel(CustomDialog.BOTH);
+                        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                //发送取消订单请求
+                                cancleOrderRequest();
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    case TALLY:
+                        Intent tIntent = new Intent(mContext,ReceiveActivity.class);
+                        Bundle tBundle = new Bundle();
+                        tBundle.putParcelable("order",bean);
+                        tBundle.putInt("mode",1);
+                        tIntent.putExtras(tBundle);
+                        startActivity(tIntent);
+                        break;
+                    case TALLYING:
+                        String name = bean.getTallyingUserName();
+                        dialog.setMessageGravity();
+                        dialog.setMessage(name+"正在点货");
+                        dialog.setModel(CustomDialog.RIGHT);
+                        dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    case RATE:
+                        Intent rIntent = new Intent(mContext,EvaluateActivity.class);
+                        Bundle rBundle = new Bundle();
+                        rBundle.putParcelable("order",bean);
+                        rIntent.putExtras(rBundle);
+                        startActivity(rIntent);
+                        break;
+                    case RECEIVE://正常收货
+                        Intent reIntent = new Intent(mContext,ReceiveActivity.class);
+                        Bundle reBundle = new Bundle();
+                        reBundle.putParcelable("order",bean);
+                        reBundle.putInt("mode",0);
+                        reIntent.putExtras(reBundle);
+                        startActivity(reIntent);
+                        break;
+                    case SETTLERECEIVE:
+                        //点货，计入结算单位
+                        Intent sIntent = new Intent(mContext,ReceiveActivity.class);
+                        Bundle sBundle = new Bundle();
+                        sBundle.putParcelable("order",bean);
+                        sBundle.putInt("mode",2);
+                        sIntent.putExtras(sBundle);
+                        startActivity(sIntent);
+                        break;
+                    case SELFTALLY:
+                        dialog.setMessageGravity();
+                        dialog.setMessage("您已经点过货了，应由其他人完成收货");
+                        dialog.setModel(CustomDialog.RIGHT);
+                        dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                        break;
                 }
+//               if (rightBtn.getText().toString().equals("收货")){
+//                    intent2 = new Intent(mContext,ReceiveActivity.class);
+//                    Bundle bundle2 = new Bundle();
+//                    bundle2.putParcelable("order",bean);
+//                    intent2.putExtras(bundle2);
+//                    startActivity(intent2);
+//                    finish();
+//                }else if(rightBtn.getText().toString().equals("评价")){
+//                    intent2 = new Intent(mContext,EvaluateActivity.class);
+//                    Bundle bundle2 = new Bundle();
+//                    bundle2.putParcelable("order",bean);
+//                    intent2.putExtras(bundle2);
+//                    startActivity(intent2);
+//                    finish();
+//                }
                 break;
             case R.id.uploadBtn:
                 //凭证
@@ -203,7 +283,14 @@ public class OrderDetailActivity extends NetWorkActivity{
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-
+        switch(where){
+            case DETAIL:
+                BaseEntity.ResultBean resultBean= result.getResult();
+                OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
+                bean = response.getOrder();
+                updateUI();
+                break;
+        }
     }
 
     @Override
@@ -281,13 +368,17 @@ public class OrderDetailActivity extends NetWorkActivity{
 
     private void updateUI() {
         if (bean != null){
+            if (bean.getHasReturn() != 0){
+                adapter.setHasReturn(true);
+            }
+            if (bean.isIsTwoUnit()){
+                adapter.setTwoUnit(true);
+            }
             String state = "";
             String tip = "";
             if (bean.getState().equals("draft")){
                 state = "订单已提交";
                 tip = "订单号："+bean.getName();
-                //底部只有"取消订单"
-                rightBtn.setText("取消订单");
                 rightBtn2.setVisibility(View.INVISIBLE);
             }else if(bean.getState().equals("sale")){
                 state = "订单已确认";
@@ -296,21 +387,17 @@ public class OrderDetailActivity extends NetWorkActivity{
             }else if(bean.getState().equals("peisong")){
                 state = "订单已发货";
                 tip = "预计发达时间："+bean.getEstimatedTime();
-                rightBtn.setText("收货");
                 rightBtn2.setVisibility(View.GONE);
             }else if (bean.getState().equals("done")){
                 state = "订单已收货";
-
                 String recdiveName = bean.getReceiveUserName();
                 tip = "收货人："+ recdiveName;
-
                 //TODO:退货单没有收货人姓名，暂时处理
                 if(TextUtils.isEmpty(recdiveName)) {
                     tip = "已退货";
                     state = "订单已退货";
                 }
                 if (TextUtils.isEmpty(bean.getAppraisalUserName())){
-                    rightBtn.setText("评价");
                     rightBtn2.setVisibility(View.INVISIBLE);
                 }else{
                     //已评价
@@ -324,6 +411,7 @@ public class OrderDetailActivity extends NetWorkActivity{
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);
+            rightBtn.setText(OrderActionUtils.getDoBtnTextByState(bean));
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
             //支付凭证在收货流程后，才显示
             if ((bean.getState().equals("rated") || bean.getState().equals("done"))
@@ -425,5 +513,14 @@ public class OrderDetailActivity extends NetWorkActivity{
             }
         }
         return false;
+    }
+
+    private void cancleOrderRequest() {
+        StringBuffer urlSb = new StringBuffer("/gongfu/order/");
+        urlSb.append(orderId).append("/state");
+        CancleRequest request = new CancleRequest();
+        request.setState("cancel");
+        sendConnection(urlSb.toString(),request,CANCEL,true,BaseEntity.ResultBean.class);
+
     }
 }
