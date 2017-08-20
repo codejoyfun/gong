@@ -1,21 +1,37 @@
 package com.runwise.supply.orderpage;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bigkoo.pickerview.OptionsPickerView;
+import com.googlecode.mp4parser.authoring.Edit;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.entity.LastBuyResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.ContextUtils;
@@ -25,16 +41,30 @@ import io.vov.vitamio.utils.ContextUtils;
  */
 
 public class OrderFragment extends NetWorkFragment {
+    private static final int LASTBUY = 1;
+    @ViewInject(R.id.lastBuyTv)
+    private TextView lastBuyTv;
+    @ViewInject(R.id.mainll)
+    private View mainll;
     @ViewInject(R.id.dayWeekTv)
     private TextView dwTv;
+    @ViewInject(R.id.sureBtn)
+    private Button sureBtn;
+    @ViewInject(R.id.safeValueTv)
+    private TextView safeValueTv;
+    @ViewInject(R.id.editText)
+    private EditText editText;
     private ListPopupWindow popupWindow;
     String[] times = {"天","周"};
+    private OptionsPickerView opv;
+    private List<String> safeArr = new ArrayList<>();
+    private int selectedIndex = 109;                              //最近一次所选,默认在+10上
 
     @Override
     protected int createViewByLayoutId() {
         return R.layout.order_fragment_layout;
     }
-    @OnClick({R.id.dayWeekTv,R.id.sureBtn,R.id.selfHelpBtn})
+    @OnClick({R.id.dayWeekTv,R.id.sureBtn,R.id.selfHelpBtn,R.id.safeValueTv})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.dayWeekTv:
@@ -64,11 +94,38 @@ public class OrderFragment extends NetWorkFragment {
             case R.id.sureBtn:
                 //跳转到智能下单页面
                 Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
+                intent.putExtra("yongliang_factor",Double.valueOf(safeArr.get(selectedIndex)));
+                intent.putExtra("predict_sale_amount",Double.valueOf(editText.getText().toString()));
                 startActivity(intent);
                 break;
             case R.id.selfHelpBtn:
                 Intent intent2 = new Intent(mContext,SelpHelpOrderActivity.class);
                 startActivity(intent2);
+                break;
+            case R.id.safeValueTv:
+                if (opv == null){
+                    opv = new OptionsPickerView.Builder(mContext,new OptionsPickerView.OnOptionsSelectListener(){
+
+                        @Override
+                        public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                            if (safeArr.size() > options1){
+                                selectedIndex = options1;
+                               String selectStr = safeArr.get(options1);
+                                safeValueTv.setText(selectStr +" %");
+                            }
+                        }
+                    }).setTitleText("选择安全系数")
+                            .setTitleBgColor(Color.parseColor("#F3F9EF"))
+                            .setTitleSize(16)
+                            .setSubCalSize(14)
+                            .setContentTextSize(23)
+                            .setCancelColor(Color.parseColor("#2E2E2E"))
+                            .setSubmitColor(Color.parseColor("#2E2E2E"))
+                            .build();
+                    opv.setPicker(safeArr);
+                }
+                opv.setSelectOptions(selectedIndex);
+                opv.show(true);
                 break;
         }
 
@@ -76,8 +133,55 @@ public class OrderFragment extends NetWorkFragment {
     }
 
     @Override
-    public void onSuccess(BaseEntity result, int where) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        for (int i = -99; i<=99; i++){
+            String str = i < 0 ? String.valueOf(i) : ("+"+i);
+            safeArr.add(str);
+        }
+        //设置canSee,登录且能看显示，否则不可见
+        if (SPUtils.isLogin(mContext) && GlobalApplication.getInstance().getCanSeePrice()){
+            lastBuyTv.setVisibility(View.VISIBLE);
+            Object request = null;
+            sendConnection("/gongfu/v2/order/last_order_amout/",request,LASTBUY,false, LastBuyResponse.class);
+        }else{
+            lastBuyTv.setVisibility(View.INVISIBLE);
+        }
 
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                sureBtn.setEnabled(s.length() > 0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        mainll.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public void onSuccess(BaseEntity result, int where) {
+        switch (where){
+            case LASTBUY:
+                BaseEntity.ResultBean response = result.getResult();
+                LastBuyResponse lbr = (LastBuyResponse) response.getData();
+                double amount = lbr.getAmout();
+                lastBuyTv.setText("上次采购额 ¥"+amount);
+                break;
+        }
     }
 
     @Override

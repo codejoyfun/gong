@@ -302,6 +302,9 @@ public class OrderDetailActivity extends NetWorkActivity{
                 bean = response.getOrder();
                 updateUI();
                 break;
+            case CANCEL:
+                finish();
+                break;
         }
     }
 
@@ -529,7 +532,7 @@ public class OrderDetailActivity extends NetWorkActivity{
 
     private void cancleOrderRequest() {
         StringBuffer urlSb = new StringBuffer("/gongfu/order/");
-        urlSb.append(orderId).append("/state");
+        urlSb.append(bean.getOrderID()).append("/state");
         CancleRequest request = new CancleRequest();
         request.setState("cancel");
         sendConnection(urlSb.toString(),request,CANCEL,true,BaseEntity.ResultBean.class);

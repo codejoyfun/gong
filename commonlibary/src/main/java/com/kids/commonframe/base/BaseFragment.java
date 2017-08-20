@@ -194,4 +194,5 @@ public abstract class BaseFragment extends Fragment {
 		FrameLayout view = (FrameLayout) findViewById(R.id.title_bg);
 		view.setBackgroundColor(color);
 	}
+
 }

@@ -17,6 +17,7 @@ dependencies {
     compile 'com.socketmobile:capture-android:0.9-SNAPSHOT'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'me.shaohui:bottomdialog:1.1.9'
+    compile 'com.contrarywind:Android-PickerView:3.2.6'
 
 
 }

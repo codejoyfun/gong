@@ -1,6 +1,8 @@
 package com.kids.commonframe.base;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.util.net.NetWorkHelper.NetWorkCallBack;

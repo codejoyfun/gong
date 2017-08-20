@@ -25,6 +25,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
@@ -34,6 +35,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +108,71 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         }
     };
     private OneKeyAdapter adapter;
+    private double predict_sale_amount;
+    private double yongliang_factor;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStatusBarEnabled();
+        StatusBarUtil.StatusBarLightMode(this);
+        setContentView(R.layout.onekey_order_layout);
+        setTitleText(true,"智能下单");
+        setTitleLeftIcon(true,R.drawable.nav_back);
+        setTitleRightText(true,"编辑");
+        pullListView.setVisibility(View.INVISIBLE);
+        adapter = new OneKeyAdapter(mContext);
+        adapter.setCallback(this);
+        pullListView.setAdapter(adapter);
+        initLoadingImgs();
+        handler.postDelayed(runnable,0);
+        dateTv.setText(cachedDWStr);
+        predict_sale_amount = getIntent().getDoubleExtra("predict_sale_amount",0);
+        yongliang_factor = getIntent().getDoubleExtra("yongliang_factor",0)/100;
+//        showDialog.setTitle("选择送达日期");
+//        showDialog.setCancelable(true)
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                requestDefalutProduct();
+            }
+        },2000);
+        allLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isInitiative = false;
+                if (allCb.isChecked()){
+                    allCb.setChecked(false);
+                    setDeleteBtnOk(false);
+                    adapter.setAllSelect(false);
+                }else{
+                    allCb.setChecked(true);
+                    setDeleteBtnOk(true);
+                    adapter.setAllSelect(true);
+                }
+            }
+        });
+//        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isInitiative){
+//                    if (isChecked){
+//                        //adapter里面所有的选中
+//                        setDeleteBtnOk(true);
+//                        adapter.setAllSelect(true);
+//                    }else{
+//                        //清掉adapter里面所有选中的状态
+//                        setDeleteBtnOk(false);
+//                        adapter.setAllSelect(false);
+//                    }
+//                }
+//                isInitiative = true;
+//            }
+//        });
+        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        if (!canSeePrice){
+            totalMoneyTv.setVisibility(View.GONE);
+        }
+    }
     @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth,R.id.onekeyBtn,R.id.deleteBtn})
     public void btnClick(View view){
         switch (view.getId()){
@@ -300,70 +367,11 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         dArr[i].setTextColor(Color.parseColor("#6BB400"));
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStatusBarEnabled();
-        StatusBarUtil.StatusBarLightMode(this);
-        setContentView(R.layout.onekey_order_layout);
-        setTitleText(true,"智能下单");
-        setTitleLeftIcon(true,R.drawable.nav_back);
-        setTitleRightText(true,"编辑");
-        pullListView.setVisibility(View.INVISIBLE);
-        adapter = new OneKeyAdapter(mContext);
-        adapter.setCallback(this);
-        pullListView.setAdapter(adapter);
-        initLoadingImgs();
-        handler.postDelayed(runnable,0);
-        dateTv.setText(cachedDWStr);
-//        showDialog.setTitle("选择送达日期");
-//        showDialog.setCancelable(true)
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                requestDefalutProduct();
-            }
-        },2000);
-        allLL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isInitiative = false;
-                if (allCb.isChecked()){
-                    allCb.setChecked(false);
-                    setDeleteBtnOk(false);
-                    adapter.setAllSelect(false);
-                }else{
-                    allCb.setChecked(true);
-                    setDeleteBtnOk(true);
-                    adapter.setAllSelect(true);
-                }
-            }
-        });
-//        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isInitiative){
-//                    if (isChecked){
-//                        //adapter里面所有的选中
-//                        setDeleteBtnOk(true);
-//                        adapter.setAllSelect(true);
-//                    }else{
-//                        //清掉adapter里面所有选中的状态
-//                        setDeleteBtnOk(false);
-//                        adapter.setAllSelect(false);
-//                    }
-//                }
-//                isInitiative = true;
-//            }
-//        });
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-        if (!canSeePrice){
-            totalMoneyTv.setVisibility(View.GONE);
-        }
-    }
     private void requestDefalutProduct(){
         ///gongfu/v2/shop/preset/product/list
-        Object request = null;
+        OneKeyRequest request = new OneKeyRequest();
+        request.setPredict_sale_amount(predict_sale_amount);
+        request.setYongliang_factor(yongliang_factor);
         sendConnection("/gongfu/v2/shop/preset/product/list",request,DEFAULT_TYPE,false,DefaultProductData.class);
     }
     private void initLoadingImgs() {
@@ -424,6 +432,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     public void countChanged() {
         int totalNum = 0;
         double totalMoney = 0;
+        DecimalFormat df = new DecimalFormat("##.#");
         List<DefaultPBean> list = adapter.getList();
         for (DefaultPBean bean : list){
             int count = adapter.getCountMap().get(Integer.valueOf(bean.getProductID()));
@@ -431,7 +440,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             double price = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID())).getPrice();
             totalMoney += count * price;
         }
-        totalMoneyTv.setText(totalMoney+"元");
+        totalMoneyTv.setText(df.format(totalMoney)+"元");
         totalNumTv.setText(totalNum+"件");
     }
 
