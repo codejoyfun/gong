@@ -59,6 +59,8 @@ public class MineFragment extends NetWorkFragment {
     @ViewInject(R.id.zhiliangImg)
     private ImageView zhiliangImg;
     String number = "02037574563";
+    @ViewInject(R.id.moneySum)
+    private TextView moneySum;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
