@@ -184,6 +184,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         Intent intent = new Intent(mContext,OrderDetailActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable("order",bean);
+        bundle.putInt("orderid",orderBean.getId());
         intent.putExtras(bundle);
         startActivity(intent);
     }
