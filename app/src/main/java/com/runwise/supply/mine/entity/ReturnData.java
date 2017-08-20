@@ -1,6 +1,7 @@
 package com.runwise.supply.mine.entity;
 
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 
 import java.util.List;
 
@@ -9,40 +10,40 @@ import java.util.List;
  */
 
 public class ReturnData {
-    private List<OrderResponse.ListBean> lastWeekList;
-    private List<OrderResponse.ListBean> thisWeekList;
-    private List<OrderResponse.ListBean> allList;
-    private List<OrderResponse.ListBean> earlierList;
+    private List<ReturnOrderBean.ListBean> lastWeekList;
+    private List<ReturnOrderBean.ListBean> thisWeekList;
+    private List<ReturnOrderBean.ListBean> allList;
+    private List<ReturnOrderBean.ListBean> earlierList;
 
-    public List<OrderResponse.ListBean> getLastWeekList() {
+    public List<ReturnOrderBean.ListBean> getLastWeekList() {
         return lastWeekList;
     }
 
-    public void setLastWeekList(List<OrderResponse.ListBean> lastWeekList) {
+    public void setLastWeekList(List<ReturnOrderBean.ListBean> lastWeekList) {
         this.lastWeekList = lastWeekList;
     }
 
-    public List<OrderResponse.ListBean> getThisWeekList() {
+    public List<ReturnOrderBean.ListBean> getThisWeekList() {
         return thisWeekList;
     }
 
-    public void setThisWeekList(List<OrderResponse.ListBean> thisWeekList) {
+    public void setThisWeekList(List<ReturnOrderBean.ListBean> thisWeekList) {
         this.thisWeekList = thisWeekList;
     }
 
-    public List<OrderResponse.ListBean> getAllList() {
+    public List<ReturnOrderBean.ListBean> getAllList() {
         return allList;
     }
 
-    public void setAllList(List<OrderResponse.ListBean> allList) {
+    public void setAllList(List<ReturnOrderBean.ListBean> allList) {
         this.allList = allList;
     }
 
-    public List<OrderResponse.ListBean> getEarlierList() {
+    public List<ReturnOrderBean.ListBean> getEarlierList() {
         return earlierList;
     }
 
-    public void setEarlierList(List<OrderResponse.ListBean> earlierList) {
+    public void setEarlierList(List<ReturnOrderBean.ListBean> earlierList) {
         this.earlierList = earlierList;
     }
 

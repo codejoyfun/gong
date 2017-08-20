@@ -30,7 +30,9 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.firstpage.OrderDetailActivity;
+import com.runwise.supply.firstpage.ReturnDetailActivity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.mine.entity.MsgEntity;
 import com.runwise.supply.mine.entity.MsgList;
 import com.runwise.supply.mine.entity.MsgResult;
@@ -63,7 +65,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
 
     private int page = 1;
     public OrderDataType orderDataType;
-    private List<OrderResponse.ListBean> allList;
+    private List<ReturnOrderBean.ListBean> allList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,10 +173,10 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        OrderResponse.ListBean bean = (OrderResponse.ListBean)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(mContext,OrderDetailActivity.class);
+        ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean)parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext,ReturnDetailActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelable("order",bean);
+        bundle.putParcelable("return",bean);
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -193,7 +195,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
     }
 
 
-    public class CarInfoListAdapter extends IBaseAdapter<OrderResponse.ListBean> {
+    public class CarInfoListAdapter extends IBaseAdapter<ReturnOrderBean.ListBean> {
         @Override
         protected View getExView(int position, View convertView,
                                  ViewGroup parent) {
@@ -207,7 +209,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
             else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            OrderResponse.ListBean bean = mList.get(position);
+            ReturnOrderBean.ListBean bean = mList.get(position);
 
           if("process".equals(bean.getState())) {
                 holder.payStatus.setText("退货中");
