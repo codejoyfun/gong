@@ -14,7 +14,6 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.business.entity.SelectDealerResponse;
-import com.runwise.supply.message.DividePayStep1Activity;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
@@ -75,12 +74,12 @@ public class SelectDealerActivity extends NetWorkActivity {
             case R.id.title_tv_rigth:
                 //跳转到申请页面：经销商id+车id
                 if (adapter.selectIndex != -1){
-                    SelectDealerResponse.DataBean.EntitiesBean bean = dealerArr.get(adapter.selectIndex);
-                    String dealerId = String.valueOf(bean.getDealer_id());
-                    Intent intent = new Intent(mContext, DividePayStep1Activity.class);
-                    intent.putExtra("dealerId",dealerId);
-                    intent.putExtra("carId",carId);
-                    startActivity(intent);
+//                    SelectDealerResponse.DataBean.EntitiesBean bean = dealerArr.get(adapter.selectIndex);
+//                    String dealerId = String.valueOf(bean.getDealer_id());
+//                    Intent intent = new Intent(mContext, DividePayStep1Activity.class);
+//                    intent.putExtra("dealerId",dealerId);
+//                    intent.putExtra("carId",carId);
+//                    startActivity(intent);
                 }else{
                     ToastUtil.show(mContext,"请选择经销商");
                 }

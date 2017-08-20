@@ -32,7 +32,6 @@ import com.runwise.supply.R;
 import com.runwise.supply.business.entity.CarResponse;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.business.entity.Item;
-import com.runwise.supply.message.DividePayStep1Activity;
 import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
@@ -298,11 +297,11 @@ public class CarTypeFragment extends NetWorkFragment {
                 @Override
                 public void onClick(View view) {
                     //事着车id + 经销商id  跳转到申请流程
-                    String dealerId = String.valueOf(bean.getDealer_id());
-                    Intent intent = new Intent(mContext, DividePayStep1Activity.class);
-                    intent.putExtra("dealerId",dealerId);
-                    intent.putExtra("carId",currentCarId);
-                    startActivity(intent);
+//                    String dealerId = String.valueOf(bean.getDealer_id());
+//                    Intent intent = new Intent(mContext, DividePayStep1Activity.class);
+//                    intent.putExtra("dealerId",dealerId);
+//                    intent.putExtra("carId",currentCarId);
+//                    startActivity(intent);
                 }
             });
             viewHolder.name.setText(bean.getDealer_name());
