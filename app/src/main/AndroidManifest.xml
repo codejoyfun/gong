@@ -237,14 +237,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".mine.UpdateUserInfoActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".mine.UpdateSexActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
@@ -295,30 +287,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme" />
         <activity
-            android:name=".message.DividePayStep1Activity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".message.DividePayStep2Activity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".message.DividePayStep3Activity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".message.DividePayStep4Activity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".message.DividePayStepFinishActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".message.DividePayStepingActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".LauncherActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait">
@@ -334,10 +302,6 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".mine.MsgDetailActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".message.DevidePayProtocolActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
@@ -371,10 +335,6 @@
                 <data android:scheme="redhare" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".message.RequestDetlActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".firstpage.PageDeatailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

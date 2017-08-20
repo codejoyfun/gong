@@ -78,6 +78,9 @@ public class GlobalApplication extends MultiDexApplication {
         if(mUserInfo == null) {
             loadUserInfo();
         }
+        if(mUserInfo == null) {
+            return true;
+        }
         return mUserInfo.isCanSeePrice();
     }
 

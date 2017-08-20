@@ -37,7 +37,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshAdapterViewBase;
 import com.kids.commonframe.R;
 
 
-public class PinnedPullToRefreshListView extends PullToRefreshAdapterViewBase<ListView> {
+public class  PinnedPullToRefreshListView extends PullToRefreshAdapterViewBase<ListView> {
 	private int MIN_DATA_SEIZE = 10;
 	private LoadingLayout mHeaderLoadingView;
 	private LoadingLayout mFooterLoadingView;
@@ -48,6 +48,7 @@ public class PinnedPullToRefreshListView extends PullToRefreshAdapterViewBase<Li
 	private boolean mAddedLvFooter = false;
 
 	private Mode currentMode;
+
 
 	public PinnedPullToRefreshListView(Context context) {
 		super(context);
