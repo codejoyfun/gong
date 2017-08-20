@@ -26,6 +26,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
@@ -34,6 +35,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
@@ -84,6 +86,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private TextView dqCountTv;
     private List orderList = new ArrayList<>();
     private View rootView;
+    private String number = "02037574563";
+    private UserInfo userInfo;
 
     public LoginedFirstFragment() {
     }
@@ -138,7 +142,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //下拉刷新:只刷新列表内容
-                requestList();
+                requestReturnList();
             }
 
             @Override
@@ -148,6 +152,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         requestDashBoard();
         requestLB();
         pullListView.setRefreshing(true);
+        //加载电话
+        userInfo = GlobalApplication.getInstance().loadUserInfo();
     }
     @Override
     public void onResume() {
@@ -187,7 +193,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 BaseEntity.ResultBean resultBean3= result.getResult();
                 if("A0006".equals(resultBean3.getState())){
                     ToastUtil.show(mContext,"取消成功");
-                    requestList();
+                    requestReturnList();
                 }
                 break;
             case FROMRETURN:
@@ -268,6 +274,19 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 tIntent.putExtras(tBundle);
                 startActivity(tIntent);
                 break;
+            case TALLYING:
+                String name = ((OrderResponse.ListBean)adapter.getItem(position)).getTallyingUserName();
+                dialog.setMessageGravity();
+                dialog.setMessage(name+"正在点货");
+                dialog.setModel(CustomDialog.RIGHT);
+                dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                break;
             case RATE:
                 //评价
                 Intent rIntent = new Intent(mContext,EvaluateActivity.class);
@@ -331,9 +350,31 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         dialog.show();
     }
 
+    @OnClick(R.id.callIcon)
+    public void btnClick(View view){
+        switch (view.getId()){
+            case R.id.callIcon:
+                if (userInfo != null && !TextUtils.isEmpty(userInfo.getCompanyHotLine())){
+                    number = userInfo.getCompanyHotLine();
+                }
+                dialog.setModel(CustomDialog.BOTH);
+                dialog.setTitle("联系客服");
+                dialog.setMessageGravity();
+                dialog.setMessage(number);
+                dialog.setLeftBtnListener("取消",null);
+                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        CommonUtils.callNumber(mContext,number);
+                    }
+                });
+                dialog.show();
+                break;
+        }
+    }
 
     //一次性加载全部，无分页,先加载退货单，然后跟着正常订单
-    private void requestList() {
+    private void requestReturnList() {
         Object request = null;
         sendConnection("/gongfu/v2/return_order/undone/",request,FROMRETURN,false,ReturnOrderBean.class);
 

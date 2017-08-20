@@ -11,6 +11,22 @@
         app:canLoop="true"
         />
     <LinearLayout
+        android:id="@+id/callIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/nav_service_message_w"
+            android:layout_marginRight="6dp"
+            />
+    </LinearLayout>
+    <LinearLayout
         android:id="@+id/numsLL"
         android:layout_width="match_parent"
         android:layout_height="77dp"

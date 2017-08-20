@@ -20,6 +20,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -148,6 +149,7 @@ public class ChangeHostActivity extends NetWorkActivity {
                 }else if (which == 3){
                     SPUtils.put(mContext,"X-Odoo-Db","Testfor...Company");
                 }
+                ProductBasicUtils.clearCache(mContext);
                 Intent intent  = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
                 finish();

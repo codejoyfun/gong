@@ -106,7 +106,7 @@ public class ReturnFragment extends BaseFragment {
                         ReturnBean rb = new ReturnBean();
                         rb.setName(basicBean.getName());
                         rb.setpId(bean.getProductID());
-                        int max = (int)bean.getProductUomQty() - (int)bean.getReturnAmount();
+                        int max = (int)bean.getDeliveredQty() - (int)bean.getReturnAmount();
                         rb.setMaxReturnCount(max);
                         callback.returnBtnClick(rb);
                     }

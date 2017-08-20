@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
@@ -24,9 +25,11 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
@@ -42,6 +45,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+
+import static com.runwise.supply.R.id.number;
 
 /**
  * Created by libin on 2017/6/26.
@@ -60,6 +65,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     @ViewInject(R.id.header)
     private View headView;
 
+
     private LayoutInflater layoutInflater;
     private ConvenientBanner banner;
     private RecyclerView recyclerView;
@@ -69,6 +75,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private boolean isLoadFirst = true;         //标记只加载一次
     private LinearLayoutManager layoutManager;
     private long[] mHints = new long[7];
+    private static String phone = "02037574563";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,7 +153,25 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             switchContent(this,new LoginedFirstFragment());
         }
     }
-
+    @OnClick(R.id.callIcon)
+    public void btnClick(View view){
+        switch (view.getId()){
+            case R.id.callIcon:
+                dialog.setModel(CustomDialog.BOTH);
+                dialog.setTitle("联系客服");
+                dialog.setMessageGravity();
+                dialog.setMessage(phone);
+                dialog.setLeftBtnListener("取消",null);
+                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        CommonUtils.callNumber(mContext,phone);
+                    }
+                });
+                dialog.show();
+                break;
+        }
+    }
     @Override
     public void onUserLoginout() {
         LoginedFirstFragment fragment = (LoginedFirstFragment) getFragmentManager().findFragmentByTag(LOGIN_FRAGMENT);

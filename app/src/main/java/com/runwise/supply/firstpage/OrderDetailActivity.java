@@ -297,6 +297,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 state = "订单已发货";
                 tip = "预计发达时间："+bean.getEstimatedTime();
                 rightBtn.setText("收货");
+                rightBtn2.setVisibility(View.GONE);
             }else if (bean.getState().equals("done")){
                 state = "订单已收货";
 
@@ -312,21 +313,21 @@ public class OrderDetailActivity extends NetWorkActivity{
                     rightBtn.setText("评价");
                     rightBtn2.setVisibility(View.INVISIBLE);
                 }else{
-                    //已评价，只显示一个按钮
-                    rightBtn.setVisibility(View.INVISIBLE);
-                    rightBtn2.setVisibility(View.INVISIBLE);
+                    //已评价
+                    bottom_bar.setVisibility(View.GONE);
                 }
 
 
             }else if(bean.getState().equals("rated")){
                 state = "订单已评价";
-                rightBtn.setText("售后订单");
+                bottom_bar.setVisibility(View.GONE);
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
             //支付凭证在收货流程后，才显示
-            if (bean.getState().equals("rated") || bean.getState().equals("done")){
+            if ((bean.getState().equals("rated") || bean.getState().equals("done"))
+                && bean.getOrderSettleName().contains("单次结算")){
                 payStateTv.setVisibility(View.VISIBLE);
                 payStateValue.setVisibility(View.VISIBLE);
                 uploadBtn.setVisibility(View.VISIBLE);
