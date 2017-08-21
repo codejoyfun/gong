@@ -25,39 +25,45 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashMap;
+
 /**
  * Created by libin on 2017/8/11.
  */
 
 public class ChangeHostActivity extends NetWorkActivity {
-    private static final int REQUEST_LOGINOUT = 0;
+    private static final int LOGINOUT_HD = 0;
+    private static final int LOGINOUT_LBZ = 1;
+    private static final int LOGINOUT_Golden = 2;
+    private static final int LOGINOUT_Test = 3;
     @ViewInject(R.id.list)
     private ListView listview;
     @ViewInject(R.id.tipTv)
     private TextView tipTv;
     private ArrayAdapter<String> adapter;
-    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","TestFor...Companyo数据库"};
+    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","TestFor...Company数据库"};
+    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","Testfor...Company"};
     private int which;
+    private boolean isLogin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.host_layout);
+        isLogin = SPUtils.isLogin(mContext);
         setTitleText(true,"更改HOST");
         setTitleLeftIcon(true,R.drawable.nav_back);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,android.R.id.text1,datas);
         listview.setAdapter(adapter);
         ToastUtil.show(mContext,"请选择你要切换的数据库");
         String dbStr = (String)SPUtils.get(mContext,"X-Odoo-Db","LBZ20170607");
-        if (dbStr.equals("LBZ20170607")){
-            tipTv.setText("当前所在数据库：老班长数据库\n切换数据库将会重新登录");
-        }else if(dbStr.equals("DemoforHD20170516")){
-            tipTv.setText("当前所在数据库：海大数据库\n切换数据库将会重新登录");
-        }else if(dbStr.equals("GoldenClient2017Test")){
-            tipTv.setText("当前所在数据库：GoldenClient2017Test数据库\n切换数据库将会重新登录");
-        }else if(dbStr.equals("Testfor...Company")){
-            tipTv.setText("当前所在数据库：TestFor...Company数据库\n切换数据库将会重新登录");
+        for (int i = 0; i < 4; i++){
+            String value = values[i];
+            if (value.equals(dbStr)){
+                tipTv.setText("当前所在数据库："+datas[i]+"\n切换数据库将会重新登录");
+                break;
+            }
         }
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -71,9 +77,13 @@ public class ChangeHostActivity extends NetWorkActivity {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
                                 //删库，进入重新登录界面
-                                which = 0;
-                                Object param = null;
-                                sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+                                if (isLogin){
+                                    loginOut(LOGINOUT_HD);
+                                }else{
+                                    switchDBByIndex(0);
+
+                                }
+
                             }
                         });
                         dialog.show();
@@ -85,9 +95,12 @@ public class ChangeHostActivity extends NetWorkActivity {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
                                 //删库，进入重新登录界面
-                                which = 1;
-                                Object param = null;
-                                sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+                                if (isLogin){
+                                    loginOut(LOGINOUT_LBZ);
+                                }else{
+                                    switchDBByIndex(1);
+                                }
+
                             }
                         });
                         dialog.show();
@@ -98,9 +111,11 @@ public class ChangeHostActivity extends NetWorkActivity {
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
-                                which = 2;
-                                Object param = null;
-                                sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+                                if (isLogin){
+                                    loginOut(LOGINOUT_Golden);
+                                }else{
+                                    switchDBByIndex(2);
+                                }
                             }
                         });
                         dialog.show();
@@ -112,9 +127,12 @@ public class ChangeHostActivity extends NetWorkActivity {
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
-                                which = 3;
-                                Object param = null;
-                                sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+                                if (isLogin){
+                                    loginOut(LOGINOUT_Test);
+                                }else{
+                                    switchDBByIndex(3);
+                                }
+
                             }
                         });
                         dialog.show();
@@ -124,6 +142,18 @@ public class ChangeHostActivity extends NetWorkActivity {
             }
         });
     }
+
+    private void switchDBByIndex(int i) {
+        ProductBasicUtils.clearCache(mContext);
+        SPUtils.put(mContext,"X-Odoo-Db",values[i]);
+        gotoLogin();
+    }
+
+    private void loginOut(int type) {
+        Object param = null;
+        sendConnection("/gongfu/logout",param,type,true,null);
+    }
+
     @OnClick(R.id.title_iv_left)
     public void btnClick(View view){
         switch(view.getId()){
@@ -139,23 +169,27 @@ public class ChangeHostActivity extends NetWorkActivity {
         //退出登录
         EventBus.getDefault().post(new UserLogoutEvent());
         switch (where){
-            case REQUEST_LOGINOUT:
-                if (which == 0){
-                    SPUtils.put(mContext,"X-Odoo-Db","DemoforHD20170516");
-                }else if(which == 1){
-                    SPUtils.put(mContext,"X-Odoo-Db","LBZ20170607");
-                }else if(which == 2){
-                    SPUtils.put(mContext,"X-Odoo-Db","GoldenClient2017Test");
-                }else if (which == 3){
-                    SPUtils.put(mContext,"X-Odoo-Db","Testfor...Company");
-                }
-                ProductBasicUtils.clearCache(mContext);
-                Intent intent  = new Intent(mContext, LoginActivity.class);
-                startActivity(intent);
-                finish();
+            case LOGINOUT_HD:
+                switchDBByIndex(0);
                 break;
+            case LOGINOUT_LBZ:
+                switchDBByIndex(1);
+                break;
+            case LOGINOUT_Golden:
+                switchDBByIndex(2);
+                break;
+            case LOGINOUT_Test:
+                switchDBByIndex(3);
+                break;
+
         }
         
+    }
+
+    private void gotoLogin() {
+        Intent intent  = new Intent(mContext, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
