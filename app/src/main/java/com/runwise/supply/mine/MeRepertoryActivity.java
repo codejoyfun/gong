@@ -9,7 +9,6 @@ import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseFragment;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
-import com.runwise.supply.business.DealerSearchActivity;
 
 /**
  * 库存

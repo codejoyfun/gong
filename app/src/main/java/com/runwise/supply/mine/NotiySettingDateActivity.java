@@ -31,7 +31,6 @@ import com.kids.commonframe.base.view.widget.WheelView;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
-import com.runwise.supply.business.CarSettingFragmentContainer;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.index.entity.CarImage;
 import com.runwise.supply.mine.entity.CollectCar;
@@ -211,10 +210,6 @@ public class NotiySettingDateActivity extends NetWorkActivity implements Adapter
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CollectCarInfo bean = (CollectCarInfo)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(this,CarSettingFragmentContainer.class);
-        intent.putExtra("carid",bean.getCar_id());
-        startActivity(intent);
     }
 
     private class DataAdapter extends AbstractWheelTextAdapter {

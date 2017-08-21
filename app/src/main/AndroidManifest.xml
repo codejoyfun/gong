@@ -262,31 +262,6 @@
             <!-- </intent-filter> -->
         </activity>
         <activity
-            android:name=".business.DealerSearchActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".business.DealerMapActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme" />
-        <activity
-            android:name=".index.MoreCarListActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".business.DealerDetainActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme" />
-        <activity
-            android:name=".business.CarSeriesActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme" />
-        <activity
             android:name=".LauncherActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait">
@@ -297,10 +272,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".business.SignActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape" />
-        <activity
             android:name=".mine.MsgDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
@@ -308,18 +279,6 @@
             android:name=".NavigationActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".business.CarSettingFragmentContainer"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".business.SelectDealerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme" />
         <activity
             android:name=".SchemeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -392,10 +351,6 @@
         android:name=".mine.CheckActivity"
         android:configChanges="keyboardHidden|orientation|screenSize"
         android:screenOrientation="portrait" />
-        <activity
-            android:name=".mine.PriceListFragment"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".mine.AccountsListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

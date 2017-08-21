@@ -26,8 +26,6 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
-import com.runwise.supply.business.CarSettingFragmentContainer;
-import com.runwise.supply.business.SelectDealerActivity;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.index.entity.CarImage;
 import com.runwise.supply.index.entity.CarPeriod;
@@ -161,10 +159,7 @@ public class NotiySettingActivity extends NetWorkActivity implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CollectCarInfo bean = (CollectCarInfo)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(this,CarSettingFragmentContainer.class);
-        intent.putExtra("carid",bean.getCar_id());
-        startActivity(intent);
+
     }
     @Override
     protected void onDestroy() {

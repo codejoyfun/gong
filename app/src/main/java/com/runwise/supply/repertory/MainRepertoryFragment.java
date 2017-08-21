@@ -1,4 +1,4 @@
-package com.runwise.supply.business;
+package com.runwise.supply.repertory;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -63,7 +63,6 @@ public class MainRepertoryFragment extends NetWorkFragment {
     }
     @OnClick(R.id.left_layout)
     public void leftClick(View view){
-        startActivity(new Intent(getContext(),DealerSearchActivity.class));
     }
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
