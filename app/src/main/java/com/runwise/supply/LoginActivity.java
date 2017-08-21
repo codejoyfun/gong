@@ -236,6 +236,7 @@ public class  LoginActivity extends NetWorkActivity {
 					startActivity(intent);
 				}
 				else {
+					SPUtils.setLogin(mContext,true);
 					if (targerIntent != null) {
 						startActivity(targerIntent);
 					}

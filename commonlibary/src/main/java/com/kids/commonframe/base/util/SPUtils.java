@@ -290,13 +290,16 @@ public class SPUtils {
     }
 
     public static boolean isLogin(Context context) {
-        if(TextUtils.isEmpty((String)SPUtils.get(context,"sign",""))) {
-            return false;
-        }
-        return true;
+        return (boolean)SPUtils.get(context,"mLogin",false);
     }
+
+    public static void setLogin(Context context,boolean isLogin){
+        SPUtils.put(context,"mLogin",isLogin);
+    }
+
     public static void loginOut (Context context) {
         SPUtils.put(context,"sign","");
+        SPUtils.put(context,"mLogin",false);
         SPUtils.put(context,"userInfo","");
     }
 

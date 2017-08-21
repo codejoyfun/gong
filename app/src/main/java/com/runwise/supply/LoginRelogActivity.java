@@ -17,6 +17,7 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CheckUtil;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -117,6 +118,7 @@ public class LoginRelogActivity extends NetWorkActivity {
 			case REQUEST_USERINFO:
 				UserInfo userInfo = (UserInfo)result.getResult().getData();
 				GlobalApplication.getInstance().saveUserInfo(userInfo);
+				SPUtils.setLogin(mContext,true);
 				ToastUtil.show(mContext,"登录成功");
 				EventBus.getDefault().post(new UserLoginEvent());
 				this.finish();

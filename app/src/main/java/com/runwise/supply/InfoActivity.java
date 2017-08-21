@@ -9,6 +9,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
+import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.mine.CheckActivity;
@@ -127,6 +128,7 @@ public class InfoActivity extends BaseActivity {
     public void doFinish(View view) {
         switch (view.getId()) {
             case R.id.nextBtn:
+                SPUtils.setLogin(mContext,true);
                 if (targerIntent != null) {
                     startActivity(targerIntent);
                 }
