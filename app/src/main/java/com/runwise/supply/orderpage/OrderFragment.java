@@ -30,6 +30,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,6 +158,8 @@ public class OrderFragment extends NetWorkFragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 sureBtn.setEnabled(s.length() > 0);
+                float alpha = s.length() > 0 ? 1.0F : 0.4F;
+                sureBtn.setAlpha(alpha);
             }
 
             @Override
@@ -179,7 +182,8 @@ public class OrderFragment extends NetWorkFragment {
                 BaseEntity.ResultBean response = result.getResult();
                 LastBuyResponse lbr = (LastBuyResponse) response.getData();
                 double amount = lbr.getAmout();
-                lastBuyTv.setText("上次采购额 ¥"+amount);
+                DecimalFormat df = new DecimalFormat("#.#");
+                lastBuyTv.setText("上次采购额 ¥"+df.format(amount));
                 break;
         }
     }
