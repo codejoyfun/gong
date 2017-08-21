@@ -190,11 +190,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 updateDashBoard(dbResponse);
                 break;
             case CANCEL:
-                BaseEntity.ResultBean resultBean3= result.getResult();
-                if("A0006".equals(resultBean3.getState())){
-                    ToastUtil.show(mContext,"取消成功");
-                    requestReturnList();
-                }
+                ToastUtil.show(mContext,"取消成功");
+                requestReturnList();
                 break;
             case FROMRETURN:
                 BaseEntity.ResultBean resultBean4= result.getResult();
@@ -207,23 +204,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 sendConnection("/gongfu/v2/order/undone_orders/",request,FROMORDER,false, OrderResponse.class);
                 break;
         }
-    }
-
-    private void updateDashBoard(DashBoardResponse dbResponse) {
-        DecimalFormat df   = new DecimalFormat("#.##");
-        lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
-        int adventNum = dbResponse.getAdventNum();
-        int maturityNum = dbResponse.getMaturityNum();
-        double adventValue = dbResponse.getAdventValue();
-        double maturityValue = dbResponse.getMaturityValue();
-        lastMonthBuy.setText("¥"+df.format(adventValue));
-        unPayAccount.setText("¥"+df.format(maturityValue));
-        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
-        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        lqCountTv.setText(ssLq);
-        SpannableString ssDq = new SpannableString("到期食材"+maturityNum+"件");
-        ssDq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(maturityNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        dqCountTv.setText(ssDq);
     }
 
     @Override
@@ -436,5 +416,21 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             mTransaction.commit();
         }
 
+    }
+    private void updateDashBoard(DashBoardResponse dbResponse) {
+        DecimalFormat df   = new DecimalFormat("#.##");
+        lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
+        int adventNum = dbResponse.getAdventNum();
+        int maturityNum = dbResponse.getMaturityNum();
+        double adventValue = dbResponse.getAdventValue();
+        double maturityValue = dbResponse.getMaturityValue();
+        lastMonthBuy.setText("¥"+df.format(adventValue));
+        unPayAccount.setText("¥"+df.format(maturityValue));
+        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
+        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        lqCountTv.setText(ssLq);
+        SpannableString ssDq = new SpannableString("到期食材"+maturityNum+"件");
+        ssDq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(maturityNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        dqCountTv.setText(ssDq);
     }
 }
