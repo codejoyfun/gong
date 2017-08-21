@@ -352,8 +352,10 @@ public class NetWorkHelper<T extends BaseEntity> {
 			Map<String, String> responseHeaders = response.headers;
 			String rawCookies = responseHeaders.get("Set-Cookie");
 			if(targerClass == LoginData.class || targerClass == ReLoginData.class) {
-				LogUtils.e("登陆存sessionid----------------" + rawCookies.substring(0, rawCookies.indexOf(";")));
-				SPUtils.put(context,"sign",rawCookies.substring(0, rawCookies.indexOf(";")));
+				if(resultObj.getResult() != null && "A0006".equals(resultObj.getResult().getState())) {
+					LogUtils.e("登陆存sessionid----------------" + rawCookies.substring(0, rawCookies.indexOf(";")));
+					SPUtils.put(context, "sign", rawCookies.substring(0, rawCookies.indexOf(";")));
+				}
 			}
 			return Response.success(resultObj, HttpHeaderParser.parseCacheHeaders(response));
 		}
