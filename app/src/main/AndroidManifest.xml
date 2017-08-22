@@ -148,7 +148,7 @@
         <service
             android:name="cn.jpush.android.service.DownloadService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <!-- Required SDK核心功能 -->
         <receiver android:name="cn.jpush.android.service.AlarmReceiver" />
@@ -175,7 +175,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:taskAffinity=""
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan" />
         <!-- vitamio 的配置信息 -->
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"
@@ -193,12 +193,11 @@
             android:name=".mine.AboutActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"/>
+            android:theme="@style/ImageTranslucentTheme" />
         <activity
             android:name=".mine.ReceiveMsgActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -298,18 +297,17 @@
             android:name=".firstpage.PageDeatailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".orderpage.OneKeyOrderActivity"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".orderpage.OneKeyOrderActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
-            />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".orderpage.ProductActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden"/>
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity
             android:name=".mine.UserGuidActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -338,19 +336,19 @@
             android:name=".orderpage.SelpHelpOrderActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".mine.MeRepertoryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
-        <activity android:name=".mine.OrderActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            />
         <activity
-        android:name=".mine.CheckActivity"
-        android:configChanges="keyboardHidden|orientation|screenSize"
-        android:screenOrientation="portrait" />
+            android:name=".mine.OrderActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".mine.CheckActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".mine.AccountsListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -359,103 +357,99 @@
             android:name=".mine.ReturnActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
-        <activity android:name=".firstpage.OrderDetailActivity"
+        <activity
+            android:name=".firstpage.OrderDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".firstpage.OrderStateActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".firstpage.ReceiveActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".firstpage.OrderStateActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".mine.AccountsDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".mine.PriceActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".message.MessageDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".firstpage.ReceiveActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".message.SystemMsgDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".InfoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".repertory.EditRepertoryFinishActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginTipActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginRelogActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".repertory.EditRepertoryListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".repertory.EditRepertoryAddActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".firstpage.ReceiveSuccessActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            android:windowSoftInputMode="adjustPan"
-            />
-
-        <activity android:name=".mine.AccountsDetailActivity"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".firstpage.EvaluateActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            />
-        <activity android:name=".mine.PriceActivity"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".firstpage.ReturnActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            />
-        <activity android:name=".message.MessageDetailActivity"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".firstpage.UploadPayedPicActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
-            />
-
-        <activity android:name=".message.SystemMsgDetailActivity"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".firstpage.ReturnDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            />
-        <activity android:name=".InfoActivity"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".mine.ChangeHostActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            />
-
-        <activity android:name=".repertory.EditRepertoryFinishActivity"
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity
+            android:name=".firstpage.OrderModifyActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            />
-        <activity android:name=".LoginTipActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".LoginRelogActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            />
-
-        <activity android:name=".repertory.EditRepertoryListActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".repertory.EditRepertoryAddActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".firstpage.ReceiveSuccessActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".firstpage.EvaluateActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".firstpage.ReturnActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".firstpage.UploadPayedPicActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".firstpage.ReturnDetailActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".mine.ChangeHostActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
-            />
-        <activity android:name=".firstpage.OrderModifyActivity"
-        android:configChanges="keyboardHidden|orientation|screenSize"
-        android:screenOrientation="portrait"
-        android:theme="@style/ImageTranslucentTheme"
-        />
-
+            android:theme="@style/ImageTranslucentTheme" />
+        <activity android:name=".ProcurementActivity"></activity>
     </application>
 
 </manifest>

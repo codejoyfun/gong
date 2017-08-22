@@ -24,6 +24,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
+import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
@@ -148,7 +149,7 @@ public class MineFragment extends NetWorkFragment {
 
     }
     @OnClick({R.id.settingIcon,R.id.cellIcon,R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
-            R.id.itemLayout_5,R.id.itemLayout_6,R.id.itemLayout_7,R.id.itemLayout_8,R.id.itemLayout_9})
+            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -211,30 +212,15 @@ public class MineFragment extends NetWorkFragment {
                     startActivity(intent);
                 }
                 break;
-            //昨日库存
-            case R.id.itemLayout_5:
-                intent = new Intent(mContext, MeRepertoryActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
-                    startActivity(intent);
-                }
-//                ShareUtil.showShare(mContext,"分享给朋友","分享内容","http://ofwp5weyr.bkt.clouddn.com/71aafd87-5c6f-4629-9dce-9347e14a19a3.png","http://www.baidu.com");
-                break;
-            //上月末库存
-            case R.id.itemLayout_6:
-                intent = new Intent(mContext, MeRepertoryActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
-                    startActivity(intent);
-                }
-                break;
             //盘点记录
-            case R.id.itemLayout_7:
+            case R.id.rl_stocktaking_record:
                 intent = new Intent(mContext, CheckActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     startActivity(intent);
                 }
                 break;
             //价目表
-            case R.id.itemLayout_8:
+            case R.id.rl_price_list:
                 intent = new Intent(mContext, PriceActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     if(GlobalApplication.getInstance().getCanSeePrice()) {
@@ -250,7 +236,7 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             //对账单
-            case R.id.itemLayout_9:
+            case R.id.rl_bill:
                 intent = new Intent(mContext, AccountsListActivity.class);
                 if (UserUtils.checkLogin(intent,mContext)) {
                     if(GlobalApplication.getInstance().getCanSeePrice()) {
@@ -264,6 +250,10 @@ public class MineFragment extends NetWorkFragment {
                         dialog.show();
                     }
                 }
+                break;
+            case R.id.rl_procurement:
+                intent = new Intent(mContext, ProcurementActivity.class);
+                startActivity(intent);
                 break;
         }
 

@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.vov.vitamio.utils.Log;
+
 /**
  * 网络请求帮助类
  * @param <T>
@@ -318,13 +320,13 @@ public class NetWorkHelper<T extends BaseEntity> {
 			if(parsed.length() > 4000) {
 				for(int i=0;i<parsed.length();i+=4000){
 					if(i+4000<parsed.length())
-						LogUtils.e(parsed.substring(i, i+4000));
+						Log.i("response", parsed.substring(i, i + 4000));
 					else
-						LogUtils.e(parsed.substring(i, parsed.length()));
+						Log.i("response", parsed.substring(i, parsed.length()));
 				}
 			}
 			else {
-				LogUtils.e(parsed);
+				Log.i("response", parsed);
 			}
 			T resultObj = null;
 			if ( newWorkCallBack != null ) {
