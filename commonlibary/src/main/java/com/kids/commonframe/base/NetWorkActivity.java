@@ -13,7 +13,7 @@ import java.util.Map;
  * 带有网络操作的activity
  */
 public abstract class NetWorkActivity extends BaseActivity implements NetWorkHelper.NetWorkCallBack<BaseEntity>{
-	private NetWorkHelper<BaseEntity> netWorkHelper;
+	protected NetWorkHelper<BaseEntity> netWorkHelper;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
