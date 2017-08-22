@@ -48,6 +48,8 @@ import com.runwise.supply.message.entity.MsgListResult;
 import com.runwise.supply.message.entity.MsgSendRequest;
 import com.runwise.supply.tools.UserUtils;
 
+import org.w3c.dom.Text;
+
 /**
  * 聊天信息
  */
@@ -217,9 +219,9 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                     break;
                 case 1:
                     MessageResult.OrderBean.WaybillBean wayBill = orderBean.getWaybill();
-                    if(wayBill != null && wayBill.getId() != 0) {
+                    if(wayBill != null && !TextUtils.isEmpty(wayBill.getId())) {
                         int oId = orderBean.getId();
-                        int bId = wayBill.getId();
+                        String bId = wayBill.getId();
                         request.setOrder_id(oId);
                         request.setWaybill_id(bId);
                         sendConnection("/gongfu/message/waybill/"+bId+"/" + oId + "/list", request, where, showDialog, MsgListResult.class);
@@ -318,8 +320,8 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                 break;
             case 1:
                 MessageResult.OrderBean.WaybillBean wayBill = orderBean.getWaybill();
-                if(wayBill != null && wayBill.getId() != 0) {
-                    int bId = wayBill.getId();
+                if(wayBill != null && !TextUtils.isEmpty(wayBill.getId())) {
+                    String bId = wayBill.getId();
                     msgSendRequest.setWaybill_id(bId);
 //                    http://develop.runwise.cn/gongfu/message/waybill/132/293/write
                     sendConnection("/gongfu/message/waybill/" + bId + "/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);

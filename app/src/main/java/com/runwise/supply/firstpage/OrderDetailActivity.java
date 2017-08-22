@@ -394,7 +394,6 @@ public class OrderDetailActivity extends NetWorkActivity{
             if (bean.getState().equals("draft")){
                 state = "订单已提交";
                 tip = "订单号："+bean.getName();
-                rightBtn2.setVisibility(View.INVISIBLE);
             }else if(bean.getState().equals("sale")){
                 state = "订单已确认";
                 tip = "正在为您挑拣商品";
@@ -402,7 +401,6 @@ public class OrderDetailActivity extends NetWorkActivity{
             }else if(bean.getState().equals("peisong")){
                 state = "订单已发货";
                 tip = "预计发达时间："+bean.getEstimatedTime();
-                rightBtn2.setVisibility(View.GONE);
             }else if (bean.getState().equals("done")){
                 state = "订单已收货";
                 String recdiveName = bean.getReceiveUserName();
@@ -412,13 +410,10 @@ public class OrderDetailActivity extends NetWorkActivity{
                     tip = "已退货";
                     state = "订单已退货";
                 }
-                if (TextUtils.isEmpty(bean.getAppraisalUserName())){
-                    rightBtn2.setVisibility(View.INVISIBLE);
-                }else{
+                if (!TextUtils.isEmpty(bean.getAppraisalUserName())){
                     //已评价
                     bottom_bar.setVisibility(View.GONE);
                 }
-
 
             }else if(bean.getState().equals("rated")){
                 state = "订单已评价";

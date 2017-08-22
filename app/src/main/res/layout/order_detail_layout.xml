@@ -27,6 +27,7 @@
             android:text="售后订单"
             android:textSize="14sp"
             android:textColor="#333333"
+            android:visibility="invisible"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/rightBtn"
             android:background="@drawable/firstpage_do_circle"/>
