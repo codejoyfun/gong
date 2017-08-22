@@ -407,7 +407,7 @@ public class OrderResult{
              */
 
             private DeliverUserBean deliverUser;
-            private int waybillID;
+            private String waybillID;
             private String name;
             private DeliverVehicleBean deliverVehicle;
 
@@ -419,11 +419,11 @@ public class OrderResult{
                 this.deliverUser = deliverUser;
             }
 
-            public int getWaybillID() {
+            public String getWaybillID() {
                 return waybillID;
             }
 
-            public void setWaybillID(int waybillID) {
+            public void setWaybillID(String waybillID) {
                 this.waybillID = waybillID;
             }
 

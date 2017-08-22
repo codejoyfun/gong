@@ -504,7 +504,7 @@ public class OrderResponse {
              */
 
             private DeliverUserBean deliverUser;
-            private int waybillID;
+            private String waybillID;
             private String name;
             private DeliverVehicleBean deliverVehicle;
 
@@ -513,7 +513,7 @@ public class OrderResponse {
 
             protected WaybillBean(Parcel in) {
                 deliverUser = in.readParcelable(DeliverUserBean.class.getClassLoader());
-                waybillID = in.readInt();
+                waybillID = in.readString();
                 name = in.readString();
                 deliverVehicle = in.readParcelable(DeliverVehicleBean.class.getClassLoader());
             }
@@ -538,11 +538,11 @@ public class OrderResponse {
                 this.deliverUser = deliverUser;
             }
 
-            public int getWaybillID() {
+            public String getWaybillID() {
                 return waybillID;
             }
 
-            public void setWaybillID(int waybillID) {
+            public void setWaybillID(String waybillID) {
                 this.waybillID = waybillID;
             }
 
@@ -570,7 +570,7 @@ public class OrderResponse {
             @Override
             public void writeToParcel(Parcel dest, int flags) {
                 dest.writeParcelable(deliverUser,flags);
-                dest.writeInt(waybillID);
+                dest.writeString(waybillID);
                 dest.writeString(name);
                 dest.writeParcelable(deliverVehicle,flags);
             }

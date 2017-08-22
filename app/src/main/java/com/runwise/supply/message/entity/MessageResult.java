@@ -220,13 +220,13 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
              * id : 9
              */
 
-            private int id;
+            private String id;
 
-            public int getId() {
+            public String getId() {
                 return id;
             }
 
-            public void setId(int id) {
+            public void setId(String id) {
                 this.id = id;
             }
         }

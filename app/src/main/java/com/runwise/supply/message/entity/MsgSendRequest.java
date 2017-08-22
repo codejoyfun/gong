@@ -7,13 +7,13 @@ package com.runwise.supply.message.entity;
 public class MsgSendRequest {
     private String comment;
     private int order_id;
-    private int waybill_id;
+    private String waybill_id;
 
-    public int getWaybill_id() {
+    public String getWaybill_id() {
         return waybill_id;
     }
 
-    public void setWaybill_id(int waybill_id) {
+    public void setWaybill_id(String waybill_id) {
         this.waybill_id = waybill_id;
     }
 
