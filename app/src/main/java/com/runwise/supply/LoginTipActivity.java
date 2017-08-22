@@ -64,9 +64,7 @@ public class LoginTipActivity extends BaseActivity {
                         intent.putExtra("mobel",mobel);
                         intent.putExtra("username",username);
                         intent.putExtra("pwd",pwd);
-                        if (UserUtils.checkLogin(intent,LoginTipActivity.this)) {
-                            startActivity(intent);
-                        }
+                        startActivity(intent);
                         finish();
                     }
                 });

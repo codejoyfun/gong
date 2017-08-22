@@ -354,8 +354,10 @@ public class NetWorkHelper<T extends BaseEntity> {
 			Map<String, String> responseHeaders = response.headers;
 			String rawCookies = responseHeaders.get("Set-Cookie");
 			if(targerClass == LoginData.class || targerClass == ReLoginData.class) {
-				LogUtils.e("登陆存sessionid----------------" + rawCookies.substring(0, rawCookies.indexOf(";")));
-				SPUtils.put(context,"sign",rawCookies.substring(0, rawCookies.indexOf(";")));
+				if(resultObj.getResult() != null && "A0006".equals(resultObj.getResult().getState())) {
+					LogUtils.e("登陆存sessionid----------------" + rawCookies.substring(0, rawCookies.indexOf(";")));
+					SPUtils.put(context, "sign", rawCookies.substring(0, rawCookies.indexOf(";")));
+				}
 			}
 			return Response.success(resultObj, HttpHeaderParser.parseCacheHeaders(response));
 		}
@@ -413,7 +415,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 			headerMap.put("Cookie", userToken);
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
-			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
+//			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
+			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","GoldenClient2017Test"));
 
 			LogUtils.e("Headers:" + headerMap.toString());
 			return headerMap;

@@ -41,7 +41,7 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.tipTv)
     private TextView tipTv;
     private ArrayAdapter<String> adapter;
-    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","TestFor...Companyo数据库"};
+    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","TestFor...Company数据库"};
     private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","Testfor...Company"};
     private int which;
     private boolean isLogin;
@@ -59,9 +59,9 @@ public class ChangeHostActivity extends NetWorkActivity {
         ToastUtil.show(mContext,"请选择你要切换的数据库");
         String dbStr = (String)SPUtils.get(mContext,"X-Odoo-Db","LBZ20170607");
         for (int i = 0; i < 4; i++){
-            String value = datas[i];
+            String value = values[i];
             if (value.equals(dbStr)){
-                tipTv.setText("当前所在数据库："+values[i]+"\n切换数据库将会重新登录");
+                tipTv.setText("当前所在数据库："+datas[i]+"\n切换数据库将会重新登录");
                 break;
             }
         }
