@@ -446,7 +446,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         public int getItemCount() {
             return datas.size();
         }
-        //含有网络图片的张数
+        //含有本地图片的张数
         public int getLocalPic(){
             int localCount = 0;
             for (String path : datas){
@@ -470,35 +470,9 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         }
     }
 
-    /**
-     * 进入相册
-     */
-    private void startAlbum() {
-        try {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
-            intent.setType("image/*");
-            startActivityForResult(intent, RET_GALLERY);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-            try {
-                Intent intent = new Intent(Intent.ACTION_PICK, null);
-                intent.setDataAndType(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(intent, RET_GALLERY);
-            } catch (Exception e2) {
-                e.printStackTrace();
-            }
-        }
-    }
 
-    /**
-     * 开启相机
-     */
-    private void startCapture() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, capTempPhotoUrl);
-        startActivityForResult(intent, RET_CAMERA);
-    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -529,7 +503,34 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
             adapter.setDatas(picList);
         }
     }
-
+    /**
+     * 进入相册
+     */
+    private void startAlbum() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+            intent.setType("image/*");
+            startActivityForResult(intent, RET_GALLERY);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+            try {
+                Intent intent = new Intent(Intent.ACTION_PICK, null);
+                intent.setDataAndType(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent, RET_GALLERY);
+            } catch (Exception e2) {
+                e.printStackTrace();
+            }
+        }
+    }
+    /**
+     * 开启相机
+     */
+    private void startCapture() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, capTempPhotoUrl);
+        startActivityForResult(intent, RET_CAMERA);
+    }
     private void startCropActivity(@NonNull Uri uri) {
         String fileName = UUID.randomUUID()+".jpg";
         UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(CommonUtils.getCachePath(mContext), fileName)));
