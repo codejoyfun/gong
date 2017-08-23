@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +32,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
-import com.runwise.supply.firstpage.entity.ReceiveMode;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
-import com.runwise.supply.firstpage.entity.ReceiveResponse;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.socketmobile.capture.Capture;
@@ -427,12 +424,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             mPopWindow.dismiss();
         }else{
             View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
-            mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
+//            mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             titleTv.setText(bottomData.getName());
             if (countMap.containsKey(String.valueOf(bean.getProductId()))){ //如果countMap里面有，则优先用countMap。
                 ReceiveBean rb = countMap.get(String.valueOf(bean.getProductId()));
-                edEt.setText(String.valueOf(rb.getCount()));
-                edEt.setSelection(String.valueOf(rb.getCount()).length());
+//                edEt.setText(String.valueOf(rb.getCount()));
+//                edEt.setSelection(String.valueOf(rb.getCount()).length());
                 unitTv.setText(rb.getUnit());
                 if (rb.getTwoUnitValue() == 0){
                     unitValueTv.setText("");
@@ -441,8 +438,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 }
 
             }else{
-                edEt.setText(bottomData.getCount()+"");
-                edEt.setSelection(String.valueOf(bottomData.getCount()).length());
+//                edEt.setText(bottomData.getCount()+"");
+//                edEt.setSelection(String.valueOf(bottomData.getCount()).length());
                 unitTv.setText(bottomData.getUnit());
 //                unitValueTv.setText(bottomData.getTwoUnitValue()+"");
                 unitValueTv.setText("");
@@ -454,6 +451,17 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }else{
                 twoUnitRL.setVisibility(View.GONE);
             }
+
+            String pId = String.valueOf(bottomData.getProductId());
+            double settleCount = TextUtils.isEmpty(unitValueTv.getText().toString()) ? 0 : Double.valueOf(unitValueTv.getText().toString());
+            bottomData.setCount(bean.getCount());
+            bottomData.setTwoUnitValue(settleCount);    //双单位的值
+            countMap.put(pId,bottomData);
+            mPopWindow.dismiss();
+            //更新进度条
+            updatePbProgress();
+            //更新fragment列表内容
+            EventBus.getDefault().post(new ReceiveProEvent());
         }
 
     }

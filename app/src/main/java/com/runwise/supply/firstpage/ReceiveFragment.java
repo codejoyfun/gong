@@ -1,11 +1,11 @@
 package com.runwise.supply.firstpage;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,11 +19,12 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.qiniu.android.utils.StringUtils;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.orderpage.ProductBasicUtils;;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -32,6 +33,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+;
 
 /**
  * Created by libin on 2017/7/16.
@@ -93,7 +96,7 @@ public class ReceiveFragment extends BaseFragment {
             countMap.clear();
             countMap.putAll(map);
         }
-        adapter.notifyDataSetChanged();
+//        adapter.notifyDataSetChanged();
     }
 
     public class ReceiveAdapter extends IBaseAdapter {
@@ -110,37 +113,37 @@ public class ReceiveFragment extends BaseFragment {
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
                 ViewUtils.inject(viewHolder, convertView);
                 //双人收货模式下，按钮隐藏
-                if (mode == 2) {
-                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
-                } else {
-                    viewHolder.doBtn.setVisibility(View.VISIBLE);
-                }
+//                if (mode == 2) {
+//                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+//                } else {
+//                    viewHolder.doBtn.setVisibility(View.VISIBLE);
+//                }
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ReceiveBean rb = new ReceiveBean();
-                    if (basicBean != null) {
-                        rb.setName(basicBean.getName());
-//                        rb.setCount((int)bean.getProductUomQty());
-                        rb.setCount(0);
-                        rb.setProductId(bean.getProductID());
-                        if (isSettle) {
-                            rb.setTwoUnit(true);
-                            rb.setUnit(basicBean.getSettleUomId());
-                        } else {
-                            rb.setTwoUnit(false);
-                        }
-                        if (callback != null) {
-                            callback.doAction(rb);
-                        }
-                    }
-
-                }
-            });
+//            viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    ReceiveBean rb = new ReceiveBean();
+//                    if (basicBean != null) {
+//                        rb.setName(basicBean.getName());
+////                        rb.setCount((int)bean.getProductUomQty());
+//                        rb.setCount(0);
+//                        rb.setProductId(bean.getProductID());
+//                        if (isSettle) {
+//                            rb.setTwoUnit(true);
+//                            rb.setUnit(basicBean.getSettleUomId());
+//                        } else {
+//                            rb.setTwoUnit(false);
+//                        }
+//                        if (callback != null) {
+//                            callback.doAction(rb);
+//                        }
+//                    }
+//
+//                }
+//            });
             if (basicBean != null) {
                 viewHolder.name.setText(basicBean.getName());
                 if (basicBean.getImage() != null)
@@ -163,6 +166,40 @@ public class ReceiveFragment extends BaseFragment {
 //                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
                     }
                 }
+
+                final ViewHolder finalViewHolder = viewHolder;
+                viewHolder.inputAdd.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                       int num =  Integer.parseInt(finalViewHolder.receivedTv.getText().toString());
+                            finalViewHolder.receivedTv.setText(String.valueOf(num + 1));
+                    }
+                });
+                finalViewHolder.receivedTv.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (StringUtils.isNullOrEmpty(s.toString())){
+                            setReceiveCount(0,basicBean,bean);
+                            return;
+                        }
+                        int editCount = Integer.parseInt(s.toString());
+                        ReceiveBean receiveBean = countMap.get(String.valueOf(bean.getProductID()));
+                        if (receiveBean != null && receiveBean.getCount() == editCount){
+                            return;
+                        }
+                        setReceiveCount(editCount,basicBean,bean);
+                    }
+                });
             }
             //双单位是跟订单相关，所以拿订单里面的字段判断.
             if (isSettle) {
@@ -172,6 +209,25 @@ public class ReceiveFragment extends BaseFragment {
 //                viewHolder.weightTv.setVisibility(View.INVISIBLE);
             }
             return convertView;
+        }
+
+        private void setReceiveCount(int count,ProductBasicList.ListBean basicBean,OrderResponse.ListBean.LinesBean bean){
+            ReceiveBean rb = new ReceiveBean();
+                    if (basicBean != null) {
+                        rb.setName(basicBean.getName());
+//                        rb.setCount((int)bean.getProductUomQty());
+                        rb.setCount(count);
+                        rb.setProductId(bean.getProductID());
+                        if (isSettle) {
+                            rb.setTwoUnit(true);
+                            rb.setUnit(basicBean.getSettleUomId());
+                        } else {
+                            rb.setTwoUnit(false);
+                        }
+                        if (callback != null) {
+                            callback.doAction(rb);
+                        }
+                    }
         }
 
         class ViewHolder {
@@ -184,11 +240,11 @@ public class ReceiveFragment extends BaseFragment {
             @ViewInject(R.id.countTv)
             TextView countTv;
             @ViewInject(R.id.receivedTv)
-            TextView receivedTv;
-            @ViewInject(R.id.doBtn)
-            Button doBtn;
-//            @ViewInject(R.id.input_add)
-//            ImageButton inputAdd;
+            EditText receivedTv;
+//            @ViewInject(R.id.doBtn)
+//            Button doBtn;
+            @ViewInject(R.id.input_add)
+            ImageButton inputAdd;
 
 
         }

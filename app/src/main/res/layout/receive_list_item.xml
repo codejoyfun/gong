@@ -24,13 +24,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible">
-        <TextView
+        <EditText
             android:id="@+id/receivedTv"
-            android:layout_width="wrap_content"
+            android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:layout_gravity="center_vertical"
             android:textColor="#343434"
+            android:inputType="number"
+            android:background="@null"
+            android:gravity="right|center_vertical"
+            android:maxLength="9"
             android:text="0"
             />
         <TextView
@@ -48,9 +52,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/input_add"
-            android:layout_marginLeft="10dp"
+            android:src="@drawable/btn_add"
             android:background="@null"
+            android:layout_marginLeft="10dp"
             />
     </LinearLayout>
     <TextView
@@ -83,8 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#E5E5E5"
-
-        android:layout_below="@id/doBtn"
+        android:layout_below="@id/productImage"
         android:layout_marginTop="15dp"
         />
 </RelativeLayout>
