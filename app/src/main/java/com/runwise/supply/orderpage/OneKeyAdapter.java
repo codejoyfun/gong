@@ -25,6 +25,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,8 +158,9 @@ public class OneKeyAdapter extends IBaseAdapter {
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
             sb.append("  ").append(basicBean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            DecimalFormat df = new DecimalFormat("#.##");
             if (canSeePrice){
-                sb.append("  ").append(basicBean.getPrice()).append("元/").append(basicBean.getUom());
+                sb.append("  ").append(df.format(basicBean.getPrice())).append("元/").append(basicBean.getUom());
             }
             viewHolder.contentTv.setText(sb.toString());
         }

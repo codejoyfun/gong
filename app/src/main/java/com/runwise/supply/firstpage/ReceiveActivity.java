@@ -114,7 +114,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         lbean = bundle.getParcelable("order");
         isSettle = lbean.isIsTwoUnit();
         mode = bundle.getInt("mode");
-        if(mode == 1 || mode == 2){
+        if(mode == 1){
             setTitleText(true,"点货");
         }else{
             setTitleText(true,"收货");
@@ -249,25 +249,21 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
-                dialog.setTitle("提示");
-                if(mode == 1 || mode == 2){
+                if (mode == 1){
+                    dialog.setTitle("提示");
                     dialog.setMessage("确认取消点货?");
-                }else{
-                    dialog.setMessage("确认取消收货?");
-                }
-                dialog.setMessageGravity();
-                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                       if (mode == 1){
-                           startOrEndTally(false);
-                       }else{
-                           finish();
-                       }
+                    dialog.setMessageGravity();
+                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            startOrEndTally(false);
 
-                    }
-                });
-                dialog.show();
+                        }
+                    });
+                    dialog.show();
+                }else{
+                    finish();
+                }
                 break;
             case R.id.title_tv_rigth:
                 //如果每样商品数量都匹配，则提示:确认收货与订单数量一致?

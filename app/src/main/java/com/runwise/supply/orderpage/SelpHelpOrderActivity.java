@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -204,6 +205,10 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }else{
             //完成模式，清空上次选择的
             adapter.clearSelect();
+            InputMethodManager imm = (InputMethodManager) getSystemService(mContext.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+            }
             this.setTitleRightText(true,"编辑");
             ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
             ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
@@ -447,6 +452,7 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     }
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+
 
     }
     private int getResIdByDrawableName(String name){

@@ -35,6 +35,7 @@ import com.runwise.supply.orderpage.entity.ProductData;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -249,15 +250,16 @@ public class ProductListFragment extends NetWorkFragment {
                 viewHolder.name.setText(basicBean.getName());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
                 sb.append("  ").append(basicBean.getUnit());
+                DecimalFormat df = new DecimalFormat("#.##");
                 if (canSeePrice){
                     if (bean.isIsTwoUnit()){
                         sb.append("  ¥")
-                                .append(bean.getSettlePrice())
+                                .append(df.format(Double.valueOf(bean.getSettlePrice())))
                                 .append("元/")
                                 .append(bean.getSettleUomId());
                     }else{
                         sb.append("  ¥")
-                                .append(bean.getPrice())
+                                .append(df.format(Double.valueOf(bean.getPrice())))
                                 .append("元/")
                                 .append(bean.getUom());
                     }

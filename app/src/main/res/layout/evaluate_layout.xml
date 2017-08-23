@@ -90,9 +90,11 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/cbLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:paddingBottom="15dp">
