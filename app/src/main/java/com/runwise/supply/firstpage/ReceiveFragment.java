@@ -187,8 +187,8 @@ public class ReceiveFragment extends BaseFragment {
             TextView receivedTv;
             @ViewInject(R.id.doBtn)
             Button doBtn;
-            @ViewInject(R.id.input_add)
-            ImageButton inputAdd;
+//            @ViewInject(R.id.input_add)
+//            ImageButton inputAdd;
 
 
         }
