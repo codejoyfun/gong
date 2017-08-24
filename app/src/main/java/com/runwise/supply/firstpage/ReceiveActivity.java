@@ -528,11 +528,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
 
             //双人点货
-            if (isSettle){
-                twoUnitRL.setVisibility(View.VISIBLE);
-            }else{
-                twoUnitRL.setVisibility(View.GONE);
-            }
+//            if (isSettle){
+//                twoUnitRL.setVisibility(View.VISIBLE);
+//            }else{
+//                twoUnitRL.setVisibility(View.GONE);
+//            }
         }
 
     }

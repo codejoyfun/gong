@@ -14,28 +14,19 @@
         android:paddingLeft="15dp"
         android:paddingTop="15dp">
 
-        <ImageView
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/icon_carid" />
 
         <TextView
             android:id="@+id/carNumTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:paddingLeft="7dp"
             android:text="晋A12323423"
+            android:drawableLeft="@drawable/icon_carid"
+            android:drawablePadding="7dp"
             android:textColor="#2A2A2A"
+            android:layout_marginRight="19dp"
             android:textSize="14sp" />
 
-        <ImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="19dp"
-            android:src="@drawable/icon_deliveryman" />
 
         <TextView
             android:id="@+id/senderTv"
@@ -44,8 +35,9 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:text="刘海民"
-            android:paddingLeft="7dp"
+            android:drawablePadding="7dp"
             android:textColor="#666666"
+            android:drawableLeft="@drawable/icon_deliveryman"
             android:textSize="14sp" />
 
         <ImageButton

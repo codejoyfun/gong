@@ -1,24 +1,20 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -28,7 +24,6 @@ import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.TimeUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -151,8 +146,10 @@ public class OrderAdapter extends IBaseAdapter {
             }
             if (bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null){
                 viewHolder.senderTv.setText(bean.getWaybill().getDeliverUser().getName());
+                viewHolder.senderTv.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.senderTv.setText("未指派");
+                viewHolder.senderTv.setVisibility(View.GONE);
             }
             viewHolder.callIb.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -203,9 +200,13 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
             if (!TextUtils.isEmpty(bean.getDriveMobile())){
                 viewHolder.carNumTv.setText(bean.getVehicle());
+                viewHolder.carNumTv.setVisibility(View.VISIBLE);
+                viewHolder.callIb.setVisibility(View.VISIBLE);
                 viewHolder.driverLL.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.carNumTv.setText("未指派");
+                viewHolder.carNumTv.setVisibility(View.GONE);
+                viewHolder.callIb.setVisibility(View.GONE);
                 viewHolder.driverLL.setVisibility(View.GONE);
             }
             if (!TextUtils.isEmpty(bean.getDriver())){

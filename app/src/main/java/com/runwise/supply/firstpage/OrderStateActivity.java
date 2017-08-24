@@ -63,7 +63,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             setTitleText(true,"订单状态");
         }
         setTitleLeftIcon(true,R.drawable.nav_back);
-        setTitleRigthIcon(true,R.drawable.nav_contract);
+        setTitleRigthIcon(true,R.drawable.nav_service_message);
         //从上个页面获取数据
         setOrderTracker();
     }

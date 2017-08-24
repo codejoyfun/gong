@@ -68,6 +68,9 @@ public abstract class BaseActivity extends FragmentActivity{
 		dialog = new CustomDialog( mContext );
 //				getWindow().setWindowAnimations(R.style.ActivityAnimation);
 		EventBus.getDefault().register(this);
+//		if (AndroidWorkaround.checkDeviceHasNavigationBar(this)){
+//			AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
+//		}
 	}
 
 	@Override
