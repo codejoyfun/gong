@@ -4,9 +4,6 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.kids.commonframe.base.util.DateFormateUtil;
-import com.lidroid.xutils.util.LogUtils;
-
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * @version 1.0
@@ -198,6 +194,11 @@ public class TimeUtils {
 		} catch (ParseException e) {
 			return date;
 		}
+	}
+
+	public static String getYMD(Date date){
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+			return ft.format(date);
 	}
 	/**
 	 * 计算宝宝年龄

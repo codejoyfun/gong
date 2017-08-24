@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.handmark.pulltorefresh.library.PullToRefreshListView
-        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+
+    <com.runwise.supply.view.swipmenu.SwipeMenuListView
         android:id="@+id/pullListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:listSelector="#0000"
-        ptr:ptrAnimationStyle="flip"
-        android:background="#ffffff"
-        android:divider="@null"
-        />
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#00000000"
+        android:divider="#dadada"
+        android:dividerHeight="1dip"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="false" />
 </LinearLayout>

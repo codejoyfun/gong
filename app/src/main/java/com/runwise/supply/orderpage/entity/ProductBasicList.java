@@ -1,12 +1,9 @@
 package com.runwise.supply.orderpage.entity;
 
 import com.lidroid.xutils.db.annotation.Column;
-import com.lidroid.xutils.db.annotation.Finder;
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.NoAutoIncrement;
-import com.lidroid.xutils.db.annotation.Unique;
-import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
 
 import java.util.List;
 
@@ -61,6 +58,21 @@ public class ProductBasicList {
         @Id
         @NoAutoIncrement
         private int productID;
+
+        public String getTracking() {
+            return tracking;
+        }
+
+        public void setTracking(String tracking) {
+            this.tracking = tracking;
+        }
+
+        @Column
+        private String tracking;
+
+        public static final String TRACKING_TYPE_LOT = "lot";
+        public static final String TRACKING_TYPE_SERIAL = "serial";
+        public static final String TRACKING_TYPE_NONE = "none";
 
         public String getName() {
             return name;

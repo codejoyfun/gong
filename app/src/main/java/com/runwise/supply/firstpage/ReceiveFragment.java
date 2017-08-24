@@ -1,5 +1,7 @@
 package com.runwise.supply.firstpage;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,8 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
@@ -26,6 +26,10 @@ import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.view.swipmenu.SwipeMenu;
+import com.runwise.supply.view.swipmenu.SwipeMenuCreator;
+import com.runwise.supply.view.swipmenu.SwipeMenuItem;
+import com.runwise.supply.view.swipmenu.SwipeMenuListView;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -49,7 +53,7 @@ public class ReceiveFragment extends BaseFragment {
 
     public DataType type;
     @ViewInject(R.id.pullListView)
-    private PullToRefreshListView pullListView;
+    private SwipeMenuListView pullListView;
     private ReceiveAdapter adapter;
     //跟自己类型配对的数据即可。
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
@@ -65,8 +69,33 @@ public class ReceiveFragment extends BaseFragment {
         ReceiveActivity activity = (ReceiveActivity) getActivity();
         adapter.isSettle = activity.isSettle();
 
-        pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
+
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+            @Override
+            public void create(SwipeMenu menu) {
+                SwipeMenuItem openItem = new SwipeMenuItem(getActivity());
+                openItem.setBackground(new ColorDrawable(Color.parseColor("#fec159")));
+                openItem.setWidth(500);
+                openItem.setTitle("确认数量一致");
+                openItem.setTitleSize(18);
+                openItem.setTitleColor(Color.WHITE);
+                menu.addMenuItem(openItem);
+            }
+        };
+        pullListView.setMenuCreator(creator);
+        pullListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) datas.get(position);
+                String pId = String.valueOf(bean.getProductID());
+                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
+                adapter.setReceiveCount((int)bean.getProductUomQty(), basicBean, bean);
+                adapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
         ArrayList<OrderResponse.ListBean.LinesBean> linesList = getArguments().getParcelableArrayList("datas");
         mode = getArguments().getInt("mode");
 
@@ -96,7 +125,9 @@ public class ReceiveFragment extends BaseFragment {
             countMap.clear();
             countMap.putAll(map);
         }
-//        adapter.notifyDataSetChanged();
+        if (event.isNotifyDataSetChange()) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public class ReceiveAdapter extends IBaseAdapter {
@@ -171,8 +202,12 @@ public class ReceiveFragment extends BaseFragment {
                 viewHolder.inputAdd.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       int num =  Integer.parseInt(finalViewHolder.receivedTv.getText().toString());
-                            finalViewHolder.receivedTv.setText(String.valueOf(num + 1));
+                        int num = Integer.parseInt(finalViewHolder.receivedTv.getText().toString());
+                        if (basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+                            setReceiveCount(num, basicBean, bean);
+                            return;
+                        }
+                        finalViewHolder.receivedTv.setText(String.valueOf(num + 1));
                     }
                 });
                 finalViewHolder.receivedTv.addTextChangedListener(new TextWatcher() {
@@ -188,16 +223,16 @@ public class ReceiveFragment extends BaseFragment {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        if (StringUtils.isNullOrEmpty(s.toString())){
-                            setReceiveCount(0,basicBean,bean);
+                        if (StringUtils.isNullOrEmpty(s.toString())) {
+                            setReceiveCount(0, basicBean, bean);
                             return;
                         }
                         int editCount = Integer.parseInt(s.toString());
                         ReceiveBean receiveBean = countMap.get(String.valueOf(bean.getProductID()));
-                        if (receiveBean != null && receiveBean.getCount() == editCount){
+                        if (receiveBean != null && receiveBean.getCount() == editCount) {
                             return;
                         }
-                        setReceiveCount(editCount,basicBean,bean);
+                        setReceiveCount(editCount, basicBean, bean);
                     }
                 });
             }
@@ -211,23 +246,28 @@ public class ReceiveFragment extends BaseFragment {
             return convertView;
         }
 
-        private void setReceiveCount(int count,ProductBasicList.ListBean basicBean,OrderResponse.ListBean.LinesBean bean){
+        private void setReceiveCount(int count, ProductBasicList.ListBean basicBean, OrderResponse.ListBean.LinesBean bean) {
             ReceiveBean rb = new ReceiveBean();
-                    if (basicBean != null) {
-                        rb.setName(basicBean.getName());
+            if (basicBean != null) {
+                rb.setName(basicBean.getName());
+                rb.setTracking(basicBean.getTracking());
 //                        rb.setCount((int)bean.getProductUomQty());
-                        rb.setCount(count);
-                        rb.setProductId(bean.getProductID());
-                        if (isSettle) {
-                            rb.setTwoUnit(true);
-                            rb.setUnit(basicBean.getSettleUomId());
-                        } else {
-                            rb.setTwoUnit(false);
-                        }
-                        if (callback != null) {
-                            callback.doAction(rb);
-                        }
-                    }
+                rb.setCount(count);
+                rb.setProductId(bean.getProductID());
+                rb.setImageBean(basicBean.getImage());
+                rb.setDefaultCode(basicBean.getDefaultCode());
+                rb.setUnit(basicBean.getUnit());
+                if (isSettle) {
+                    rb.setTwoUnit(true);
+                    rb.setUnit(basicBean.getSettleUomId());
+                } else {
+                    rb.setTwoUnit(false);
+                }
+                countMap.put(String.valueOf(bean.getProductID()),rb);
+                if (callback != null) {
+                    callback.doAction(rb);
+                }
+            }
         }
 
         class ViewHolder {
@@ -241,7 +281,7 @@ public class ReceiveFragment extends BaseFragment {
             TextView countTv;
             @ViewInject(R.id.receivedTv)
             EditText receivedTv;
-//            @ViewInject(R.id.doBtn)
+            //            @ViewInject(R.id.doBtn)
 //            Button doBtn;
             @ViewInject(R.id.input_add)
             ImageButton inputAdd;

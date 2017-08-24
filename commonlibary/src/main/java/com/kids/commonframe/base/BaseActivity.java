@@ -1,6 +1,7 @@
 package com.kids.commonframe.base;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -288,5 +290,10 @@ public abstract class BaseActivity extends FragmentActivity{
 	protected void setTitleTitleBg(int color) {
 		View view = findViewById(R.id.title_bg);
 		view.setBackgroundColor(color);
+	}
+
+	protected static ViewGroup getRootView(Activity context)
+	{
+		return ((ViewGroup)context.findViewById(android.R.id.content));
 	}
 }
