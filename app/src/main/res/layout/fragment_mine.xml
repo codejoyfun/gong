@@ -370,7 +370,7 @@
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="价格目"
+                android:text="价目表"
                 android:gravity="center"
                 android:drawablePadding="10dp"
                 android:drawableLeft="@drawable/more_restaurant_pricelist_s"

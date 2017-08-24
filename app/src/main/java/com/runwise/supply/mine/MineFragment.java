@@ -153,8 +153,17 @@ public class MineFragment extends NetWorkFragment {
             case  REQUEST_SUM:
                 SumMoneyData sumMoneyData = (SumMoneyData)result.getResult().getData();
                 if(GlobalApplication.getInstance().getCanSeePrice()) {
-                    moneySum.setText(sumMoneyData.getTotal_amount()+"");
-                    moneyNuit.setVisibility(View.GONE);
+                    if(sumMoneyData.getTotal_amount() > 10000) {
+                        double price = sumMoneyData.getTotal_amount()/10000;
+                        moneySum.setText(UserUtils.formatPrice(price+"")+"");
+                        moneyNuit.setText("万元");
+                        moneyNuit.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        moneySum.setText(UserUtils.formatPrice(sumMoneyData.getTotal_amount()+"")+"");
+                        moneyNuit.setVisibility(View.VISIBLE);
+                        moneyNuit.setText("元");
+                    }
                     showText.setText("上周采购额");
                 }
                 else{

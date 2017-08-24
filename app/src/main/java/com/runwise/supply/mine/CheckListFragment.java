@@ -1,5 +1,7 @@
 package com.runwise.supply.mine;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -14,15 +16,19 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
+import com.runwise.supply.mine.entity.OrderEntity;
 import com.runwise.supply.tools.TimeUtils;
 
 /**
@@ -43,6 +49,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
 
     private int page = 1;
     public OrderDataType orderDataType;
+    private String mName;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +85,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         loadingLayout.setStatusLoading();
         requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
+        mName = GlobalApplication.getInstance().loadUserInfo().getUsername();
     }
 
 
@@ -147,21 +155,11 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        OrderEntity bean = (OrderEntity)parent.getAdapter().getItem(position);
-//        Intent intent = new Intent(mContext, IWebViewActivity.class);
-//        intent.putExtra(WebViewActivity.WEB_TITLE,bean.getTitle());
-//        if (bean.getOrder_status() == 1 ) {
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getApply_info_url());
-//            startActivity(intent);
-//        }
-//        else if(bean.getOrder_status() == 11) {
-//            Intent dealIntent = new Intent(this,RequestDetlActivity.class);
-//            startActivity(dealIntent);
-//        }
-//        else{
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getPeriod_url());
-//            startActivity(intent);
-//        }
+        CheckResult.ListBean bean = (CheckResult.ListBean)parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext, CheckDetailActivity.class);
+        intent.putExtra("id",bean.getInventoryID()+"");
+        intent.putExtra("bean",bean);
+        startActivity(intent);
     }
 
 
@@ -195,8 +193,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
             final CheckResult.ListBean bean = mList.get(position);
             holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
             holder.name.setText(bean.getCreateUser());
-            holder.money.setText(bean.getValue()+"");
-            if ("confirm".equals(bean.getState())) {
+            if ("confirm".equals(bean.getState()) && bean.getCreateUser().equals(mName)) {
                 holder.money.setVisibility(View.GONE);
                 holder.handlerBtn.setVisibility(View.VISIBLE);
                 holder.handlerBtn.setOnClickListener(new View.OnClickListener() {
@@ -206,7 +203,32 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                     }
                 });
             }
+            if ("confirm".equals(bean.getState()) && !bean.getCreateUser().equals(mName)) {
+                holder.money.setVisibility(View.VISIBLE);
+                holder.handlerBtn.setVisibility(View.GONE);
+                holder.money.setTextColor(Color.parseColor("#3d3d3d"));
+                holder.money.setText("盘点中");
+            }
             else {
+                if(GlobalApplication.getInstance().getCanSeePrice()) {
+                    holder.money.setText("¥"+bean.getValue()+"");
+                    if(bean.getValue() >= 0) {
+                        holder.money.setTextColor(Color.parseColor("#9cb62e"));
+                    }
+                    else{
+                        holder.money.setTextColor(Color.parseColor("#e75967"));
+                    }
+                }
+                else{
+                    holder.money.setText(bean.getNum()+"");
+                    if(bean.getNum() >= 0) {
+                        holder.money.setTextColor(Color.parseColor("#9cb62e"));
+                    }
+                    else{
+                        holder.money.setTextColor(Color.parseColor("#e75967"));
+                    }
+                }
+
                 holder.money.setVisibility(View.VISIBLE);
                 holder.handlerBtn.setVisibility(View.GONE);
             }

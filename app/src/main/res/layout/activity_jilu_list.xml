@@ -9,36 +9,51 @@
     <LinearLayout
         android:id="@+id/titleLayout"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
         android:layout_height="wrap_content"
-        android:padding="10dp">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#9e9e9e"
-            android:text="盘点时间"
+            android:padding="10dp"
+            android:background="#ffff"
+            android:layout_marginTop="10dp"
+            >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#9e9e9e"
+                android:text="盘点时间"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#9e9e9e"
+                android:text="盘点人员"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#9e9e9e"
+                android:text="差异金额"
+                android:gravity="right"
+                />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#f6f6f6"
             />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#9e9e9e"
-            android:text="盘点人员"
-            android:gravity="center"
-            />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#9e9e9e"
-            android:text="差异金额"
-            android:gravity="right"
-            />
+
     </LinearLayout>
+
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/pullListView"

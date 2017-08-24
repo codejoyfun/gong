@@ -2,6 +2,7 @@ package com.runwise.supply.mine.entity;
 
 import com.kids.commonframe.base.BaseEntity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class CheckResult extends BaseEntity.ResultBean {
         this.list = list;
     }
 
-    public static class ListBean {
+    public static class ListBean implements Serializable{
         /**
          * state : confirm
          * num : 0.0
@@ -104,7 +105,7 @@ public class CheckResult extends BaseEntity.ResultBean {
         public void setLines(List<LinesBean> lines) {
             this.lines = lines;
         }
-        public static class LinesBean{
+        public static class LinesBean implements Serializable{
 
             /**
              * theoreticalQty : 20.0
