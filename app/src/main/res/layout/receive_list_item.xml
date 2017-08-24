@@ -19,38 +19,44 @@
         android:layout_marginRight="@dimen/padding_right"
         android:layout_alignParentRight="true"
         android:layout_marginTop="4dp"
+        android:layout_centerVertical="true"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible">
-        <TextView
+        <EditText
             android:id="@+id/receivedTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:layout_gravity="center_vertical"
             android:textColor="#343434"
+            android:inputType="number"
+            android:background="@null"
+            android:gravity="right|center_vertical"
+            android:maxLength="9"
             android:text="0"
             />
         <TextView
             android:id="@+id/countTv"
             android:layout_width="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_height="wrap_content"
             android:textSize="11sp"
             android:layout_marginLeft="8dp"
             android:textColor="#343434"
             android:text="/12条"
             />
+        <ImageButton
+            android:id="@+id/input_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/btn_add"
+            android:background="@null"
+            android:layout_marginLeft="10dp"
+            />
     </LinearLayout>
-    <TextView
-        android:id="@+id/weightTv"
-        android:layout_width="wrap_content"
-        android:layout_height="22dp"
-        android:textSize="11sp"
-        android:text="0"
-        android:gravity="center_vertical"
-        android:layout_alignRight="@id/countLL"
-        android:layout_below="@id/countLL"
-        android:textColor="#2E2E2E"/>
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
@@ -77,21 +83,11 @@
         android:layout_marginTop="5dp"
         android:layout_below="@id/name"
         />
-    <Button
-        android:id="@+id/doBtn"
-        android:layout_width="80dp"
-        android:layout_height="28dp"
-        android:layout_below="@id/productImage"
-        android:background="@drawable/firstpage_do_circle"
-        android:layout_alignRight="@id/weightTv"
-        android:text="收货"
-        />
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#E5E5E5"
-
-        android:layout_below="@id/doBtn"
+        android:layout_below="@id/productImage"
         android:layout_marginTop="15dp"
         />
 </RelativeLayout>

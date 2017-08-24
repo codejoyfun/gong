@@ -184,7 +184,12 @@ public class OneKeyAdapter extends IBaseAdapter {
                 }else{
                     countMap.remove(pId);
                     mList.remove(bean);
-                    notifyDataSetChanged();;
+                    notifyDataSetChanged();
+                    //不管这些包含在selcetArr中，都要刷新全选
+                    if (selectArr.contains(bean)){
+                        selectArr.remove(bean);
+                    }
+                    checkSelectState();
                 }
                 //发送事件
                 callback.countChanged();
@@ -218,14 +223,7 @@ public class OneKeyAdapter extends IBaseAdapter {
                 }else{
                     selectArr.remove(bean);
                 }
-                //返回是否全选标记,true全选, false一个没选
-                if (selectArr.size() == mList.size() && selectArr.size() != 0){
-                    callback.selectClicked(SELECTTYPE.ALL_SELECT);
-                }else if (selectArr.size() == 0){
-                    callback.selectClicked(SELECTTYPE.NO_SELECT);
-                }else{
-                    callback.selectClicked(SELECTTYPE.PART_SELECT);
-                }
+                checkSelectState();
             }
         });
         if (selectArr.contains(bean)){
@@ -235,6 +233,18 @@ public class OneKeyAdapter extends IBaseAdapter {
         }
         return convertView;
     }
+
+    private void checkSelectState() {
+        //返回是否全选标记,true全选, false一个没选
+        if (selectArr.size() == mList.size() && selectArr.size() != 0){
+            callback.selectClicked(SELECTTYPE.ALL_SELECT);
+        }else if (selectArr.size() == 0){
+            callback.selectClicked(SELECTTYPE.NO_SELECT);
+        }else{
+            callback.selectClicked(SELECTTYPE.PART_SELECT);
+        }
+    }
+
     public void setAllSelect(boolean isAll){
         if (isAll){
             selectArr.clear();

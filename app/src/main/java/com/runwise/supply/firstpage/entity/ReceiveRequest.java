@@ -29,6 +29,13 @@ public class ReceiveRequest {
         private int product_id;
         private double height;
 
+        private String product_datetime;
+        private String tracking;
+        private String lot_name;
+        private String life_datetime;
+
+
+
         public int getQty() {
             return qty;
         }
@@ -51,6 +58,37 @@ public class ReceiveRequest {
 
         public void setHeight(double height) {
             this.height = height;
+        }
+        public String getProduct_datetime() {
+            return product_datetime;
+        }
+
+        public void setProduct_datetime(String product_datetime) {
+            this.product_datetime = product_datetime;
+        }
+
+        public String getTracking() {
+            return tracking;
+        }
+
+        public void setTracking(String tracking) {
+            this.tracking = tracking;
+        }
+
+        public String getLot_name() {
+            return lot_name;
+        }
+
+        public void setLot_name(String lot_name) {
+            this.lot_name = lot_name;
+        }
+
+        public String getLife_datetime() {
+            return life_datetime;
+        }
+
+        public void setLife_datetime(String life_datetime) {
+            this.life_datetime = life_datetime;
         }
     }
 }

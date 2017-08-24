@@ -149,25 +149,26 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     setDeleteBtnOk(true);
                     adapter.setAllSelect(true);
                 }
+                isInitiative = true;
             }
         });
-//        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isInitiative){
-//                    if (isChecked){
-//                        //adapter里面所有的选中
-//                        setDeleteBtnOk(true);
-//                        adapter.setAllSelect(true);
-//                    }else{
-//                        //清掉adapter里面所有选中的状态
-//                        setDeleteBtnOk(false);
-//                        adapter.setAllSelect(false);
-//                    }
-//                }
-//                isInitiative = true;
-//            }
-//        });
+        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isInitiative){
+                    if (isChecked){
+                        //adapter里面所有的选中
+                        setDeleteBtnOk(true);
+                        adapter.setAllSelect(true);
+                    }else{
+                        //清掉adapter里面所有选中的状态
+                        setDeleteBtnOk(false);
+                        adapter.setAllSelect(false);
+                    }
+                }
+                isInitiative = true;
+            }
+        });
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (!canSeePrice){
             totalMoneyTv.setVisibility(View.GONE);
@@ -446,6 +447,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
 
     @Override
     public void selectClicked(OneKeyAdapter.SELECTTYPE type) {
+        isInitiative = false;
         switch(type){
             case ALL_SELECT:
                 allCb.setChecked(true);
@@ -461,6 +463,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 allCb.setChecked(false);
                 break;
         }
+        isInitiative = true;
     }
 
     @Override
