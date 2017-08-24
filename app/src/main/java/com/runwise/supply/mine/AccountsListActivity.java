@@ -32,6 +32,9 @@ import com.runwise.supply.mine.entity.MsgResult;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.tools.UserUtils;
+
+import static com.runwise.supply.tools.TimeUtils.getTimeStamps4;
 
 /**
  * 对账单
@@ -175,7 +178,7 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             final CheckOrderData.BankStatementBean bean =  mList.get(position);
-            viewHolder.date.setText(bean.getBeginDate()+"至"+bean.getEndDate());
+            viewHolder.date.setText(getTimeStamps4(bean.getBeginDate())+"至"+getTimeStamps4(bean.getEndDate()));
             viewHolder.name.setText(bean.getName());
 //           viewHolder.status.setText();
             if(!TimeUtils.isTimeInner(bean.getBeginDate(),bean.getEndDate())) {
@@ -186,7 +189,7 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
                 bean.setTimeLater(false);
                 viewHolder.status.setVisibility(View.GONE);
             }
-            viewHolder.money.setText("￥"+bean.getTotalPrice());
+            viewHolder.money.setText("￥"+ UserUtils.formatPrice(bean.getTotalPrice()));
             return convertView;
         }
 

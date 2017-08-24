@@ -179,6 +179,16 @@ public class TimeUtils {
 			return date;
 		}
 	}
+	public static String getTimeStamps4(String date){
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat ft2 = new SimpleDateFormat("MM-dd");
+		try {
+			Date sDate = ft.parse(date);
+			return ft2.format(sDate);
+		} catch (ParseException e) {
+			return date;
+		}
+	}
 	public static String getMMdd(String date){
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		SimpleDateFormat ft2 = new SimpleDateFormat("MM-dd");

@@ -1,7 +1,7 @@
 package com.runwise.supply.mine;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,18 +16,17 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.CheckOrderData;
-import com.runwise.supply.mine.entity.MsgEntity;
 import com.runwise.supply.mine.entity.MsgList;
 import com.runwise.supply.mine.entity.MsgResult;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.tools.UserUtils;
 
 /**
  * 对账单详情
@@ -55,7 +54,6 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_account_detail);
-        this.setTitleText(true,"对账单");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
 
         pullListView.setPullToRefreshOverScrollEnabled(false);
@@ -91,6 +89,8 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
 //        loadingLayout.setOnRetryClickListener(this);
 
         CheckOrderData.BankStatementBean bean = (CheckOrderData.BankStatementBean)this.getIntent().getSerializableExtra("bean");
+        this.setTitleText(true,bean.getName());
+
         adapter.setData(bean.getOrders());
         if(bean.isTimeLater()) {
             timeLaterLayout.setVisibility(View.VISIBLE);
@@ -98,7 +98,7 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
         else {
             timeLaterLayout.setVisibility(View.GONE);
         }
-        totleMoney.setText("￥"+bean.getTotalPrice());
+        totleMoney.setText("￥"+ UserUtils.formatPrice(bean.getTotalPrice()));
     }
 
     @OnClick(R.id.left_layout)
@@ -187,10 +187,15 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             final CheckOrderData.BankStatementBean.OrdersBean bean =  mList.get(position);
-            viewHolder.date.setText(bean.getCreateDate());
+            viewHolder.date.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
             viewHolder.name.setText(bean.getName());
-            viewHolder.sum.setText("共" + bean.getAmount()+"件商品");
-            viewHolder.money.setText("￥"+bean.getTotalPrice());
+            if(TextUtils.isEmpty(bean.getAmount())) {
+                viewHolder.sum.setText("共" + Integer.parseInt(bean.getAmount()) + "件商品");
+            }
+            else{
+                viewHolder.sum.setText("共0件商品");
+            }
+            viewHolder.money.setText("￥"+ UserUtils.formatPrice(bean.getTotalPrice()));
             return convertView;
         }
 

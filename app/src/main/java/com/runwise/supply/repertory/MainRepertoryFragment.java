@@ -48,7 +48,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setTitleText(true, "当前库存" );
+        this.setTitleText(true, "库存" );
         this.setTitleLeftIcon(true, R.drawable.searchbar_ico_search);
         setTitleRightText(true,"盘点");
         FragmentManager manager = this.getActivity().getSupportFragmentManager();
