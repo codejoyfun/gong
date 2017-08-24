@@ -54,6 +54,7 @@
             android:background="@drawable/input_bg"
             android:maxLength="4"
             android:gravity="center"
+            android:imeOptions="actionDone"
             android:inputType="numberDecimal"/>
         <ImageButton
             android:id="@+id/input_add"

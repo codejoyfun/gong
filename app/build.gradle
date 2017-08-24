@@ -10,8 +10,6 @@ dependencies {
     compile project(':commonlibary')
     compile project(':ucrop')
     compile files('libs/superadapter-3.6.6.jar')
-
-
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.anthonycr.grant:permissions:1.0'
@@ -19,7 +17,7 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'me.shaohui:bottomdialog:1.1.9'
     compile 'com.contrarywind:Android-PickerView:3.2.6'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
+//    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
     testCompile 'junit:junit:4.12'
 }
 

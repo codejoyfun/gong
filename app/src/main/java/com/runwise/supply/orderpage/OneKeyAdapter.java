@@ -25,6 +25,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,8 +158,9 @@ public class OneKeyAdapter extends IBaseAdapter {
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
             sb.append("  ").append(basicBean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            DecimalFormat df = new DecimalFormat("#.##");
             if (canSeePrice){
-                sb.append("  ").append(basicBean.getPrice()).append("元/").append(basicBean.getUom());
+                sb.append("  ").append(df.format(basicBean.getPrice())).append("元/").append(basicBean.getUom());
             }
             viewHolder.contentTv.setText(sb.toString());
         }
@@ -182,7 +184,12 @@ public class OneKeyAdapter extends IBaseAdapter {
                 }else{
                     countMap.remove(pId);
                     mList.remove(bean);
-                    notifyDataSetChanged();;
+                    notifyDataSetChanged();
+                    //不管这些包含在selcetArr中，都要刷新全选
+                    if (selectArr.contains(bean)){
+                        selectArr.remove(bean);
+                    }
+                    checkSelectState();
                 }
                 //发送事件
                 callback.countChanged();
@@ -216,14 +223,7 @@ public class OneKeyAdapter extends IBaseAdapter {
                 }else{
                     selectArr.remove(bean);
                 }
-                //返回是否全选标记,true全选, false一个没选
-                if (selectArr.size() == mList.size() && selectArr.size() != 0){
-                    callback.selectClicked(SELECTTYPE.ALL_SELECT);
-                }else if (selectArr.size() == 0){
-                    callback.selectClicked(SELECTTYPE.NO_SELECT);
-                }else{
-                    callback.selectClicked(SELECTTYPE.PART_SELECT);
-                }
+                checkSelectState();
             }
         });
         if (selectArr.contains(bean)){
@@ -233,6 +233,18 @@ public class OneKeyAdapter extends IBaseAdapter {
         }
         return convertView;
     }
+
+    private void checkSelectState() {
+        //返回是否全选标记,true全选, false一个没选
+        if (selectArr.size() == mList.size() && selectArr.size() != 0){
+            callback.selectClicked(SELECTTYPE.ALL_SELECT);
+        }else if (selectArr.size() == 0){
+            callback.selectClicked(SELECTTYPE.NO_SELECT);
+        }else{
+            callback.selectClicked(SELECTTYPE.PART_SELECT);
+        }
+    }
+
     public void setAllSelect(boolean isAll){
         if (isAll){
             selectArr.clear();

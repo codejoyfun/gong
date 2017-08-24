@@ -69,6 +69,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private EditText        qualityEt;
     @ViewInject(R.id.serviceRb)
     private RatingBar       serviceRb;
+    @ViewInject(R.id.cbLL)
+    private View cbLL;
     private static final int ORDERREQUST = 1;
     private static final int LINEREQUEST = 2;
 
@@ -80,6 +82,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private View popView;
     private int orderId;
     private int flag = 0;
+    private final static String TIP1 = "迟到且无提前告知";
+    private final static String TIP2 = "未确认收货就离开";
+    private final static String TIP3 = "态度差";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +105,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("order");
         adapter = new EvaluateAdapter(this,null,rateMap);
+        adapter.setCallback(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         selectProductTypeData(DataType.LENGCANGHUO);
@@ -117,7 +123,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 nameTv.setText("未知");
             }
             String estimatTime = bean.getEstimatedTime();
-            String endUploadTime = bean.getEndUnloadDatetime();
+            String endUploadTime = bean.getStartUnloadDatetime();
             StringBuffer sb = new StringBuffer("预计送达时间 ");
             sb.append(estimatTime)
                     .append("   ")
@@ -129,6 +135,16 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         cb1.setOnCheckedChangeListener(this);
         cb2.setOnCheckedChangeListener(this);
         cb3.setOnCheckedChangeListener(this);
+        serviceRb.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if (rating < 5){
+                    cbLL.setVisibility(View.VISIBLE);
+                }else{
+                    cbLL.setVisibility(View.GONE);
+                }
+            }
+        });
     }
     @OnClick({R.id.coldBtn,R.id.freezeBtn,R.id.dryBtn,
             R.id.title_iv_left,R.id.onekeyTv,R.id.title_tv_rigth})
@@ -296,27 +312,62 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(serviceEt.getText().toString());
         switch (buttonView.getId()){
             case R.id.cb1:
                 if(isChecked){
                     cb1.setTextColor(Color.parseColor("#9ACC35"));
+                    if(sb.toString().length() > 0){
+                        sb.append("，");
+                    }
+                    sb.append(TIP1);
+                    serviceEt.setText(sb.toString());
+                    serviceEt.setSelection(sb.toString().length());
                 }else{
                     cb1.setTextColor(Color.parseColor("#CCCCCC"));
+                    if (sb.toString().contains(TIP1)){
+                        String newStr = sb.toString().replaceAll(TIP1,"");
+                        serviceEt.setText(newStr);
+                        serviceEt.setSelection(newStr.length());
+                    }
                 }
 
                 break;
             case R.id.cb2:
                 if(isChecked){
                     cb2.setTextColor(Color.parseColor("#9ACC35"));
+                    if(sb.toString().length() > 0){
+                        sb.append("，");
+                    }
+                    sb.append(TIP2);
+                    serviceEt.setText(sb.toString());
+                    serviceEt.setSelection(sb.toString().length());
                 }else{
                     cb2.setTextColor(Color.parseColor("#CCCCCC"));
+                    if (sb.toString().contains(TIP2)){
+                        String newStr = sb.toString().replaceAll(TIP2,"");
+                        serviceEt.setText(newStr);
+                        serviceEt.setSelection(newStr.length());
+                    }
                 }
                 break;
             case R.id.cb3:
                 if(isChecked){
                     cb3.setTextColor(Color.parseColor("#9ACC35"));
+                    if(sb.toString().length() > 0){
+                        sb.append("，");
+                    }
+                    sb.append(TIP3);
+                    serviceEt.setText(sb.toString());
+                    serviceEt.setSelection(sb.toString().length());
                 }else{
                     cb3.setTextColor(Color.parseColor("#CCCCCC"));
+                    if (sb.toString().contains(TIP3)){
+                        String newStr = sb.toString().replaceAll(TIP3,"");
+                        serviceEt.setText(newStr);
+                        serviceEt.setSelection(newStr.length());
+                    }
                 }
                 break;
         }

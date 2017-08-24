@@ -144,8 +144,10 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.stateTv.setTextColor(Color.parseColor("#333333"));
             if (bean.getWaybill() != null && bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null){
                 viewHolder.carNumTv.setText(bean.getWaybill().getDeliverVehicle().getLicensePlate());
+                viewHolder.driverLL.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.carNumTv.setText("未指派");
+                viewHolder.driverLL.setVisibility(View.GONE);
             }
             if (bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null){
                 viewHolder.senderTv.setText(bean.getWaybill().getDeliverUser().getName());
@@ -201,8 +203,10 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
             if (!TextUtils.isEmpty(bean.getDriveMobile())){
                 viewHolder.carNumTv.setText(bean.getVehicle());
+                viewHolder.driverLL.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.carNumTv.setText("未指派");
+                viewHolder.driverLL.setVisibility(View.GONE);
             }
             if (!TextUtils.isEmpty(bean.getDriver())){
                 viewHolder.senderTv.setText(bean.getDriver());
@@ -283,6 +287,8 @@ public class OrderAdapter extends IBaseAdapter {
         LinearLayout priceLL;
         @ViewInject(R.id.callIb)
         ImageButton callIb;
+        @ViewInject(R.id.driverLL)
+        LinearLayout driverLL;
 
     }
 

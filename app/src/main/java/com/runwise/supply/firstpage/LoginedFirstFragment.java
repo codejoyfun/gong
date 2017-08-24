@@ -88,6 +88,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private View rootView;
     private String number = "02037574563";
     private UserInfo userInfo;
+    private boolean isFirst = true;
 
     public LoginedFirstFragment() {
     }
@@ -124,14 +125,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 if (adapter.getItemViewType(realPosition) == adapter.TYPE_ORDER){
                     Intent intent = new Intent(mContext,OrderDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    OrderResponse.ListBean bean = (OrderResponse.ListBean) orderList.get(realPosition);
+                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
                     bundle.putParcelable("order",bean);
                     intent.putExtras(bundle);
                     startActivity(intent);
                 }else if(adapter.getItemViewType(realPosition) == adapter.TYPE_RETURN){
                     Intent intent = new Intent(mContext,ReturnDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) orderList.get(realPosition);
+                    ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) adapter.getList().get(realPosition);
                     bundle.putParcelable("return",bean);
                     intent.putExtras(bundle);
                     startActivity(intent);
@@ -151,7 +152,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         });
         requestDashBoard();
         requestLB();
-        pullListView.setRefreshing(true);
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
     }
@@ -162,6 +162,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             MainActivity ma = (MainActivity) getActivity();
             if (ma.getCurrentTabIndex() == 0)
                 this.switchContent(this,new UnLoginedFirstFragment());
+        }else{
+            pullListView.setRefreshing(true);
         }
     }
     @Override
@@ -176,9 +178,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 OrderResponse response = (OrderResponse) resultBean.getData();
                 int addIndex = orderList.size();
                 orderList.addAll(addIndex,response.getList());
+                adapter.setReturnCount(addIndex);
                 adapter.setOrderCount(response.getList().size());
                 adapter.setData(orderList);
                 pullListView.onRefreshComplete();
+                if (!isFirst){
+                    ToastUtil.show(mContext,"订单已刷新");
+                }
+                isFirst = false;
                 break;
             case FROMLB:
                 LunboResponse lRes = (LunboResponse) result.getResult();
@@ -196,10 +203,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FROMRETURN:
                 BaseEntity.ResultBean resultBean4= result.getResult();
                 ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
+                //加入轮询判断，不定时刷新，只有都拉到数据，才一起更新列表
                 orderList.clear();
                 orderList.addAll(rob.getList());
-                adapter.setReturnCount(rob.getList().size());
-                adapter.setData(orderList);
+                if (adapter.getCount() == 0){
+                    //首次
+                    adapter.setReturnCount(rob.getList().size());
+                    adapter.setData(orderList);
+                }
                 Object request = null;
                 sendConnection("/gongfu/v2/order/undone_orders/",request,FROMORDER,false, OrderResponse.class);
                 break;
@@ -270,7 +281,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case RATE:
                 //评价
                 Intent rIntent = new Intent(mContext,EvaluateActivity.class);
-                OrderResponse.ListBean bean = (OrderResponse.ListBean) orderList.get(position);
+                OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(position);
                 Bundle rBundle = new Bundle();
                 rBundle.putParcelable("order",bean);
                 rIntent.putExtras(rBundle);
