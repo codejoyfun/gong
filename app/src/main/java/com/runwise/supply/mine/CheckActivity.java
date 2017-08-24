@@ -59,7 +59,6 @@ public class CheckActivity extends BaseActivity {
             titleList.add("全部");
             titleList.add("本周");
             titleList.add("上周");
-            titleList.add("上月");
             titleList.add("更早");
             Bundle bundle = new Bundle();
             CheckListFragment allFragment = new CheckListFragment();
@@ -74,9 +73,9 @@ public class CheckActivity extends BaseActivity {
             freezeFragment.orderDataType = OrderDataType.SHANGZHOU;
             freezeFragment.setArguments(bundle);
 
-            CheckListFragment yueFragment = new CheckListFragment();
-            yueFragment.orderDataType = OrderDataType.SHANGYUE;
-            yueFragment.setArguments(bundle);
+//            CheckListFragment yueFragment = new CheckListFragment();
+//            yueFragment.orderDataType = OrderDataType.SHANGYUE;
+//            yueFragment.setArguments(bundle);
 
             CheckListFragment dryFragment = new CheckListFragment();
             dryFragment.orderDataType = OrderDataType.GENGZAO;
@@ -85,7 +84,6 @@ public class CheckActivity extends BaseActivity {
             fragmentList.add(allFragment);
             fragmentList.add(coldFragment);
             fragmentList.add(freezeFragment);
-            fragmentList.add(yueFragment);
             fragmentList.add(dryFragment);
         }
         @Override

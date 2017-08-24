@@ -26,6 +26,8 @@ import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.UnReadData;
+import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
 
@@ -38,6 +40,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class MineFragment extends NetWorkFragment {
     private final int REQUEST_SYSTEM = 1;
+    private final int REQUEST_SUM = 2;
     //电话
     @ViewInject(R.id.minePhone)
     private TextView minePhone;
@@ -60,8 +63,13 @@ public class MineFragment extends NetWorkFragment {
     @ViewInject(R.id.zhiliangImg)
     private ImageView zhiliangImg;
     String number = "02037574563";
+
     @ViewInject(R.id.moneySum)
     private TextView moneySum;
+    @ViewInject(R.id.moneyNuit)
+    private TextView moneyNuit;
+    @ViewInject(R.id.showText)
+    private TextView showText;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +109,8 @@ public class MineFragment extends NetWorkFragment {
                 zhiliangImg.setImageResource(R.drawable.tag_up);
             }
         }
-        MainActivity mainActivity = (MainActivity)mContext;
+        Object request = null;
+        sendConnection("/api/sale/shop/info", request, REQUEST_SUM, false, SumMoneyData.class);
     }
 
     private void setLogoutStatus() {
@@ -140,6 +149,20 @@ public class MineFragment extends NetWorkFragment {
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_SYSTEM:
+                break;
+            case  REQUEST_SUM:
+                SumMoneyData sumMoneyData = (SumMoneyData)result.getResult().getData();
+                if(GlobalApplication.getInstance().getCanSeePrice()) {
+                    moneySum.setText(sumMoneyData.getTotal_amount()+"");
+                    moneyNuit.setVisibility(View.GONE);
+                    showText.setText("上周采购额");
+                }
+                else{
+                    moneySum.setText(sumMoneyData.getTotal_number()+"");
+                    moneyNuit.setText("件");
+                    moneyNuit.setVisibility(View.VISIBLE);
+                    showText.setText("上周采购量");
+                }
                 break;
         }
     }

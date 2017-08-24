@@ -17,9 +17,13 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +55,10 @@ public class RepertoryFragment extends NetWorkFragment {
         else{
             buildData();
         }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateEvent(UpdateRepertory event) {
+        requestData();
     }
     private void requestData() {
         sendConnection("/gongfu/shop/stock/list",null,PRODUCT_GET,true, RepertoryEntity.class);

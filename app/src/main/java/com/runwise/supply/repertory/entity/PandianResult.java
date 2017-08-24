@@ -1,34 +1,39 @@
-package com.runwise.supply.mine.entity;
+package com.runwise.supply.repertory.entity;
 
-import com.kids.commonframe.base.BaseEntity;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by mychao on 2017/7/17.
+ * Created by myChaoFile on 2017/8/24.
  */
 
-public class CheckResult extends BaseEntity.ResultBean {
+public class PandianResult implements Serializable{
 
-    private List<ListBean> list;
+    /**
+     * inventory : {"state":"confirm","num":0,"name":"PD77-2017-08-23","createUser":"小卢","inventoryID":234,"createDate":"2017-08-23 18:51:21","lines":[{"theoreticalQty":13,"lifeEndDate":"2017-09-07 18:23:02","actualQty":0,"inventoryLineID":1529,"code":"11012312","lotID":256,"lotNum":"Z170823000025","unitPrice":10,"diff":-13,"productID":42},{"theoreticalQty":6,"lifeEndDate":"","actualQty":0,"inventoryLineID":1527,"code":"11012214","lotID":0,"lotNum":"","unitPrice":0.95,"diff":-6,"productID":21},{"theoreticalQty":5,"lifeEndDate":"2017-10-31 08:00:00","actualQty":0,"inventoryLineID":1526,"code":"11012213","lotID":252,"lotNum":"Z170823000018","unitPrice":15.2,"diff":-5,"productID":20},{"theoreticalQty":3,"lifeEndDate":"2017-08-26 08:00:00","actualQty":0,"inventoryLineID":1528,"code":"11012216","lotID":255,"lotNum":"Z170823000021","unitPrice":89.3,"diff":-3,"productID":23}],"value":0}
+     */
 
-    public List<ListBean> getList() {
-        return list;
+    private InventoryBean inventory;
+
+    public InventoryBean getInventory() {
+        return inventory;
     }
 
-    public void setList(List<ListBean> list) {
-        this.list = list;
+    public void setInventory(InventoryBean inventory) {
+        this.inventory = inventory;
     }
 
-    public static class ListBean {
+    public static class InventoryBean implements Serializable{
         /**
          * state : confirm
          * num : 0.0
-         * name : PD77-2017-08-24
+         * name : PD77-2017-08-23
          * createUser : 小卢
-         * inventoryID : 245
-         * createDate : 2017-08-24 13:13:25
-         * lines : []
+         * inventoryID : 234
+         * createDate : 2017-08-23 18:51:21
+         * lines : [{"theoreticalQty":13,"lifeEndDate":"2017-09-07 18:23:02","actualQty":0,"inventoryLineID":1529,"code":"11012312","lotID":256,"lotNum":"Z170823000025","unitPrice":10,"diff":-13,"productID":42},{"theoreticalQty":6,"lifeEndDate":"","actualQty":0,"inventoryLineID":1527,"code":"11012214","lotID":0,"lotNum":"","unitPrice":0.95,"diff":-6,"productID":21},{"theoreticalQty":5,"lifeEndDate":"2017-10-31 08:00:00","actualQty":0,"inventoryLineID":1526,"code":"11012213","lotID":252,"lotNum":"Z170823000018","unitPrice":15.2,"diff":-5,"productID":20},{"theoreticalQty":3,"lifeEndDate":"2017-08-26 08:00:00","actualQty":0,"inventoryLineID":1528,"code":"11012216","lotID":255,"lotNum":"Z170823000021","unitPrice":89.3,"diff":-3,"productID":23}]
          * value : 0.0
          */
 
@@ -104,24 +109,24 @@ public class CheckResult extends BaseEntity.ResultBean {
         public void setLines(List<LinesBean> lines) {
             this.lines = lines;
         }
-        public static class LinesBean{
 
+        public static class LinesBean implements Serializable{
             /**
-             * theoreticalQty : 20.0
+             * theoreticalQty : 13.0
              * lifeEndDate : 2017-09-07 18:23:02
              * actualQty : 0.0
-             * inventoryLineID : 1605
+             * inventoryLineID : 1529
              * code : 11012312
              * lotID : 256
              * lotNum : Z170823000025
              * unitPrice : 10.0
-             * diff : -20.0
+             * diff : -13.0
              * productID : 42
              */
 
             private double theoreticalQty;
             private String lifeEndDate;
-            private double actualQty;
+            private int actualQty;
             private int inventoryLineID;
             private String code;
             private int lotID;
@@ -129,6 +134,42 @@ public class CheckResult extends BaseEntity.ResultBean {
             private double unitPrice;
             private double diff;
             private int productID;
+            private boolean checked;
+            private int type;
+            private int editNum;
+            private ProductBasicList.ListBean product;
+
+            public ProductBasicList.ListBean getProduct() {
+                return product;
+            }
+
+            public void setProduct(ProductBasicList.ListBean product) {
+                this.product = product;
+            }
+
+            public int getEditNum() {
+                return editNum;
+            }
+
+            public void setEditNum(int editNum) {
+                this.editNum = editNum;
+            }
+
+            public boolean isChecked() {
+                return checked;
+            }
+
+            public void setChecked(boolean checked) {
+                this.checked = checked;
+            }
+
+            public int getType() {
+                return type;
+            }
+
+            public void setType(int type) {
+                this.type = type;
+            }
 
             public double getTheoreticalQty() {
                 return theoreticalQty;
@@ -146,11 +187,11 @@ public class CheckResult extends BaseEntity.ResultBean {
                 this.lifeEndDate = lifeEndDate;
             }
 
-            public double getActualQty() {
+            public int getActualQty() {
                 return actualQty;
             }
 
-            public void setActualQty(double actualQty) {
+            public void setActualQty(int actualQty) {
                 this.actualQty = actualQty;
             }
 

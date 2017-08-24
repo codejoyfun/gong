@@ -1,18 +1,13 @@
 package com.runwise.supply.repertory;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -23,7 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -35,14 +29,13 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
-import com.runwise.supply.mine.RepertoryFragment;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.pictakelist.PicTake;
+import com.runwise.supply.orderpage.entity.ImageBean;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditHotResult;
-import com.runwise.supply.repertory.entity.EditRepertoryResult;
 import com.runwise.supply.repertory.entity.NewAdd;
+import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.view.NoWatchEditText;
 
 import org.greenrobot.eventbus.EventBus;
@@ -116,7 +109,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             }
         });
         Object param = null;
-        sendConnection("/gongfu/shop/inventory/lot/list",param,PRODUCT_GET,true, EditHotResult.class);
+        sendConnection("/api/inventory/add/list",param,PRODUCT_GET,true, EditHotResult.class);
 //        bgView.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -137,39 +130,41 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onShowPopEvent(final EditHotResult.LotInProductListBean bean) {
-        final EditHotResult.LotInProductListBean.ProductBean productBean = bean.getProduct();
-        addProductAdapter.setData(bean.getLot_list());
+    public void onShowPopEvent(final EditHotResult.ListBean returnBean) {
+        final EditHotResult.ListBean.ProductBean productBean = returnBean.getProduct();
+        addProductAdapter.setData(returnBean.getLotList());
         name.setText(productBean.getName());
-        number.setText(productBean.getDefault_code() + " | ");
+        number.setText(productBean.getDefaultCode() + " | ");
         content.setText(productBean.getUnit());
-        FrecoFactory.getInstance(mContext).disPlay(productImage, Constant.BASE_URL + productBean.getImage().getImage_small());
+        FrecoFactory.getInstance(mContext).disPlay(productImage, Constant.BASE_URL + productBean.getImage().getImageSmall());
         finalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List< EditRepertoryResult.InventoryBean.ListBean> newProductList = new ArrayList<>();
-                for (EditHotResult.LotInProductListBean.LotListBean logBean : addProductAdapter.getList()){
+                List<PandianResult.InventoryBean.LinesBean> newProductList = new ArrayList<>();
+                for (EditHotResult.ListBean.LotListBean logBean : addProductAdapter.getList()){
                     //现在只添加手动添加的
-                    if (!TextUtils.isEmpty(logBean.getLot_num()) && logBean.getSum() != 0 ) {
-                        EditRepertoryResult.InventoryBean.ListBean bean = new EditRepertoryResult.InventoryBean.ListBean();
-                        bean.setLife_end_date(logBean.getLife_end_date());
-                        bean.setTheoretical_qty(logBean.getSum());
-                        bean.setLot_num(logBean.getLot_num());
-                        bean.setLot_id(logBean.getLot_id());
+                    if (!TextUtils.isEmpty(logBean.getName()) && logBean.getSum() != 0 ) {
+                        PandianResult.InventoryBean.LinesBean bean = new PandianResult.InventoryBean.LinesBean();
+                        bean.setLifeEndDate(logBean.getLifeEndDate());
+                        bean.setTheoreticalQty(logBean.getSum());
+                        bean.setLotNum(logBean.getName());
+                        bean.setLotID(logBean.getLotID());
+                        bean.setCode(productBean.getDefaultCode());
+                        bean.setInventoryLineID(returnBean.getInventoryAddLineID());
+                        bean.setProductID(returnBean.getProductID());
 //                        bean.setUnit_price();
 //                        bean.setActual_qty();
                         bean.setEditNum(logBean.getSum());
-                        EditRepertoryResult.InventoryBean.ListBean.ProductBean product = new EditRepertoryResult.InventoryBean.ListBean.ProductBean();
+                        ProductBasicList.ListBean product = new ProductBasicList.ListBean();
                         product.setName(productBean.getName());
                         product.setBarcode(productBean.getBarcode());
-                        product.setStock_type(productBean.getStock_type());
-                        product.setDefault_code(productBean.getDefault_code());
-                        product.setId(productBean.getId());
+                        product.setStockType(productBean.getStockType());
+                        product.setDefaultCode(productBean.getDefaultCode());
                         product.setUnit(productBean.getUnit());
-                        EditRepertoryResult.InventoryBean.ListBean.ProductBean.ImageBean imageBean = new EditRepertoryResult.InventoryBean.ListBean.ProductBean.ImageBean();
+                        ImageBean imageBean = new ImageBean();
                         imageBean.setImage(productBean.getImage().getImage());
-                        imageBean.setImage_small(productBean.getImage().getImage_small());
-                        imageBean.setImage_medium(productBean.getImage().getImage_medium());
+                        imageBean.setImageSmall(productBean.getImage().getImageSmall());
+                        imageBean.setImageMedium(productBean.getImage().getImageMedium());
                         product.setImage(imageBean);
 
                         bean.setProduct(product);
@@ -196,8 +191,8 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case PRODUCT_GET:
-                EditHotResult editHotResult = (EditHotResult)result.getResult();
-                List<EditHotResult.LotInProductListBean> hotList = editHotResult.getLot_in_product_list();
+                EditHotResult editHotResult = (EditHotResult)result.getResult().getData();
+                List<EditHotResult.ListBean> hotList = editHotResult.getList();
 
                 Bundle bundle = new Bundle();
                 SearchListFragment allFragment = new SearchListFragment();
@@ -272,7 +267,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
     }
 
 
-    public class AddProductAdapter extends IBaseAdapter<EditHotResult.LotInProductListBean.LotListBean> {
+    public class AddProductAdapter extends IBaseAdapter<EditHotResult.ListBean.LotListBean> {
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             final ViewHolder viewHolder;
@@ -285,10 +280,10 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final EditHotResult.LotInProductListBean.LotListBean bean =  mList.get(position);
+            final EditHotResult.ListBean.LotListBean bean =  mList.get(position);
             viewHolder.addNumber.removeTextChangedListener();
             viewHolder.addSum.removeTextChangedListener();
-            viewHolder.addNumber.setText(bean.getLot_num()+"");
+            viewHolder.addNumber.setText(bean.getName()+"");
             viewHolder.addSum.setText(bean.getSum()+"");
             viewHolder.addNumber.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -300,12 +295,12 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 @Override
                 public void afterTextChanged(Editable editable) {
                     if(!TextUtils.isEmpty(editable.toString())) {
-                        bean.setLot_num(editable.toString());
+                        bean.setName(editable.toString());
                         addLastItem();
 //                        notifyDataSetChanged();
                     }
                     else{
-                        bean.setLot_num("");
+                        bean.setName("");
                         removeLastItem();
                         notifyDataSetChanged();
                     }
@@ -351,24 +346,24 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         }
 
         @Override
-        public void setData(List<EditHotResult.LotInProductListBean.LotListBean> list) {
+        public void setData(List<EditHotResult.ListBean.LotListBean> list) {
             super.setData(list);
             addLastItem();
         }
 
         private void addLastItem() {
-            if(!mList.isEmpty() && !TextUtils.isEmpty(mList.get(mList.size()-1).getLot_num())) {
-                EditHotResult.LotInProductListBean.LotListBean add = new EditHotResult.LotInProductListBean.LotListBean();
+            if(!mList.isEmpty() && !TextUtils.isEmpty(mList.get(mList.size()-1).getName())) {
+                EditHotResult.ListBean.LotListBean add = new EditHotResult.ListBean.LotListBean();
                 add.setType(1);
-                add.setLot_num("");
+                add.setName("");
                 mList.add(add);
             }
         }
         private void removeLastItem() {
             if(mList.size() >= 2) {
-                EditHotResult.LotInProductListBean.LotListBean bean = mList.get(mList.size()-2);
-                EditHotResult.LotInProductListBean.LotListBean lastBean = mList.get(mList.size()-1);
-                if(TextUtils.isEmpty(bean.getLot_num()) && bean.getSum() ==0 && TextUtils.isEmpty(lastBean.getLot_num()) && lastBean.getSum() ==0) {
+                EditHotResult.ListBean.LotListBean bean = mList.get(mList.size()-2);
+                EditHotResult.ListBean.LotListBean lastBean = mList.get(mList.size()-1);
+                if(TextUtils.isEmpty(bean.getName()) && bean.getSum() ==0 && TextUtils.isEmpty(lastBean.getName()) && lastBean.getSum() ==0) {
                     mList.remove(mList.size() - 1);
                 }
             }

@@ -34,6 +34,7 @@ import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.mine.entity.ProductData;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.repertory.EditRepertoryListActivity;
+import com.runwise.supply.repertory.entity.PandianResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
             Object parma = null;
-            sendConnection("/gongfu/shop/inventory/list", parma, REQUEST_EXIT, true, CheckResult.class);
+            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
         }
         else{
             Intent intent = new Intent(mContext, LoginActivity.class);
@@ -108,41 +109,24 @@ public class MainRepertoryFragment extends NetWorkFragment {
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_EXIT:
-                CheckResult repertoryEntity = (CheckResult)result.getResult();
-                boolean findCheckOrder = false;
-                for(CheckResult.ListBean bean : repertoryEntity.getList()) {
-                    if ("confirm".equals(bean.getState())) {
-                        findCheckOrder = true;
-                        //本人盘点
-                        if(GlobalApplication.getInstance().loadUserInfo().getUid().equals( bean.getCreate_partner().getId())) {
-                            forWardAct(bean.getId()+"");
-                        }
-                        else{
-                            dialog.setModel(CustomDialog.LEFT);
-                            dialog.setMessage("当前"+bean.getCreate_partner().getName()+"正在盘点中,无法创建新的盘点单");
-                            dialog.setLeftBtnListener("我知道了", null);
-                            dialog.show();
-                        }
-                        break;
-                    }
-                }
-                if(!findCheckOrder) {
-                    if(repertoryEntity.getList() != null && !repertoryEntity.getList().isEmpty()) {
-                        forWardAct(repertoryEntity.getList().get(0).getId()+"");
-                    }
-                }
+                PandianResult repertoryEntity = (PandianResult)result.getResult().getData();
+                Intent intent =  new Intent(getContext(), EditRepertoryListActivity.class);
+                intent.putExtra("bean",repertoryEntity);
+                startActivity(intent);
                 break;
         }
-    }
-    private void forWardAct(String id) {
-        Intent intent =  new Intent(getContext(), EditRepertoryListActivity.class);
-        intent.putExtra("id",id);
-        startActivity(intent);
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        ToastUtil.show(mContext,errMsg);
+        switch (where) {
+            case REQUEST_EXIT:
+                dialog.setModel(CustomDialog.LEFT);
+                dialog.setMessage(errMsg);
+                dialog.setLeftBtnListener("我知道了", null);
+                dialog.show();
+                break;
+        }
     }
 }
 

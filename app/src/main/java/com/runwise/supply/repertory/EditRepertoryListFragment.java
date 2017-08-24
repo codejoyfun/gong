@@ -35,6 +35,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditRepertoryResult;
 import com.runwise.supply.repertory.entity.NewAdd;
+import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.repertory.entity.UpdateData;
 import com.runwise.supply.view.NoWatchEditText;
 import com.runwise.supply.view.swipmenu.SwipeMenu;
@@ -61,7 +62,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     public  DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-    private List<EditRepertoryResult.InventoryBean.ListBean> dataList;
+    private List<PandianResult.InventoryBean.LinesBean> dataList;
     private String keyWork;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,12 +86,12 @@ public class EditRepertoryListFragment extends NetWorkFragment {
         pullListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                EditRepertoryResult.InventoryBean.ListBean bean = adapter.getList().remove(position);
+                PandianResult.InventoryBean.LinesBean bean = adapter.getList().remove(position);
                 bean.setChecked(true);
                 int findIndex = 0;
                 boolean findIt = false;
                 for (int i = 0; i< adapter.getList().size(); i++){
-                    EditRepertoryResult.InventoryBean.ListBean entity = adapter.getList().get(i);
+                    PandianResult.InventoryBean.LinesBean entity = adapter.getList().get(i);
                     if(entity.getType() == 1) {
                         findIndex = i;
                         findIt = true;
@@ -110,10 +111,10 @@ public class EditRepertoryListFragment extends NetWorkFragment {
         loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
     }
 
-    public void setData(List<EditRepertoryResult.InventoryBean.ListBean> mDataList) {
-        List<EditRepertoryResult.InventoryBean.ListBean> typeList = new ArrayList<>();
-        for (EditRepertoryResult.InventoryBean.ListBean bean : mDataList){
-            if (bean.getProduct().getStock_type().equals(type.getType())){
+    public void setData(List<PandianResult.InventoryBean.LinesBean> mDataList) {
+        List<PandianResult.InventoryBean.LinesBean> typeList = new ArrayList<>();
+        for (PandianResult.InventoryBean.LinesBean bean : mDataList){
+            if (bean.getProduct().getStockType().equals(type.getType())){
                 typeList.add(bean);
             }
         }
@@ -123,8 +124,8 @@ public class EditRepertoryListFragment extends NetWorkFragment {
         else {
             dataList = typeList;
         }
-        for(EditRepertoryResult.InventoryBean.ListBean bean : dataList) {
-            bean.setEditNum(bean.getActual_qty());
+        for(PandianResult.InventoryBean.LinesBean bean : dataList) {
+            bean.setEditNum(bean.getActualQty());
         }
     }
 
@@ -132,11 +133,11 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     protected int createViewByLayoutId() {
         return R.layout.repertory_layout_list;
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataSynEvent(SearchKeyWork event) {
-        adapter.setData(findArrayByWord(event.getKeyWork()));
-    }
+//
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onDataSynEvent(SearchKeyWork event) {
+//        adapter.setData(findArrayByWord(event.getKeyWork()));
+//    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdate(UpdateData updateData) {
         if(updateData.getType() != type) {
@@ -146,17 +147,17 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     //添加新商品
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddNewBean(NewAdd newBean) {
-        List<EditRepertoryResult.InventoryBean.ListBean> newProductList = newBean.getNewProductList();
-        if(type == DataType.ALL || newProductList.get(0).getProduct().getStock_type().equals(type.getType())) {
+        List<PandianResult.InventoryBean.LinesBean> newProductList = newBean.getNewProductList();
+        if(type == DataType.ALL || newProductList.get(0).getProduct().getStockType().equals(type.getType())) {
             boolean isOtherView = false;
-            for(EditRepertoryResult.InventoryBean.ListBean bean:adapter.getList()) {
+            for(PandianResult.InventoryBean.LinesBean bean:adapter.getList()) {
                 if(bean.getType() == 1) {
                     isOtherView = true;
                     break;
                 }
             }
             if(!isOtherView) {
-                EditRepertoryResult.InventoryBean.ListBean otherBean = new EditRepertoryResult.InventoryBean.ListBean();
+                PandianResult.InventoryBean.LinesBean otherBean = new PandianResult.InventoryBean.LinesBean();
                 otherBean.setType(1);
                 adapter.getList().add(otherBean);
             }
@@ -165,20 +166,20 @@ public class EditRepertoryListFragment extends NetWorkFragment {
             loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
         }
     }
-    //返回当前标签下名称包含的
-    private List<EditRepertoryResult.InventoryBean.ListBean> findArrayByWord(String word) {
-        keyWork = word;
-        List<EditRepertoryResult.InventoryBean.ListBean> findList = new ArrayList<>();
-        if(TextUtils.isEmpty(word)) {
-            return dataList;
-        }
-        for (EditRepertoryResult.InventoryBean.ListBean bean : dataList){
-            if (bean.getProduct().getName().contains(word)) {
-                findList.add(bean);
-            }
-        }
-        return findList;
-    }
+//    //返回当前标签下名称包含的
+//    private List<PandianResult.InventoryBean.LinesBean> findArrayByWord(String word) {
+//        keyWork = word;
+//        List<PandianResult.InventoryBean.LinesBean> findList = new ArrayList<>();
+//        if(TextUtils.isEmpty(word)) {
+//            return dataList;
+//        }
+//        for (PandianResult.InventoryBean.LinesBean bean : dataList){
+//            if (bean.getProduct().getName().contains(word)) {
+//                findList.add(bean);
+//            }
+//        }
+//        return findList;
+//    }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -189,11 +190,11 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
-    public List<EditRepertoryResult.InventoryBean.ListBean> getFinalDataList() {
+    public List<PandianResult.InventoryBean.LinesBean> getFinalDataList() {
         return adapter.getList();
     }
 
-        public class ProductAdapter extends IBaseAdapter<EditRepertoryResult.InventoryBean.ListBean> implements ListAdapter {
+        public class ProductAdapter extends IBaseAdapter<PandianResult.InventoryBean.LinesBean> implements ListAdapter {
             @Override
             protected View getExView(int position, View convertView, ViewGroup parent) {
                 final ViewHolder viewHolder;
@@ -214,24 +215,10 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                 else {
                     viewHolder = (ViewHolder) convertView.getTag();
                 }
-                final EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+                final PandianResult.InventoryBean.LinesBean bean =  mList.get(position);
                 switch (viewType){
                     case 0:
                         viewHolder.editText.removeTextChangedListener();
-//                        viewHolder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//                            @Override
-//                            public void onFocusChange(View view, boolean b) {
-//                                if(b) {
-////                                    viewHolder.editText.setText("");
-//                                    LogUtils.e("得到");
-//                                }
-//                                else {
-////                                    viewHolder.editText.setText(bean.getEditNum()+"");
-//                                    LogUtils.e("失去");
-//
-//                                }
-//                            }
-//                        });
                         viewHolder.editText.addTextChangedListener(new TextWatcher() {
                             @Override
                             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -244,7 +231,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                             public void afterTextChanged(Editable editable) {
                                 if(!TextUtils.isEmpty(editable.toString())) {
                                     bean.setEditNum(Integer.parseInt(editable.toString()));
-                                    if(bean.getEditNum() == bean.getActual_qty()) {
+                                    if(bean.getEditNum() == bean.getActualQty()) {
                                         viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
                                     }
                                     else{
@@ -259,14 +246,14 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                                 }
                             }
                         });
-                        if(bean.getEditNum() == bean.getActual_qty()) {
+                        if(bean.getEditNum() == bean.getActualQty()) {
                             viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
                         }
                         else{
                             viewHolder.editText.setTextColor(Color.parseColor("#444444"));
                         }
                         viewHolder.editText.setText(bean.getEditNum()+"");
-                        EditRepertoryResult.InventoryBean.ListBean.ProductBean productBean = bean.getProduct();
+                        ProductBasicList.ListBean productBean = bean.getProduct();
                         if (productBean != null){
                             if(!TextUtils.isEmpty(keyWork)) {
                                 int index = productBean.getName().indexOf(keyWork);
@@ -279,20 +266,14 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                             else {
                                 viewHolder.name.setText(productBean.getName());
                             }
-                            viewHolder.number.setText(productBean.getDefault_code() + " | ");
+                            viewHolder.number.setText(bean.getCode() + " | ");
                             viewHolder.content.setText(productBean.getUnit());
-                            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
+                            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
                         }
-                        viewHolder.value.setText("库存" + bean.getActual_qty()+"");
-                        ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProduct().getId()));
-                        if(basicBean != null) {
-                            viewHolder.uom.setText(basicBean.getUom());
-                        }
-                        else {
-                            viewHolder.uom.setText("");
-                        }
-                        viewHolder.dateNumber.setText(bean.getLot_num());
-                        viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
+                        viewHolder.value.setText("库存" + bean.getActualQty()+"");
+                        viewHolder.uom.setText(productBean.getUom());
+                        viewHolder.dateNumber.setText(bean.getLotNum());
+                        viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLifeEndDate()));
                         if(bean.isChecked()) {
                             viewHolder.rootLayout.setBackgroundColor(Color.parseColor("#fefce8"));
                         }
@@ -305,7 +286,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
             }
             @Override
             public boolean isEnabled(int position){
-                EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+                PandianResult.InventoryBean.LinesBean bean =  mList.get(position);
                 if(bean.getType() == 0) {
                     return true;
                 }
@@ -318,7 +299,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
 
             @Override
             public int getItemViewType(int position) {
-                EditRepertoryResult.InventoryBean.ListBean bean =  mList.get(position);
+                PandianResult.InventoryBean.LinesBean bean =  mList.get(position);
                 return bean.getType();
             }
 

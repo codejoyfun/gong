@@ -324,6 +324,9 @@ public class MainActivity extends NetWorkActivity {
         }
     }
     public int getCurrentTabIndex(){
+        if( mTabHost == null) {
+            return 0;
+        }
         return mTabHost.getCurrentTab();
     }
 }

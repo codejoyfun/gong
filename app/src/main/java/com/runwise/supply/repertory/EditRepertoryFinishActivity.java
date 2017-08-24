@@ -8,7 +8,10 @@ import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.CheckActivity;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.UserUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 
 public class EditRepertoryFinishActivity extends BaseActivity {
@@ -38,4 +41,9 @@ public class EditRepertoryFinishActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().post(new UpdateRepertory());
+    }
 }

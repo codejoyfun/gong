@@ -530,6 +530,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent">
                             <TextView
+                                android:id="@+id/moneyNuit"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#36cf00"
@@ -543,6 +544,7 @@
 
                     </LinearLayout>
                     <TextView
+                        android:id="@+id/showText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#6b6b6b"

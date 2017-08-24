@@ -147,7 +147,7 @@
             android:text="单号 1232132"
             android:layout_gravity="center"
             android:id="@+id/textView2"
-            android:visibility="gone"
+            android:visibility="visible"
             />
     </FrameLayout>
 
