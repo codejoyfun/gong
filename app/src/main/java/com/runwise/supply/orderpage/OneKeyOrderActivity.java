@@ -166,7 +166,6 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                         adapter.setAllSelect(false);
                     }
                 }
-                isInitiative = true;
             }
         });
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();

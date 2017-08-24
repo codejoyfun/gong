@@ -366,25 +366,25 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     setDeleteBtnOk(true);
                     adapter.setAllSelect(true);
                 }
+                isInitiative = true;
             }
         });
-//        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isInitiative){
-//                    if (isChecked){
-//                        //adapter里面所有的选中
-//                        setDeleteBtnOk(true);
-//                        adapter.setAllSelect(true);
-//                    }else{
-//                        //清掉adapter里面所有选中的状态
-//                        setDeleteBtnOk(false);
-//                        adapter.setAllSelect(false);
-//                    }
-//                }
-//                isInitiative = true;
-//            }
-//        });
+        allCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isInitiative){
+                    if (isChecked){
+                        //adapter里面所有的选中
+                        setDeleteBtnOk(true);
+                        adapter.setAllSelect(true);
+                    }else{
+                        //清掉adapter里面所有选中的状态
+                        setDeleteBtnOk(false);
+                        adapter.setAllSelect(false);
+                    }
+                }
+            }
+        });
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (!canSeePrice){
             totalMoneyTv.setVisibility(View.GONE);
