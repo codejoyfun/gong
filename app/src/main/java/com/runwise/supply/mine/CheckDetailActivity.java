@@ -18,6 +18,8 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -44,6 +46,10 @@ public class CheckDetailActivity extends BaseActivity {
     private TextView text4;
     @ViewInject(R.id.text5)
     private TextView text5;
+    private CheckResult.ListBean bean;
+
+    private List<String> titleList = new ArrayList<>();
+    private List<Fragment> fragmentList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,15 +59,50 @@ public class CheckDetailActivity extends BaseActivity {
 
         this.setTitleText(true,"盘点记录详情");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
+        bean = (CheckResult.ListBean)this.getIntent().getSerializableExtra("bean");
+        for(CheckResult.ListBean.LinesBean lines: bean.getLines()) {
+            ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(lines.getProductID()));
+            if( product == null) {
+                product = new ProductBasicList.ListBean();
+                product.setStockType("gege");
+            }
+            lines.setProduct(product);
+        }
+
+        titleList.add("全部");
+        titleList.add("冷藏货");
+        titleList.add("冻货");
+        titleList.add("干货");
+        CheckDetailListFragment allFragment = new CheckDetailListFragment();
+        allFragment.type = DataType.ALL;
+        allFragment.setData(bean);
+
+        CheckDetailListFragment coldFragment = new CheckDetailListFragment();
+        coldFragment.type = DataType.LENGCANGHUO;
+        coldFragment.setData(bean);
+
+        CheckDetailListFragment freezeFragment = new CheckDetailListFragment();
+        freezeFragment.type = DataType.FREEZE;
+        freezeFragment.setData(bean);
+
+        CheckDetailListFragment dryFragment = new CheckDetailListFragment();
+        dryFragment.type = DataType.DRY;
+        dryFragment.setData(bean);
+
+        fragmentList.add(allFragment);
+        fragmentList.add(coldFragment);
+        fragmentList.add(freezeFragment);
+        fragmentList.add(dryFragment);
+
         adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 //        viewPager.setOffscreenPageLimit(4);
         smartTabLayout.setViewPager(viewPager);
         int position = this.getIntent().getIntExtra("position",0);
         viewPager.setCurrentItem(position,false);
-        CheckResult.ListBean bean = (CheckResult.ListBean)this.getIntent().getSerializableExtra("bean");
+
         text1.setText("盘点人员："+bean.getCreateUser());
-        text2.setText("盘点单号："+bean.getNum());
+        text2.setText("盘点单号："+bean.getName());
         text3.setText("盘点日期："+TimeUtils.getTimeStamps3(bean.getCreateDate()));
         if(GlobalApplication.getInstance().getCanSeePrice()) {
             text5.setText("¥"+bean.getValue()+"");
@@ -86,38 +127,19 @@ public class CheckDetailActivity extends BaseActivity {
             text5.setText("盘点中");
         }
     }
+    public CheckResult.ListBean getDataBean() {
+        return bean;
+    }
     @OnClick(R.id.left_layout)
     public void doBack(View view) {
         finish();
     }
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
-        private List<String> titleList = new ArrayList<>();
-        private List<Fragment> fragmentList = new ArrayList<>();
+
         public TabPageIndicatorAdapter(FragmentManager fm) {
             super(fm);
             
-            titleList.add("全部");
-            titleList.add("冷藏货");
-            titleList.add("冻货");
-            titleList.add("干货");
-            Bundle bundle = new Bundle();
-            CheckDetailListFragment allFragment = new CheckDetailListFragment();
-            allFragment.type = DataType.ALL;
-            allFragment.setArguments(bundle);
-            CheckDetailListFragment coldFragment = new CheckDetailListFragment();
-            coldFragment.type = DataType.LENGCANGHUO;
-            coldFragment.setArguments(bundle);
-            CheckDetailListFragment freezeFragment = new CheckDetailListFragment();
-            freezeFragment.type = DataType.FREEZE;
-            freezeFragment.setArguments(bundle);
-            CheckDetailListFragment dryFragment = new CheckDetailListFragment();
-            dryFragment.type = DataType.DRY;
-            dryFragment.setArguments(bundle);
 
-            fragmentList.add(allFragment);
-            fragmentList.add(coldFragment);
-            fragmentList.add(freezeFragment);
-            fragmentList.add(dryFragment);
         }
         @Override
         public Fragment getItem(int position) {

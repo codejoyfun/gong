@@ -16,19 +16,16 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
-import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
-import com.runwise.supply.mine.entity.OrderEntity;
 import com.runwise.supply.tools.TimeUtils;
 
 /**
@@ -203,7 +200,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                     }
                 });
             }
-            if ("confirm".equals(bean.getState()) && !bean.getCreateUser().equals(mName)) {
+            else if ("confirm".equals(bean.getState()) && !bean.getCreateUser().equals(mName)) {
                 holder.money.setVisibility(View.VISIBLE);
                 holder.handlerBtn.setVisibility(View.GONE);
                 holder.money.setTextColor(Color.parseColor("#3d3d3d"));

@@ -2,14 +2,15 @@ package com.runwise.supply.tools;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.icu.text.DecimalFormat;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.runwise.supply.LoginActivity;
 import com.kids.commonframe.base.util.SPUtils;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by myChaoFile on 16/12/1.

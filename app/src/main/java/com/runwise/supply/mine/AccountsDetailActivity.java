@@ -189,7 +189,7 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
             final CheckOrderData.BankStatementBean.OrdersBean bean =  mList.get(position);
             viewHolder.date.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
             viewHolder.name.setText(bean.getName());
-            if(TextUtils.isEmpty(bean.getAmount())) {
+            if(!TextUtils.isEmpty(bean.getAmount())) {
                 viewHolder.sum.setText("共" + Integer.parseInt(bean.getAmount()) + "件商品");
             }
             else{

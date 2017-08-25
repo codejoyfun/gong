@@ -7,13 +7,22 @@ import java.util.List;
  */
 
 public class NewAdd {
-    private List<PandianResult.InventoryBean.LinesBean> newProductList;
+    private int type;
+    private PandianResult.InventoryBean.LinesBean bean;
 
-    public List<PandianResult.InventoryBean.LinesBean> getNewProductList() {
-        return newProductList;
+    public PandianResult.InventoryBean.LinesBean getBean() {
+        return bean;
     }
 
-    public void setNewProductList(List<PandianResult.InventoryBean.LinesBean> newProductList) {
-        this.newProductList = newProductList;
+    public void setBean(PandianResult.InventoryBean.LinesBean bean) {
+        this.bean = bean;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

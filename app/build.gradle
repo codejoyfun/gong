@@ -42,7 +42,7 @@ android {
     }
     productFlavors {
         instant {
-            minSdkVersion 21
+            minSdkVersion 19
         }
         app {
             minSdkVersion 14
@@ -62,10 +62,10 @@ android {
     signingConfigs {
 //        debug {
 //            //debug也用正式证书编译，方便调试分享等
-//            storeFile file("../carKeystore.jks")
-//            storePassword "redharecar"
-//            keyAlias "redharecar"
-//            keyPassword "redharecar"
+//            storeFile file("../fruitKeystore.jks")
+//            storePassword "runwise"
+//            keyAlias "runwise"
+//            keyPassword "runwise"
 //        }
 
         release {

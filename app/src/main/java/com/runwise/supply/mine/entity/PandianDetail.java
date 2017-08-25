@@ -1,6 +1,7 @@
 package com.runwise.supply.mine.entity;
 
 import com.kids.commonframe.base.BaseEntity;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.List;
 
@@ -50,200 +51,118 @@ public class PandianDetail extends BaseEntity.ResultBean {
         }
 
         public static class ListBean {
+
             /**
-             * life_end_date : 2017-11-24 11:54:37
-             * product : {"name":"一号灌汤包馅料","image":{"image":"/gongfu/image/product/20/image/","image_medium":"/gongfu/image/product/20/image_medium/","image_small":"/gongfu/image/product/20/image_small/"},"barcode":"","stock_type":"donghuo","default_code":"11012213","id":20,"unit":"300g/袋"}
-             * theoretical_qty : 0.0
-             * lot_num : 1234
-             * lot_id : 1610
-             * id : 1610
-             * unit_price : 15.2
-             * actual_qty : 1.0
+             * theoreticalQty : 20.0
+             * lifeEndDate : 2017-09-07 18:23:02
+             * actualQty : 0.0
+             * inventoryLineID : 1605
+             * code : 11012312
+             * lotID : 256
+             * lotNum : Z170823000025
+             * unitPrice : 10.0
+             * diff : -20.0
+             * productID : 42
              */
 
-            private String life_end_date;
-            private ProductBean product;
-            private double theoretical_qty;
-            private String lot_num;
-            private int lot_id;
-            private int id;
-            private double unit_price;
-            private int actual_qty;
+            private int theoreticalQty;
+            private String lifeEndDate;
+            private int actualQty;
+            private int inventoryLineID;
+            private String code;
+            private int lotID;
+            private String lotNum;
+            private double unitPrice;
+            private int diff;
+            private int productID;
+            private ProductBasicList.ListBean product;
 
-            public String getLife_end_date() {
-                return life_end_date;
+            public int getTheoreticalQty() {
+                return theoreticalQty;
             }
 
-            public void setLife_end_date(String life_end_date) {
-                this.life_end_date = life_end_date;
+            public void setTheoreticalQty(int theoreticalQty) {
+                this.theoreticalQty = theoreticalQty;
             }
 
-            public ProductBean getProduct() {
+            public String getLifeEndDate() {
+                return lifeEndDate;
+            }
+
+            public void setLifeEndDate(String lifeEndDate) {
+                this.lifeEndDate = lifeEndDate;
+            }
+
+            public int getActualQty() {
+                return actualQty;
+            }
+
+            public void setActualQty(int actualQty) {
+                this.actualQty = actualQty;
+            }
+
+            public int getInventoryLineID() {
+                return inventoryLineID;
+            }
+
+            public void setInventoryLineID(int inventoryLineID) {
+                this.inventoryLineID = inventoryLineID;
+            }
+
+            public String getCode() {
+                return code;
+            }
+
+            public void setCode(String code) {
+                this.code = code;
+            }
+
+            public int getLotID() {
+                return lotID;
+            }
+
+            public void setLotID(int lotID) {
+                this.lotID = lotID;
+            }
+
+            public String getLotNum() {
+                return lotNum;
+            }
+
+            public void setLotNum(String lotNum) {
+                this.lotNum = lotNum;
+            }
+
+            public double getUnitPrice() {
+                return unitPrice;
+            }
+
+            public void setUnitPrice(double unitPrice) {
+                this.unitPrice = unitPrice;
+            }
+
+            public int getDiff() {
+                return diff;
+            }
+
+            public void setDiff(int diff) {
+                this.diff = diff;
+            }
+
+            public int getProductID() {
+                return productID;
+            }
+
+            public void setProductID(int productID) {
+                this.productID = productID;
+            }
+
+            public ProductBasicList.ListBean getProduct() {
                 return product;
             }
 
-            public void setProduct(ProductBean product) {
+            public void setProduct(ProductBasicList.ListBean product) {
                 this.product = product;
-            }
-
-            public double getTheoretical_qty() {
-                return theoretical_qty;
-            }
-
-            public void setTheoretical_qty(double theoretical_qty) {
-                this.theoretical_qty = theoretical_qty;
-            }
-
-            public String getLot_num() {
-                return lot_num;
-            }
-
-            public void setLot_num(String lot_num) {
-                this.lot_num = lot_num;
-            }
-
-            public int getLot_id() {
-                return lot_id;
-            }
-
-            public void setLot_id(int lot_id) {
-                this.lot_id = lot_id;
-            }
-
-            public int getId() {
-                return id;
-            }
-
-            public void setId(int id) {
-                this.id = id;
-            }
-
-            public double getUnit_price() {
-                return unit_price;
-            }
-
-            public void setUnit_price(int unit_price) {
-                this.unit_price = unit_price;
-            }
-
-            public int getActual_qty() {
-                return actual_qty;
-            }
-
-            public void setActual_qty(int actual_qty) {
-                this.actual_qty = actual_qty;
-            }
-
-            public static class ProductBean {
-                /**
-                 * name : 一号灌汤包馅料
-                 * image : {"image":"/gongfu/image/product/20/image/","image_medium":"/gongfu/image/product/20/image_medium/","image_small":"/gongfu/image/product/20/image_small/"}
-                 * barcode :
-                 * stock_type : donghuo
-                 * default_code : 11012213
-                 * id : 20
-                 * unit : 300g/袋
-                 */
-
-                private String name;
-                private ImageBean image;
-                private String barcode;
-                private String stock_type;
-                private String default_code;
-                private int id;
-                private String unit;
-
-                public String getName() {
-                    return name;
-                }
-
-                public void setName(String name) {
-                    this.name = name;
-                }
-
-                public ImageBean getImage() {
-                    return image;
-                }
-
-                public void setImage(ImageBean image) {
-                    this.image = image;
-                }
-
-                public String getBarcode() {
-                    return barcode;
-                }
-
-                public void setBarcode(String barcode) {
-                    this.barcode = barcode;
-                }
-
-                public String getStock_type() {
-                    return stock_type;
-                }
-
-                public void setStock_type(String stock_type) {
-                    this.stock_type = stock_type;
-                }
-
-                public String getDefault_code() {
-                    return default_code;
-                }
-
-                public void setDefault_code(String default_code) {
-                    this.default_code = default_code;
-                }
-
-                public int getId() {
-                    return id;
-                }
-
-                public void setId(int id) {
-                    this.id = id;
-                }
-
-                public String getUnit() {
-                    return unit;
-                }
-
-                public void setUnit(String unit) {
-                    this.unit = unit;
-                }
-
-                public static class ImageBean {
-                    /**
-                     * image : /gongfu/image/product/20/image/
-                     * image_medium : /gongfu/image/product/20/image_medium/
-                     * image_small : /gongfu/image/product/20/image_small/
-                     */
-
-                    private String image;
-                    private String image_medium;
-                    private String image_small;
-
-                    public String getImage() {
-                        return image;
-                    }
-
-                    public void setImage(String image) {
-                        this.image = image;
-                    }
-
-                    public String getImage_medium() {
-                        return image_medium;
-                    }
-
-                    public void setImage_medium(String image_medium) {
-                        this.image_medium = image_medium;
-                    }
-
-                    public String getImage_small() {
-                        return image_small;
-                    }
-
-                    public void setImage_small(String image_small) {
-                        this.image_small = image_small;
-                    }
-                }
             }
         }
     }

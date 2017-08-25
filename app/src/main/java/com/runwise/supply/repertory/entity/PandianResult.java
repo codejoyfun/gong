@@ -124,7 +124,7 @@ public class PandianResult implements Serializable{
              * productID : 42
              */
 
-            private double theoreticalQty;
+            private int theoreticalQty;
             private String lifeEndDate;
             private int actualQty;
             private int inventoryLineID;
@@ -171,11 +171,11 @@ public class PandianResult implements Serializable{
                 this.type = type;
             }
 
-            public double getTheoreticalQty() {
+            public int getTheoreticalQty() {
                 return theoreticalQty;
             }
 
-            public void setTheoreticalQty(double theoreticalQty) {
+            public void setTheoreticalQty(int theoreticalQty) {
                 this.theoreticalQty = theoreticalQty;
             }
 

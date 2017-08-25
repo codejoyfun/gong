@@ -427,8 +427,9 @@
                 android:layout_marginRight="10dp"
                 android:src="@drawable/more_img"/>
             <View
-                android:layout_width="6dp"
-                android:layout_height="6dp"
+                android:id="@+id/orderRed"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
                 android:layout_toLeftOf="@id/rightRow"
                 android:layout_marginRight="6dp"
                 android:background="@drawable/red_shap"

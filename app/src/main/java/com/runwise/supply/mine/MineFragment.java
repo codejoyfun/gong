@@ -70,6 +70,9 @@ public class MineFragment extends NetWorkFragment {
     private TextView moneyNuit;
     @ViewInject(R.id.showText)
     private TextView showText;
+
+    @ViewInject(R.id.orderRed)
+    private View orderRed;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,6 +114,9 @@ public class MineFragment extends NetWorkFragment {
         }
         Object request = null;
         sendConnection("/api/sale/shop/info", request, REQUEST_SUM, false, SumMoneyData.class);
+    }
+    private void requestUserInfo() {
+
     }
 
     private void setLogoutStatus() {

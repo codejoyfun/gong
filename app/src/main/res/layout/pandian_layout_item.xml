@@ -117,8 +117,17 @@
                  android:id="@+id/dateLate"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
-                 android:text="天到期"
-                 android:textColor="#f55f5e"
+                 android:text="63"
+                 android:textColor="#3c3c3c"
+                 android:textSize="14sp"
+                 android:gravity="right"
+                 />
+             <TextView
+                 android:id="@+id/dateLate1"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="/1"
+                 android:textColor="#a4a4a4"
                  android:textSize="14sp"
                  android:gravity="right"
                  />

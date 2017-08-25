@@ -17,8 +17,10 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.RepertoryEntity;
-import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ImageBean;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,6 +93,26 @@ public class RepertoryFragment extends NetWorkFragment {
         switch (where) {
             case PRODUCT_GET:
                 RepertoryEntity repertoryEntity = (RepertoryEntity)result.getResult();
+                List<RepertoryEntity.ListBean> productList = repertoryEntity.getList();
+                for(RepertoryEntity.ListBean bean : productList) {
+                    ProductBasicList.ListBean baseProduct = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProduct().getId()));
+                    if( baseProduct == null ) {
+                        RepertoryEntity.ListBean.ProductBean oldProduct = bean.getProduct();
+                        ProductBasicList.ListBean product = new ProductBasicList.ListBean();
+                        product.setProductID(oldProduct.getId());
+                        product.setName(oldProduct.getName());
+                        product.setBarcode(oldProduct.getBarcode());
+                        product.setStockType(oldProduct.getStock_type());
+                        product.setDefaultCode(oldProduct.getDefault_code());
+                        product.setUnit(oldProduct.getUnit());
+                        ImageBean imageBean = new ImageBean();
+                        imageBean.setImage(oldProduct.getImage().getImage());
+                        imageBean.setImageSmall(oldProduct.getImage().getImage_small());
+                        imageBean.setImageMedium(oldProduct.getImage().getImage_medium());
+                        product.setImage(imageBean);
+                        ProductBasicUtils.getBasicMap(mContext).put(oldProduct.getId()+"",product);
+                    }
+                }
                 EventBus.getDefault().post(repertoryEntity);
                 break;
         }

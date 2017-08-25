@@ -20,6 +20,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditRepertoryResult;
 import com.runwise.supply.repertory.entity.EditRequest;
 import com.runwise.supply.repertory.entity.PandianResult;
@@ -70,10 +71,15 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 		setTitleText(true, "盘点");
 		Object param = null;
 		pandianResult = (PandianResult) this.getIntent().getSerializableExtra("bean");
-		textView2.setText(pandianResult.getInventory().getName());
+		textView2.setText("单号" + pandianResult.getInventory().getName());
 		List<PandianResult.InventoryBean.LinesBean> linesBeanList = pandianResult.getInventory().getLines();
 		for(PandianResult.InventoryBean.LinesBean bean : linesBeanList) {
-			bean.setProduct(ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID())));
+			ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
+			if( product == null) {
+				product = new ProductBasicList.ListBean();
+				product.setStockType("gege");
+			}
+			bean.setProduct(product);
 		}
 		Bundle bundle = new Bundle();
 		allFragment = new EditRepertoryListFragment();

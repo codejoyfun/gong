@@ -2,11 +2,7 @@ package com.runwise.supply.mine;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,7 +16,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
@@ -29,9 +24,10 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
+import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.mine.entity.PandianDetail;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +49,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
 
     private int page = 1;
     public DataType type;
+    private List<CheckResult.ListBean.LinesBean> typeList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,11 +82,25 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        requestData(false, REQUEST_MAIN, page, 10);
-        loadingLayout.setStatusLoading();
+//        requestData(false, REQUEST_MAIN, page, 10);
+//        loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
+        adapter.setData(typeList);
+        loadingLayout.onSuccess(adapter.getCount(),"暂时没有记录");
     }
 
+    public void setData(CheckResult.ListBean dataBean) {
+        List<CheckResult.ListBean.LinesBean> typeList = new ArrayList<>();
+        if(type == DataType.ALL) {
+            typeList = dataBean.getLines();
+        }
+        for (CheckResult.ListBean.LinesBean bean : dataBean.getLines()){
+            if (bean.getProduct().getStockType().equals(type.getType())){
+                typeList.add(bean);
+            }
+        }
+        this.typeList = typeList;
+    }
 
     public void requestData (boolean showDialog,int where, int page,int limit) {
         PageRequest request = null;
@@ -104,7 +115,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
         }
         List<PandianDetail.InventoryBean.ListBean> typeList = new ArrayList<>();
         for (PandianDetail.InventoryBean.ListBean bean : prodectList){
-            if (bean.getProduct().getStock_type().equals(type.getType())){
+            if (bean.getProduct().getStockType().equals(type.getType())){
                 typeList.add(bean);
             }
         }
@@ -116,19 +127,18 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
         switch (where) {
             case REQUEST_MAIN:
                 PandianDetail mainListResult = (PandianDetail)result.getResult();
-                adapter.setData(handlerDataList(mainListResult.getInventory().getList()));
-                loadingLayout.onSuccess(adapter.getCount(),"暂时没有记录");
+
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
                 PandianDetail startListResult = (PandianDetail)result.getResult();
-                adapter.setData(startListResult.getInventory().getList());
+//                adapter.setData(handlerDataList(startListResult.getInventory().getList()));
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
                 PandianDetail sndListResult = (PandianDetail)result.getResult();
                 if (sndListResult.getInventory().getList() != null && !sndListResult.getInventory().getList().isEmpty()) {
-                    adapter.appendData(sndListResult.getInventory().getList());
+//                    adapter.appendData(handlerDataList(sndListResult.getInventory().getList()));
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 }
                 else {
@@ -164,7 +174,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
     }
 
 
-    public class PriceAdapter extends IBaseAdapter<PandianDetail.InventoryBean.ListBean>{
+    public class PriceAdapter extends IBaseAdapter<CheckResult.ListBean.LinesBean>{
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -177,18 +187,30 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final PandianDetail.InventoryBean.ListBean bean =  mList.get(position);
-            PandianDetail.InventoryBean.ListBean.ProductBean productBean = bean.getProduct();
+            final CheckResult.ListBean.LinesBean bean =  mList.get(position);
+            ProductBasicList.ListBean productBean = bean.getProduct();
             if (productBean != null){
                 viewHolder.name.setText(productBean.getName());
-                viewHolder.number.setText(productBean.getDefault_code() + " | ");
+                viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
+                if(productBean.getImage() != null)
+                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
             }
-            viewHolder.value.setText(bean.getActual_qty()+"");
-//            viewHolder.uom.setText(bean.getU);
-            viewHolder.dateNumber.setText(bean.getLot_num());
-            viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
+            viewHolder.dateNumber.setText(bean.getLotNum());
+
+            if( bean.getDiff() == 0) {
+                viewHolder.value.setText("--");
+                viewHolder.value.setTextColor(Color.parseColor("#9b9b9b"));            }
+            else if(bean.getDiff() > 0) {
+                viewHolder.value.setText(bean.getDiff()+"");
+                viewHolder.value.setTextColor(Color.parseColor("#9cb62e"));
+            }
+            else{
+                viewHolder.value.setText(bean.getDiff()+"");
+                viewHolder.value.setTextColor(Color.parseColor("#e75967"));
+            }
+            viewHolder.dateLate.setText(bean.getActualQty()+"");
+            viewHolder.dateLate1.setText("/"+bean.getTheoreticalQty());
             return convertView;
         }
 
@@ -209,6 +231,8 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
             TextView         dateNumber;
             @ViewInject(R.id.dateLate)
             TextView            dateLate;
+            @ViewInject(R.id.dateLate1)
+            TextView            dateLate1;
 
 
         }

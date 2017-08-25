@@ -1,43 +1,21 @@
 package com.runwise.supply.repertory;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
-
 
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
-import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
-import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
-import com.runwise.supply.business.entity.DealerEnity;
-import com.runwise.supply.business.entity.DealerRequest;
-import com.runwise.supply.business.entity.DealerResponse;
-import com.runwise.supply.business.entity.DealerEnity;
 import com.runwise.supply.mine.RepertoryFragment;
-import com.runwise.supply.mine.entity.CheckResult;
-import com.runwise.supply.mine.entity.ProductData;
-import com.runwise.supply.mine.entity.RepertoryEntity;
-import com.runwise.supply.repertory.EditRepertoryListActivity;
 import com.runwise.supply.repertory.entity.PandianResult;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 库存
@@ -64,6 +42,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
     }
     @OnClick(R.id.left_layout)
     public void leftClick(View view){
+        startActivity(new Intent(mContext,DealerSearchActivity.class));
     }
     @OnClick(R.id.right_layout)
     public void rightClick(View view){

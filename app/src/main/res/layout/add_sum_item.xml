@@ -22,7 +22,7 @@
             >
             <com.facebook.drawee.view.SimpleDraweeView
                 xmlns:fresco="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/productImage"
+                android:id="@+id/productImage1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 fresco:placeholderImageScaleType="focusCrop"
@@ -45,7 +45,7 @@
                 android:orientation="horizontal"
                 >
                 <TextView
-                    android:id="@+id/name"
+                    android:id="@+id/name1"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                     android:textSize="16sp"
                     />
                 <ImageView
-                    android:id="@+id/colseIcon"
+                    android:id="@+id/colseIcon1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="12dp"
@@ -74,7 +74,7 @@
                 android:layout_marginTop="8dp"
                 >
                 <TextView
-                    android:id="@+id/number"
+                    android:id="@+id/number1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="330533 |"
@@ -84,7 +84,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/content"
+                    android:id="@+id/content1"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
@@ -107,79 +107,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tv_batch_tv_serial_number"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            android:maxLines="2"
-            android:text="批次号"
-            android:textColor="@color/black"
-            android:textSize="13sp" />
-
-        <EditText
-            android:id="@+id/et_batch_number"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_toRightOf="@id/tv_batch_tv_serial_number"
-            android:background="@null"
-            android:gravity="center_vertical"
-            android:hint="添加批次号(选填)"
-            android:maxLines="2"
-            android:textColor="@color/black"
-            android:textSize="13sp" />
-
-        <View
-            android:id="@+id/v_line1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/et_batch_number"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/repertory_shadow" />
-
-        <TextView
-            android:id="@+id/tv_product_date"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:layout_below="@id/v_line1"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            android:maxLines="2"
-            android:text="生产日期"
-            android:textColor="@color/black"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/tv_product_date_value"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_below="@id/v_line1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_toRightOf="@id/tv_product_date"
-            android:background="@null"
-            android:gravity="center_vertical"
-            android:maxLines="2"
-            android:textColor="@color/black"
-            android:hint="请填写日期"
-            android:textSize="13sp" />
-
-        <View
-            android:id="@+id/v_line2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/tv_product_date"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/repertory_shadow" />
 
 
         <TextView
-            android:id="@+id/tv_product_amount"
+            android:id="@+id/tv_product_amount1"
             android:layout_width="60dp"
             android:layout_height="40dp"
             android:layout_below="@id/v_line2"
@@ -192,13 +123,13 @@
             android:textSize="13sp" />
 
         <EditText
-            android:id="@+id/et_product_amount"
+            android:id="@+id/et_product_amount1"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_below="@id/v_line2"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:layout_toRightOf="@id/tv_product_amount"
+            android:layout_toRightOf="@id/tv_product_amount1"
             android:background="@null"
             android:gravity="center_vertical"
             android:maxLines="2"
@@ -211,7 +142,7 @@
 
     </RelativeLayout>
     <TextView
-        android:id="@+id/finalButton"
+        android:id="@+id/finalButton1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/finish_btn_selector"
