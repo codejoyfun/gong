@@ -89,13 +89,27 @@
         android:layout_height="match_parent"
         android:background="#90000000"
         android:visibility="gone"
-        ></View>
-    <include
+        />
+    <FrameLayout
         android:id="@+id/addRootView"
-        layout="@layout/add_repertory_item"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
-        />
+        >
+        <include
+            android:id="@+id/popView1"
+            layout="@layout/add_repertory_item"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            />
+        <include
+            android:id="@+id/popView2"
+            layout="@layout/add_sum_item"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            />
+    </FrameLayout>
 </RelativeLayout>
