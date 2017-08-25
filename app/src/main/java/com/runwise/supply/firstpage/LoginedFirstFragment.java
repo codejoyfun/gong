@@ -373,7 +373,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private void requestLB(){
         Object request = null;
         LunboRequest lbRequest = new LunboRequest("餐户端");
-        sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,false,LunboResponse.class);
+        sendConnection("/gongfu/blog/post/list/login",lbRequest,FROMLB,false,LunboResponse.class);
     }
     private void requestDashBoard(){
         Object request = null;
@@ -435,13 +435,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         int maturityNum = dbResponse.getMaturityNum();
         double adventValue = dbResponse.getAdventValue();
         double maturityValue = dbResponse.getMaturityValue();
-        lastMonthBuy.setText("¥"+df.format(adventValue));
-        unPayAccount.setText("¥"+df.format(maturityValue));
-        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
-        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        lqCountTv.setText(ssLq);
-        SpannableString ssDq = new SpannableString("到期食材"+maturityNum+"件");
-        ssDq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(maturityNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        dqCountTv.setText(ssDq);
+        lastMonthBuy.setText(df.format(adventValue));
+        unPayAccount.setText(df.format(maturityValue));
+//        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
+//        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//        lqCountTv.setText(ssLq);
+//        SpannableString ssDq = new SpannableString("到期食材"+maturityNum+"件");
+//        ssDq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(maturityNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+//        dqCountTv.setText(ssDq);
     }
 }
