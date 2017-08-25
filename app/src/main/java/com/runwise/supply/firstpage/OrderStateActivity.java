@@ -63,7 +63,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             setTitleText(true,"订单状态");
         }
         setTitleLeftIcon(true,R.drawable.nav_back);
-        setTitleRigthIcon(true,R.drawable.nav_contract);
+        setTitleRigthIcon(true,R.drawable.nav_service_message);
         //从上个页面获取数据
         setOrderTracker();
     }
@@ -212,6 +212,8 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                     }
                 }else if(str.contains("已提交")){
                     content.append("订单号：").append(bean.getName());
+                }else if(str.contains("已通知供应商")){
+                    content.append("已通知供应商发货，请耐心等待");
                 }
                 osl.setContent(content.toString());
                 datas.add(osl);

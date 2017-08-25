@@ -2,7 +2,6 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -26,7 +25,6 @@ import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.tools.AndroidWorkaround;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -106,9 +104,9 @@ public class OrderDetailActivity extends NetWorkActivity{
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_detail_layout);
-        if (AndroidWorkaround.checkDeviceHasNavigationBar(this)){
-            AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
-        }
+//        if (AndroidWorkaround.checkDeviceHasNavigationBar(this)){
+//            AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
+//        }
         setTitleText(true,"订单详情");
         setTitleLeftIcon(true,R.drawable.nav_back);
         Bundle bundle = getIntent().getExtras();
