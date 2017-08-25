@@ -1,13 +1,9 @@
 package com.runwise.supply.mine;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -16,21 +12,20 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.mine.entity.RepertoryEntity;
-import com.runwise.supply.mine.entity.SearchKeyAct;
-import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.entity.ProcurementRequest;
+import com.runwise.supply.mine.entity.ProcurementEntity;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,71 +36,60 @@ public class ProcurementFragment extends NetWorkFragment {
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
-    public DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-    private List<RepertoryEntity.ListBean> dataList;
+    private List<ProcurementEntity.ListBean.ProductsBean> dataList = new ArrayList<>();
+    private boolean canSeePrice = true;             //默认价格中可见
+    //选中数量map
+    private static HashMap<String,Integer> countMap = new HashMap<>();
+    public static HashMap<String, Integer> getCountMap() {
+        return countMap;
+    }
     private String keyWork;
+    ArrayList<Integer> mSelection = new ArrayList<>();
+    HashMap<Integer,ProcurementEntity.ListBean> mHeadMap = new HashMap<>();
+
+    public  final int REQUEST_CODE_PROCUREMENT = 1 << 0;
+    public int type;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ProductAdapter();
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
-        if(dataList != null) {
-            adapter.setData(dataList);
-            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
-        }
+        requestData();
     }
     @Override
     protected int createViewByLayoutId() {
         return R.layout.product_layout_list;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataSynEvent(RepertoryEntity event) {
-        List<RepertoryEntity.ListBean> typeList = new ArrayList<>();
-        for (RepertoryEntity.ListBean bean : event.getList()){
-            if (bean.getProduct().getStock_type().equals(type.getType())){
-                typeList.add(bean);
-            }
-        }
-        if(type == DataType.ALL) {
-            dataList = event.getList();
-        }
-        else {
-            dataList = typeList;
-        }
-        if(adapter != null) {
-            adapter.setData(dataList);
-            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
-        }
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataSynEvent(SearchKeyAct event) {
-        if(mContext.getClass().getSimpleName().equals(event.getActName())) {
-            adapter.setData(findArrayByWord(event.getKeyWork()));
-        }
+    private void requestData() {
+        ProcurementRequest procurementRequest = new ProcurementRequest();
+        procurementRequest.setType(type);
+        sendConnection("/gongfu/shop/zicai/list",procurementRequest,REQUEST_CODE_PROCUREMENT, true, ProcurementEntity.class);
     }
 
-    //返回当前标签下名称包含的
-    private List<RepertoryEntity.ListBean> findArrayByWord(String word) {
-        keyWork = word;
-        List<RepertoryEntity.ListBean> findList = new ArrayList<>();
-        if(TextUtils.isEmpty(word)) {
-            return dataList;
-        }
-        for (RepertoryEntity.ListBean bean : dataList){
-            if (bean.getProduct().getName().contains(word)) {
-                findList.add(bean);
-            }
-        }
-        return findList;
-    }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-
+        switch (where) {
+            case REQUEST_CODE_PROCUREMENT:
+                ProcurementEntity procurementEntity = (ProcurementEntity)result.getResult().getData();
+                for (ProcurementEntity.ListBean listBean : procurementEntity.getList()){
+                    mSelection.add(dataList.size());
+                    mHeadMap.put(dataList.size(),listBean);
+                    for (ProcurementEntity.ListBean.ProductsBean productsBean:listBean.getProducts()){
+                        dataList.add(productsBean);
+                    }
+                }
+                if(dataList != null) {
+                    adapter.setData(dataList);
+                    loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+                }
+                break;
+        }
     }
 
     @Override
@@ -113,61 +97,81 @@ public class ProcurementFragment extends NetWorkFragment {
 
     }
 
-    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean> {
+    public class ProductAdapter extends IBaseAdapter<ProcurementEntity.ListBean.ProductsBean> {
+        private boolean ischange;
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
+            final ProcurementEntity.ListBean.ProductsBean bean = (ProcurementEntity.ListBean.ProductsBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.repertory_layout_item, null);
-                ViewUtils.inject(viewHolder,convertView);
+                convertView = View.inflate(mContext, R.layout.procurement_layout_item, null);
+                ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-            }
-            else {
+            } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final RepertoryEntity.ListBean bean =  mList.get(position);
-            RepertoryEntity.ListBean.ProductBean productBean = bean.getProduct();
-            if (productBean != null){
-                if(!TextUtils.isEmpty(keyWork)) {
-                    int index = productBean.getName().indexOf(keyWork);
-                    if(index != -1) {
-                        SpannableString spannStr = new SpannableString(productBean.getName());
-                        spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#6bb400")), index, index + keyWork.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        viewHolder.name.setText(spannStr);
-                    }
+            ischange = true;
+            ischange = false;
+
+            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
+            if (basicBean != null) {
+                viewHolder.name.setText(basicBean.getName());
+                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
+                sb.append("  ").append(basicBean.getUnit());
+                DecimalFormat df = new DecimalFormat("#.##");
+                if (canSeePrice) {
+//                    if (basicBean.isIsTwoUnit()) {
+//                        sb.append("  ¥")
+//                                .append(df.format(Double.valueOf(bean.getSettlePrice())))
+//                                .append("元/")
+//                                .append(bean.getSettleUomId());
+//                    } else {
+//                        sb.append("  ¥")
+//                                .append(df.format(Double.valueOf(bean.getPrice())))
+//                                .append("元/")
+//                                .append(bean.getUom());
+//                    }
                 }
-                else {
-                    viewHolder.name.setText(productBean.getName());
+                viewHolder.content.setText(sb.toString());
+                viewHolder.tvCount.setText(String.valueOf((int)bean.getQty()));
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
+                if (isHead(position)){
+                    viewHolder.rl_head.setVisibility(View.VISIBLE);
+                    ProcurementEntity.ListBean listBean = mHeadMap.get(position);
+                    viewHolder.tv_date.setText(listBean.getDate());
+                    viewHolder.tv_cai_gou_ren.setText("采购人:"+listBean.getUser());
+                }else{
+                    viewHolder.rl_head.setVisibility(View.GONE);
                 }
-                viewHolder.number.setText(productBean.getDefault_code() + " | ");
-                viewHolder.content.setText(productBean.getUnit());
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
             }
-            viewHolder.value.setText(bean.getQty()+"");
-            viewHolder.uom.setText(bean.getUom());
-            viewHolder.dateNumber.setText(bean.getLot_num());
-            viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
             return convertView;
+        }
+
+        private boolean isHead(int position){
+            for (Integer integer:mSelection){
+                if (position == integer){
+                    return true;
+                }
+            }
+            return false;
         }
 
         class ViewHolder {
             @ViewInject(R.id.name)
-            TextView name;
+            TextView            name;   //名称
             @ViewInject(R.id.productImage)
-            SimpleDraweeView sDv;
-            @ViewInject(R.id.number)
-            TextView            number;
+            SimpleDraweeView    sDv;    //头像
             @ViewInject(R.id.content)
-            TextView content;
-            @ViewInject(R.id.value)
-            TextView         value;
-            @ViewInject(R.id.uom)
-            TextView         uom;
-            @ViewInject(R.id.dateNumber)
-            TextView         dateNumber;
-            @ViewInject(R.id.dateLate)
-            TextView            dateLate;
+            TextView            content;//内容
+            @ViewInject(R.id.tv_count)
+            TextView tvCount;//数量
+            @ViewInject(R.id.rl_head)
+            RelativeLayout rl_head;//数量
+            @ViewInject(R.id.tv_date)
+            TextView tv_date;//日期
+            @ViewInject(R.id.tv_cai_gou_ren)
+            TextView tv_cai_gou_ren;//采购人
         }
     }
 }

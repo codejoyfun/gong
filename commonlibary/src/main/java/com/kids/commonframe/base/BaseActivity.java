@@ -226,6 +226,18 @@ public abstract class BaseActivity extends FragmentActivity{
 			view.setVisibility(View.GONE);
 		}
 	}
+	protected void showBackBtn(){
+		ImageView view = (ImageView) findViewById(R.id.title_iv_left);
+			view.setVisibility(View.VISIBLE);
+			view.setImageResource(R.drawable.back_btn);
+		view.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+	}
+
 	protected void setTitleRigthIcon(boolean show, int resid) {
 		ImageView view = (ImageView) findViewById(R.id.title_iv_rigth);
 		if (show) {

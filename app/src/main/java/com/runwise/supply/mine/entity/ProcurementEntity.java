@@ -9,61 +9,74 @@ import java.util.List;
 public class ProcurementEntity {
     private List<ListBean> list;
 
-    public void setList(List<ListBean> list){
+    public List<ListBean> getList() {
+        return list;
+    }
+
+    public void setList(List<ListBean> list) {
         this.list = list;
     }
-    public List<ListBean> getList(){
-        return this.list;
-    }
 
-    public class ListBean{
+    public static class ListBean {
+        /**
+         * date : 2017-08-21
+         * products : [{"qty":5,"productID":26}]
+         * user : 张少军
+         */
+
         private String date;
-
-        private List<Products> products;
-
         private String user;
+        private List<ProductsBean> products;
 
-        public void setDate(String date){
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
             this.date = date;
         }
-        public String getDate(){
-            return this.date;
+
+        public String getUser() {
+            return user;
         }
-        public void setProducts(List<Products> products){
-            this.products = products;
-        }
-        public List<Products> getProducts(){
-            return this.products;
-        }
-        public void setUser(String user){
+
+        public void setUser(String user) {
             this.user = user;
         }
-        public String getUser(){
-            return this.user;
+
+        public List<ProductsBean> getProducts() {
+            return products;
+        }
+
+        public void setProducts(List<ProductsBean> products) {
+            this.products = products;
+        }
+
+        public static class ProductsBean {
+            /**
+             * qty : 5.0
+             * productID : 26
+             */
+
+            private double qty;
+            private int productID;
+
+            public double getQty() {
+                return qty;
+            }
+
+            public void setQty(double qty) {
+                this.qty = qty;
+            }
+
+            public int getProductID() {
+                return productID;
+            }
+
+            public void setProductID(int productID) {
+                this.productID = productID;
+            }
         }
     }
-
-    public class Products
-    {
-        private int qty;
-
-        private int productID;
-
-        public void setQty(int qty){
-            this.qty = qty;
-        }
-        public int getQty(){
-            return this.qty;
-        }
-        public void setProductID(int productID){
-            this.productID = productID;
-        }
-        public int getProductID(){
-            return this.productID;
-        }
-    }
-
-
-
 
 }
