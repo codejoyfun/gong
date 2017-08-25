@@ -1,6 +1,7 @@
 package com.runwise.supply.mine.entity;
 
 import com.kids.commonframe.base.BaseEntity;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.List;
 
@@ -93,6 +94,7 @@ public class RepertoryEntity extends BaseEntity.ResultBean {
         public void setUom(String uom) {
             this.uom = uom;
         }
+
 
         public static class ProductBean {
             /**

@@ -2,12 +2,15 @@ package com.runwise.supply.tools;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.runwise.supply.LoginActivity;
 import com.kids.commonframe.base.util.SPUtils;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by myChaoFile on 16/12/1.
@@ -30,6 +33,14 @@ public class UserUtils {
             return false;
         }
         return true;
+    }
+
+    public static String formatPrice(String price) {
+        if(TextUtils.isEmpty(price)) {
+            return "";
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        return decimalFormat.format(Double.parseDouble(price));
     }
     /*
  根据状态设置订单图标和标签

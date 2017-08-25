@@ -1,13 +1,13 @@
 package com.runwise.supply.mine;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,18 +17,16 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
+import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
-import com.runwise.supply.mine.entity.OrderResult;
 import com.runwise.supply.tools.TimeUtils;
-
-import java.util.Calendar;
 
 /**
  * 盘点记录
@@ -37,6 +35,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
+    private static final int REQUEST_CHANNEL = 4;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -47,6 +46,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
 
     private int page = 1;
     public OrderDataType orderDataType;
+    private String mName;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +82,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         loadingLayout.setStatusLoading();
         requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
+        mName = GlobalApplication.getInstance().loadUserInfo().getUsername();
     }
 
 
@@ -91,22 +92,24 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         request.setPz(page);
         switch (orderDataType) {
             case BENZHOU:
-                request.setStart(TimeUtils.getThisWeekStart());
-                request.setEnd(TimeUtils.getCurrentDate());
+                request.setDate_type(1);
                 break;
             case SHANGZHOU:
-                request.setStart(TimeUtils.getPerWeekStart());
-                request.setEnd(TimeUtils.getPerWeekEnd());
-                break;
-            case SHANGYUE:
-                request.setStart(TimeUtils.getPerMonthStart());
-                request.setEnd(TimeUtils.getPerMonthEnd());
+                request.setDate_type(2);
                 break;
             case GENGZAO:
-                request.setEnd(TimeUtils.getPerMonthStart());
+                request.setDate_type(3);
                 break;
+            default:
+                request.setDate_type(0);
         }
-        sendConnection("/gongfu/shop/inventory/list",request,where,showDialog,CheckResult.class);
+        sendConnection("/api/inventory/list",request,where,showDialog,CheckResult.class);
+    }
+    private void channelPandian(int id) {
+        ChannelPandian request = new ChannelPandian();
+        request.setId(id);
+        request.setState("draft");
+        sendConnection("/api/inventory/state",request,REQUEST_CHANNEL,true,null);
     }
 
 
@@ -114,18 +117,18 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
-                CheckResult mainListResult = (CheckResult)result.getResult();
+                CheckResult mainListResult = (CheckResult)result.getResult().getData();
                 adapter.setData(mainListResult.getList());
                 loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
-                CheckResult startResult = (CheckResult)result.getResult();
+                CheckResult startResult = (CheckResult)result.getResult().getData();
                 adapter.setData(startResult.getList());
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
-                CheckResult endResult = (CheckResult)result.getResult();
+                CheckResult endResult = (CheckResult)result.getResult().getData();
                 if (endResult.getList() != null && !endResult.getList().isEmpty()) {
                     adapter.appendData(endResult.getList());
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);
@@ -133,6 +136,10 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                 else {
                     pullListView.onRefreshComplete(adapter.getCount());
                 }
+                break;
+            case REQUEST_CHANNEL:
+                ToastUtil.show(mContext,"盘点已取消");
+                requestData(false, REQUEST_MAIN, page, 10);
                 break;
         }
     }
@@ -145,27 +152,17 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        OrderEntity bean = (OrderEntity)parent.getAdapter().getItem(position);
-//        Intent intent = new Intent(mContext, IWebViewActivity.class);
-//        intent.putExtra(WebViewActivity.WEB_TITLE,bean.getTitle());
-//        if (bean.getOrder_status() == 1 ) {
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getApply_info_url());
-//            startActivity(intent);
-//        }
-//        else if(bean.getOrder_status() == 11) {
-//            Intent dealIntent = new Intent(this,RequestDetlActivity.class);
-//            startActivity(dealIntent);
-//        }
-//        else{
-//            intent.putExtra(WebViewActivity.WEB_URL, bean.getPeriod_url());
-//            startActivity(intent);
-//        }
+        CheckResult.ListBean bean = (CheckResult.ListBean)parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext, CheckDetailActivity.class);
+        intent.putExtra("id",bean.getInventoryID()+"");
+        intent.putExtra("bean",bean);
+        startActivity(intent);
     }
 
 
     @Override
     protected int createViewByLayoutId() {
-        return R.layout.activity_collection_list;
+        return R.layout.activity_jilu_list;
     }
 
     @Override
@@ -190,33 +187,59 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
             else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            CheckResult.ListBean bean = mList.get(position);
-
-            holder.payStatus.setText(bean.getName());
-            holder.payDate.setText(bean.getCreate_date());
-            holder.number.setText(bean.getName());
-            holder.name.setText(bean.getCreate_partner().getName());
-            holder.money.setText(bean.getDelta_value()+"");
-            if ("confirm".equals(bean.getState())) {
-                holder.payStatus.setText("盘点中");
-                holder.payStatus.setVisibility(View.VISIBLE);
+            final CheckResult.ListBean bean = mList.get(position);
+            holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
+            holder.name.setText(bean.getCreateUser());
+            if ("confirm".equals(bean.getState()) && bean.getCreateUser().equals(mName)) {
+                holder.money.setVisibility(View.GONE);
+                holder.handlerBtn.setVisibility(View.VISIBLE);
+                holder.handlerBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        channelPandian(bean.getInventoryID());
+                    }
+                });
+            }
+            else if ("confirm".equals(bean.getState()) && !bean.getCreateUser().equals(mName)) {
+                holder.money.setVisibility(View.VISIBLE);
+                holder.handlerBtn.setVisibility(View.GONE);
+                holder.money.setTextColor(Color.parseColor("#3d3d3d"));
+                holder.money.setText("盘点中");
             }
             else {
-                holder.payStatus.setVisibility(View.GONE);
+                if(GlobalApplication.getInstance().getCanSeePrice()) {
+                    holder.money.setText("¥"+bean.getValue()+"");
+                    if(bean.getValue() >= 0) {
+                        holder.money.setTextColor(Color.parseColor("#9cb62e"));
+                    }
+                    else{
+                        holder.money.setTextColor(Color.parseColor("#e75967"));
+                    }
+                }
+                else{
+                    holder.money.setText(bean.getNum()+"");
+                    if(bean.getNum() >= 0) {
+                        holder.money.setTextColor(Color.parseColor("#9cb62e"));
+                    }
+                    else{
+                        holder.money.setTextColor(Color.parseColor("#e75967"));
+                    }
+                }
+
+                holder.money.setVisibility(View.VISIBLE);
+                holder.handlerBtn.setVisibility(View.GONE);
             }
             return convertView;
         }
         class ViewHolder {
             @ViewInject(R.id.payDate)
             TextView payDate;
-            @ViewInject(R.id.payStatus)
-            TextView payStatus;
-            @ViewInject(R.id.number)
-            TextView number;
             @ViewInject(R.id.name)
             TextView name;
             @ViewInject(R.id.money)
             TextView money;
+            @ViewInject(R.id.handlerBtn)
+            TextView handlerBtn;
         }
     }
 }

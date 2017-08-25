@@ -19,6 +19,15 @@ public class PageRequest {
     private int limit;
     private int order_id;
     private String waybill_id;
+    private int date_type;
+
+    public int getDate_type() {
+        return date_type;
+    }
+
+    public void setDate_type(int date_type) {
+        this.date_type = date_type;
+    }
 
     public int getPz() {
         return pz;

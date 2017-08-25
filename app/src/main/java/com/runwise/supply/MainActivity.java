@@ -256,6 +256,7 @@ public class MainActivity extends NetWorkActivity {
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
         isLogin = true;
+        queryProductList();
     }
 
     @Override
@@ -317,13 +318,10 @@ public class MainActivity extends NetWorkActivity {
         Object request = null;
         sendConnection("/gongfu/v2/product/list/",request, QUERY_ALL,false, ProductBasicList.class);
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void requestBasicProduct(UserLoginEvent event){
-        if (ProductBasicUtils.getBasicArr().size() == 0){
-            queryProductList();
-        }
-    }
     public int getCurrentTabIndex(){
+        if( mTabHost == null) {
+            return 0;
+        }
         return mTabHost.getCurrentTab();
     }
 }

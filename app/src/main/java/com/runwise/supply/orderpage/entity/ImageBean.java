@@ -6,11 +6,13 @@ import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
 
+import java.io.Serializable;
+
 /**
  * Created by libin on 2017/7/19.
  */
 
-public class ImageBean {
+public class ImageBean implements Serializable{
     /**
      * imageMedium : /gongfu/image/product/8/image_medium/
      * image : /gongfu/image/product/8/image/

@@ -48,6 +48,8 @@
                     android:textColor="#4b4b4b"
                     android:text="efw"
                     android:layout_marginTop="2dp"
+                    android:drawableRight="@drawable/more_itemlist_grayarrow"
+                    android:drawablePadding="4dp"
                     />
             </LinearLayout>
             <TextView

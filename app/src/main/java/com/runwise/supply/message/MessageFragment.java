@@ -223,7 +223,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.no_network);
+        loadingLayout.onFailure(errMsg);
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
