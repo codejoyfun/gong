@@ -20,6 +20,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -86,7 +87,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private String cachedDWStr = TimeUtils.getABFormatDate(1).substring(5) + " " + TimeUtils.getWeekStr(1);
     //标记当前是否在编辑模式
     private boolean editMode;
-    private BottomDialog dialog = BottomDialog.create(getSupportFragmentManager())
+    private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
                 public void bindView(View v) {
@@ -178,10 +179,10 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         switch (view.getId()){
             case R.id.dateTv:
                 //弹出日期选择控件
-                if (dialog.isVisible()){
-                    dialog.dismiss();
+                if (bDialog.isVisible()){
+                    bDialog.dismiss();
                 }else{
-                    dialog.show();
+                    bDialog.show();
                 }
                 break;
             case R.id.title_iv_left:
@@ -204,8 +205,18 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     bundle.putParcelableArrayList("ap",addedList);
                     intent.putExtra("apbundle",bundle);
                     startActivityForResult(intent,ADD_PRODUCT);
-                }else
-                    finish();
+                }else{
+                    dialog.setTitle("提示");
+                    dialog.setMessageGravity();
+                    dialog.setMessage("确认取消下单？");
+                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            finish();
+                        }
+                    });
+                    dialog.show();
+                }
                 break;
             case R.id.title_tv_rigth:
                 switchEditMode();
@@ -228,9 +239,18 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 sendConnection("/gongfu/v2/order/create/",request,COMMIT_TYPE,true, CommitResponse.class);
                 break;
             case R.id.deleteBtn:
-                adapter.deleteSelectItems();
-                //更新个数
-                countChanged();
+                dialog.setTitle("提示");
+                dialog.setMessageGravity();
+                dialog.setMessage("确认删除选中商品?");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        adapter.deleteSelectItems();
+                        //更新个数
+                        countChanged();
+                    }
+                });
+                dialog.show();
                 break;
             default:
                 break;
@@ -318,7 +338,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     @Override
                     public void run() {
                         selectedDate = 0;
-                        dialog.dismiss();
+                        bDialog.dismiss();
                         dateTv.setText(TimeUtils.getABFormatDate(0).substring(5)+" "+TimeUtils.getWeekStr(0));
                     }
                 },500);
@@ -333,7 +353,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     @Override
                     public void run() {
                         selectedDate = 1;
-                        dialog.dismiss();
+                        bDialog.dismiss();
                         dateTv.setText(TimeUtils.getABFormatDate(1).substring(5)+" "+TimeUtils.getWeekStr(1));
                     }
                 },500);
@@ -348,7 +368,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     @Override
                     public void run() {
                         selectedDate = 2;
-                        dialog.dismiss();
+                        bDialog.dismiss();
                         dateTv.setText(TimeUtils.getABFormatDate(2).substring(5)+" "+TimeUtils.getWeekStr(2));
                     }
                 },500);
@@ -482,6 +502,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                        adapter.getCountMap().put(proId,count);
                    }
                    adapter.setData(newList);
+                   if (backList.size() > 0){
+                       ToastUtil.show(mContext,"添加成功");
+                   }
                }
                break;
        }
