@@ -69,7 +69,7 @@ public class ProcurementActivity extends NetWorkActivity {
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_CODE_PROCUREMENT:
-                ProcurementEntity procurementEntity = (ProcurementEntity)result.getResult();
+                ProcurementEntity procurementEntity = (ProcurementEntity)result.getResult().getData();
                 EventBus.getDefault().post(procurementEntity);
                 break;
         }
@@ -87,9 +87,9 @@ public class ProcurementActivity extends NetWorkActivity {
         public TabPageIndicatorAdapter(FragmentManager fm) {
             super(fm);
             titleList.add("全部");
-            titleList.add("冷藏货");
-            titleList.add("冻货");
-            titleList.add("干货");
+            titleList.add("本周");
+            titleList.add("上周");
+            titleList.add("更早");
             Bundle bundle = new Bundle();
             RepertoryListFragment allFragment = new RepertoryListFragment();
             allFragment.type = DataType.ALL;

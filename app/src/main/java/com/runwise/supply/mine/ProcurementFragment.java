@@ -34,18 +34,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by libin on 2017/7/3.
- * 根据传入的数据集合，显示全部、冷藏、冻货、干货集合
+ * Created by mike on 2017/8/25.
  */
 
-public class RepertoryListFragment extends NetWorkFragment {
+public class ProcurementFragment extends NetWorkFragment {
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
-    public  DataType type;
+    public DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-        private List<RepertoryEntity.ListBean> dataList;
+    private List<RepertoryEntity.ListBean> dataList;
     private String keyWork;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,9 +53,9 @@ public class RepertoryListFragment extends NetWorkFragment {
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
         if(dataList != null) {
-          adapter.setData(dataList);
-          loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
-      }
+            adapter.setData(dataList);
+            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+        }
     }
     @Override
     protected int createViewByLayoutId() {
@@ -114,7 +113,7 @@ public class RepertoryListFragment extends NetWorkFragment {
 
     }
 
-    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean>{
+    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean> {
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -154,9 +153,9 @@ public class RepertoryListFragment extends NetWorkFragment {
 
         class ViewHolder {
             @ViewInject(R.id.name)
-            TextView            name;
+            TextView name;
             @ViewInject(R.id.productImage)
-            SimpleDraweeView    sDv;
+            SimpleDraweeView sDv;
             @ViewInject(R.id.number)
             TextView            number;
             @ViewInject(R.id.content)
