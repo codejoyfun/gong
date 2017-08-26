@@ -33,16 +33,12 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
+import com.runwise.supply.mine.entity.ProcurementAddResult;
 import com.runwise.supply.mine.entity.ProcurenmentAddRequest;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.orderpage.entity.ImageBean;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.SearchListFragment;
-import com.runwise.supply.repertory.entity.AddRepertoryData;
 import com.runwise.supply.repertory.entity.EditHotResult;
-import com.runwise.supply.repertory.entity.NewAdd;
-import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -277,7 +273,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     productsBean.setQty(Integer.parseInt(amount));
                     products.add(productsBean);
                     procurenmentAddRequest.setProducts(products);
-                    sendConnection("/gongfu/shop/zicai",procurenmentAddRequest,PRODUCT_ADD_1,true, AddRepertoryData.class);
+                    sendConnection("/gongfu/shop/zicai",procurenmentAddRequest,PRODUCT_ADD_1,true, ProcurementAddResult.class);
                 }
             });
         }
@@ -312,37 +308,18 @@ public class ProcurementAddActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View view) {
                     amount = et_product_amount1.getText().toString();
-
-                    PandianResult.InventoryBean.LinesBean bean = new PandianResult.InventoryBean.LinesBean();
-//                    bean.setLifeEndDate(lotBean.getLifeEndDate());
-                    bean.setTheoreticalQty(0);
-//                    bean.setLotNum(lotBean.getLotName());
-                    bean.setLotID(0);
-                    bean.setCode(productBean.getDefaultCode());
-                    bean.setInventoryLineID(returnBean.getInventoryAddLineID());
-                    bean.setProductID(productBean.getProductID());
-                    bean.setEditNum(Integer.parseInt(amount));
-
-                    ProductBasicList.ListBean product = new ProductBasicList.ListBean();
-                    product.setName(productBean.getName());
-                    product.setBarcode(productBean.getBarcode());
-                    product.setStockType(productBean.getStockType());
-                    product.setDefaultCode(productBean.getDefaultCode());
-                    product.setUnit(productBean.getUnit());
-                    ImageBean imageBean = new ImageBean();
-                    imageBean.setImage(productBean.getImage().getImage());
-                    imageBean.setImageSmall(productBean.getImage().getImageSmall());
-                    imageBean.setImageMedium(productBean.getImage().getImageMedium());
-                    product.setImage(imageBean);
-
-                    bean.setProduct(product);
-
-                    NewAdd newAddBean = new NewAdd();
-                    newAddBean.setType(1);
-                    newAddBean.setBean(bean);
-                    EventBus.getDefault().post(newAddBean);
-                    setCommontTopHide();
-                    finish();
+                    ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
+                    List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
+                    ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
+                    productsBean.setProduct_id(productBean.getProductID());
+                    productsBean.setTracking("");
+                    productsBean.setLot_name("none");
+                    productsBean.setLife_datetime("");
+                    productsBean.setProduct_datetime("");
+                    productsBean.setQty(Integer.parseInt(amount));
+                    products.add(productsBean);
+                    procurenmentAddRequest.setProducts(products);
+                    sendConnection("/gongfu/shop/zicai",procurenmentAddRequest,PRODUCT_ADD_1,true, ProcurementAddResult.class);
                 }
             });
         }
@@ -400,39 +377,8 @@ public class ProcurementAddActivity extends NetWorkActivity {
                 smartTabLayout.setViewPager(viewPager);
                 break;
             case PRODUCT_ADD_1:
-                AddRepertoryData addRepertoryData = (AddRepertoryData) result.getResult().getData();
-                AddRepertoryData.LotNewsBean lotBean = addRepertoryData.getLotNews();
-
-                PandianResult.InventoryBean.LinesBean bean = new PandianResult.InventoryBean.LinesBean();
-                bean.setLifeEndDate(lotBean.getLifeEndDate());
-                bean.setTheoreticalQty(0);
-                bean.setLotNum(lotBean.getLotName());
-                bean.setLotID(lotBean.getLotID());
-                bean.setCode(productBean.getDefaultCode());
-                bean.setInventoryLineID(returnBean.getInventoryAddLineID());
-                bean.setProductID(lotBean.getProductID());
-//                        bean.setUnit_price();
-//                        bean.setActual_qty();
-                bean.setEditNum(Integer.parseInt(amount));
-
-                ProductBasicList.ListBean product = new ProductBasicList.ListBean();
-                product.setName(productBean.getName());
-                product.setBarcode(productBean.getBarcode());
-                product.setStockType(productBean.getStockType());
-                product.setDefaultCode(productBean.getDefaultCode());
-                product.setUnit(productBean.getUnit());
-                ImageBean imageBean = new ImageBean();
-                imageBean.setImage(productBean.getImage().getImage());
-                imageBean.setImageSmall(productBean.getImage().getImageSmall());
-                imageBean.setImageMedium(productBean.getImage().getImageMedium());
-                product.setImage(imageBean);
-
-                bean.setProduct(product);
-
-                NewAdd newAddBean = new NewAdd();
-                newAddBean.setBean(bean);
-                EventBus.getDefault().post(newAddBean);
-                setCommontTopHide();
+                ProcurementAddResult procurementAddResult = (ProcurementAddResult) result.getResult();
+                EventBus.getDefault().post(procurementAddResult);
                 finish();
                 break;
         }

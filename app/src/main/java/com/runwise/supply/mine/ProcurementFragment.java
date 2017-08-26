@@ -19,9 +19,13 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProcurementRequest;
+import com.runwise.supply.mine.entity.ProcurementAddResult;
 import com.runwise.supply.mine.entity.ProcurementEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -71,12 +75,21 @@ public class ProcurementFragment extends NetWorkFragment {
         sendConnection("/gongfu/shop/zicai/list",procurementRequest,REQUEST_CODE_PROCUREMENT, true, ProcurementEntity.class);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCountSynEvent(ProcurementAddResult procurementAddResult) {
+        requestData();
+    }
+
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_CODE_PROCUREMENT:
                 ProcurementEntity procurementEntity = (ProcurementEntity)result.getResult().getData();
+                mSelection.clear();
+                dataList.clear();
+                mHeadMap.clear();
+
                 for (ProcurementEntity.ListBean listBean : procurementEntity.getList()){
                     mSelection.add(dataList.size());
                     mHeadMap.put(dataList.size(),listBean);

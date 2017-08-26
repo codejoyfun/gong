@@ -25,7 +25,6 @@ public class ProcurenmentAddRequest {
 
         private int qty;
         private int product_id;
-        private double height;
 
         private String product_datetime;
         private String tracking;
@@ -50,13 +49,6 @@ public class ProcurenmentAddRequest {
             this.product_id = product_id;
         }
 
-        public double getHeight() {
-            return height;
-        }
-
-        public void setHeight(double height) {
-            this.height = height;
-        }
         public String getProduct_datetime() {
             return product_datetime;
         }
