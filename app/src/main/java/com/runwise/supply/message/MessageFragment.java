@@ -42,6 +42,7 @@ import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Handler;
 
 /**
  * Created by mychao on 2017/7/14.
@@ -65,6 +66,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     @ViewInject(R.id.tipLayout)
     private View tipLayout;
     private boolean isLogin,firstLaunch;
+    private Handler handler = new Handler();
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,11 +82,21 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener2<ListView>() {
                 @Override
                 public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                    String label = DateUtils.formatDateTime(mContext, System.currentTimeMillis(),
-                            DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
-                    refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-                    page = 1;
-                    requestData(false, REQUEST_START, page, 10);
+                    if(isLogin) {
+                        String label = DateUtils.formatDateTime(mContext, System.currentTimeMillis(),
+                                DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+                        refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+                        page = 1;
+                        requestData(false, REQUEST_START, page, 10);
+                    }
+                    else{
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                pullListView.onRefreshComplete();
+                            }
+                        }, 1000);
+                    }
                 }
 
                 @Override
@@ -281,7 +293,14 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             switch (viewType) {
                 case 0:
                     MessageResult.OrderBean orderBean = bean.getOrderBean();
-                    UserUtils.setOrderStatus(orderBean.getState(),viewHolder.chatStatus,viewHolder.chatIcon);
+                    boolean normalOrder;
+                    if(orderBean.getName().startsWith("RO")) {
+                        normalOrder = false;
+                    }
+                    else{
+                        normalOrder = true;
+                    }
+                    UserUtils.setOrderStatus(orderBean.getState(),viewHolder.chatStatus,viewHolder.chatIcon,normalOrder);
 
                     viewHolder.chatName.setText(orderBean.getName());
                     viewHolder.chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));

@@ -45,7 +45,7 @@ public class UserUtils {
     /*
  根据状态设置订单图标和标签
  */
-    public static void setOrderStatus(String status, TextView label, ImageView icon) {
+    public static void setOrderStatus(String status, TextView label, ImageView icon, boolean normalOrder) {
         //待确认
         if("draft".equals(status)) {
             label.setText("待确认");
@@ -63,10 +63,7 @@ public class UserUtils {
         }
         //已收货
         //退货returnOrders
-//                    else if("done".equals(orderBean.getState())) {
-//                        viewHolder.chatStatus.setText("已收货");
-//                        viewHolder.chatIcon.setImageResource(R.drawable.state_restaurant_2_certain);
-//                    }
+
         //已评价
         else if("rated".equals(status)) {
             label.setText("已评价");
@@ -78,9 +75,14 @@ public class UserUtils {
             icon.setImageResource(R.drawable.state_delivery_7_return);
         }
         //已退货
-        else if("done".equals(status)) {
+        else if(!normalOrder &&"done".equals(status)) {
             label.setText("已退货");
             icon.setImageResource(R.drawable.state_delivery_7_return);
+        }
+        //已收货
+        else if(normalOrder && "done".equals(status)) {
+            label.setText("已收货");
+            icon.setImageResource(R.drawable.state_restaurant_2_certain);
         }
         //已取消cancel
         else if("cancel".equals(status)){

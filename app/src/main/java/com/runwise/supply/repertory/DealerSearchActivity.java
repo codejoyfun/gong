@@ -46,7 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Created by libin on 2017/1/4.
+ * 库存搜索
  */
 
 public class DealerSearchActivity extends BaseActivity{

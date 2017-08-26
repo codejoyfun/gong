@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -13,12 +15,16 @@ import android.widget.RelativeLayout;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.view.CustomBottomDialog;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import static com.runwise.supply.R.id.number1;
 
 /**
  * 聊天详情
@@ -33,6 +39,8 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     private MessageListFragment chatFragment2;//设置页面
     private FragmentManager fragmentManager;
     private Fragment currentFragment;      //当前加载的
+
+    private String mobel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,16 +107,20 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
 ////                ShareUtil.showShare(mContext,"车-详情",chatFragment1.getCarSeriesTile(),LogoUrl,share_url);
 //                break;
             case R.id.right_layout:
-//                final CustomBottomDialog customBottomDialog = new CustomBottomDialog(mContext);
-//                ArrayMap<Integer, String> menus = new ArrayMap<>();
-//                menus.put(0, "联系客服");
-//                menus.put(1, "联系配送员");
-//                customBottomDialog.addItemViews(menus);
-//                customBottomDialog.setOnBottomDialogClick(new CustomBottomDialog.OnBottomDialogClick() {
-//                    @Override
-//                    public void onItemClick(View view) {
-//                        switch (view.getId()) {
-//                            case 0:
+                MessageResult.OrderBean orderBean = (MessageResult.OrderBean) this.getIntent().getSerializableExtra("orderBean");
+                final CustomBottomDialog customBottomDialog = new CustomBottomDialog(mContext);
+                ArrayMap<Integer, String> menus = new ArrayMap<>();
+                menus.put(0, "联系客服");
+//                if(orderBean.getWaybill() != null && orderBean.getWaybill().getUser() != null && !TextUtils.isEmpty(orderBean.getWaybill().getUser().getMobile())) {
+//                    mobel = orderBean.getWaybill().getUser().getMobile();
+//                    menus.put(1, "联系配送员");
+//                }
+                customBottomDialog.addItemViews(menus);
+                customBottomDialog.setOnBottomDialogClick(new CustomBottomDialog.OnBottomDialogClick() {
+                    @Override
+                    public void onItemClick(View view) {
+                        switch (view.getId()) {
+                            case 0:
                                 final String number = GlobalApplication.getInstance().loadUserInfo().getCompanyHotLine();
                                 dialog.setModel(CustomDialog.BOTH);
                                 dialog.setTitle("联系客服");
@@ -122,28 +134,27 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
                                     }
                                 });
                                 dialog.show();
-//                                break;
-//                            case 1:
-//                                final String number1 = "111111";
-//                                dialog.setModel(CustomDialog.BOTH);
-//                                dialog.setTitle("联系配送员");
-//                                dialog.setMessageGravity();
-//                                dialog.setMessage(number1);
-//                                dialog.setLeftBtnListener("取消",null);
-//                                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
-//                                    @Override
-//                                    public void doClickButton(Button btn, CustomDialog dialog) {
-//                                        CommonUtils.callNumber(mContext,number1);
-//                                    }
-//                                });
-//                                dialog.show();
-//                                break;
-//
-//                        }
-//                        customBottomDialog.dismiss();
-//                    }
-//                });
-//                customBottomDialog.show();
+                                break;
+                            case 1:
+                                dialog.setModel(CustomDialog.BOTH);
+                                dialog.setTitle("联系配送员");
+                                dialog.setMessageGravity();
+                                dialog.setMessage(mobel);
+                                dialog.setLeftBtnListener("取消",null);
+                                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+                                    @Override
+                                    public void doClickButton(Button btn, CustomDialog dialog) {
+                                        CommonUtils.callNumber(mContext,mobel);
+                                    }
+                                });
+                                dialog.show();
+                                break;
+
+                        }
+                        customBottomDialog.dismiss();
+                    }
+                });
+                customBottomDialog.show();
                 break;
         }
     }

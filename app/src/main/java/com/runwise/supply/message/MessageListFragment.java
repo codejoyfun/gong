@@ -87,12 +87,19 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
 
     public int type;
     private UserInfo userInfo;
+    private boolean normalOrder;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         orderBean = (MessageResult.OrderBean) this.getActivity().getIntent().getSerializableExtra("orderBean");
-        UserUtils.setOrderStatus(orderBean.getState(),chatStatus,chatIcon);
+        if(orderBean.getName().startsWith("RO")) {
+            normalOrder = false;
+        }
+        else{
+            normalOrder = true;
+        }
+        UserUtils.setOrderStatus(orderBean.getState(),chatStatus,chatIcon,normalOrder);
 
         chatName.setText(orderBean.getName());
         chatTime.setText(orderBean.getEstimated_time());
@@ -168,42 +175,11 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     }
     @OnClick(R.id.titleLayout)
     public void doOrderClick(View view) {
-        OrderResponse.ListBean bean = new OrderResponse.ListBean();
-        bean.setOrderID(orderBean.getId());
-        bean.setState(orderBean.getState());
-        bean.setCreateDate(orderBean.getCreate_date());
-        bean.setName(orderBean.getName());
-        if (orderBean.getWaybill() != null) {
-            OrderResponse.ListBean.WaybillBean waybillBean = new OrderResponse.ListBean.WaybillBean();
-            waybillBean.setWaybillID(orderBean.getWaybill().getId());
-            bean.setWaybill(waybillBean);
-        }
-        bean.setAmount(orderBean.getAmount());
-        bean.setAmountTotal(orderBean.getAmount_total());
-//        bean.setIsToday(orderBean.getTa);
-        bean.setDoneDatetime(orderBean.getDone_datetime());
-        bean.setConfirmationDate(orderBean.getConfirmation_date());
-        bean.setEstimatedTime(orderBean.getEstimated_time());
-        bean.setEndUnloadDatetime(orderBean.getEnd_unload_datetime());
-        bean.setStartUnloadDatetime(orderBean.getStart_unload_datetime());
-        bean.setCreateUserName(orderBean.getCreate_user_name());
-        bean.setLoadingTime(orderBean.getLoading_time());
-        //退货中  已退货
-//        if("process".equals(orderBean.getState()) || "done".equals(orderBean.getState())) {
-//            Intent intent = new Intent(mContext,ReturnDetailActivity.class);
-//            Bundle bundle = new Bundle();
-//            bundle.putInt("returnid", orderBean.getId());
-//            intent.putExtras(bundle);
-//            startActivity(intent);
-//        }
-//        else {
-//            Intent intent = new Intent(mContext, OrderDetailActivity.class);
-//            Bundle bundle = new Bundle();
-//            bundle.putParcelable("order", bean);
-//            bundle.putInt("orderid", orderBean.getId());
-//            intent.putExtras(bundle);
-//            startActivity(intent);
-//        }
+        Intent intent = new Intent(mContext, OrderMsgDetailActivity.class);
+        intent.putExtra("title",orderBean.getName());
+        intent.putExtra("normalOrder",normalOrder);
+        intent.putExtra("orderId",orderBean.getId()+"");
+        startActivity(intent);
     }
 
 
@@ -220,7 +196,12 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                 case 0:
                     int orderId = orderBean.getId();
                     request.setOrder_id(orderId);
-                    sendConnection("/gongfu/message/order/" + orderId + "/list", request, where, showDialog, MsgListResult.class);
+                    if(normalOrder) {
+                        sendConnection("/gongfu/message/order/" + orderId + "/list", request, where, showDialog, MsgListResult.class);
+                    }
+                    else{
+                        sendConnection("/gongfu/message/return_order/" + orderId + "/list", request, where, showDialog, MsgListResult.class);
+                    }
                     break;
                 case 1:
                     MessageResult.OrderBean.WaybillBean wayBill = orderBean.getWaybill();
@@ -229,7 +210,13 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                         String bId = wayBill.getId();
                         request.setOrder_id(oId);
                         request.setWaybill_id(bId);
-                        sendConnection("/gongfu/message/waybill/"+bId+"/" + oId + "/list", request, where, showDialog, MsgListResult.class);
+                        if(normalOrder) {
+                            sendConnection("/gongfu/message/waybill/" + bId + "/" + oId + "/list", request, where, showDialog, MsgListResult.class);
+                        }
+                        else{
+                            sendConnection("/gongfu/message/return_waybill/" + bId + "/" + oId + "/list", request, where, showDialog, MsgListResult.class);
+
+                        }
                     }
                     else{
                         ToastUtil.show(mContext,"该订单没有配送员，暂时不能聊天");
@@ -321,15 +308,24 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         msgSendRequest.setComment(common);
         switch (type) {
             case 0:
-                sendConnection("/gongfu/message/order/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                if (normalOrder) {
+                    sendConnection("/gongfu/message/order/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                }
+                else{
+                    sendConnection("/gongfu/message/return_order/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                }
                 break;
             case 1:
                 MessageResult.OrderBean.WaybillBean wayBill = orderBean.getWaybill();
                 if(wayBill != null && !TextUtils.isEmpty(wayBill.getId())) {
                     String bId = wayBill.getId();
                     msgSendRequest.setWaybill_id(bId);
-//                    http://develop.runwise.cn/gongfu/message/waybill/132/293/write
-                    sendConnection("/gongfu/message/waybill/" + bId + "/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                    if(normalOrder) {
+                        sendConnection("/gongfu/message/waybill/" + bId + "/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                    }
+                    else{
+                        sendConnection("/gongfu/message/return_waybill/" + bId + "/" + orderId + "/write", msgSendRequest, REQUEST_SEND, true, null);
+                    }
                 }
                 else {
                     ToastUtil.show(mContext,"该订单没有配送员，暂时不能聊天");

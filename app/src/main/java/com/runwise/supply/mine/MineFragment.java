@@ -23,10 +23,8 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
-import com.runwise.supply.MainActivity;
 import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.UnReadData;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
@@ -41,6 +39,8 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MineFragment extends NetWorkFragment {
     private final int REQUEST_SYSTEM = 1;
     private final int REQUEST_SUM = 2;
+    private static final int REQUEST_USERINFO = 3;
+
     //电话
     @ViewInject(R.id.minePhone)
     private TextView minePhone;
@@ -115,8 +115,10 @@ public class MineFragment extends NetWorkFragment {
         Object request = null;
         sendConnection("/api/sale/shop/info", request, REQUEST_SUM, false, SumMoneyData.class);
     }
-    private void requestUserInfo() {
 
+    private void requestUserInfo() {
+        Object paramBean = null;
+        this.sendConnection("/gongfu/v2/user/information",paramBean ,REQUEST_USERINFO, false, UserInfo.class);
     }
 
     private void setLogoutStatus() {
@@ -144,6 +146,9 @@ public class MineFragment extends NetWorkFragment {
     @Override
     public void onResume() {
         super.onResume();
+        if(isLogin) {
+            requestUserInfo();
+        }
     }
 
     @Override
@@ -154,7 +159,14 @@ public class MineFragment extends NetWorkFragment {
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
-            case REQUEST_SYSTEM:
+            case REQUEST_USERINFO:
+                UserInfo userInfo = (UserInfo) result.getResult().getData();
+                if(userInfo.isHasNewInvoice()) {
+                    orderRed.setVisibility(View.VISIBLE);
+                }
+                else{
+                    orderRed.setVisibility(View.GONE);
+                }
                 break;
             case  REQUEST_SUM:
                 SumMoneyData sumMoneyData = (SumMoneyData)result.getResult().getData();
@@ -199,15 +211,17 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.cellIcon:
+                String name = "供鲜生";
                 if(isLogin) {
                     if(userInfo != null) {
                         number = userInfo.getCompanyHotLine();
+                        name = userInfo.getCompany();
                     }
                 }
                 dialog.setModel(CustomDialog.BOTH);
-                dialog.setTitle("联系客服");
+//                dialog.setTitle("联系客服");
                 dialog.setMessageGravity();
-                dialog.setMessage(number);
+                dialog.setMessage("致电"+" "+ name +" 客服热线");
                 dialog.setLeftBtnListener("取消",null);
                 dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
                     @Override
@@ -300,11 +314,13 @@ public class MineFragment extends NetWorkFragment {
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
         setLoginStatus();
+        isLogin = true;
     }
 
     @Override
     public void onUserLoginout() {
         setLogoutStatus();
+        isLogin = false;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
