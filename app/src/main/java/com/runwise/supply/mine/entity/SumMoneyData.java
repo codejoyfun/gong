@@ -1,12 +1,13 @@
 package com.runwise.supply.mine.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by myChaoFile on 2017/8/24.
  */
 
-public class SumMoneyData {
+public class SumMoneyData implements Serializable{
 
     /**
      * purchase_number_list : [22,28,31,31,54]

@@ -257,6 +257,7 @@ public class ReceiveFragment extends BaseFragment {
                 rb.setImageBean(basicBean.getImage());
                 rb.setDefaultCode(basicBean.getDefaultCode());
                 rb.setUnit(basicBean.getUnit());
+                rb.setStockType(bean.getStockType());
                 if (isSettle) {
                     rb.setTwoUnit(true);
                     rb.setUnit(basicBean.getSettleUomId());

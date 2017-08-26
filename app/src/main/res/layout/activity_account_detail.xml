@@ -52,8 +52,7 @@
             android:fadingEdge="none"
             android:fadingEdgeLength="0dp"
             android:listSelector="#0000"
-            ptr:ptrAnimationStyle="flip"
-            />
+            ptr:ptrAnimationStyle="flip"/>
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

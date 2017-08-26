@@ -495,7 +495,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         if (mPopWindow.isShowing()) {
             mPopWindow.dismiss();
         } else {
-            if (bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+            if (lbean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                 View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
                 mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
                 mTvProductName.setText(bottomData.getName());

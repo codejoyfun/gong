@@ -16,6 +16,16 @@ public class ReceiveBean {
     private String tracking;
     private ImageBean imageBean;
 
+    public String getStockType() {
+        return stockType;
+    }
+
+    public void setStockType(String stockType) {
+        this.stockType = stockType;
+    }
+
+    private String stockType;
+
     private String defaultCode;
 
 

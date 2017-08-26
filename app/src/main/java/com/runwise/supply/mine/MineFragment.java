@@ -32,6 +32,8 @@ import com.runwise.supply.tools.UserUtils;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
+
 /**
  * Created by myChaoFile on 16/10/13.
  */
@@ -73,6 +75,8 @@ public class MineFragment extends NetWorkFragment {
 
     @ViewInject(R.id.orderRed)
     private View orderRed;
+    private SumMoneyData sumMoneyData;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,7 +173,7 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case  REQUEST_SUM:
-                SumMoneyData sumMoneyData = (SumMoneyData)result.getResult().getData();
+                 sumMoneyData = (SumMoneyData)result.getResult().getData();
                 if(GlobalApplication.getInstance().getCanSeePrice()) {
                     if(sumMoneyData.getTotal_amount() > 10000) {
                         double price = sumMoneyData.getTotal_amount()/10000;
@@ -199,7 +203,7 @@ public class MineFragment extends NetWorkFragment {
 
     }
     @OnClick({R.id.settingIcon,R.id.cellIcon,R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
-            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement})
+            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement,R.id.ll_cai_gou_e})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -305,6 +309,11 @@ public class MineFragment extends NetWorkFragment {
                 break;
             case R.id.rl_procurement:
                 intent = new Intent(mContext, ProcurementActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.ll_cai_gou_e:
+                intent = new Intent(mContext,ProcurementLimitActivity.class);
+                intent.putExtra(KEY_SUM_MONEY_DATA,sumMoneyData);
                 startActivity(intent);
                 break;
         }

@@ -393,7 +393,6 @@
             android:name=".mine.CheckDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".message.MessageDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -437,7 +436,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".firstpage.ReturnActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -463,7 +462,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/ImageTranslucentTheme" />
-        <activity android:name=".ProcurementActivity"></activity>
+        <activity android:name=".ProcurementActivity" />
+        <activity android:name=".mine.ProcurementAddActivity" />
+        <activity android:name=".mine.ProcurementLimitActivity"></activity>
     </application>
 
 </manifest>
