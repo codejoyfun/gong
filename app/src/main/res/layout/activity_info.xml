@@ -11,40 +11,48 @@
         android:orientation="vertical" >
         <include
             layout="@layout/common_title_bar"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textColor="#2E2E2E"
-            android:textSize="17sp"
-            android:visibility="visible"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:textStyle="bold"
-            android:text="供鲜生商城服务条款"
-
-            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="4dp"
             android:background="#ffff"
             android:orientation="vertical"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
             >
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <TextView
-                    android:id="@+id/context"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textColor="#363636"
-                    android:textSize="15sp"
-                    />
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:textColor="#2E2E2E"
+                        android:textSize="17sp"
+                        android:visibility="visible"
+                        android:layout_gravity="center_horizontal"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textStyle="bold"
+                        android:text="供鲜生商城服务条款"
+                        />
+                    <TextView
+                        android:id="@+id/context"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:textColor="#363636"
+                        android:textSize="15sp"
+                        android:lineSpacingExtra="6dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="20dp"
+                        />
+                </LinearLayout>
+
 
             </ScrollView>
         </LinearLayout>
@@ -72,7 +80,7 @@
             android:layout_marginRight="42dp"
             android:layout_marginTop="26dp"
             android:background="@drawable/getcode_selector"
-            android:text="登录"
+            android:text="立即体验"
             android:textColor="#ffffffff"
             android:textSize="16sp"
             />

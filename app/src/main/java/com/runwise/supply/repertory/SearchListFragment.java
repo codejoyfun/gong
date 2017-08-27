@@ -49,7 +49,7 @@ public class SearchListFragment extends NetWorkFragment {
     public  DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-    private List<EditHotResult.LotInProductListBean> dataList;
+    private List<EditHotResult.ListBean> dataList;
     private String keyWork;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,10 +60,10 @@ public class SearchListFragment extends NetWorkFragment {
         adapter.setData(dataList);
         loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
     }
-    public void setData(List<EditHotResult.LotInProductListBean> dataList) {
-        List<EditHotResult.LotInProductListBean> typeList = new ArrayList<>();
-        for (EditHotResult.LotInProductListBean bean : dataList){
-            if (bean.getProduct().getStock_type().equals(type.getType())){
+    public void setData(List<EditHotResult.ListBean> dataList) {
+        List<EditHotResult.ListBean> typeList = new ArrayList<>();
+        for (EditHotResult.ListBean bean : dataList){
+            if (bean.getProduct().getStockType().equals(type.getType())){
                 typeList.add(bean);
             }
         }
@@ -85,13 +85,13 @@ public class SearchListFragment extends NetWorkFragment {
     }
 
     //返回当前标签下名称包含的
-    private List<EditHotResult.LotInProductListBean> findArrayByWord(String word) {
+    private List<EditHotResult.ListBean> findArrayByWord(String word) {
         keyWork = word;
-        List<EditHotResult.LotInProductListBean> findList = new ArrayList<>();
+        List<EditHotResult.ListBean> findList = new ArrayList<>();
         if(TextUtils.isEmpty(word)) {
             return dataList;
         }
-        for (EditHotResult.LotInProductListBean bean : dataList){
+        for (EditHotResult.ListBean bean : dataList){
             if (bean.getProduct().getName().contains(word)) {
                 findList.add(bean);
             }
@@ -109,7 +109,7 @@ public class SearchListFragment extends NetWorkFragment {
 
     }
 
-    public class ProductAdapter extends IBaseAdapter<EditHotResult.LotInProductListBean>{
+    public class ProductAdapter extends IBaseAdapter<EditHotResult.ListBean>{
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -122,8 +122,8 @@ public class SearchListFragment extends NetWorkFragment {
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final EditHotResult.LotInProductListBean bean =  mList.get(position);
-            EditHotResult.LotInProductListBean.ProductBean productBean = bean.getProduct();
+            final EditHotResult.ListBean bean =  mList.get(position);
+            EditHotResult.ListBean.ProductBean productBean = bean.getProduct();
             if (productBean != null){
                 if(!TextUtils.isEmpty(keyWork)) {
                     int index = productBean.getName().indexOf(keyWork);
@@ -136,7 +136,7 @@ public class SearchListFragment extends NetWorkFragment {
                 else {
                     viewHolder.name.setText(productBean.getName());
                 }
-                viewHolder.number.setText(productBean.getDefault_code() + " | ");
+                viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
                 viewHolder.addBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -144,7 +144,7 @@ public class SearchListFragment extends NetWorkFragment {
                         EventBus.getDefault().post(bean);
                     }
                 });
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
             }
             return convertView;
         }

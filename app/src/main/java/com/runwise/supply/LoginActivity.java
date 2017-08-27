@@ -229,13 +229,13 @@ public class  LoginActivity extends NetWorkActivity {
 				GlobalApplication.getInstance().saveUserInfo(userInfoData);
 //				ToastUtil.show(mContext,"登录成功");
 				//@libin added
-				EventBus.getDefault().post(new UserLoginEvent());
-				if(SPUtils.firstLaunchInfo(mContext)) {
+				if(!"true".equals(userInfoData.getIsAgreeItem())) {
 					InfoActivity.targerIntent = targerIntent;
 					Intent intent = new Intent(this,InfoActivity.class);
 					startActivity(intent);
 				}
 				else {
+					EventBus.getDefault().post(new UserLoginEvent());
 					SPUtils.setLogin(mContext,true);
 					if (targerIntent != null) {
 						startActivity(targerIntent);

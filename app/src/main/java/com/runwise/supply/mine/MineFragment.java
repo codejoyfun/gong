@@ -23,14 +23,16 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
-import com.runwise.supply.MainActivity;
 import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 
 /**
  * Created by myChaoFile on 16/10/13.
@@ -38,6 +40,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class MineFragment extends NetWorkFragment {
     private final int REQUEST_SYSTEM = 1;
+    private final int REQUEST_SUM = 2;
     //电话
     @ViewInject(R.id.minePhone)
     private TextView minePhone;
@@ -60,8 +63,18 @@ public class MineFragment extends NetWorkFragment {
     @ViewInject(R.id.zhiliangImg)
     private ImageView zhiliangImg;
     String number = "02037574563";
+
     @ViewInject(R.id.moneySum)
     private TextView moneySum;
+    @ViewInject(R.id.moneyNuit)
+    private TextView moneyNuit;
+    @ViewInject(R.id.showText)
+    private TextView showText;
+
+    @ViewInject(R.id.orderRed)
+    private View orderRed;
+    private SumMoneyData sumMoneyData;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +114,11 @@ public class MineFragment extends NetWorkFragment {
                 zhiliangImg.setImageResource(R.drawable.tag_up);
             }
         }
-        MainActivity mainActivity = (MainActivity)mContext;
+        Object request = null;
+        sendConnection("/api/sale/shop/info", request, REQUEST_SUM, false, SumMoneyData.class);
+    }
+    private void requestUserInfo() {
+
     }
 
     private void setLogoutStatus() {
@@ -141,6 +158,29 @@ public class MineFragment extends NetWorkFragment {
         switch (where) {
             case REQUEST_SYSTEM:
                 break;
+            case  REQUEST_SUM:
+                 sumMoneyData = (SumMoneyData)result.getResult().getData();
+                if(GlobalApplication.getInstance().getCanSeePrice()) {
+                    if(sumMoneyData.getTotal_amount() > 10000) {
+                        double price = sumMoneyData.getTotal_amount()/10000;
+                        moneySum.setText(UserUtils.formatPrice(price+"")+"");
+                        moneyNuit.setText("万元");
+                        moneyNuit.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        moneySum.setText(UserUtils.formatPrice(sumMoneyData.getTotal_amount()+"")+"");
+                        moneyNuit.setVisibility(View.VISIBLE);
+                        moneyNuit.setText("元");
+                    }
+                    showText.setText("上周采购额");
+                }
+                else{
+                    moneySum.setText(sumMoneyData.getTotal_number()+"");
+                    moneyNuit.setText("件");
+                    moneyNuit.setVisibility(View.VISIBLE);
+                    showText.setText("上周采购量");
+                }
+                break;
         }
     }
 
@@ -149,7 +189,7 @@ public class MineFragment extends NetWorkFragment {
 
     }
     @OnClick({R.id.settingIcon,R.id.cellIcon,R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
-            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement})
+            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement,R.id.ll_cai_gou_e})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -253,6 +293,11 @@ public class MineFragment extends NetWorkFragment {
                 break;
             case R.id.rl_procurement:
                 intent = new Intent(mContext, ProcurementActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.ll_cai_gou_e:
+                intent = new Intent(mContext,ProcurementLimitActivity.class);
+                intent.putExtra(KEY_SUM_MONEY_DATA,sumMoneyData);
                 startActivity(intent);
                 break;
         }

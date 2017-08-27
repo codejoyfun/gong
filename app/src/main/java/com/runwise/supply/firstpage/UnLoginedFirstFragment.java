@@ -132,6 +132,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         //判断登录状态,进行fragment的切换
         if (SPUtils.isLogin(mContext)){
             MainActivity ma = (MainActivity) getActivity();
+            if(ma != null)
             if (ma.getCurrentTabIndex() == 0){
                 switchContent(this,new LoginedFirstFragment());
             }

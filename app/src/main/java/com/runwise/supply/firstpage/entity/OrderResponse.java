@@ -96,6 +96,16 @@ public class OrderResponse {
         private List<String> stateTracker;
         private List<String> returnOrders;
 
+        public String getDeliveryType() {
+            return deliveryType;
+        }
+
+        public void setDeliveryType(String deliveryType) {
+            this.deliveryType = deliveryType;
+        }
+
+        private String deliveryType;
+
         public ListBean() {
         }
 
@@ -129,6 +139,7 @@ public class OrderResponse {
             amount = in.readDouble();
             isToday = in.readByte() != 0;
             doneDatetime = in.readString();
+            deliveryType = in.readString();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
             returnOrders = in.createStringArrayList();
@@ -446,6 +457,7 @@ public class OrderResponse {
             dest.writeDouble(amount);
             dest.writeByte((byte) (isToday ? 1 : 0));
             dest.writeString(doneDatetime);
+            dest.writeString(deliveryType);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
             dest.writeStringList(returnOrders);

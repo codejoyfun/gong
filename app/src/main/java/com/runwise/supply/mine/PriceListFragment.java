@@ -1,13 +1,10 @@
 package com.runwise.supply.mine;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,29 +13,24 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.mine.entity.MsgEntity;
-import com.runwise.supply.mine.entity.MsgList;
-import com.runwise.supply.mine.entity.MsgResult;
 import com.runwise.supply.mine.entity.ProductData;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.runwise.supply.R.id.moneySum;
 
 /**
  * 价目表
@@ -186,7 +178,7 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
             viewHolder.number.setText(bean.getDefaultCode());
             viewHolder.content.setText(bean.getUnit());
             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
-            viewHolder.value.setText("￥"+bean.getPrice());
+            viewHolder.value.setText("￥"+UserUtils.formatPrice(bean.getPrice()+""));
             return convertView;
         }
 

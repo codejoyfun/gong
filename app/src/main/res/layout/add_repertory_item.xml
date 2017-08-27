@@ -104,33 +104,123 @@
         android:layout_gravity="bottom"
         android:layout_marginTop="4dp"
         />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="批次号"
-        android:textColor="#999999"
-        android:maxLines="2"
-        android:textSize="13sp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="8dp"
-        />
-    <ListView
-        android:id="@+id/listView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:layout_marginTop="8dp"
-        android:divider="@null"
-        />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_batch_tv_serial_number"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:text="批次号"
+            android:textColor="@color/black"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/et_batch_number"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_batch_tv_serial_number"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="添加批次号(选填)"
+            android:maxLines="2"
+            android:textColor="@color/black"
+            android:textSize="13sp" />
+
+        <View
+            android:id="@+id/v_line1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/et_batch_number"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/repertory_shadow" />
+
+        <TextView
+            android:id="@+id/tv_product_date"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/v_line1"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:text="生产日期"
+            android:textColor="@color/black"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_product_date_value"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/v_line1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_product_date"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:textColor="@color/black"
+            android:hint="请填写日期"
+            android:textSize="13sp" />
+
+        <View
+            android:id="@+id/v_line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/tv_product_date"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/repertory_shadow" />
+
+
+        <TextView
+            android:id="@+id/tv_product_amount"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/v_line2"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:text="商品数量"
+            android:textColor="@color/black"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/et_product_amount"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/v_line2"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_product_amount"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:inputType="number"
+            android:maxLength="9"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:hint="请填写数量"
+            />
+
+    </RelativeLayout>
     <TextView
         android:id="@+id/finalButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/base_color"
+        android:background="@drawable/finish_btn_selector"
         android:textSize="16sp"
         android:textColor="#ffff"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:text="确认添加"
         android:gravity="center"
+        android:layout_marginTop="4dp"
         />
 </LinearLayout>

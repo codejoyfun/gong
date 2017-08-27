@@ -8,15 +8,17 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.kids.commonframe.base.BaseActivity;
+import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.mine.CheckActivity;
-import com.runwise.supply.tools.UserUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 
-public class InfoActivity extends BaseActivity {
+public class InfoActivity extends NetWorkActivity {
     @ViewInject(R.id.context)
     private TextView context;
     @ViewInject(R.id.checkBox)
@@ -25,6 +27,7 @@ public class InfoActivity extends BaseActivity {
     private Button nextBtn;
     public static Intent targerIntent;
     boolean hide;
+    private final int AGGRE_ITEM = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,11 +131,8 @@ public class InfoActivity extends BaseActivity {
     public void doFinish(View view) {
         switch (view.getId()) {
             case R.id.nextBtn:
-                SPUtils.setLogin(mContext,true);
-                if (targerIntent != null) {
-                    startActivity(targerIntent);
-                }
-                finish();
+                Object param = null;
+                sendConnection("/api/user/agree_item_time",param,AGGRE_ITEM,true,null);
                 break;
             case R.id.left_layout:
                 if(hide) {
@@ -144,9 +144,27 @@ public class InfoActivity extends BaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (hide) {
-            finish();
+    public void onSuccess(BaseEntity result, int where) {
+        switch (where) {
+            case AGGRE_ITEM:
+                SPUtils.setLogin(mContext,true);
+                if (targerIntent != null) {
+                    startActivity(targerIntent);
+                }
+                EventBus.getDefault().post(new UserLoginEvent());
+                finish();
+                break;
         }
     }
+
+    @Override
+    public void onFailure(String errMsg, BaseEntity result, int where) {
+    }
+
+//    @Override
+//    public void onBackPressed() {
+//        if (hide) {
+//            finish();
+//        }
+//    }
 }

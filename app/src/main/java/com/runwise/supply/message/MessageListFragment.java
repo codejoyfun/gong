@@ -96,7 +96,12 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
 
         chatName.setText(orderBean.getName());
         chatTime.setText(orderBean.getEstimated_time());
-        chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
+        if(GlobalApplication.getInstance().getCanSeePrice()) {
+            chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
+        }
+        else {
+            chatContext.setText("共"+orderBean.getAmount()+"件商品");
+        }
 
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);

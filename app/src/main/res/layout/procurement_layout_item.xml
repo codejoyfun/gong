@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/group_head">
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="2017-08-24"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:textColor="@color/bottom_dialog_textcolor"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tv_cai_gou_ren"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="采购人:陆明"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:layout_alignParentRight="true"
+            android:paddingRight="5dp"
+            android:textColor="@color/bottom_dialog_textcolor"
+            android:textSize="11sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:layout_below="@id/rl_head"
+        android:paddingBottom="15dp"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingRight="@dimen/padding_right"
+        android:paddingTop="15dp">
+
+        <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/productImage"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_alignParentLeft="true"
+            fresco:placeholderImage="@drawable/car"
+            fresco:placeholderImageScaleType="focusCrop" />
+
+        <LinearLayout
+            android:id="@+id/editLL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:inputType="numberDecimal"
+                android:maxLength="4"
+                android:text="X"
+                android:textColor="@color/bottom_dialog_textcolor"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:inputType="numberDecimal"
+                android:maxLength="4"
+                android:text="10"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/productImage"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/editLL"
+            android:layout_toRightOf="@id/productImage"
+            android:text="黑鱼(大型)"
+            android:textColor="#444444"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/name"
+            android:layout_below="@id/name"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@id/editLL"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="3305335 2-3斤／条"
+            android:textColor="#999999"
+            android:textSize="11sp" />
+    </RelativeLayout>
+
+</RelativeLayout>
