@@ -20,6 +20,7 @@ import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.qiniu.android.utils.StringUtils;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
@@ -132,6 +133,12 @@ public class ReceiveFragment extends BaseFragment {
 
     public class ReceiveAdapter extends IBaseAdapter {
         private boolean isSettle;       //是不是双单位
+        private boolean canSeePrice;
+
+        public ReceiveAdapter() {
+            super();
+            canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        }
 
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
@@ -180,7 +187,9 @@ public class ReceiveFragment extends BaseFragment {
                 if (basicBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                if (canSeePrice){
+                    sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                }
                 viewHolder.content.setText(sb.toString());
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
                 //优先用已输入的数据，没有，则用默认

@@ -78,6 +78,10 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     private LinearLayout allLL;
     @ViewInject(R.id.self_help_rl)
     private RelativeLayout self_help_rl;
+    @ViewInject(R.id.bgView)
+    private View bgView;
+    @ViewInject(R.id.orderSuccessIv)
+    private ImageView orderSuccessIv;
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
     //弹窗星期的View集合
@@ -462,8 +466,14 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
                 break;
             case COMMIT_TYPE:
-                ToastUtil.show(mContext,"下单成功");
-                finish();
+                bgView.setVisibility(View.VISIBLE);
+                orderSuccessIv.setVisibility(View.VISIBLE);
+                orderSuccessIv.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                },1500);
                 break;
             default:
                 break;

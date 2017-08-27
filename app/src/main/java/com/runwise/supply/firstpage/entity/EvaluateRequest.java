@@ -18,7 +18,7 @@ public class EvaluateRequest {
     private String service_evaluation;
     private int service_score;
     private String quality_evaluation;
-    private List<?> tags;
+    private List<String> tags;
 
     public String getService_evaluation() {
         return service_evaluation;
@@ -44,11 +44,11 @@ public class EvaluateRequest {
         this.quality_evaluation = quality_evaluation;
     }
 
-    public List<?> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<?> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 }
