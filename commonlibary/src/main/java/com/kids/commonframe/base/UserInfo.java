@@ -55,6 +55,7 @@ public class UserInfo implements Serializable{
     private boolean clerk;
     private boolean canSeePrice;
     private String companyHotLine;
+    private String company;
     private String isAgreeItem;
 
     public String getUsername() {
@@ -241,6 +242,13 @@ public class UserInfo implements Serializable{
         this.canSeePrice = canSeePrice;
     }
 
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
     public String getIsAgreeItem() {
         return isAgreeItem;
     }

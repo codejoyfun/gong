@@ -58,6 +58,7 @@ public class OrderResponse {
          * amount : 5.0
          * isToday : false
          * doneDatetime : 2017-07-14 11:14:02
+         * returnOrders:["164","163"]
          */
 
         private double amountTotal;
@@ -93,6 +94,15 @@ public class OrderResponse {
         private String doneDatetime;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+        private List<String> returnOrders;
+
+        public static final String TYPE_STANDARD = "standard";// 标准订单
+        public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
+        public static final String TYPE_THIRD_PART_DELIVERY = "third_part_delivery";// 第三方物流订单
+        public static final String TYPE_FRESH = "fresh";//鲜活订单
+        public static final String TYPE_FRESH_VENDOR_DELIVERY = "fresh_vendor_delivery";// 鲜活直运订单
+        public static final String TYPE_FRESH_THIRD_PART_DELIVERY = "fresh_third_part_delivery";// 鲜活第三方物流订单
+
 
         public String getDeliveryType() {
             return deliveryType;
@@ -140,6 +150,7 @@ public class OrderResponse {
             deliveryType = in.readString();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
+            returnOrders = in.createStringArrayList();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -410,6 +421,14 @@ public class OrderResponse {
             this.stateTracker = stateTracker;
         }
 
+        public List<String> getReturnOrders() {
+            return returnOrders;
+        }
+
+        public void setReturnOrders(List<String> returnOrders) {
+            this.returnOrders = returnOrders;
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -449,6 +468,7 @@ public class OrderResponse {
             dest.writeString(deliveryType);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
+            dest.writeStringList(returnOrders);
         }
 
         public static class StoreBean {

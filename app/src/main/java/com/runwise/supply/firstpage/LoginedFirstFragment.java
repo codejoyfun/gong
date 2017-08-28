@@ -78,6 +78,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private LayoutInflater      layoutInflater;
     private ConvenientBanner    banner;
     private OrderAdapter        adapter;
+    private TextView lastWeekKey;
     private TextView lastWeekBuy;
     private TextView lastMonthBuy;
     private TextView unPayAccount;
@@ -102,6 +103,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         //表头：放轮播+统计表
 //        View headView = layoutInflater.inflate(R.layout.logined_head_layout,null);
+        lastWeekKey = (TextView) headView.findViewById(R.id.lastWeekKey);
         lastWeekBuy = (TextView) headView.findViewById(R.id.lastWeekBuy);
         lastMonthBuy = (TextView)headView.findViewById(R.id.lastMonthBuy);
         unPayAccount = (TextView)headView.findViewById(R.id.unPayAccount);
@@ -163,7 +165,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             if (ma.getCurrentTabIndex() == 0)
                 this.switchContent(this,new UnLoginedFirstFragment());
         }else{
-            pullListView.setRefreshing(true);
+            if(this.isVisible()){
+                pullListView.setRefreshing(true);
+            }
         }
     }
     @Override
@@ -182,9 +186,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 adapter.setOrderCount(response.getList().size());
                 adapter.setData(orderList);
                 pullListView.onRefreshComplete();
-                if (!isFirst){
-                    ToastUtil.show(mContext,"订单已刷新");
-                }
+//                if (!isFirst){
+//                    ToastUtil.show(mContext,"订单已刷新");
+//                }
                 isFirst = false;
                 break;
             case FROMLB:
@@ -347,9 +351,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case R.id.callIcon:
                 if (userInfo != null && !TextUtils.isEmpty(userInfo.getCompanyHotLine())){
                     number = userInfo.getCompanyHotLine();
+                    dialog.setTitle("联系 "+userInfo.getCompany() + " 客服");
+                }else{
+                    dialog.setTitle("联系 供鲜生 客服");
                 }
                 dialog.setModel(CustomDialog.BOTH);
-                dialog.setTitle("联系客服");
                 dialog.setMessageGravity();
                 dialog.setMessage(number);
                 dialog.setLeftBtnListener("取消",null);
@@ -429,14 +435,28 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     }
     private void updateDashBoard(DashBoardResponse dbResponse) {
-        DecimalFormat df   = new DecimalFormat("#.##");
-        lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
-        int adventNum = dbResponse.getAdventNum();
-        int maturityNum = dbResponse.getMaturityNum();
-        double adventValue = dbResponse.getAdventValue();
-        double maturityValue = dbResponse.getMaturityValue();
-        lastMonthBuy.setText(df.format(adventValue));
-        unPayAccount.setText(df.format(maturityValue));
+        //能看价格，看价格，不能则看件数
+        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        if (canSeePrice){
+            DecimalFormat df   = new DecimalFormat("#.##");
+            lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
+            double adventNum = dbResponse.getAdventValue();
+            double maturityNum = dbResponse.getMaturityValue();
+            double adventValue = dbResponse.getAdventValue();
+            double maturityValue = dbResponse.getMaturityValue();
+            lastMonthBuy.setText(df.format(adventValue));
+            unPayAccount.setText(df.format(maturityValue));
+        }else{
+            lastWeekKey.setText("上周采购量(件)");
+            lqCountTv.setText("临期食材(件)");
+            dqCountTv.setText("到期食材(件)");
+            lastWeekBuy.setText(String.valueOf(dbResponse.getTotalNumber()));
+            int adventNum = dbResponse.getAdventNum();
+            int maturityNum = dbResponse.getMaturityNum();
+            lastMonthBuy.setText(String.valueOf(adventNum));
+            unPayAccount.setText(String.valueOf(maturityNum));
+
+        }
 //        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
 //        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 //        lqCountTv.setText(ssLq);

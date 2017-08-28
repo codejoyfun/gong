@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.StatusBarUtil;
 
@@ -25,6 +27,7 @@ import java.util.List;
  */
 
 public class ReturnDetailActivity extends NetWorkActivity {
+    private static final int DETAIL = 0;
     @ViewInject(R.id.orderStateTv)
     private TextView orderStateTv;
     @ViewInject(R.id.tipTv)
@@ -46,6 +49,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
     private TextView ygMoneyTv;
     @ViewInject(R.id.priceLL)
     private LinearLayout priceLL;
+    private ReturnOrderBean.ListBean bean;
 
 
     @Override
@@ -56,7 +60,18 @@ public class ReturnDetailActivity extends NetWorkActivity {
         setContentView(R.layout.return_detain_layout);
         setTitleText(true,"退货单详情");
         setTitleLeftIcon(true,R.drawable.nav_back);
+        String rid = getIntent().getStringExtra("rid");
         initViews();
+        if(TextUtils.isEmpty(rid)){
+            updateUI();
+        }else{
+            //发网络请求获取
+            Object request = null;
+            StringBuffer sb = new StringBuffer("/gongfu/v2/return_order/");
+            sb.append(rid).append("/");
+            sendConnection(sb.toString(),request,DETAIL,true, ReturnDetailResponse.class);
+        }
+
     }
 
     private void initViews() {
@@ -71,25 +86,30 @@ public class ReturnDetailActivity extends NetWorkActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setNestedScrollingEnabled(false);
         Bundle bundle = getIntent().getExtras();
-        ReturnOrderBean.ListBean bean = bundle.getParcelable("return");
-        if (bean.getState().equals("process")){
-            orderStateTv.setText("退货进行中");
-            tipTv.setText("原销售订单：SO"+bean.getOrderID());
-        }else{
-            orderStateTv.setText("退货成功");
-            tipTv.setText("退货成功，退货商品：");
-        }
-        orderNumTv.setText(bean.getName());
-        buyerValue.setText(bean.getCreateUser());
-        orderTimeValue.setText(bean.getCreateDate());
-        List<ReturnOrderBean.ListBean.LinesBean> list = bean.getLines();
-        adapter.setReturnList(list);
-        recyclerView.getLayoutParams().height = list.size()* CommonUtils.dip2px(mContext,86);
-        countTv.setText((int)bean.getAmount()+"件");
-        ygMoneyTv.setText(bean.getAmountTotal()+"元");
-
+       bean = bundle.getParcelable("return");
     }
-
+    private void updateUI(){
+        if (bean != null){
+            if (bean.getState().equals("process")){
+                orderStateTv.setText("退货进行中");
+//                tipTv.setText("原销售订单：SO"+bean.getOrderID());
+            }else{
+                orderStateTv.setText("退货成功");
+            }
+            StringBuffer sb = new StringBuffer("退货商品：");
+            sb.append((int)bean.getAmount()).append("件")
+                    .append(" 共").append(bean.getAmountTotal()).append("元");
+            tipTv.setText(sb.toString());
+            orderNumTv.setText(bean.getName());
+            buyerValue.setText(bean.getCreateUser());
+            orderTimeValue.setText(bean.getCreateDate());
+            List<ReturnOrderBean.ListBean.LinesBean> list = bean.getLines();
+            adapter.setReturnList(list);
+            recyclerView.getLayoutParams().height = list.size()* CommonUtils.dip2px(mContext,86);
+            countTv.setText((int)bean.getAmount()+"件");
+            ygMoneyTv.setText(bean.getAmountTotal()+"元");
+        }
+    }
     @OnClick({R.id.title_iv_left,R.id.gotoStateBtn})
     public void btnClick(View view){
         switch(view.getId()){
@@ -109,6 +129,14 @@ public class ReturnDetailActivity extends NetWorkActivity {
     }
     @Override
     public void onSuccess(BaseEntity result, int where) {
+        switch (where){
+            case DETAIL:
+                BaseEntity.ResultBean rb = result.getResult();
+                ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
+                bean = rdr.getReturnOrder();
+                updateUI();
+                break;
+        }
 
     }
 

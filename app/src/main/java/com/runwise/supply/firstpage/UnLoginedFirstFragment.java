@@ -159,7 +159,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         switch (view.getId()){
             case R.id.callIcon:
                 dialog.setModel(CustomDialog.BOTH);
-                dialog.setTitle("联系客服");
+                dialog.setTitle("联系 供鲜生 客服");
                 dialog.setMessageGravity();
                 dialog.setMessage(phone);
                 dialog.setLeftBtnListener("取消",null);
@@ -202,7 +202,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     }
     private void requestLB(){
         //只在首次加载轮播图+统计表
-        LunboRequest lbRequest = new LunboRequest("餐户端");
+        LunboRequest lbRequest = new LunboRequest("访客端");
         sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,true,LunboResponse.class);
 
     }
