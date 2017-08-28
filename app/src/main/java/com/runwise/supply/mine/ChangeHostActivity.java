@@ -35,14 +35,15 @@ public class ChangeHostActivity extends NetWorkActivity {
     private static final int LOGINOUT_HD = 0;
     private static final int LOGINOUT_LBZ = 1;
     private static final int LOGINOUT_Golden = 2;
-    private static final int LOGINOUT_Test = 3;
+    private static final int LOGINOUT_Golden2 = 3;
+    private static final int LOGINOUT_Test = 4;
     @ViewInject(R.id.list)
     private ListView listview;
     @ViewInject(R.id.tipTv)
     private TextView tipTv;
     private ArrayAdapter<String> adapter;
-    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","TestFor...Company数据库"};
-    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","Testfor...Company"};
+    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","GoldenClient2017Test2","TestFor...Company数据库"};
+    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","GoldenClient2017Test2","Testfor...Company"};
     private int which;
     private boolean isLogin;
     @Override
@@ -58,7 +59,7 @@ public class ChangeHostActivity extends NetWorkActivity {
         listview.setAdapter(adapter);
         ToastUtil.show(mContext,"请选择你要切换的数据库");
         String dbStr = (String)SPUtils.get(mContext,"X-Odoo-Db","LBZ20170607");
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i < datas.length; i++){
             String value = values[i];
             if (value.equals(dbStr)){
                 tipTv.setText("当前所在数据库："+datas[i]+"\n切换数据库将会重新登录");
@@ -122,6 +123,22 @@ public class ChangeHostActivity extends NetWorkActivity {
 
                         break;
                     case 3:
+                        dialog.setMessage("即将切换到GoldenClient2017Test2数据库");
+                        dialog.setMessageGravity();
+                        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                if (isLogin){
+                                    loginOut(LOGINOUT_Golden2);
+                                }else{
+                                    switchDBByIndex(3);
+                                }
+
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    case 4:
                         dialog.setMessage("即将切换到Testfor...Company数据库");
                         dialog.setMessageGravity();
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
@@ -130,7 +147,7 @@ public class ChangeHostActivity extends NetWorkActivity {
                                 if (isLogin){
                                     loginOut(LOGINOUT_Test);
                                 }else{
-                                    switchDBByIndex(3);
+                                    switchDBByIndex(4);
                                 }
 
                             }
@@ -178,8 +195,11 @@ public class ChangeHostActivity extends NetWorkActivity {
             case LOGINOUT_Golden:
                 switchDBByIndex(2);
                 break;
-            case LOGINOUT_Test:
+            case LOGINOUT_Golden2:
                 switchDBByIndex(3);
+                break;
+            case LOGINOUT_Test:
+                switchDBByIndex(4);
                 break;
 
         }
