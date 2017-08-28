@@ -39,16 +39,10 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.firstpage.OrderDetailActivity;
-import com.runwise.supply.firstpage.ReturnDetailActivity;
-import com.runwise.supply.firstpage.entity.OrderResponse;
-import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.message.entity.MsgListResult;
 import com.runwise.supply.message.entity.MsgSendRequest;
 import com.runwise.supply.tools.UserUtils;
-
-import org.w3c.dom.Text;
 
 /**
  * 聊天信息

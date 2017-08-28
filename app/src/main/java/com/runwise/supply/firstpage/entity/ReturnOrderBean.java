@@ -92,6 +92,7 @@ public class ReturnOrderBean{
             isDispatch = in.readByte() != 0;
             returnOrderID = in.readInt();
             driveMobile = in.readString();
+            deliveryType = in.readString();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
         }
@@ -275,6 +276,7 @@ public class ReturnOrderBean{
             dest.writeByte((byte) (isDispatch ? 1 : 0));
             dest.writeInt(returnOrderID);
             dest.writeString(driveMobile);
+            dest.writeString(deliveryType);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
         }

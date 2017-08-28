@@ -32,124 +32,55 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
 
     public static class OrderBean implements Serializable{
         /**
-         * orderID : 285
+         * is_today : false
+         * done_datetime : 2017-08-25 11:20:25
+         * create_date : 2017-08-23 20:24:03
+         * name : SO17082300015
+         * confirmation_date : 2017-08-23 20:25:28
+         * estimated_time : 2017-08-24 10:00:00
+         * waybill : {"user":{"mobile":"15542154698","avatar_url":"","name":"黄飞"},"vehicle":{"name":"Audi/A4/999999999999","license_plate":"999999999999"},"name":"SP17082300005","id":81}
+         * deliveryType : fresh
+         * amount : 5
+         * end_unload_datetime : 2017-08-23 12:58:43
+         * isThirdPartLog : false
+         * last_message : {"body":"Hello ","id":22908,"date":"2017-08-25 18:17:08","seen":true,"model":"sale.order","author_id":{"avatar_url":"/gongfu/user/avatar/331/4822439085110259747.png","id":374,"name":"卢小宝"}}
          * state : done
-         * create_date : 2017-07-11 08:50:15
-         * name : RSO039
-         * waybill : {"id":9}
-         * last_message : {"body":"🌝","id":26945,"date":"2017-07-17 17:08:17","seen":true,"model":"return.sale.order","author_id":{"avatar_url":"/gongfu/user/avatar/18/2145901519106070062.png","id":27,"name":"赵京"}}
-         * amount : 3
-         * id : 39
-         * amount_total : 52.65
-         * is_today : true
-         * done_datetime : 2017-07-27 18:00:28
-         * confirmation_date : 2017-07-27 17:43:40
-         * estimated_time : 2017-07-28 09:00:00
-         * end_unload_datetime : 2017-07-27 10:00:00
          * order_type_id : null
-         * start_unload_datetime : 2017-07-27 09:59:55
-         * create_user_name : 赵京
-         * loading_time : 2017-07-28 09:30:00
+         * recent_trends : 2017-08-25 11:20:25
+         * start_unload_datetime : 2017-08-23 12:58:41
+         * create_user_name : 卢宝
+         * loading_time : 2017-08-24 00:00:00
+         * id : 723
+         * amount_total : 58.5
          */
-
-        private int orderID;
-        private String state;
-        private String create_date;
-        private String name;
-        private WaybillBean waybill;
-        private LastMessageBean last_message;
-        private int amount;
-        private int id;
-        private double amount_total;
+        private String orderID;
         private boolean is_today;
         private String done_datetime;
+        private String create_date;
+        private String name;
         private String confirmation_date;
         private String estimated_time;
+        private WaybillBean waybill;
+        private String deliveryType;
+        private int amount;
         private String end_unload_datetime;
-        private Object order_type_id;
+        private boolean isThirdPartLog;
+        private LastMessageBean last_message;
+        private String state;
+        private String order_type_id;
+        private String recent_trends;
         private String start_unload_datetime;
         private String create_user_name;
         private String loading_time;
+        private int id;
+        private double amount_total;
 
-        public String getDeliveryType() {
-            return deliveryType;
-        }
-
-        public void setDeliveryType(String deliveryType) {
-            this.deliveryType = deliveryType;
-        }
-
-        private String deliveryType;
-        public int getOrderID() {
+        public String getOrderID() {
             return orderID;
         }
 
-        public void setOrderID(int orderID) {
+        public void setOrderID(String orderID) {
             this.orderID = orderID;
-        }
-
-        public String getState() {
-            return state;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-
-        public String getCreate_date() {
-            return create_date;
-        }
-
-        public void setCreate_date(String create_date) {
-            this.create_date = create_date;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public WaybillBean getWaybill() {
-            return waybill;
-        }
-
-        public void setWaybill(WaybillBean waybill) {
-            this.waybill = waybill;
-        }
-
-        public LastMessageBean getLast_message() {
-            return last_message;
-        }
-
-        public void setLast_message(LastMessageBean last_message) {
-            this.last_message = last_message;
-        }
-
-        public int getAmount() {
-            return amount;
-        }
-
-        public void setAmount(int amount) {
-            this.amount = amount;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public double getAmount_total() {
-            return amount_total;
-        }
-
-        public void setAmount_total(double amount_total) {
-            this.amount_total = amount_total;
         }
 
         public boolean isIs_today() {
@@ -168,6 +99,22 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
             this.done_datetime = done_datetime;
         }
 
+        public String getCreate_date() {
+            return create_date;
+        }
+
+        public void setCreate_date(String create_date) {
+            this.create_date = create_date;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
         public String getConfirmation_date() {
             return confirmation_date;
         }
@@ -184,6 +131,30 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
             this.estimated_time = estimated_time;
         }
 
+        public WaybillBean getWaybill() {
+            return waybill;
+        }
+
+        public void setWaybill(WaybillBean waybill) {
+            this.waybill = waybill;
+        }
+
+        public String getDeliveryType() {
+            return deliveryType;
+        }
+
+        public void setDeliveryType(String deliveryType) {
+            this.deliveryType = deliveryType;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public void setAmount(int amount) {
+            this.amount = amount;
+        }
+
         public String getEnd_unload_datetime() {
             return end_unload_datetime;
         }
@@ -192,12 +163,44 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
             this.end_unload_datetime = end_unload_datetime;
         }
 
-        public Object getOrder_type_id() {
+        public boolean isIsThirdPartLog() {
+            return isThirdPartLog;
+        }
+
+        public void setIsThirdPartLog(boolean isThirdPartLog) {
+            this.isThirdPartLog = isThirdPartLog;
+        }
+
+        public LastMessageBean getLast_message() {
+            return last_message;
+        }
+
+        public void setLast_message(LastMessageBean last_message) {
+            this.last_message = last_message;
+        }
+
+        public String getState() {
+            return state;
+        }
+
+        public void setState(String state) {
+            this.state = state;
+        }
+
+        public String getOrder_type_id() {
             return order_type_id;
         }
 
-        public void setOrder_type_id(Object order_type_id) {
+        public void setOrder_type_id(String order_type_id) {
             this.order_type_id = order_type_id;
+        }
+
+        public String getRecent_trends() {
+            return recent_trends;
+        }
+
+        public void setRecent_trends(String recent_trends) {
+            this.recent_trends = recent_trends;
         }
 
         public String getStart_unload_datetime() {
@@ -224,12 +227,58 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
             this.loading_time = loading_time;
         }
 
-        public static class WaybillBean  implements Serializable{
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public double getAmount_total() {
+            return amount_total;
+        }
+
+        public void setAmount_total(double amount_total) {
+            this.amount_total = amount_total;
+        }
+
+        public static class WaybillBean implements Serializable{
             /**
-             * id : 9
+             * user : {"mobile":"15542154698","avatar_url":"","name":"黄飞"}
+             * vehicle : {"name":"Audi/A4/999999999999","license_plate":"999999999999"}
+             * name : SP17082300005
+             * id : 81
              */
 
+            private UserBean user;
+            private VehicleBean vehicle;
+            private String name;
             private String id;
+
+            public UserBean getUser() {
+                return user;
+            }
+
+            public void setUser(UserBean user) {
+                this.user = user;
+            }
+
+            public VehicleBean getVehicle() {
+                return vehicle;
+            }
+
+            public void setVehicle(VehicleBean vehicle) {
+                this.vehicle = vehicle;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
 
             public String getId() {
                 return id;
@@ -238,16 +287,78 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
             public void setId(String id) {
                 this.id = id;
             }
+
+            public static class UserBean implements Serializable{
+                /**
+                 * mobile : 15542154698
+                 * avatar_url :
+                 * name : 黄飞
+                 */
+
+                private String mobile;
+                private String avatar_url;
+                private String name;
+
+                public String getMobile() {
+                    return mobile;
+                }
+
+                public void setMobile(String mobile) {
+                    this.mobile = mobile;
+                }
+
+                public String getAvatar_url() {
+                    return avatar_url;
+                }
+
+                public void setAvatar_url(String avatar_url) {
+                    this.avatar_url = avatar_url;
+                }
+
+                public String getName() {
+                    return name;
+                }
+
+                public void setName(String name) {
+                    this.name = name;
+                }
+            }
+
+            public static class VehicleBean implements Serializable{
+                /**
+                 * name : Audi/A4/999999999999
+                 * license_plate : 999999999999
+                 */
+
+                private String name;
+                private String license_plate;
+
+                public String getName() {
+                    return name;
+                }
+
+                public void setName(String name) {
+                    this.name = name;
+                }
+
+                public String getLicense_plate() {
+                    return license_plate;
+                }
+
+                public void setLicense_plate(String license_plate) {
+                    this.license_plate = license_plate;
+                }
+            }
         }
 
-        public static class LastMessageBean  implements Serializable{
+        public static class LastMessageBean implements Serializable{
             /**
-             * body : 🌝
-             * id : 26945
-             * date : 2017-07-17 17:08:17
+             * body : Hello
+             * id : 22908
+             * date : 2017-08-25 18:17:08
              * seen : true
-             * model : return.sale.order
-             * author_id : {"avatar_url":"/gongfu/user/avatar/18/2145901519106070062.png","id":27,"name":"赵京"}
+             * model : sale.order
+             * author_id : {"avatar_url":"/gongfu/user/avatar/331/4822439085110259747.png","id":374,"name":"卢小宝"}
              */
 
             private String body;
@@ -307,9 +418,9 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
 
             public static class AuthorIdBean implements Serializable{
                 /**
-                 * avatar_url : /gongfu/user/avatar/18/2145901519106070062.png
-                 * id : 27
-                 * name : 赵京
+                 * avatar_url : /gongfu/user/avatar/331/4822439085110259747.png
+                 * id : 374
+                 * name : 卢小宝
                  */
 
                 private String avatar_url;
