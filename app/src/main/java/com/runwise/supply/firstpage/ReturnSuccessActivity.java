@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,12 +51,23 @@ public class ReturnSuccessActivity extends BaseActivity {
     @BindView(R.id.uploadBtn)
     TextView uploadBtn;
 
+    public static final String INTENT_KEY_RESULTBEAN = "intent_key_resultbean";
+    ReturnOrderBean.ListBean listBean;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_return_success);
         ButterKnife.bind(this);
 
+        listBean = (ReturnOrderBean.ListBean) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
+        tvReturnCount.setText("退货数量: " +
+                listBean.getLines().size() +
+                "件\\n" +
+                "退货金额: " +
+                listBean.getAmountTotal() +
+                "\\n退货成功时间: " +
+                "2017-0828 17:34");
 
     }
 
@@ -62,7 +75,8 @@ public class ReturnSuccessActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.orderBtn:
-
+                Intent intent = new Intent(ReturnSuccessActivity.this,OrderDetailActivity.class);
+//                intent.putExtra()
                 break;
             case R.id.uploadBtn:
                 break;
