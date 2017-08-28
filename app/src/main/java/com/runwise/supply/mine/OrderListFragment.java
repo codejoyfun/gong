@@ -22,7 +22,6 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
@@ -33,7 +32,10 @@ import com.runwise.supply.firstpage.OrderDoAction;
 import com.runwise.supply.firstpage.ReceiveActivity;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.TimeUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 我的订单

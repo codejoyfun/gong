@@ -111,10 +111,10 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
                 final CustomBottomDialog customBottomDialog = new CustomBottomDialog(mContext);
                 ArrayMap<Integer, String> menus = new ArrayMap<>();
                 menus.put(0, "联系客服");
-//                if(orderBean.getWaybill() != null && orderBean.getWaybill().getUser() != null && !TextUtils.isEmpty(orderBean.getWaybill().getUser().getMobile())) {
-//                    mobel = orderBean.getWaybill().getUser().getMobile();
-//                    menus.put(1, "联系配送员");
-//                }
+                if(orderBean.getWaybill() != null && orderBean.getWaybill().getUser() != null && !TextUtils.isEmpty(orderBean.getWaybill().getUser().getMobile())) {
+                    mobel = orderBean.getWaybill().getUser().getMobile();
+                    menus.put(1, "联系配送员");
+                }
                 customBottomDialog.addItemViews(menus);
                 customBottomDialog.setOnBottomDialogClick(new CustomBottomDialog.OnBottomDialogClick() {
                     @Override

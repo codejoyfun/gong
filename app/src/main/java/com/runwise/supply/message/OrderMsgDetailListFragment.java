@@ -16,19 +16,20 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.OrderMsgDetail;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -195,7 +196,13 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
                 viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
-                viewHolder.dateNumber.setText("¥"+productBean.getSettlePrice()+"/"+bean.getProductUom());
+                if (GlobalApplication.getInstance().getCanSeePrice()) {
+                    viewHolder.dateNumber.setVisibility(View.VISIBLE);
+                    viewHolder.dateNumber.setText("¥"+ UserUtils.formatPrice(productBean.getPrice()+"")+"/"+bean.getProductUom());
+                }
+                else{
+                    viewHolder.dateNumber.setVisibility(View.GONE);
+                }
             }
             viewHolder.uom.setText(bean.getProductUomQty()+"");
             return convertView;

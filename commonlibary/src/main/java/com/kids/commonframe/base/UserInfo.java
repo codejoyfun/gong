@@ -55,20 +55,11 @@ public class UserInfo implements Serializable{
     private boolean clerk;
     private boolean canSeePrice;
     private String companyHotLine;
-    private String company;
     private String isAgreeItem;
     private boolean hasNewInvoice;
     private String company;
     public boolean isHasNewInvoice() {
         return hasNewInvoice;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
     }
 
     public void setHasNewInvoice(boolean hasNewInvoice) {
