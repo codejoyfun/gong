@@ -5,6 +5,53 @@
     android:background="#FFFFFF">
     <include layout="@layout/common_title_bar" />
 
+    <RelativeLayout
+        android:id="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ps_head_bg">
+
+        <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/headSdv"
+            android:layout_width="41dp"
+            android:layout_height="41dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            fresco:overlayImage="@drawable/head_over_bg"
+            fresco:placeholderImage="@drawable/login_ico_user"
+            fresco:placeholderImageScaleType="centerCrop"
+            fresco:roundAsCircle="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="15dp" />
+
+        <TextView
+            android:id="@+id/nameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/headSdv"
+            android:layout_marginLeft="9.5dp"
+            android:layout_toRightOf="@id/headSdv"
+            android:text="张云飞"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/timeTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameTv"
+            android:layout_marginLeft="9.5dp"
+            android:layout_marginTop="4dp"
+            android:layout_toRightOf="@+id/headSdv"
+            android:text="预计发达时间    开始卸货时间"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="26dp"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -46,6 +93,7 @@
 
             <LinearLayout
                 android:id="@+id/cbLL"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"

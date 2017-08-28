@@ -71,6 +71,15 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
         private String create_user_name;
         private String loading_time;
 
+        public String getDeliveryType() {
+            return deliveryType;
+        }
+
+        public void setDeliveryType(String deliveryType) {
+            this.deliveryType = deliveryType;
+        }
+
+        private String deliveryType;
         public int getOrderID() {
             return orderID;
         }

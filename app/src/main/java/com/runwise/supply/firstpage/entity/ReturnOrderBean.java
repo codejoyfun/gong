@@ -64,6 +64,15 @@ public class ReturnOrderBean{
         private String driveMobile;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+        public String getDeliveryType() {
+            return deliveryType;
+        }
+
+        public void setDeliveryType(String deliveryType) {
+            this.deliveryType = deliveryType;
+        }
+
+        private String deliveryType;
 
 
         protected ListBean(Parcel in) {

@@ -14,13 +14,17 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -44,8 +48,14 @@ import java.util.Map;
 public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter.RatingBarClickCallback,CheckBox.OnCheckedChangeListener {
     @ViewInject(R.id.indexLine)
     private View indexLine;
+    @ViewInject(R.id.headSdv)
+    private SimpleDraweeView headSdv;
     @ViewInject(R.id.recyclerView)
     private RecyclerView    recyclerView;
+    @ViewInject(R.id.nameTv)
+    private TextView        nameTv;
+    @ViewInject(R.id.timeTv)
+    private TextView        timeTv;
     @ViewInject(R.id.cb1)
     private CheckBox        cb1;
     @ViewInject(R.id.cb2)
@@ -62,6 +72,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private RatingBar       serviceRb;
     @ViewInject(R.id.cbLL)
     private View cbLL;
+    @ViewInject(R.id.rl_head)
+    private RelativeLayout rlHead;
     private static final int ORDERREQUST = 1;
     private static final int LINEREQUEST = 2;
 
@@ -96,6 +108,10 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         indexLine.setTranslationX(translationX);
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("order");
+        if (bean.getDeliveryType() == OrderResponse.ListBean.TYPE_VENDOR_DELIVERY || bean.getDeliveryType() == OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY
+                || bean.getDeliveryType() == OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY){
+            rlHead.setVisibility(View.GONE);
+        }
         adapter = new EvaluateAdapter(this,null,rateMap);
         adapter.setCallback(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -108,8 +124,11 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             }
             if(bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null){
                 String deliverName = bean.getWaybill().getDeliverUser().getName();
+                nameTv.setText(deliverName);
                 String imgUrl = bean.getWaybill().getDeliverUser().getAvatarUrl();
+                FrecoFactory.getInstance(mContext).disPlay(headSdv, Constant.BASE_URL+imgUrl);
             }else{
+                nameTv.setText("未知");
             }
             String estimatTime = bean.getEstimatedTime();
             String endUploadTime = bean.getStartUnloadDatetime();
@@ -118,6 +137,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                     .append("   ")
                     .append("开始卸货时间 ")
                     .append(endUploadTime);
+            timeTv.setText(sb.toString());
         }
 
         cb1.setOnCheckedChangeListener(this);
