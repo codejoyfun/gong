@@ -54,7 +54,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/more_img"/>
+                android:src="@drawable/itemlst_bigger"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
@@ -81,7 +81,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="14dp"
                 android:clickable="true"
-                android:src="@drawable/tabbar_order_highlight"/>
+                android:src="@drawable/setting_agreement"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/more_img"/>
+                android:src="@drawable/itemlst_bigger"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
@@ -114,6 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/white_btn_selector"
+            android:visibility="gone"
             >
             <View
                 android:layout_width="match_parent"
@@ -147,7 +148,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/more_img"/>
+                android:src="@drawable/itemlst_bigger"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
@@ -196,7 +197,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/more_img"/>
+                android:src="@drawable/itemlst_bigger"/>
 
             <!--<TextView-->
             <!--android:layout_width="wrap_content"-->
@@ -255,7 +256,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/more_img"/>
+                android:src="@drawable/itemlst_bigger"/>
 
             <TextView
                 android:id="@+id/setItemName_4"
@@ -312,7 +313,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/more_img"/>
+                android:src="@drawable/itemlst_bigger"/>
 
             <TextView
                 android:id="@+id/setItemName_5"

@@ -67,6 +67,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.runwise.supply.R.id.orderRed;
+
 
 public class EditUserinfoActivity extends NetWorkActivity {
     private final int REQUEST_UPDATE_NAME = 10;
@@ -75,6 +77,8 @@ public class EditUserinfoActivity extends NetWorkActivity {
     private final int REQUEST_UPDATE_PHONENUMBER = 13;
     private final int REQUEST_UPLOAD_IMAGEFILE = 14;
     private final int REQUEST_LOGINOUT = 15;
+    private static final int REQUEST_USERINFO = 16;
+
 
     private final int RET_CAMERA = 101;
     private final int RET_GALLERY = 102;
@@ -131,11 +135,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
             case REQUEST_UPLOAD_IMAGEFILE:
                 UploadImg uploadImg = (UploadImg)result.getResult();
                 LogUtils.e(uploadImg.getAvatar_url());
-                userInfo.setAvatarUrl(uploadImg.getAvatar_url());
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
-                Fresco.getImagePipeline().evictFromCache(updateImgUri);
-                FrecoFactory.getInstance(this).disPlay(userHead, updateImgUri);
-                dismissUploadDialog("头像上传成功!");
+                requestUserInfo();
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
@@ -144,8 +144,20 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 EventBus.getDefault().post(new UserLogoutEvent());
                 finish();
                 break;
+            case REQUEST_USERINFO:
+                UserInfo userInfo = (UserInfo) result.getResult().getData();
+//                userInfo.setAvatarUrl(userInfo.getAvatarUrl());
+                GlobalApplication.getInstance().saveUserInfo(userInfo);
+                Fresco.getImagePipeline().evictFromCache(updateImgUri);
+                FrecoFactory.getInstance(this).disPlay(userHead, updateImgUri);
+                dismissUploadDialog("头像上传成功!");
+                break;
         }
 
+    }
+    private void requestUserInfo() {
+        Object paramBean = null;
+        this.sendConnection("/gongfu/v2/user/information",paramBean ,REQUEST_USERINFO, false, UserInfo.class);
     }
 
     @Override
