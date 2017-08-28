@@ -64,6 +64,16 @@ public class ReturnOrderBean{
         private String driveMobile;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+
+        public boolean isReturnThirdPartLog() {
+            return returnThirdPartLog;
+        }
+
+        public void setReturnThirdPartLog(boolean returnThirdPartLog) {
+            this.returnThirdPartLog = returnThirdPartLog;
+        }
+
+        private boolean returnThirdPartLog;
         public String getDeliveryType() {
             return deliveryType;
         }

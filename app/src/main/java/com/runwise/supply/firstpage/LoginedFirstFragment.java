@@ -55,6 +55,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int FROMDB = 2;
     private static final int CANCEL = 3;        //取消订单
     private static final int FROMRETURN = 4;
+    private static final int FINISHRETURN = 5;
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -206,6 +207,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 Object request = null;
                 sendConnection("/gongfu/v2/order/undone_orders/",request,FROMORDER,false, OrderResponse.class);
                 break;
+            case FINISHRETURN:
+                ToastUtil.show(mContext,"退货成功");
+
+//                requestReturnList();
+                break;
         }
     }
 
@@ -273,7 +279,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case RATE:
                 //评价
                 Intent rIntent = new Intent(mContext,EvaluateActivity.class);
-                OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(position);
+                final OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(position);
                 Bundle rBundle = new Bundle();
                 rBundle.putParcelable("order",bean);
                 rIntent.putExtras(rBundle);
@@ -303,6 +309,21 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
 
+                    }
+                });
+                dialog.show();
+                break;
+            case FINISH_RETURN:
+                final ReturnOrderBean.ListBean finalBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
+                dialog.setMessageGravity();
+                dialog.setMessage("确认数量一致?");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        Object request = null;
+                        sendConnection("/gongfu/v2/return_order/" +
+                                finalBean.getOrderID() +
+                                "/done",request,FINISHRETURN,false, null);
                     }
                 });
                 dialog.show();
