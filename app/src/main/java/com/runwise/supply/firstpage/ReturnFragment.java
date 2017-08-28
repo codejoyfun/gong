@@ -20,6 +20,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnBean;
@@ -44,6 +45,7 @@ public class ReturnFragment extends BaseFragment {
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ReturnAdapter adapter;
+    private boolean canSeePrice;
     //跟自己类型配对的数据即可。
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
     private Map<String,ReturnBean> countMap = new HashMap<>();
@@ -55,6 +57,7 @@ public class ReturnFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         adapter = new ReturnAdapter();
         ArrayList<OrderResponse.ListBean.LinesBean> linesList = getArguments().getParcelableArrayList("datas");
         if (type == DataType.ALL){
@@ -96,7 +99,10 @@ public class ReturnFragment extends BaseFragment {
                 if (basicBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                sb.append("  ").append(basicBean.getUnit());
+                if (canSeePrice){
+                    sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                }
                 viewHolder.content.setText(sb.toString());
             }
             viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {

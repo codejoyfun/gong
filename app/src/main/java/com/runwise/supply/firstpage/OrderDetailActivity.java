@@ -1,12 +1,19 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -81,6 +88,11 @@ public class OrderDetailActivity extends NetWorkActivity{
     private Button rightBtn2;
     @ViewInject(R.id.rightBtn)
     private Button rightBtn;
+    @ViewInject(R.id.returnLL)
+    private View returnLL;
+
+    @ViewInject(R.id.returnContainer)
+    private LinearLayout returnContainer;
     @ViewInject(R.id.bottom_bar)
     private RelativeLayout bottom_bar;
     private boolean isHasAttachment;        //默认无凭证
@@ -383,6 +395,31 @@ public class OrderDetailActivity extends NetWorkActivity{
         if (bean != null){
             if (bean.getHasReturn() != 0){
                 adapter.setHasReturn(true);
+                returnLL.setVisibility(View.VISIBLE);
+                //可能有多个退货单。
+                for (final String returnId : bean.getReturnOrders()){
+                    TextView tv = new TextView(mContext);
+                    tv.setTextSize(14);
+                    tv.setTextColor(Color.parseColor("#999999"));
+                    tv.setGravity(Gravity.CENTER_VERTICAL);
+                    tv.setTag(returnId);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            CommonUtils.dip2px(mContext,40));
+                    SpannableString ss = new SpannableString("退货单号：RSO"+returnId);
+                    ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2F96D8")),5,8+returnId.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    tv.setText(ss);
+                    returnContainer.addView(tv,params);
+                    tv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //跳转到退货单详情
+                            Intent intent = new Intent(mContext,ReturnDetailActivity.class);
+                            intent.putExtra("rid",returnId);
+                            startActivity(intent);
+                        }
+                    });
+                }
+
             }
             if (bean.isIsTwoUnit()){
                 adapter.setTwoUnit(true);
@@ -402,7 +439,8 @@ public class OrderDetailActivity extends NetWorkActivity{
             }else if (bean.getState().equals("done")){
                 state = "订单已收货";
                 String recdiveName = bean.getReceiveUserName();
-                tip = "收货人："+ recdiveName;
+//                tip = "收货人："+ recdiveName;
+                tip = "配送已完成，如有问题请联系客服";
                 //TODO:退货单没有收货人姓名，暂时处理
                 if(TextUtils.isEmpty(recdiveName)) {
                     tip = "已退货";

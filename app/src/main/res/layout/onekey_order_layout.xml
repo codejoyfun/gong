@@ -192,4 +192,21 @@
             android:layout_marginBottom="15dp"/>
 
     </RelativeLayout>
+    <View
+        android:id="@+id/bgView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone"
+        android:alpha="0.4">
+    </View>
+    <ImageView
+        android:id="@+id/orderSuccessIv"
+        android:layout_width="317dp"
+        android:layout_height="296dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/order_successesd"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        />
 </RelativeLayout>

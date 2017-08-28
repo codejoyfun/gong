@@ -76,6 +76,10 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private CheckBox allCb;
     @ViewInject(R.id.allLL)
     private LinearLayout allLL;
+    @ViewInject(R.id.orderSuccessIv)
+    private ImageView orderSuccessIv;
+    @ViewInject(R.id.bgView)
+    private View bgView;
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
     //弹窗星期的View集合
@@ -419,8 +423,14 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 adapter.setData(data.getList());
                 break;
             case COMMIT_TYPE:
-                ToastUtil.show(mContext,"下单成功");
-                finish();
+                bgView.setVisibility(View.VISIBLE);
+                orderSuccessIv.setVisibility(View.VISIBLE);
+                orderSuccessIv.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                },1500);
                 break;
             default:
                 break;

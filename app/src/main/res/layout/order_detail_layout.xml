@@ -48,6 +48,8 @@
             <include layout="@layout/orderdetain_state_item" />
             <!--订单信息-->
             <include layout="@layout/orderdetail_info_item" />
+            <!-- 退货单信息 -->
+            <include layout="@layout/return_info_item" />
             <!--种类bar-->
             <include layout="@layout/orderdetail_type_item" />
             <!--列表-->

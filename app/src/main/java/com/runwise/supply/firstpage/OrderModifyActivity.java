@@ -20,6 +20,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OrderChangedEvent;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -93,12 +94,14 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
             .setDimAmount(0.5f);
     private Handler handler = new Handler();
     private OneKeyAdapter adapter;
+    private boolean canSeePrice;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_modify_layout);
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         setTitleRightText(true,"编辑");
         setTitleLeftIcon(true,R.drawable.nav_back);
         dateTv.setText(cachedDWStr);
@@ -347,6 +350,9 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         String formatMoney = df.format(totalMoney);
         totalMoneyTv.setText(formatMoney+"元");
         totalNumTv.setText(totalNum+"件");
+        if (canSeePrice){
+            totalMoneyTv.setVisibility(View.VISIBLE);
+        }
         setTitleEditShow();
     }
 

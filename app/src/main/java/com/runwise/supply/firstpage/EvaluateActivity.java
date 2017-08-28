@@ -76,6 +76,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private final static String TIP1 = "迟到且无提前告知";
     private final static String TIP2 = "未确认收货就离开";
     private final static String TIP3 = "态度差";
+    private List<String> tags = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,6 +224,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         request.setService_score((int)serviceRb.getRating());
         StringBuffer sb = new StringBuffer("/gongfu/assess/order/");
         sb.append(orderId).append("/");
+        if(tags.size() > 0){
+            request.setTags(tags);
+        }
         sendConnection(sb.toString(),request,ORDERREQUST,false,BaseEntity.ResultBean.class);
         //对订单商品行的评价:gongfu/assess/order/line/
         EvaluateLineRequest lineRequest = new EvaluateLineRequest();
@@ -309,9 +313,15 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                         sb.append("，");
                     }
                     sb.append(TIP1);
+                    if (!tags.contains(TIP1)){
+                        tags.add(TIP1);
+                    }
                     serviceEt.setText(sb.toString());
                     serviceEt.setSelection(sb.toString().length());
                 }else{
+                    if (tags.contains(TIP1)){
+                        tags.remove(TIP1);
+                    }
                     cb1.setTextColor(Color.parseColor("#CCCCCC"));
                     if (sb.toString().contains(TIP1)){
                         String newStr = sb.toString().replaceAll(TIP1,"");
@@ -323,6 +333,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 break;
             case R.id.cb2:
                 if(isChecked){
+                    if (!tags.contains(TIP2)){
+                        tags.add(TIP2);
+                    }
                     cb2.setTextColor(Color.parseColor("#9ACC35"));
                     if(sb.toString().length() > 0){
                         sb.append("，");
@@ -331,6 +344,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                     serviceEt.setText(sb.toString());
                     serviceEt.setSelection(sb.toString().length());
                 }else{
+                    if (tags.contains(TIP2)){
+                        tags.remove(TIP2);
+                    }
                     cb2.setTextColor(Color.parseColor("#CCCCCC"));
                     if (sb.toString().contains(TIP2)){
                         String newStr = sb.toString().replaceAll(TIP2,"");
@@ -341,6 +357,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 break;
             case R.id.cb3:
                 if(isChecked){
+                    if (!tags.contains(TIP3)){
+                        tags.add(TIP3);
+                    }
                     cb3.setTextColor(Color.parseColor("#9ACC35"));
                     if(sb.toString().length() > 0){
                         sb.append("，");
@@ -349,6 +368,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                     serviceEt.setText(sb.toString());
                     serviceEt.setSelection(sb.toString().length());
                 }else{
+                    if (tags.contains(TIP3)){
+                        tags.remove(TIP3);
+                    }
                     cb3.setTextColor(Color.parseColor("#CCCCCC"));
                     if (sb.toString().contains(TIP3)){
                         String newStr = sb.toString().replaceAll(TIP3,"");

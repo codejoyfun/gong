@@ -58,6 +58,7 @@ public class OrderResponse {
          * amount : 5.0
          * isToday : false
          * doneDatetime : 2017-07-14 11:14:02
+         * returnOrders:["164","163"]
          */
 
         private double amountTotal;
@@ -93,6 +94,7 @@ public class OrderResponse {
         private String doneDatetime;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+        private List<String> returnOrders;
 
         public String getDeliveryType() {
             return deliveryType;
@@ -140,6 +142,7 @@ public class OrderResponse {
             deliveryType = in.readString();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
+            returnOrders = in.createStringArrayList();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -410,6 +413,14 @@ public class OrderResponse {
             this.stateTracker = stateTracker;
         }
 
+        public List<String> getReturnOrders() {
+            return returnOrders;
+        }
+
+        public void setReturnOrders(List<String> returnOrders) {
+            this.returnOrders = returnOrders;
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -449,6 +460,7 @@ public class OrderResponse {
             dest.writeString(deliveryType);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
+            dest.writeStringList(returnOrders);
         }
 
         public static class StoreBean {
