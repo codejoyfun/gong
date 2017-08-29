@@ -157,7 +157,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="17sp"
-            android:text="您还没有相关商品哦"
+            android:text=""
             android:layout_centerInParent="true"
             android:textColor="#666666"/>
         <TextView
@@ -165,10 +165,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:text="点击按钮添加商品"
-            android:layout_below="@id/tip"
+            android:text="暂无下单列表，请点击"
+            android:layout_alignTop="@id/tip"
             android:gravity="center"
-            android:layout_marginTop="5dp"
             android:textColor="#B6B6B6"/>
         <Button
             android:id="@+id/self_add_btn"

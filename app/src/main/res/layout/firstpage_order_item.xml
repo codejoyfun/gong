@@ -15,16 +15,34 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="17dp" />
-    <TextView
+    <LinearLayout
+        android:id="@+id/orderNumLL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SO123450"
-        android:textSize="18sp"
-        android:textColor="#2E2E2E"
+        android:orientation="horizontal"
         android:layout_toRightOf="@id/img"
-        android:layout_marginLeft="12dp"
-        android:layout_alignTop="@id/img"
-        android:id="@+id/orderNumTv"/>
+        android:gravity="center_vertical"
+        android:layout_marginLeft="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SO123450"
+            android:textSize="18sp"
+            android:textColor="#2E2E2E"
+            android:layout_alignTop="@id/img"
+            android:id="@+id/orderNumTv"/>
+        <TextView
+            android:id="@+id/returnTv"
+            android:layout_width="18dp"
+            android:layout_height="14dp"
+            android:text="退"
+            android:layout_marginLeft="5dp"
+            android:textSize="9sp"
+            android:textColor="#FA5900"
+            android:visibility="invisible"
+            android:gravity="center"
+            android:background="@drawable/receive_circle"/>
+    </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +60,7 @@
         android:textSize="12sp"
         android:textColor="#999999"
         android:layout_alignBottom="@id/img"
-        android:layout_alignLeft="@id/orderNumTv"
+        android:layout_alignLeft="@id/orderNumLL"
         android:id="@+id/orderTimeTv"/>
     <LinearLayout
         android:id="@+id/ll1"
@@ -50,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/orderTimeTv"
         android:layout_marginTop="17dp"
-        android:layout_alignLeft="@id/orderNumTv"
+        android:layout_alignLeft="@id/orderNumLL"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="wrap_content"

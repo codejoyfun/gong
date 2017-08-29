@@ -27,6 +27,9 @@ import com.runwise.supply.tools.TimeUtils;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
+
 /**
  * Created by libin on 2017/7/14.
  */
@@ -185,9 +188,15 @@ public class OrderAdapter extends IBaseAdapter {
             }else{
                 viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
+            if(bean.getHasReturn() != 0){
+                viewHolder.returnTv.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.returnTv.setVisibility(View.INVISIBLE);
+            }
         }else{
             final ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) mList.get(position);
             //发货单
+            viewHolder.returnTv.setVisibility(View.INVISIBLE);
             viewHolder.imgIv.setImageResource(R.drawable.more_restaurant_returnrecord);
             viewHolder.titleTv.setText(bean.getName());
             viewHolder.stateTv.setText("退货中");
@@ -252,6 +261,27 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.timelineLL.setVisibility(View.GONE);
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
             }
+            String deliveryType = bean.getDeliveryType();
+            if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
+            deliveryType.equals(TYPE_VENDOR_DELIVERY)
+                    ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
+                    &&bean.isReturnThirdPartLog())
+            ){
+                viewHolder.doBtn.setVisibility(View.VISIBLE);
+                viewHolder.doBtn.setText("完成退货");
+                viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //根据状态进行不同的逻辑处理
+                        if (callback != null){
+                            callback.doAction(OrderDoAction.FINISH_RETURN,position);
+                        }
+
+                    }
+                });
+            }else{
+                viewHolder.doBtn.setVisibility(View.INVISIBLE);
+            }
 
         }
 
@@ -290,6 +320,8 @@ public class OrderAdapter extends IBaseAdapter {
         ImageButton callIb;
         @ViewInject(R.id.driverLL)
         LinearLayout driverLL;
+        @ViewInject(R.id.returnTv)
+        TextView returnTv;
 
     }
 

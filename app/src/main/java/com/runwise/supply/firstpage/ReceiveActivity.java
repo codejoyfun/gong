@@ -392,8 +392,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
             pb.setQty(bean.getCount());
-            pb.setHeight(bean.getTwoUnitValue());
-            pb.setTracking(bean.getTracking());
+            pb.setHeight(bean.getCount());
+            if(bean.getTracking().equals("lot")){
+                pb.setTracking(bean.getTracking());
+            }
             pb.setProduct_datetime(bean.getProduct_datetime());
             pb.setLife_datetime(bean.getLife_datetime());
             pb.setLot_name(bean.getLot_name());
@@ -527,7 +529,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }
 
 
-            //双人点货
+//            //双人点货
 //            if (isSettle){
 //                twoUnitRL.setVisibility(View.VISIBLE);
 //            }else{

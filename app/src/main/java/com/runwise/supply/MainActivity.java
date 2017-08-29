@@ -324,4 +324,10 @@ public class MainActivity extends NetWorkActivity {
         }
         return mTabHost.getCurrentTab();
     }
+    //跳转到哪个tab页下面
+    public void gotoTabByIndex(int index){
+        mTabHost.setCurrentTab(index);
+
+
+    }
 }

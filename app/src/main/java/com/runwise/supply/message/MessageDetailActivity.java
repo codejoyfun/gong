@@ -21,10 +21,9 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
-
-import static com.runwise.supply.R.id.number1;
 
 /**
  * 聊天详情
@@ -39,6 +38,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     private MessageListFragment chatFragment2;//设置页面
     private FragmentManager fragmentManager;
     private Fragment currentFragment;      //当前加载的
+    public static final String INTENT_KEY_ORDER = "orderBean";
 
     private String mobel;
     @Override
@@ -50,9 +50,19 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
 //        setTitleRightIcon2(true,R.drawable.not_collected);
         setTitleRigthIcon(true,R.drawable.nav_contract);
 //        isWebFrom = getIntent().getBooleanExtra("isWebFrom",false);
-        //中间添加两个切换按钮
-//        addTitleBarBtn();
-        setTitleText(true,"在线客服");
+        MessageResult.OrderBean orderBean = (MessageResult.OrderBean)(getIntent().getSerializableExtra(INTENT_KEY_ORDER));
+
+        String deliveryType =  orderBean.getDeliveryType();
+        if (deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)
+                ||deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+                ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)
+                ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
+            //中间添加两个切换按钮
+            addTitleBarBtn();
+
+        }else{
+            setTitleText(true,"在线客服");
+        }
         if (savedInstanceState == null){
             initFragments();
         }

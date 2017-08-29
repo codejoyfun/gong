@@ -102,6 +102,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             orderBean.setAmount_total((int)bean.getAmountTotal());
             orderBean.setState(bean.getState());
             orderBean.setName(bean.getName());
+            orderBean.setDeliveryType(bean.getDeliveryType());
             ArrayList<String> trackers = (ArrayList<String>) bean.getStateTracker();
             for (String str : trackers) {
                 OrderStateLine osl = new OrderStateLine();
@@ -155,6 +156,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             orderBean.setState(bean.getState());
             orderBean.setName(bean.getName());
             orderBean.setEstimated_time(bean.getEstimatedTime());
+            orderBean.setDeliveryType(bean.getDeliveryType());
             if (bean.getWaybill() != null){
                 MessageResult.OrderBean.WaybillBean wb = new MessageResult.OrderBean.WaybillBean();
                 wb.setId(bean.getWaybill().getWaybillID());
