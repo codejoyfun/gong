@@ -465,7 +465,8 @@
         <activity android:name=".ProcurementActivity" />
         <activity android:name=".mine.ProcurementAddActivity" />
         <activity android:name=".mine.ProcurementLimitActivity" />
-        <activity android:name=".firstpage.ReturnSuccessActivity"></activity>
+        <activity android:name=".firstpage.ReturnSuccessActivity" />
+        <activity android:name=".firstpage.UploadReturnPicActivity"></activity>
     </application>
 
 </manifest>

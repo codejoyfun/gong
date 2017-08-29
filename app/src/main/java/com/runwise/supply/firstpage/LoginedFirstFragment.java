@@ -36,6 +36,7 @@ import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.DashBoardResponse;
+import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -213,9 +214,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
                 break;
             case FINISHRETURN:
+                FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
                 ToastUtil.show(mContext, "退货成功");
                 Intent intent = new Intent(getActivity(),ReturnSuccessActivity.class);
-                intent.putExtra(INTENT_KEY_RESULTBEAN,mSelectBean);
+                intent.putExtra(INTENT_KEY_RESULTBEAN,finishReturnResponse);
                 startActivity(intent);
 //                requestReturnList();
                 break;
@@ -330,8 +332,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         Object request = null;
                         sendConnection("/gongfu/v2/return_order/" +
-                                mSelectBean.getOrderID() +
-                                "/done", request, FINISHRETURN, false, null);
+                                mSelectBean.getReturnOrderID() +
+                                "/done", request, FINISHRETURN, false, FinishReturnResponse.class);
                     }
                 });
                 dialog.show();
