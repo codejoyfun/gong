@@ -212,7 +212,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
                 uIntent.putExtra("orderid", bean.getOrderID());
                 uIntent.putExtra("ordername", bean.getName());
-                uIntent.putExtra("hasattachment", bean.getHasAttachment()>0);
+                uIntent.putExtra("hasattachment", hasAttatchment);
                 startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
                 break;
             default:
