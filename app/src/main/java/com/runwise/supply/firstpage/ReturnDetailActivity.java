@@ -167,8 +167,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 }
             }
             StringBuffer sb = new StringBuffer("退货商品：");
-            sb.append((int) bean.getAmount()).append("件")
-                    .append(" 共").append(bean.getAmountTotal()).append("元");
+            sb.append((int)bean.getAmount()).append("件");
+//                    .append(" 共").append(bean.getAmountTotal()).append("元");
             tipTv.setText(sb.toString());
             orderNumTv.setText(bean.getName());
             buyerValue.setText(bean.getCreateUser());

@@ -21,6 +21,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -99,6 +100,9 @@ public class OrderDetailActivity extends NetWorkActivity{
     private View priceLL;
     private boolean isModifyOrder;          //可修改订单
     private int orderId;                    //如果有orderId, 需要重新刷新
+
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout loadingLayout;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -131,16 +135,16 @@ public class OrderDetailActivity extends NetWorkActivity{
         if (!canSeePrice){
             priceLL.setVisibility(View.GONE);
         }
-        if (orderId != 0){
-            //需要自己刷新
-            Object request = null;
-            StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
-            sb.append(orderId).append("/");
-            sendConnection(sb.toString(),request,DETAIL,true, OrderDetailResponse.class);
-        }else{
-            bean = bundle.getParcelable("order");
-            updateUI();
+        bean = bundle.getParcelable("order");
+        if ( bean != null) {
+            orderId = bean.getOrderID();
         }
+        //需要自己刷新
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+        sb.append(orderId).append("/");
+        sendConnection(sb.toString(),request,DETAIL,false, OrderDetailResponse.class);
+        loadingLayout.setStatusLoading();
     }
 
     @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,R.id.uploadBtn,
@@ -310,6 +314,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
                 updateUI();
+                loadingLayout.onSuccess(1,"暂时没有数据哦");
                 break;
             case CANCEL:
                 finish();
@@ -460,7 +465,7 @@ public class OrderDetailActivity extends NetWorkActivity{
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
             //支付凭证在收货流程后，才显示
             if ((bean.getState().equals("rated") || bean.getState().equals("done"))
-                && bean.getOrderSettleName().contains("单次结算")){
+                    && bean.getOrderSettleName().contains("单次结算")){
                 payStateTv.setVisibility(View.VISIBLE);
                 payStateValue.setVisibility(View.VISIBLE);
                 uploadBtn.setVisibility(View.VISIBLE);
@@ -490,14 +495,17 @@ public class OrderDetailActivity extends NetWorkActivity{
                 returnTv.setVisibility(View.VISIBLE);
             }
             //实收判断
-            if (isRealReceive()){
+            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
                 receivtTv.setVisibility(View.VISIBLE);
-            }else{
+                countTv.setText((int)bean.getDeliveredQty()+"件");
+            }
+            else{
                 receivtTv.setVisibility(View.GONE);
+                countTv.setText((int)bean.getAmount()+"件");
             }
             //商品数量/预估金额
             ygMoneyTv.setText(bean.getAmountTotal()+"元");
-            countTv.setText((int)bean.getAmount()+"件");
+//            countTv.setText((int)bean.getAmount()+"件");
             //设置list
             listDatas = bean.getLines();
             adapter.setProductList(listDatas);

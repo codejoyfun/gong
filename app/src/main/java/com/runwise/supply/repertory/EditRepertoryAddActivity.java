@@ -176,6 +176,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             name.setText(productBean.getName());
             number.setText(productBean.getDefaultCode() + " | ");
             content.setText(productBean.getUnit());
+            tv_product_date_value.setText("");
             tv_product_date_value.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
