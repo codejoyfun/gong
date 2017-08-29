@@ -1,5 +1,7 @@
 package com.runwise.supply.mine.entity;
 
+import android.content.Intent;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class SumMoneyData implements Serializable{
 
     private double total_amount;
     private int total_number;
-    private List<Double> purchase_number_list;
+    private List<Integer> purchase_number_list;
     private List<String> product_list;
     private List<Double> purchase_volume_list;
 
@@ -39,11 +41,11 @@ public class SumMoneyData implements Serializable{
         this.total_number = total_number;
     }
 
-    public List<Double> getPurchase_number_list() {
+    public List<Integer> getPurchase_number_list() {
         return purchase_number_list;
     }
 
-    public void setPurchase_number_list(List<Double> purchase_number_list) {
+    public void setPurchase_number_list(List<Integer> purchase_number_list) {
         this.purchase_number_list = purchase_number_list;
     }
 

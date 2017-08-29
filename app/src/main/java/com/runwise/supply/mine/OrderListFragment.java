@@ -400,6 +400,12 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             else {
                 holder.payMoney.setVisibility(View.GONE);
             }
+            if(bean.getHasReturn() > 0) {
+                holder.returnTv.setVisibility(View.VISIBLE);
+            }
+            else {
+                holder.returnTv.setVisibility(View.GONE);
+            }
 //            holder.payMoney.setText(bean.getAmountTotal()+"");
             return convertView;
         }
@@ -418,6 +424,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             TextView payBtn;
             @ViewInject(R.id.orderStatus)
             ImageView orderStatus;
+            @ViewInject(R.id.returnTv)
+            TextView returnTv;
         }
     }
 }

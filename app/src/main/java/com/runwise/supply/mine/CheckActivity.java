@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static android.R.attr.format;
 
 public class CheckActivity extends BaseActivity {
     @ViewInject(R.id.indicator)

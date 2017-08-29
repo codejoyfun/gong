@@ -28,6 +28,7 @@ import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.mine.entity.PandianDetail;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.entity.PandianResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
 
     private int page = 1;
     public DataType type;
-    private List<CheckResult.ListBean.LinesBean> typeList;
+    private List<PandianResult.InventoryBean.LinesBean> typeList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,11 +91,11 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
     }
 
     public void setData(CheckResult.ListBean dataBean) {
-        List<CheckResult.ListBean.LinesBean> typeList = new ArrayList<>();
+        List<PandianResult.InventoryBean.LinesBean> typeList = new ArrayList<>();
         if(type == DataType.ALL) {
             typeList = dataBean.getLines();
         }
-        for (CheckResult.ListBean.LinesBean bean : dataBean.getLines()){
+        for (PandianResult.InventoryBean.LinesBean bean : dataBean.getLines()){
             if (bean.getProduct().getStockType().equals(type.getType())){
                 typeList.add(bean);
             }
@@ -174,7 +175,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
     }
 
 
-    public class PriceAdapter extends IBaseAdapter<CheckResult.ListBean.LinesBean>{
+    public class PriceAdapter extends IBaseAdapter<PandianResult.InventoryBean.LinesBean>{
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -187,7 +188,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final CheckResult.ListBean.LinesBean bean =  mList.get(position);
+            final PandianResult.InventoryBean.LinesBean bean =  mList.get(position);
             ProductBasicList.ListBean productBean = bean.getProduct();
             if (productBean != null){
                 viewHolder.name.setText(productBean.getName());
