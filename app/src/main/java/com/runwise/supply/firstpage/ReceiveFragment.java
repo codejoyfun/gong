@@ -219,6 +219,7 @@ public class ReceiveFragment extends BaseFragment {
                         finalViewHolder.receivedTv.setText(String.valueOf(num + 1));
                     }
                 });
+//                finalViewHolder.receivedTv.removeTextChangedListener();
                 finalViewHolder.receivedTv.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {

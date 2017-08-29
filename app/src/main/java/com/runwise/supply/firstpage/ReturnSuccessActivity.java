@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
+import com.runwise.supply.message.OrderMsgDetailActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,35 +31,51 @@ public class ReturnSuccessActivity extends BaseActivity {
     public static final String INTENT_KEY_RESULTBEAN = "intent_key_resultbean";
     FinishReturnResponse finishReturnResponse;
 
+    public static final int REQUEST_CODE_UPLOAD = 1<<0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_return_success);
         ButterKnife.bind(this);
-
+        setTitleText(true, "退货成功");
+        showBackBtn();
         finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
         tvReturnCount.setText("退货数量: " +
                 finishReturnResponse.getReturnOrder().getLines().size() +
-                "件\\n" +
+                "件\n" +
                 "退货金额: " +
                 finishReturnResponse.getReturnOrder().getAmountTotal() +
-                "\\n退货成功时间: " +
-                "2017-0828 17:34");
+                "\n退货成功时间: " +
+                finishReturnResponse.getReturnOrder().getDoneDate());
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            if (requestCode == REQUEST_CODE_UPLOAD){
+                finish();
+            }
+        }
+    }
+
     @OnClick({R.id.orderBtn, R.id.uploadBtn})
-        public void onViewClicked(View view) {
+    public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.orderBtn:
-                Bundle bundle = new Bundle();
-                bundle.putInt("orderid", finishReturnResponse.getReturnOrder().getOrderID());
-                Intent intent = new Intent(ReturnSuccessActivity.this,OrderDetailActivity.class);
-                intent.putExtras(bundle);
+                Intent intent = new Intent(mContext, OrderMsgDetailActivity.class);
+                intent.putExtra("title",finishReturnResponse.getReturnOrder().getName());
+                intent.putExtra("normalOrder",false);
+                intent.putExtra("orderId",finishReturnResponse.getReturnOrder().getOrderID()+"");
                 startActivity(intent);
                 break;
             case R.id.uploadBtn:
-
+                Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
+                uIntent.putExtra("orderid", finishReturnResponse.getReturnOrder().getOrderID());
+                uIntent.putExtra("ordername", finishReturnResponse.getReturnOrder().getName());
+                startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
                 break;
         }
     }

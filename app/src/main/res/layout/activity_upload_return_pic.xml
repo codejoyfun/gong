@@ -11,7 +11,7 @@
         android:paddingTop="10dp"
         android:textSize="14sp"
         android:textColor="#2E2E2E"
-        android:text="上传支付凭证"/>
+        android:text="上传退货凭证"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

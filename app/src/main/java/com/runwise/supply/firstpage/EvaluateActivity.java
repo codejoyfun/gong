@@ -108,8 +108,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         indexLine.setTranslationX(translationX);
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("order");
-        if (bean.getDeliveryType() == OrderResponse.ListBean.TYPE_VENDOR_DELIVERY || bean.getDeliveryType() == OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY
-                || bean.getDeliveryType() == OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY){
+        if (bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)|| bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+                || bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
             rlHead.setVisibility(View.GONE);
         }
         adapter = new EvaluateAdapter(this,null,rateMap);

@@ -124,7 +124,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
     }
     private void getAttachmentList() {
         Object request = null;
-        StringBuffer urlSb = new StringBuffer("/gongfu/order/");
+        StringBuffer urlSb = new StringBuffer("/gongfu/return_order/");
         urlSb.append(orderId).append("/attachment/list/");
         sendConnection(urlSb.toString(),request,ATTACHMENTLIST,true,AttachmentResponse.class);
     }
@@ -227,7 +227,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
                     ToastUtil.show(mContext,"上传成功");
                     Intent intent = new Intent();
                     intent.putExtra("has",true);
-                    setResult(200,intent);
+                    setResult(RESULT_OK,intent);
                     finish();
                 }
                 break;

@@ -3,13 +3,16 @@ package com.runwise.supply.firstpage.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.runwise.supply.message.entity.OrderMsgDetail;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by libin on 2017/8/1.
  */
 
-public class ReturnOrderBean{
+public class ReturnOrderBean implements Serializable{
 
     private List<ListBean> list;
 
@@ -21,7 +24,7 @@ public class ReturnOrderBean{
         this.list = list;
     }
 
-    public static class ListBean implements Parcelable{
+    public static class ListBean implements Parcelable,Serializable{
         public ListBean() {
         }
 
@@ -58,6 +61,16 @@ public class ReturnOrderBean{
         private double amountTotal;
         private String state;
         private String loadingDate;
+
+        public WaybillBean getWaybill() {
+            return waybill;
+        }
+
+        public void setWaybill(WaybillBean waybill) {
+            this.waybill = waybill;
+        }
+
+        private WaybillBean waybill;
         private String vehicle;
         private boolean isDispatch;
         private int returnOrderID;
@@ -83,9 +96,102 @@ public class ReturnOrderBean{
         }
 
         private String deliveryType;
+        public static class WaybillBean implements Serializable{
+            /**
+             * deliverUser : {"mobile":"15542154698","userID":292,"name":"黄飞","avatarUrl":""}
+             * waybillID : 81
+             * name : SP17082300005
+             * deliverVehicle : {"licensePlate":"999999999999","name":"Audi/A4/999999999999","vehicleID":73}
+             */
+
+            private DeliverUserBean deliverUser;
+            private int waybillID;
+            private String name;
+            private OrderMsgDetail.OrderBean.WaybillBean.DeliverVehicleBean deliverVehicle;
+
+            public DeliverUserBean getDeliverUser() {
+                return deliverUser;
+            }
+
+            public void setDeliverUser(DeliverUserBean deliverUser) {
+                this.deliverUser = deliverUser;
+            }
+
+            public int getWaybillID() {
+                return waybillID;
+            }
+
+            public void setWaybillID(int waybillID) {
+                this.waybillID = waybillID;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public OrderMsgDetail.OrderBean.WaybillBean.DeliverVehicleBean getDeliverVehicle() {
+                return deliverVehicle;
+            }
+
+            public void setDeliverVehicle(OrderMsgDetail.OrderBean.WaybillBean.DeliverVehicleBean deliverVehicle) {
+                this.deliverVehicle = deliverVehicle;
+            }
+
+            public static class DeliverUserBean implements Serializable{
+                /**
+                 * mobile : 15542154698
+                 * userID : 292
+                 * name : 黄飞
+                 * avatarUrl :
+                 */
+
+                private String mobile;
+                private int userID;
+                private String name;
+                private String avatarUrl;
+
+                public String getMobile() {
+                    return mobile;
+                }
+
+                public void setMobile(String mobile) {
+                    this.mobile = mobile;
+                }
+
+                public int getUserID() {
+                    return userID;
+                }
+
+                public void setUserID(int userID) {
+                    this.userID = userID;
+                }
+
+                public String getName() {
+                    return name;
+                }
+
+                public void setName(String name) {
+                    this.name = name;
+                }
+
+                public String getAvatarUrl() {
+                    return avatarUrl;
+                }
+
+                public void setAvatarUrl(String avatarUrl) {
+                    this.avatarUrl = avatarUrl;
+                }
+            }
+        }
 
 
-        protected ListBean(Parcel in) {
+
+
+            protected ListBean(Parcel in) {
             orderID = in.readInt();
             doneDate = in.readString();
             name = in.readString();
@@ -292,7 +398,7 @@ public class ReturnOrderBean{
         }
 
 
-        public static class LinesBean implements Parcelable{
+        public static class LinesBean implements Parcelable,Serializable{
             public LinesBean() {
             }
 
@@ -492,7 +598,7 @@ public class ReturnOrderBean{
                 dest.writeTypedList(lotList);
             }
 
-            public static class LotListBean implements Parcelable{
+            public static class LotListBean implements Parcelable,Serializable{
                 public LotListBean() {
                 }
 

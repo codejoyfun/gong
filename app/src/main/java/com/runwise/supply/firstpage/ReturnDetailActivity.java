@@ -6,21 +6,29 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.FinishReturnResponse;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.List;
+
+import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 
 /**
  * Created by libin on 2017/8/1.
@@ -28,6 +36,7 @@ import java.util.List;
 
 public class ReturnDetailActivity extends NetWorkActivity {
     private static final int DETAIL = 0;
+    private static final int FINISHRETURN = 1;
     @ViewInject(R.id.orderStateTv)
     private TextView orderStateTv;
     @ViewInject(R.id.tipTv)
@@ -47,8 +56,12 @@ public class ReturnDetailActivity extends NetWorkActivity {
     private TextView countTv;
     @ViewInject(R.id.ygMoneyTv)
     private TextView ygMoneyTv;
+    @ViewInject(R.id.doBtn)
+    private TextView doBtn;
     @ViewInject(R.id.priceLL)
     private LinearLayout priceLL;
+    @ViewInject(R.id.rl_bottom)
+    private RelativeLayout rlBottom;
     private ReturnOrderBean.ListBean bean;
 
 
@@ -72,6 +85,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
             sendConnection(sb.toString(),request,DETAIL,true, ReturnDetailResponse.class);
         }
 
+
+
     }
 
     private void initViews() {
@@ -87,6 +102,20 @@ public class ReturnDetailActivity extends NetWorkActivity {
         recyclerView.setNestedScrollingEnabled(false);
         Bundle bundle = getIntent().getExtras();
        bean = bundle.getParcelable("return");
+
+        String deliveryType = bean.getDeliveryType();
+        rlBottom.setVisibility(View.VISIBLE);
+        //不显示
+        if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH)||deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)){
+            rlBottom.setVisibility(View.GONE);
+        }
+        if(deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
+            if (bean.getWaybill() == null ||bean.getWaybill().getDeliverUser() == null||TextUtils.isEmpty(bean.getWaybill().getDeliverUser().getName())){
+                rlBottom.setVisibility(View.GONE);
+            }
+        }
+
+
     }
     private void updateUI(){
         if (bean != null){
@@ -121,7 +150,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
             ygMoneyTv.setText(bean.getAmountTotal()+"元");
         }
     }
-    @OnClick({R.id.title_iv_left,R.id.gotoStateBtn})
+    @OnClick({R.id.title_iv_left,R.id.gotoStateBtn,R.id.doBtn})
     public void btnClick(View view){
         switch(view.getId()){
             case R.id.title_iv_left:
@@ -133,6 +162,20 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 Bundle bundle = getIntent().getExtras();
                 intent.putExtras(bundle);
                 startActivity(intent);
+                break;
+            case R.id.doBtn:
+                dialog.setMessageGravity();
+                dialog.setMessage("确认数量一致?");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        Object request = null;
+                        sendConnection("/gongfu/v2/return_order/" +
+                                bean.getReturnOrderID() +
+                                "/done", request, FINISHRETURN, false, FinishReturnResponse.class);
+                    }
+                });
+                dialog.show();
                 break;
             default:
                 break;
@@ -146,6 +189,14 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
                 bean = rdr.getReturnOrder();
                 updateUI();
+                break;
+            case FINISHRETURN:
+                FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
+                ToastUtil.show(mContext, "退货成功");
+                Intent intent = new Intent(mContext,ReturnSuccessActivity.class);
+                intent.putExtra(INTENT_KEY_RESULTBEAN,finishReturnResponse);
+                startActivity(intent);
+                rlBottom.setVisibility(View.GONE);
                 break;
         }
 
