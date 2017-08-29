@@ -90,11 +90,22 @@ public class ReturnDetailActivity extends NetWorkActivity {
     }
     private void updateUI(){
         if (bean != null){
-            if (bean.getState().equals("process")){
-                orderStateTv.setText("退货进行中");
+            //获取物流状态
+            List<String> trackerList = bean.getStateTracker();
+            if (trackerList != null && trackerList.size() > 0){
+                String newestTrack = trackerList.get(0);
+                String[] pathStr = newestTrack.split(" ");
+                if (pathStr.length == 3){   //正常状态，取最新的物流状态
+                    orderStateTv.setText(pathStr[2]);
+                }else{
+                    //异常，自己设置
+                    if (bean.getState().equals("process")){
+                        orderStateTv.setText("退货进行中");
 //                tipTv.setText("原销售订单：SO"+bean.getOrderID());
-            }else{
-                orderStateTv.setText("退货成功");
+                    }else{
+                        orderStateTv.setText("退货成功");
+                    }
+                }
             }
             StringBuffer sb = new StringBuffer("退货商品：");
             sb.append((int)bean.getAmount()).append("件")

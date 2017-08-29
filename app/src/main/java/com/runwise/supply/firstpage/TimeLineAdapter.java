@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.util.CommonUtils;
 import com.runwise.supply.R;
+import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,9 +65,9 @@ public class TimeLineAdapter extends RecyclerView.Adapter {
         String timeLine = traceList.get(position);
         String[] sections = timeLine.split(" ");
         if (sections.length >= 3){
-            String time = sections[0]+"   "+sections[1];
+            String time = sections[0]+" "+sections[1];
             String state = sections[2];
-            itemHolder.tvAcceptTime.setText(time);
+            itemHolder.tvAcceptTime.setText(TimeUtils.getMMddHHmm2(time));
             itemHolder.tvAcceptStation.setText(state);
         }
 

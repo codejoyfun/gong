@@ -185,9 +185,15 @@ public class OrderAdapter extends IBaseAdapter {
             }else{
                 viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
+            if(bean.getHasReturn() != 0){
+                viewHolder.returnTv.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.returnTv.setVisibility(View.INVISIBLE);
+            }
         }else{
             final ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) mList.get(position);
             //发货单
+            viewHolder.returnTv.setVisibility(View.INVISIBLE);
             viewHolder.imgIv.setImageResource(R.drawable.more_restaurant_returnrecord);
             viewHolder.titleTv.setText(bean.getName());
             viewHolder.stateTv.setText("退货中");
@@ -290,6 +296,8 @@ public class OrderAdapter extends IBaseAdapter {
         ImageButton callIb;
         @ViewInject(R.id.driverLL)
         LinearLayout driverLL;
+        @ViewInject(R.id.returnTv)
+        TextView returnTv;
 
     }
 
