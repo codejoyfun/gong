@@ -18,7 +18,7 @@ public class SumMoneyData implements Serializable{
      */
 
     private double total_amount;
-    private double total_number;
+    private int total_number;
     private List<Double> purchase_number_list;
     private List<String> product_list;
     private List<Double> purchase_volume_list;
@@ -31,11 +31,11 @@ public class SumMoneyData implements Serializable{
         this.total_amount = total_amount;
     }
 
-    public double getTotal_number() {
+    public int getTotal_number() {
         return total_number;
     }
 
-    public void setTotal_number(double total_number) {
+    public void setTotal_number(int total_number) {
         this.total_number = total_number;
     }
 

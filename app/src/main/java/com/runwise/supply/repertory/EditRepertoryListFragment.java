@@ -36,7 +36,6 @@ import com.runwise.supply.view.swipmenu.SwipeMenuCreator;
 import com.runwise.supply.view.swipmenu.SwipeMenuItem;
 import com.runwise.supply.view.swipmenu.SwipeMenuListView;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -135,10 +134,16 @@ public class EditRepertoryListFragment extends NetWorkFragment {
 //    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdate(UpdateData updateData) {
-        if(updateData.getType() != type) {
+        if(!updateData.getType().getType().equals(type.getType())) {
             adapter.notifyDataSetChanged();
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     //添加新商品
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddNewBean(NewAdd newBean) {
@@ -246,9 +251,9 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                                 else{
                                     viewHolder.editText.setTextColor(Color.parseColor("#444444"));
                                 }
-                                UpdateData updateData = new UpdateData();
-                                updateData.setType(type);
-                                EventBus.getDefault().post(updateData);
+//                                UpdateData updateData = new UpdateData();
+//                                updateData.setType(type);
+//                                EventBus.getDefault().post(updateData);
                             }
                             else{
                                 bean.setEditNum(0);

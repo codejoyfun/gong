@@ -1,7 +1,6 @@
 package com.runwise.supply.mine;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,7 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
 
-//    @ViewInject(R.id.loadingLayout)
+    //    @ViewInject(R.id.loadingLayout)
 //    private LoadingLayout loadingLayout;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -189,12 +188,7 @@ public class AccountsDetailActivity extends NetWorkActivity implements AdapterVi
             final CheckOrderData.BankStatementBean.OrdersBean bean =  mList.get(position);
             viewHolder.date.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
             viewHolder.name.setText(bean.getName());
-            if(!TextUtils.isEmpty(bean.getAmount())) {
-                viewHolder.sum.setText("共" + Integer.parseInt(bean.getAmount()) + "件商品");
-            }
-            else{
-                viewHolder.sum.setText("共0件商品");
-            }
+            viewHolder.sum.setText("共" + bean.getAmount() + "件商品");
             viewHolder.money.setText("￥"+ UserUtils.formatPrice(bean.getTotalPrice()));
             return convertView;
         }

@@ -61,16 +61,16 @@ public class SearchListFragment extends NetWorkFragment {
         loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
     }
     public void setData(List<EditHotResult.ListBean> dataList) {
-        List<EditHotResult.ListBean> typeList = new ArrayList<>();
-        for (EditHotResult.ListBean bean : dataList){
-            if (bean.getProduct().getStockType().equals(type.getType())){
-                typeList.add(bean);
-            }
-        }
         if(type == DataType.ALL) {
             this.dataList = dataList;
         }
         else {
+            List<EditHotResult.ListBean> typeList = new ArrayList<>();
+            for (EditHotResult.ListBean bean : dataList){
+                if (bean.getProduct().getStockType().equals(type.getType())){
+                    typeList.add(bean);
+                }
+            }
             this.dataList = typeList;
         }
     }
