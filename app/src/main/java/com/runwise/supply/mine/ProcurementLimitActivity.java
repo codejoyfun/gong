@@ -95,7 +95,7 @@ public class ProcurementLimitActivity extends NetWorkActivity{
             }
             else{
                 viewHolder.tv_price.setText(mSumMoneyData.getPurchase_number_list().get(position) +  "件");
-                double progress = (mSumMoneyData.getPurchase_number_list().get(position)/mSumMoneyData.getTotal_number()*100);
+                double progress = (mSumMoneyData.getPurchase_number_list().get(position)/((float)mSumMoneyData.getTotal_number())*100);
                 if(progress >0 && progress <1) {
                     viewHolder.pbBar.setProgress(1);
                 }
