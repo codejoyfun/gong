@@ -20,6 +20,7 @@ import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -56,11 +57,17 @@ public class CheckDetailActivity extends BaseActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.acticity_checkdetail_layout);
+        if (GlobalApplication.getInstance().getCanSeePrice()) {
+            text4.setText("盘点结果(元)");
+        }
+        else{
+            text4.setText("盘点结果(件)");
+        }
 
         this.setTitleText(true,"盘点记录详情");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
         bean = (CheckResult.ListBean)this.getIntent().getSerializableExtra("bean");
-        for(CheckResult.ListBean.LinesBean lines: bean.getLines()) {
+        for(PandianResult.InventoryBean.LinesBean lines: bean.getLines()) {
             ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(lines.getProductID()));
             if( product == null) {
                 product = new ProductBasicList.ListBean();

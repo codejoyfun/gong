@@ -31,6 +31,7 @@ public class PageDeatailActivity extends NetWorkActivity {
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.page_detail_webview);
         this.setTitleLeftIcon(true, R.drawable.back_btn);
+        setTitleText(true,"详情");
         String url = getIntent().getStringExtra("url");
         Map<String, String > map = new HashMap<String, String>() ;
         map.put("X-Odoo-Db", (String)SPUtils.get(mContext,"X-Odoo-Db","LBZ20170607"));

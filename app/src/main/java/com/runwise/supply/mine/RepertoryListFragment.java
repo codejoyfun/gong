@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -22,11 +23,15 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.mine.entity.RefreshPepertoy;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -45,18 +50,31 @@ public class RepertoryListFragment extends NetWorkFragment {
     public  DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-        private List<RepertoryEntity.ListBean> dataList;
+    private List<RepertoryEntity.ListBean> dataList;
     private String keyWork;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ProductAdapter();
-        pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
+        if(mContext instanceof MainActivity) {
+            pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        }
+        else {
+            pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
+        }
+        pullListView.setPullToRefreshOverScrollEnabled(false);
+        pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setAdapter(adapter);
+        pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                EventBus.getDefault().post(new RefreshPepertoy());
+            }
+        });
         if(dataList != null) {
-          adapter.setData(dataList);
-          loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
-      }
+            adapter.setData(dataList);
+            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+        }
     }
     @Override
     protected int createViewByLayoutId() {
@@ -67,7 +85,7 @@ public class RepertoryListFragment extends NetWorkFragment {
     public void onDataSynEvent(RepertoryEntity event) {
         List<RepertoryEntity.ListBean> typeList = new ArrayList<>();
         for (RepertoryEntity.ListBean bean : event.getList()){
-            if (bean.getProduct().getStock_type().equals(type.getType())){
+            if (bean.getProduct().getStockType().equals(type.getType())){
                 typeList.add(bean);
             }
         }
@@ -80,6 +98,9 @@ public class RepertoryListFragment extends NetWorkFragment {
         if(adapter != null) {
             adapter.setData(dataList);
             loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+        }
+        if(pullListView != null) {
+            pullListView.onRefreshComplete();
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -128,7 +149,7 @@ public class RepertoryListFragment extends NetWorkFragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             final RepertoryEntity.ListBean bean =  mList.get(position);
-            RepertoryEntity.ListBean.ProductBean productBean = bean.getProduct();
+            ProductBasicList.ListBean productBean = bean.getProduct();
             if (productBean != null){
                 if(!TextUtils.isEmpty(keyWork)) {
                     int index = productBean.getName().indexOf(keyWork);
@@ -141,14 +162,14 @@ public class RepertoryListFragment extends NetWorkFragment {
                 else {
                     viewHolder.name.setText(productBean.getName());
                 }
-                viewHolder.number.setText(productBean.getDefault_code() + " | ");
+                viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImage_small());
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
             }
             viewHolder.value.setText(bean.getQty()+"");
             viewHolder.uom.setText(bean.getUom());
-            viewHolder.dateNumber.setText(bean.getLot_num());
-            viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLife_end_date()));
+            viewHolder.dateNumber.setText(bean.getLotNum());
+            viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLifeEndDate()));
             return convertView;
         }
 

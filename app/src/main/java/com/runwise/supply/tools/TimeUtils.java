@@ -197,7 +197,7 @@ public class TimeUtils {
 	}
 	public static String getMMddHHmm(String date){
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		SimpleDateFormat ft2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		SimpleDateFormat ft2 = new SimpleDateFormat("MM-dd HH:mm");
 		try {
 			Date sDate = ft.parse(date);
 			return ft2.format(sDate);
@@ -205,10 +205,23 @@ public class TimeUtils {
 			return date;
 		}
 	}
-
+	public static String getMMddHHmm2(String date){
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		SimpleDateFormat ft2 = new SimpleDateFormat("MM-dd HH:mm");
+		try {
+			Date sDate = ft.parse(date);
+			return ft2.format(sDate);
+		} catch (ParseException e) {
+			return date;
+		}
+	}
 	public static String getYMD(Date date){
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 			return ft.format(date);
+	}
+	public static String getYMDHMS(Date date){
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return ft.format(date);
 	}
 	/**
 	 * 计算宝宝年龄

@@ -32,14 +32,15 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="食材"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_weight="1"/>
             <TextView
+                android:id="@+id/amountTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="采购额"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_weight="1"/>
 
         </LinearLayout>
@@ -63,7 +64,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="1.20万元"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_marginRight="10dp"
                 android:textColor="@color/black"
                 android:layout_alignParentRight="true"/>
@@ -76,7 +77,7 @@
                 android:text="总额"
                 android:layout_marginRight="10dp"
                 android:textColor="@color/tab_text_off_color"
-                android:textSize="18sp"/>
+                android:textSize="16sp"/>
 
         </RelativeLayout>
 

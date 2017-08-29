@@ -18,6 +18,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
+import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -64,6 +65,7 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 	private EditRepertoryListFragment allFragment;
 
 	private PandianResult pandianResult;
+	private int inventoryID;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,8 +73,18 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 		setTitleText(true, "盘点");
 		Object param = null;
 		pandianResult = (PandianResult) this.getIntent().getSerializableExtra("bean");
-		textView2.setText("单号" + pandianResult.getInventory().getName());
-		List<PandianResult.InventoryBean.LinesBean> linesBeanList = pandianResult.getInventory().getLines();
+		List<PandianResult.InventoryBean.LinesBean> linesBeanList = null;
+		if (pandianResult != null) {
+			textView2.setText("单号" + pandianResult.getInventory().getName());
+			inventoryID = pandianResult.getInventory().getInventoryID();
+			linesBeanList = pandianResult.getInventory().getLines();
+		}
+		else{
+			CheckResult.ListBean checkBean = (CheckResult.ListBean )this.getIntent().getSerializableExtra("checkBean");
+			textView2.setText("单号" + checkBean.getName());
+			inventoryID = checkBean.getInventoryID();
+			linesBeanList = checkBean.getLines();
+		}
 		for(PandianResult.InventoryBean.LinesBean bean : linesBeanList) {
 			ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
 			if( product == null) {
@@ -158,7 +170,7 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 						@Override
 						public void doClickButton(Button btn, CustomDialog dialog) {
 							EditRequest editRequest = new EditRequest();
-							editRequest.setId(pandianResult.getInventory().getInventoryID());
+							editRequest.setId(inventoryID);
 							editRequest.setState("done");
 							List<PandianResult.InventoryBean.LinesBean> finalDataList = allFragment.getFinalDataList();
 							List<EditRequest.ProductBean> editListBean = new ArrayList<>();

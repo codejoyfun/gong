@@ -159,7 +159,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 this.switchContent(this, new UnLoginedFirstFragment());
         } else {
             if (this.isVisible()) {
-                pullListView.setRefreshing(true);
+                if (adapter.getCount() == 0) {
+                    pullListView.setRefreshing(true);
+                } else {
+                    requestReturnList();
+                }
             }
         }
     }
@@ -366,7 +370,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         dialog.show();
     }
 
-    @OnClick(R.id.callIcon)
+    @OnClick({R.id.callIcon,R.id.lqLL,R.id.dqLL})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.callIcon:
@@ -387,6 +391,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     }
                 });
                 dialog.show();
+                break;
+            case R.id.lqLL:
+            case R.id.dqLL:
+                MainActivity ma = (MainActivity) getActivity();
+                ma.gotoTabByIndex(2);
                 break;
         }
     }

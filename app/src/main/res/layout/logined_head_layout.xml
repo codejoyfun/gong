@@ -48,7 +48,7 @@
                 android:gravity="center"
                 android:textSize="12sp"
                 android:textColor="#999999"
-                android:text="上周采购额(万)"/>
+                android:text="上周采购额(万元)"/>
             <TextView
                 android:id="@+id/lastWeekBuy"
                 android:layout_width="match_parent"
@@ -67,6 +67,7 @@
             android:background="#E3E3E3"
             />
         <LinearLayout
+            android:id="@+id/lqLL"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -98,6 +99,7 @@
             android:background="#E3E3E3"
             />
         <LinearLayout
+            android:id="@+id/dqLL"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"

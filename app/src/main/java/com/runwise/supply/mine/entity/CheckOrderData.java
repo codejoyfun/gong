@@ -105,7 +105,7 @@ public class CheckOrderData {
              */
 
             private String orderID;
-            private String amount;
+            private int amount;
             private String createDate;
             private String totalPrice;
             private String name;
@@ -118,11 +118,11 @@ public class CheckOrderData {
                 this.orderID = orderID;
             }
 
-            public String getAmount() {
+            public int getAmount() {
                 return amount;
             }
 
-            public void setAmount(String amount) {
+            public void setAmount(int amount) {
                 this.amount = amount;
             }
 

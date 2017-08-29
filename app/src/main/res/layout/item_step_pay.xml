@@ -31,15 +31,33 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <TextView
-                    android:id="@+id/payTitle"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:textColor="#3b3b3b"
-                    android:textSize="16sp"
-                    android:text="efwf"
-                    />
+                    android:orientation="horizontal"
+                    >
+                    <TextView
+                        android:id="@+id/payTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#3b3b3b"
+                        android:textSize="16sp"
+                        android:text="efwf"
+                        />
+                    <TextView
+                        android:id="@+id/returnTv"
+                        android:layout_width="18dp"
+                        android:layout_height="14dp"
+                        android:text="退"
+                        android:layout_marginLeft="5dp"
+                        android:textSize="9sp"
+                        android:textColor="#FA5900"
+                        android:visibility="invisible"
+                        android:gravity="center"
+                        android:background="@drawable/receive_circle"/>
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/payStatus"
                     android:layout_width="wrap_content"

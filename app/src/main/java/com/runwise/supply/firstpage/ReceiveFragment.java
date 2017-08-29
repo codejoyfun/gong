@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,6 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.qiniu.android.utils.StringUtils;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -232,7 +232,7 @@ public class ReceiveFragment extends BaseFragment {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        if (StringUtils.isNullOrEmpty(s.toString())) {
+                        if (TextUtils.isEmpty(s.toString())) {
                             setReceiveCount(0, basicBean, bean);
                             return;
                         }
