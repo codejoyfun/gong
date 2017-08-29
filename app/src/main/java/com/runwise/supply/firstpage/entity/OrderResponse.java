@@ -96,6 +96,14 @@ public class OrderResponse {
         private List<String> stateTracker;
         private List<String> returnOrders;
 
+        public static final String TYPE_STANDARD = "standard";// 标准订单
+        public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
+        public static final String TYPE_THIRD_PART_DELIVERY = "third_part_delivery";// 第三方物流订单
+        public static final String TYPE_FRESH = "fresh";//鲜活订单
+        public static final String TYPE_FRESH_VENDOR_DELIVERY = "fresh_vendor_delivery";// 鲜活直运订单
+        public static final String TYPE_FRESH_THIRD_PART_DELIVERY = "fresh_third_part_delivery";// 鲜活第三方物流订单
+
+
         public String getDeliveryType() {
             return deliveryType;
         }

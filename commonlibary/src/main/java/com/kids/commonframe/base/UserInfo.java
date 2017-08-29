@@ -55,8 +55,16 @@ public class UserInfo implements Serializable{
     private boolean clerk;
     private boolean canSeePrice;
     private String companyHotLine;
-    private String company;
     private String isAgreeItem;
+    private boolean hasNewInvoice;
+    private String company;
+    public boolean isHasNewInvoice() {
+        return hasNewInvoice;
+    }
+
+    public void setHasNewInvoice(boolean hasNewInvoice) {
+        this.hasNewInvoice = hasNewInvoice;
+    }
 
     public String getUsername() {
         return username;

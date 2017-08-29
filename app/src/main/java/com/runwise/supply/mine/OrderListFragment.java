@@ -32,7 +32,10 @@ import com.runwise.supply.firstpage.OrderDoAction;
 import com.runwise.supply.firstpage.ReceiveActivity;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.TimeUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 我的订单
@@ -43,6 +46,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     private static final int REQUEST_DEN = 3;
     private static final int CANCEL = 4;
     private static final int DELETE_ORDER = 5;
+    private static final int REQUEST_MAIN_PAGE = 6;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -88,6 +92,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
         loadingLayout.setStatusLoading();
         requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
+
+        requestData(false, REQUEST_MAIN_PAGE, page, 1000);
     }
 
 
@@ -144,6 +150,24 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             case DELETE_ORDER:
                 requestData(true, REQUEST_MAIN, page, 10);
                 ToastUtil.show(mContext,"订单已删除");
+                break;
+            case REQUEST_MAIN_PAGE:
+                OrderResponse listSizeBean = (OrderResponse)result.getResult().getData();
+                OrderActivity orderActivity = (OrderActivity) mContext;
+                switch (orderDataType) {
+                    case BENZHOU:
+                        orderActivity.setTabText(1,"本周("+listSizeBean.getList().size()+")");
+                        break;
+                    case SHANGZHOU:
+                        orderActivity.setTabText(2,"上周("+listSizeBean.getList().size()+")");
+                        break;
+                    case GENGZAO:
+                        orderActivity.setTabText(3,"更早("+listSizeBean.getList().size()+")");
+                        break;
+                    default:
+                        orderActivity.setTabText(0,"全部("+listSizeBean.getList().size()+")");
+
+                }
                 break;
         }
     }

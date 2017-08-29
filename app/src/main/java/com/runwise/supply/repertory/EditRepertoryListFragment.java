@@ -303,11 +303,11 @@ public class EditRepertoryListFragment extends NetWorkFragment {
         }
         @Override
         public boolean isEnabled(int position){
-            PandianResult.InventoryBean.LinesBean bean =  mList.get(position);
-            if(bean.getType() == 0) {
-                return true;
-            }
-            return false;
+//            PandianResult.InventoryBean.LinesBean bean =  mList.get(position);
+//            if(bean.getType() == 0) {
+//                return true;
+//            }
+            return true;
         }
         @Override
         public boolean areAllItemsEnabled(){

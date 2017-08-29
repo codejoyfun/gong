@@ -1,4 +1,4 @@
-package com.runwise.supply.mine;
+package com.runwise.supply.message;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,27 +7,27 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class OrderActivity extends BaseActivity {
+/**
+ * 消息订单详情
+ */
+public class OrderMsgDetailActivity extends BaseActivity {
     @ViewInject(R.id.indicator)
     private SmartTabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
     private TabPageIndicatorAdapter adapter;
-    private Map<Integer,String> titleList = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,67 +35,45 @@ public class OrderActivity extends BaseActivity {
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.acticity_tabs_layout);
 
-        this.setTitleText(true,"我的订单");
+        this.setTitleText(true,this.getIntent().getStringExtra("title"));
         this.setTitleLeftIcon(true,R.drawable.back_btn);
-        titleList.put(0,"全部");
-        titleList.put(1,"本周");
-        titleList.put(2,"上周");
-        titleList.put(3,"更早");
         adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 //        viewPager.setOffscreenPageLimit(4);
         smartTabLayout.setViewPager(viewPager);
         int position = this.getIntent().getIntExtra("position",0);
         viewPager.setCurrentItem(position,false);
-        smartTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
 
     }
-    public Map<Integer,String> getTitleList() {
-        return titleList;
-    }
-
-    public void setTabText(int position,String text) {
-        TextView textView = (TextView)  smartTabLayout.getTabAt(position);
-        textView.setText(text);
-    }
-
     @OnClick(R.id.left_layout)
     public void doBack(View view) {
         finish();
     }
-
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
+        private List<String> titleList = new ArrayList<>();
         private List<Fragment> fragmentList = new ArrayList<>();
         public TabPageIndicatorAdapter(FragmentManager fm) {
             super(fm);
+            
+            titleList.add("全部");
+            titleList.add("冷藏货");
+            titleList.add("冻货");
+            titleList.add("干货");
             Bundle bundle = new Bundle();
-            OrderListFragment allFragment = new OrderListFragment();
-            allFragment.orderDataType = OrderDataType.ALL;
+            OrderMsgDetailListFragment allFragment = new OrderMsgDetailListFragment();
+            allFragment.type = DataType.ALL;
             allFragment.setArguments(bundle);
-            OrderListFragment coldFragment = new OrderListFragment();
-            coldFragment.orderDataType = OrderDataType.BENZHOU;
+            OrderMsgDetailListFragment coldFragment = new OrderMsgDetailListFragment();
+            coldFragment.type = DataType.LENGCANGHUO;
             coldFragment.setArguments(bundle);
-            OrderListFragment freezeFragment = new OrderListFragment();
-            freezeFragment.orderDataType = OrderDataType.SHANGZHOU;
+            OrderMsgDetailListFragment freezeFragment = new OrderMsgDetailListFragment();
+            freezeFragment.type = DataType.FREEZE;
             freezeFragment.setArguments(bundle);
-            OrderListFragment dryFragment = new OrderListFragment();
-            dryFragment.orderDataType = OrderDataType.GENGZAO;
+            OrderMsgDetailListFragment dryFragment = new OrderMsgDetailListFragment();
+            dryFragment.type = DataType.DRY;
             dryFragment.setArguments(bundle);
+
             fragmentList.add(allFragment);
             fragmentList.add(coldFragment);
             fragmentList.add(freezeFragment);

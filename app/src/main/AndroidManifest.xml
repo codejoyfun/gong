@@ -358,6 +358,10 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".message.OrderMsgDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".firstpage.OrderDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
@@ -460,7 +464,8 @@
             android:theme="@style/ImageTranslucentTheme" />
         <activity android:name=".ProcurementActivity" />
         <activity android:name=".mine.ProcurementAddActivity" />
-        <activity android:name=".mine.ProcurementLimitActivity"></activity>
+        <activity android:name=".mine.ProcurementLimitActivity" />
+        <activity android:name=".firstpage.ReturnSuccessActivity"></activity>
     </application>
 
 </manifest>

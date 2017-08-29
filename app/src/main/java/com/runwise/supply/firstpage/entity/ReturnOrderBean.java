@@ -65,6 +65,25 @@ public class ReturnOrderBean{
         private List<LinesBean> lines;
         private List<String> stateTracker;
 
+        public boolean isReturnThirdPartLog() {
+            return returnThirdPartLog;
+        }
+
+        public void setReturnThirdPartLog(boolean returnThirdPartLog) {
+            this.returnThirdPartLog = returnThirdPartLog;
+        }
+
+        private boolean returnThirdPartLog;
+        public String getDeliveryType() {
+            return deliveryType;
+        }
+
+        public void setDeliveryType(String deliveryType) {
+            this.deliveryType = deliveryType;
+        }
+
+        private String deliveryType;
+
 
         protected ListBean(Parcel in) {
             orderID = in.readInt();
@@ -83,6 +102,7 @@ public class ReturnOrderBean{
             isDispatch = in.readByte() != 0;
             returnOrderID = in.readInt();
             driveMobile = in.readString();
+            deliveryType = in.readString();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
         }
@@ -266,6 +286,7 @@ public class ReturnOrderBean{
             dest.writeByte((byte) (isDispatch ? 1 : 0));
             dest.writeInt(returnOrderID);
             dest.writeString(driveMobile);
+            dest.writeString(deliveryType);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
         }

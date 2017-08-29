@@ -27,6 +27,9 @@ import com.runwise.supply.tools.TimeUtils;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
+
 /**
  * Created by libin on 2017/7/14.
  */
@@ -257,6 +260,27 @@ public class OrderAdapter extends IBaseAdapter {
             }else{
                 viewHolder.timelineLL.setVisibility(View.GONE);
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
+            }
+            String deliveryType = bean.getDeliveryType();
+            if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
+            deliveryType.equals(TYPE_VENDOR_DELIVERY)
+                    ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
+                    &&bean.isReturnThirdPartLog())
+            ){
+                viewHolder.doBtn.setVisibility(View.VISIBLE);
+                viewHolder.doBtn.setText("完成退货");
+                viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //根据状态进行不同的逻辑处理
+                        if (callback != null){
+                            callback.doAction(OrderDoAction.FINISH_RETURN,position);
+                        }
+
+                    }
+                });
+            }else{
+                viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
 
         }

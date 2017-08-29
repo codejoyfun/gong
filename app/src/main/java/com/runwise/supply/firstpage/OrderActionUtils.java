@@ -78,6 +78,8 @@ public class OrderActionUtils {
             action = OrderDoAction.LOOK;
         }else if("评价".equals(doAction)){
             action = OrderDoAction.RATE;
+        }else if ("完成退货".equals(OrderDoAction.FINISH_RETURN)){
+            action = OrderDoAction.FINISH_RETURN;
         }
         return action;
     }
