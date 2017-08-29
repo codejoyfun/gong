@@ -130,8 +130,8 @@ public class CheckDetailActivity extends BaseActivity {
             }
         }
         if ("confirm".equals(bean.getState())) {
-            text5.setTextColor(Color.parseColor("#3d3d3d"));
-            text5.setText("盘点中");
+            text5.setTextColor(Color.parseColor("#999999"));
+            text5.setText("--");
         }
     }
     public CheckResult.ListBean getDataBean() {

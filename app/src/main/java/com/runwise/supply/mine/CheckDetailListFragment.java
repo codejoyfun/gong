@@ -51,10 +51,14 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
     private int page = 1;
     public DataType type;
     private List<PandianResult.InventoryBean.LinesBean> typeList;
+    private boolean reading;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        CheckResult.ListBean bean = (CheckResult.ListBean)mContext.getIntent().getSerializableExtra("bean");
+        if ("confirm".equals(bean.getState())) {
+            reading = true;
+        }
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
@@ -199,15 +203,16 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
             }
             viewHolder.dateNumber.setText(bean.getLotNum());
 
-            if( bean.getDiff() == 0) {
+            if( bean.getDiff() == 0 || reading) {
                 viewHolder.value.setText("--");
-                viewHolder.value.setTextColor(Color.parseColor("#9b9b9b"));            }
+                viewHolder.value.setTextColor(Color.parseColor("#9b9b9b"));
+            }
             else if(bean.getDiff() > 0) {
-                viewHolder.value.setText(bean.getDiff()+"");
+                viewHolder.value.setText(((int)bean.getDiff())+"");
                 viewHolder.value.setTextColor(Color.parseColor("#9cb62e"));
             }
             else{
-                viewHolder.value.setText(bean.getDiff()+"");
+                viewHolder.value.setText(((int)bean.getDiff())+"");
                 viewHolder.value.setTextColor(Color.parseColor("#e75967"));
             }
             viewHolder.dateLate.setText(bean.getActualQty()+"");
