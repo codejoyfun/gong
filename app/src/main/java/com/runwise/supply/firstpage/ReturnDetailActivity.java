@@ -62,7 +62,18 @@ public class ReturnDetailActivity extends NetWorkActivity {
     private LinearLayout priceLL;
     @ViewInject(R.id.rl_bottom)
     private RelativeLayout rlBottom;
+
+    @ViewInject(R.id.payStateValue)
+    private TextView payStateValue;
+    @ViewInject(R.id.payStateTv)
+    private TextView payStateTv;
+    @ViewInject(R.id.uploadBtn)
+    private Button uploadBtn;
+
     private ReturnOrderBean.ListBean bean;
+    public static final int REQUEST_CODE_UPLOAD = 1<<0;
+
+    private boolean hasAttatchment = false;
 
 
     @Override
@@ -71,73 +82,92 @@ public class ReturnDetailActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.return_detain_layout);
-        setTitleText(true,"退货单详情");
-        setTitleLeftIcon(true,R.drawable.nav_back);
+        setTitleText(true, "退货单详情");
+        setTitleLeftIcon(true, R.drawable.nav_back);
         String rid = getIntent().getStringExtra("rid");
         initViews();
-        if(TextUtils.isEmpty(rid)){
+        if (TextUtils.isEmpty(rid)) {
             updateUI();
-        }else{
+        } else {
             //发网络请求获取
             Object request = null;
             StringBuffer sb = new StringBuffer("/gongfu/v2/return_order/");
             sb.append(rid).append("/");
-            sendConnection(sb.toString(),request,DETAIL,true, ReturnDetailResponse.class);
+            sendConnection(sb.toString(), request, DETAIL, true, ReturnDetailResponse.class);
         }
-
 
 
     }
 
     private void initViews() {
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-        if (!canSeePrice){
+        if (!canSeePrice) {
             priceLL.setVisibility(View.GONE);
         }
         dateTv.setVisibility(View.INVISIBLE);
         adapter = new ReturnDetailAdapter(mContext);
-        LinearLayoutManager mgr = new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false);
+        LinearLayoutManager mgr = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(mgr);
         recyclerView.setAdapter(adapter);
         recyclerView.setNestedScrollingEnabled(false);
         Bundle bundle = getIntent().getExtras();
-       bean = bundle.getParcelable("return");
+        bean = bundle.getParcelable("return");
 
         String deliveryType = bean.getDeliveryType();
-        rlBottom.setVisibility(View.VISIBLE);
         //不显示
-        if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH)||deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)){
-            rlBottom.setVisibility(View.GONE);
-        }
-        if(deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
-            if (bean.getWaybill() == null ||bean.getWaybill().getDeliverUser() == null||TextUtils.isEmpty(bean.getWaybill().getDeliverUser().getName())){
+        if (bean.getState().equals("process")) {
+            if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH) || deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)) {
                 rlBottom.setVisibility(View.GONE);
             }
+            if (deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY) || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)) {
+                if (bean.getWaybill() == null || bean.getWaybill().getDeliverUser() == null || TextUtils.isEmpty(bean.getWaybill().getDeliverUser().getName())) {
+                    rlBottom.setVisibility(View.GONE);
+                }
+            }
+        } else {
+            rlBottom.setVisibility(View.GONE);
         }
-
-
+        payStateTv.setVisibility(View.VISIBLE);
+        payStateValue.setVisibility(View.VISIBLE);
+        uploadBtn.setVisibility(View.VISIBLE);
+        hasAttatchment = bean.getHasAttachment() >0;
+        updateReturnView();
     }
-    private void updateUI(){
-        if (bean != null){
+
+    private void updateReturnView(){
+        if (!hasAttatchment){
+            payStateTv.setText("退货凭证: ");
+            payStateValue.setText("未有退货凭证");
+            uploadBtn.setText("上传退货凭证");
+
+        }else{
+            payStateTv.setText("退货凭证: ");
+            payStateValue.setText("已有退货凭证");
+            uploadBtn.setText("查看退货凭证");
+        }
+    }
+
+    private void updateUI() {
+        if (bean != null) {
             //获取物流状态
             List<String> trackerList = bean.getStateTracker();
-            if (trackerList != null && trackerList.size() > 0){
+            if (trackerList != null && trackerList.size() > 0) {
                 String newestTrack = trackerList.get(0);
                 String[] pathStr = newestTrack.split(" ");
-                if (pathStr.length == 3){   //正常状态，取最新的物流状态
+                if (pathStr.length == 3) {   //正常状态，取最新的物流状态
                     orderStateTv.setText(pathStr[2]);
-                }else{
+                } else {
                     //异常，自己设置
-                    if (bean.getState().equals("process")){
+                    if (bean.getState().equals("process")) {
                         orderStateTv.setText("退货进行中");
 //                tipTv.setText("原销售订单：SO"+bean.getOrderID());
-                    }else{
+                    } else {
                         orderStateTv.setText("退货成功");
                     }
                 }
             }
             StringBuffer sb = new StringBuffer("退货商品：");
-            sb.append((int)bean.getAmount()).append("件")
+            sb.append((int) bean.getAmount()).append("件")
                     .append(" 共").append(bean.getAmountTotal()).append("元");
             tipTv.setText(sb.toString());
             orderNumTv.setText(bean.getName());
@@ -145,20 +175,21 @@ public class ReturnDetailActivity extends NetWorkActivity {
             orderTimeValue.setText(bean.getCreateDate());
             List<ReturnOrderBean.ListBean.LinesBean> list = bean.getLines();
             adapter.setReturnList(list);
-            recyclerView.getLayoutParams().height = list.size()* CommonUtils.dip2px(mContext,86);
-            countTv.setText((int)bean.getAmount()+"件");
-            ygMoneyTv.setText(bean.getAmountTotal()+"元");
+            recyclerView.getLayoutParams().height = list.size() * CommonUtils.dip2px(mContext, 86);
+            countTv.setText((int) bean.getAmount() + "件");
+            ygMoneyTv.setText(bean.getAmountTotal() + "元");
         }
     }
-    @OnClick({R.id.title_iv_left,R.id.gotoStateBtn,R.id.doBtn})
-    public void btnClick(View view){
-        switch(view.getId()){
+
+    @OnClick({R.id.title_iv_left, R.id.gotoStateBtn, R.id.doBtn,R.id.uploadBtn})
+    public void btnClick(View view) {
+        switch (view.getId()) {
             case R.id.title_iv_left:
                 finish();
                 break;
             case R.id.gotoStateBtn:
-                Intent intent = new Intent(mContext,OrderStateActivity.class);
-                intent.putExtra("mode",true);
+                Intent intent = new Intent(mContext, OrderStateActivity.class);
+                intent.putExtra("mode", true);
                 Bundle bundle = getIntent().getExtras();
                 intent.putExtras(bundle);
                 startActivity(intent);
@@ -177,13 +208,33 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 });
                 dialog.show();
                 break;
+            case R.id.uploadBtn:
+                Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
+                uIntent.putExtra("orderid", bean.getOrderID());
+                uIntent.putExtra("ordername", bean.getName());
+                uIntent.putExtra("hasattachment", bean.getHasAttachment()>0);
+                startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
+                break;
             default:
                 break;
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            if (requestCode == REQUEST_CODE_UPLOAD){
+                //刷新界面
+                hasAttatchment = data.getBooleanExtra("has",false);
+                updateReturnView();
+            }
+        }
+    }
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where){
+        switch (where) {
             case DETAIL:
                 BaseEntity.ResultBean rb = result.getResult();
                 ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
@@ -193,8 +244,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
             case FINISHRETURN:
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
                 ToastUtil.show(mContext, "退货成功");
-                Intent intent = new Intent(mContext,ReturnSuccessActivity.class);
-                intent.putExtra(INTENT_KEY_RESULTBEAN,finishReturnResponse);
+                Intent intent = new Intent(mContext, ReturnSuccessActivity.class);
+                intent.putExtra(INTENT_KEY_RESULTBEAN, finishReturnResponse);
                 startActivity(intent);
                 rlBottom.setVisibility(View.GONE);
                 break;

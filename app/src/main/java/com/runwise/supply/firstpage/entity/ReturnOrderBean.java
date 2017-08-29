@@ -12,7 +12,7 @@ import java.util.List;
  * Created by libin on 2017/8/1.
  */
 
-public class ReturnOrderBean implements Serializable{
+public class ReturnOrderBean implements Serializable {
 
     private List<ListBean> list;
 
@@ -24,7 +24,7 @@ public class ReturnOrderBean implements Serializable{
         this.list = list;
     }
 
-    public static class ListBean implements Parcelable,Serializable{
+    public static class ListBean implements Parcelable, Serializable {
         public ListBean() {
         }
 
@@ -87,6 +87,7 @@ public class ReturnOrderBean implements Serializable{
         }
 
         private boolean returnThirdPartLog;
+
         public String getDeliveryType() {
             return deliveryType;
         }
@@ -96,7 +97,18 @@ public class ReturnOrderBean implements Serializable{
         }
 
         private String deliveryType;
-        public static class WaybillBean implements Serializable{
+
+        public int getHasAttachment() {
+            return hasAttachment;
+        }
+
+        public void setHasAttachment(int hasAttachment) {
+            this.hasAttachment = hasAttachment;
+        }
+
+        private int hasAttachment;
+
+        public static class WaybillBean implements Serializable {
             /**
              * deliverUser : {"mobile":"15542154698","userID":292,"name":"黄飞","avatarUrl":""}
              * waybillID : 81
@@ -141,7 +153,7 @@ public class ReturnOrderBean implements Serializable{
                 this.deliverVehicle = deliverVehicle;
             }
 
-            public static class DeliverUserBean implements Serializable{
+            public static class DeliverUserBean implements Serializable {
                 /**
                  * mobile : 15542154698
                  * userID : 292
@@ -189,9 +201,7 @@ public class ReturnOrderBean implements Serializable{
         }
 
 
-
-
-            protected ListBean(Parcel in) {
+        protected ListBean(Parcel in) {
             orderID = in.readInt();
             doneDate = in.readString();
             name = in.readString();
@@ -209,6 +219,7 @@ public class ReturnOrderBean implements Serializable{
             returnOrderID = in.readInt();
             driveMobile = in.readString();
             deliveryType = in.readString();
+            hasAttachment = in.readInt();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
         }
@@ -393,12 +404,13 @@ public class ReturnOrderBean implements Serializable{
             dest.writeInt(returnOrderID);
             dest.writeString(driveMobile);
             dest.writeString(deliveryType);
+            dest.writeInt(hasAttachment);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
         }
 
 
-        public static class LinesBean implements Parcelable,Serializable{
+        public static class LinesBean implements Parcelable, Serializable {
             public LinesBean() {
             }
 
@@ -598,7 +610,7 @@ public class ReturnOrderBean implements Serializable{
                 dest.writeTypedList(lotList);
             }
 
-            public static class LotListBean implements Parcelable,Serializable{
+            public static class LotListBean implements Parcelable, Serializable {
                 public LotListBean() {
                 }
 
