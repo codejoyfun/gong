@@ -113,7 +113,7 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
             case REQUEST_MAIN:
                 ProductData mainListResult = (ProductData)result.getResult().getData();
                 adapter.setData(handlerDataList(mainListResult.getList()));
-                loadingLayout.onSuccess(adapter.getCount(),"",R.drawable.news);
+                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据哦");
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:

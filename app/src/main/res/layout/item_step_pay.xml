@@ -46,17 +46,6 @@
                         android:text="efwf"
                         />
                     <TextView
-                        android:id="@+id/returnTv"
-                        android:layout_width="18dp"
-                        android:layout_height="14dp"
-                        android:text="退"
-                        android:layout_marginLeft="5dp"
-                        android:textSize="9sp"
-                        android:textColor="#FA5900"
-                        android:visibility="invisible"
-                        android:gravity="center"
-                        android:background="@drawable/receive_circle"/>
-                    <TextView
                         android:id="@+id/realTv"
                         android:layout_width="24dp"
                         android:layout_height="14dp"
@@ -65,6 +54,17 @@
                         android:textSize="9sp"
                         android:textColor="#FA5900"
                         android:visibility="visible"
+                        android:gravity="center"
+                        android:background="@drawable/receive_circle"/>
+                    <TextView
+                        android:id="@+id/returnTv"
+                        android:layout_width="18dp"
+                        android:layout_height="14dp"
+                        android:text="退"
+                        android:layout_marginLeft="5dp"
+                        android:textSize="9sp"
+                        android:textColor="#FA5900"
+                        android:visibility="invisible"
                         android:gravity="center"
                         android:background="@drawable/receive_circle"/>
                 </LinearLayout>

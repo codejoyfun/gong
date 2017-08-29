@@ -21,6 +21,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -99,6 +100,9 @@ public class OrderDetailActivity extends NetWorkActivity{
     private View priceLL;
     private boolean isModifyOrder;          //可修改订单
     private int orderId;                    //如果有orderId, 需要重新刷新
+
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout loadingLayout;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -139,7 +143,8 @@ public class OrderDetailActivity extends NetWorkActivity{
         Object request = null;
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(orderId).append("/");
-        sendConnection(sb.toString(),request,DETAIL,true, OrderDetailResponse.class);
+        sendConnection(sb.toString(),request,DETAIL,false, OrderDetailResponse.class);
+        loadingLayout.setStatusLoading();
     }
 
     @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,R.id.uploadBtn,
@@ -309,6 +314,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
                 updateUI();
+                loadingLayout.onSuccess(1,"暂时没有数据哦");
                 break;
             case CANCEL:
                 finish();
