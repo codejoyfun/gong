@@ -85,11 +85,23 @@ public class ProcurementLimitActivity extends NetWorkActivity{
             viewHolder.tv_product_name.setText(mSumMoneyData.getProduct_list().get(position));
             if(GlobalApplication.getInstance().getCanSeePrice()) {
                 viewHolder.tv_price.setText(UserUtils.formatPrice(mSumMoneyData.getPurchase_volume_list().get(position) + "") + "元");
-                viewHolder.pbBar.setProgress((int)(mSumMoneyData.getPurchase_volume_list().get(position)/mSumMoneyData.getTotal_amount()*100));
+                double progress = (mSumMoneyData.getPurchase_volume_list().get(position)/mSumMoneyData.getTotal_amount()*100);
+                if(progress >0 && progress <1) {
+                    viewHolder.pbBar.setProgress(1);
+                }
+                else{
+                    viewHolder.pbBar.setProgress((int)progress);
+                }
             }
             else{
                 viewHolder.tv_price.setText(mSumMoneyData.getPurchase_number_list().get(position) +  "件");
-                viewHolder.pbBar.setProgress((int)(mSumMoneyData.getPurchase_number_list().get(position)/mSumMoneyData.getTotal_number()*100));
+                double progress = (mSumMoneyData.getPurchase_number_list().get(position)/mSumMoneyData.getTotal_number()*100);
+                if(progress >0 && progress <1) {
+                    viewHolder.pbBar.setProgress(1);
+                }
+                else{
+                    viewHolder.pbBar.setProgress((int)progress);
+                }
             }
             return convertView;
         }

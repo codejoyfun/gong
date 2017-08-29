@@ -33,7 +33,7 @@
         android:indeterminateDrawable="@drawable/receive_tip_circle"
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:max="20"
+        android:max="100"
         android:progress="5"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
