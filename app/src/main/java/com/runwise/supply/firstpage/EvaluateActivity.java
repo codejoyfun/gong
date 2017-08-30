@@ -5,6 +5,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +36,10 @@ import com.runwise.supply.firstpage.entity.EvaluateLineRequest;
 import com.runwise.supply.firstpage.entity.EvaluateRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.view.ClearEditText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +58,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private SimpleDraweeView headSdv;
     @ViewInject(R.id.recyclerView)
     private RecyclerView    recyclerView;
+    @ViewInject(R.id.searchRecyclerView)
+    private RecyclerView searchRecyclerView;
     @ViewInject(R.id.nameTv)
     private TextView        nameTv;
     @ViewInject(R.id.timeTv)
@@ -74,10 +82,17 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private View cbLL;
     @ViewInject(R.id.rl_head)
     private RelativeLayout rlHead;
+    @ViewInject(R.id.searchPart)
+    private RelativeLayout searchPart;
+    @ViewInject(R.id.inputPart)
+    private RelativeLayout inputPart;
+    @ViewInject(R.id.evaluateEditText)
+    private ClearEditText evaluateEditText;
     private static final int ORDERREQUST = 1;
     private static final int LINEREQUEST = 2;
 
     private EvaluateAdapter adapter;
+    private EvaluateAdapter searchAdapter;
     private OrderResponse.ListBean bean;
     //维护星星分数的集合,LineId -----> 星星分数
     private Map<Integer,Integer> rateMap = new HashMap<>();
@@ -113,10 +128,15 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             rlHead.setVisibility(View.GONE);
         }
         adapter = new EvaluateAdapter(this,null,rateMap);
+        searchAdapter = new EvaluateAdapter(this,null,rateMap);
         adapter.setCallback(this);
+        searchAdapter.setCallback(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-        selectProductTypeData(DataType.LENGCANGHUO);
+        searchRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        searchRecyclerView.setAdapter(searchAdapter);
+        selectProductTypeData(DataType.LENGCANGHUO,null);
+        selectProductTypeData(DataType.ALL,null);
         if (bean != null){
             orderId = bean.getOrderID();
             for(OrderResponse.ListBean.LinesBean lb : bean.getLines()){
@@ -153,24 +173,40 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 }
             }
         });
+        evaluateEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                selectProductTypeData(DataType.ALL,s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
-    @OnClick({R.id.coldBtn,R.id.freezeBtn,R.id.dryBtn,
-            R.id.title_iv_left,R.id.onekeyTv,R.id.title_tv_rigth})
+    @OnClick({R.id.coldBtn,R.id.freezeBtn,R.id.dryBtn,R.id.startSearchIB,
+            R.id.title_iv_left,R.id.onekeyTv,R.id.title_tv_rigth,R.id.searchCancleTv})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.coldBtn:
                 //切换指示器
                 switchTabIndex(DataType.LENGCANGHUO);
                 //筛选列表数据
-                selectProductTypeData(DataType.LENGCANGHUO);
+                selectProductTypeData(DataType.LENGCANGHUO,null);
                 break;
             case R.id.freezeBtn:
                 switchTabIndex(DataType.FREEZE);
-                selectProductTypeData(DataType.FREEZE);
+                selectProductTypeData(DataType.FREEZE,null);
                 break;
             case R.id.dryBtn:
                 switchTabIndex(DataType.DRY);
-                selectProductTypeData(DataType.DRY);
+                selectProductTypeData(DataType.DRY,null);
                 break;
             case R.id.title_iv_left:
                 dialog.setMessage("评价尚未提交\n您确定要返回吗?");
@@ -208,6 +244,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                                     rateMap.put(key,Integer.valueOf((int)rating));
                                 }
                                 adapter.notifyDataSetChanged();
+                                searchAdapter.notifyDataSetChanged();
                                 popupWindow.dismiss();
                             }
                         }
@@ -232,6 +269,14 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                     }
                 });
                 dialog.show();
+                break;
+            case R.id.startSearchIB:
+                searchPart.setVisibility(View.VISIBLE);
+                inputPart.setVisibility(View.GONE);
+                break;
+            case R.id.searchCancleTv:
+                searchPart.setVisibility(View.GONE);
+                inputPart.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -263,15 +308,33 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         sendConnection("/gongfu/assess/order/line/",lineRequest,LINEREQUEST,false,BaseEntity.ResultBean.class);
     }
 
-    private void selectProductTypeData(DataType type) {
+    private void selectProductTypeData(DataType type,String filterText) {
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
         List<OrderResponse.ListBean.LinesBean> typeList = new ArrayList<>();
+        if (type == DataType.ALL && list != null) {
+            //在这里做过滤
+            if (TextUtils.isEmpty(filterText)){
+                typeList.addAll(list);
+                searchAdapter.setProductList(typeList,null);
+            }else{
+                for (OrderResponse.ListBean.LinesBean lb : list){
+                    String pid = String.valueOf(lb.getProductID());
+                    ProductBasicList.ListBean bb = ProductBasicUtils.getBasicMap(mContext).get(pid);
+                    if(bb.getName().contains(filterText)){
+                        typeList.add(lb);
+                        continue;
+                    }
+                }
+                searchAdapter.setProductList(typeList,filterText);
+            }
+            return;
+        }
         for (OrderResponse.ListBean.LinesBean lb : list){
             if (lb.getStockType().equals(type.getType())){
                 typeList.add(lb);
             }
         }
-        adapter.setProductList(typeList);
+        adapter.setProductList(typeList,null);
     }
 
     private void switchTabIndex(DataType type) {
@@ -319,6 +382,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     @Override
     public void rateChanged(Integer lineId, Integer rateScore) {
         rateMap.put(lineId,rateScore);
+        if (searchPart.getVisibility() == View.VISIBLE){
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
