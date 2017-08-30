@@ -180,7 +180,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
         if (orderId == 0){
             ToastUtil.show(mContext,"数据异常，请退出重进");
         }else{
-            StringBuffer urlSb = new StringBuffer("/gongfu/order/");
+            StringBuffer urlSb = new StringBuffer("/gongfu/return_order/");
             urlSb.append(orderId).append("/attachment/");
             showIProgressDialog();
             //如果集合中没有本地图片，则退出

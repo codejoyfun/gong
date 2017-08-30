@@ -8,7 +8,6 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -16,11 +15,13 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
-import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.entity.ReturnActivityRefreshEvent;
 import com.runwise.supply.mine.entity.ReturnData;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,13 @@ public class ReturnActivity extends NetWorkActivity {
         Object param = null;
         sendConnection("/API/v2/return_order/list",param,PRODUCT_GET,true, ReturnData.class);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDataSynEvent(ReturnActivityRefreshEvent returnActivityRefreshEvent) {
+        Object param = null;
+        sendConnection("/API/v2/return_order/list",param,PRODUCT_GET,true, ReturnData.class);
+    }
+
     @OnClick(R.id.left_layout)
     public void doBack(View view) {
         finish();
