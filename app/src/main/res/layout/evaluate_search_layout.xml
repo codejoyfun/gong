@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/searchPart"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/searchBar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+            <com.runwise.supply.view.ClearEditText
+                android:id="@+id/evaluateEditText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/evaluate_search_circle"
+                android:hint="请输入搜索"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="#2E2E2E"
+                android:textSize="14sp"
+                android:drawableLeft="@drawable/search_icon"
+                android:drawablePadding="10dp"
+                android:drawableRight="@drawable/login_btn_delete"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/searchCancleTv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="取消"/>
+        </LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/searchBar"
+            android:background="#FFFFFF"
+            android:minHeight="100dp"
+            android:id="@+id/searchRecyclerView">
+
+        </android.support.v7.widget.RecyclerView>
+    </RelativeLayout>
+</merge>
