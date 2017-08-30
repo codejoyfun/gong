@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base_background_color"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="20dp">
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/msg_context_bg"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_batch"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="批次号"
+            android:gravity="center"
+            android:textColor="@color/bottom_dialog_textcolor"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/et_batch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="添加批次号(选填)"
+            android:textColorHint=""
+            android:layout_alignTop="@id/tv_batch"
+            android:layout_alignBottom="@id/tv_batch"
+            android:layout_toRightOf="@id/tv_batch"
+            android:background="@null"
+            android:singleLine="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center|right"
+            android:textColor="@color/bottom_dialog_divider"
+            android:textSize="16sp" />
+
+        <View
+            android:id="@+id/v_line"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider"
+            android:layout_below="@id/et_batch"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:id="@+id/tv_product_date"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="生产日期"
+            android:gravity="center"
+            android:layout_below="@id/v_line"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/bottom_dialog_textcolor"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/et_product_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写日期"
+            android:textColorHint=""
+            android:layout_alignTop="@id/tv_product_date"
+            android:layout_alignBottom="@id/tv_product_date"
+            android:layout_toRightOf="@id/tv_product_date"
+            android:background="@null"
+            android:singleLine="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center|right"
+            android:textColor="@color/bottom_dialog_divider"
+            android:textSize="16sp" />
+
+        <View
+            android:id="@+id/v_line1"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider"
+            android:layout_below="@id/tv_product_date"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:id="@+id/tv_product_count"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="商品数量"
+            android:gravity="center"
+            android:layout_below="@id/v_line1"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/bottom_dialog_textcolor"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/et_product_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写数量"
+            android:textColorHint=""
+            android:layout_alignTop="@id/tv_product_count"
+            android:layout_alignBottom="@id/tv_product_count"
+            android:layout_toRightOf="@id/tv_product_count"
+            android:background="@null"
+            android:singleLine="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center|right"
+            android:textColor="@color/bottom_dialog_divider"
+            android:textSize="16sp" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
