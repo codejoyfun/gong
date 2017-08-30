@@ -122,12 +122,11 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 osl.setTime(timeSb.toString());
                 if (bean.getState().equals("process")) {
                     //退货中...
-                    if (!TextUtils.isEmpty(bean.getDriver()) && !TextUtils.isEmpty(bean.getDriveMobile())) {
+                    if ((bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_STANDARD) || bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_FRESH)) && !TextUtils.isEmpty(bean.getDriver()) && !TextUtils.isEmpty(bean.getDriveMobile())) {
                         //订单审核通过
                         content.append("请等待取货员上门取货").append("\n")
                                 .append("车牌号：").append(bean.getDriveMobile()).append("\n")
-                                .append("取货员：").append(bean.getDriver()).append("\n")
-                                .append("预计取货时间：").append(bean.getLoadingDate());
+                                .append("取货员：").append(bean.getDriver()).append("\n");
                     } else {
                         //订单已提交
                         content.append("退货单号：").append(bean.getName()).append("\n")
@@ -138,9 +137,9 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                     }
                 } else {
                     //退货成功
-                    content.append("退货成功，退货商品：").append(bean.getAmount()).append("件");
+                    content.append("退货商品：").append(bean.getAmount()).append("件");
                     if (GlobalApplication.getInstance().getCanSeePrice()){
-                        content.append("，共").append(bean.getAmountTotal()).append("元");
+                        content.append("，").append(bean.getAmountTotal()).append("元");
                     }
 
                 }

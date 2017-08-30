@@ -42,6 +42,7 @@ import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoScrollViewPager;
@@ -155,6 +156,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startOrEndTally(true);
             }
         }
+    }
+
+    public String getDeliveryType(){
+        return lbean.getDeliveryType();
     }
 
     @Override
@@ -451,6 +456,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 bundle.putParcelable("order", lbean);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                EventBus.getDefault().post(new UpdateRepertory());
                 finish();
                 break;
             case TALLYING:
@@ -463,6 +469,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 dBundle.putParcelable("order", lbean);
                 dIntent.putExtras(dBundle);
                 startActivity(dIntent);
+                EventBus.getDefault().post(new UpdateRepertory());
                 finish();
                 break;
             case BEGIN_TALLY:
@@ -569,6 +576,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             if (datas != null && datas.size() > 0) {
                 bundle.putParcelableArrayList("datas", datas);
             }
+            bundle.putParcelable("order",lbean);
             ReceiveFragment allFragment = new ReceiveFragment();
             allFragment.type = DataType.ALL;
             allFragment.setCallback(ReceiveActivity.this);

@@ -30,6 +30,7 @@ public class UserInfo implements Serializable{
      * login : PS60007
      * customerServicePhone : false
      * clerk : true
+     * isZicai
      */
 
     private String username;
@@ -58,6 +59,16 @@ public class UserInfo implements Serializable{
     private String isAgreeItem;
     private boolean hasNewInvoice;
     private String company;
+    private boolean isZicai;
+
+    public boolean isZicai() {
+        return isZicai;
+    }
+
+    public void setZicai(boolean zicai) {
+        isZicai = zicai;
+    }
+
     public boolean isHasNewInvoice() {
         return hasNewInvoice;
     }

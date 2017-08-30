@@ -220,6 +220,7 @@ public class ReturnOrderBean implements Serializable {
             driveMobile = in.readString();
             deliveryType = in.readString();
             hasAttachment = in.readInt();
+            returnThirdPartLog = in.readByte() != 0;
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
         }
@@ -407,6 +408,7 @@ public class ReturnOrderBean implements Serializable {
             dest.writeInt(hasAttachment);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
+            dest.writeByte((byte)(returnThirdPartLog?1:0));
         }
 
 

@@ -62,6 +62,7 @@ public class ReceiveFragment extends BaseFragment {
     private Map<String, ReceiveBean> countMap = new HashMap<>();
     //收点货模式
     private int mode;
+    OrderResponse.ListBean orderBean;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,6 +99,7 @@ public class ReceiveFragment extends BaseFragment {
         });
 
         ArrayList<OrderResponse.ListBean.LinesBean> linesList = getArguments().getParcelableArrayList("datas");
+        orderBean = getArguments().getParcelable("order");
         mode = getArguments().getInt("mode");
 
         if (type == DataType.ALL) {
@@ -212,7 +214,7 @@ public class ReceiveFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         int num = Integer.parseInt(finalViewHolder.receivedTv.getText().toString());
-                        if (basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+                        if (basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT) && orderBean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)) {
                             setReceiveCount(num, basicBean, bean);
                             return;
                         }

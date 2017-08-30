@@ -80,6 +80,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private ImageView orderSuccessIv;
     @ViewInject(R.id.bgView)
     private View bgView;
+    @ViewInject(R.id.nopurchaseRL)
+    private RelativeLayout nopurchaseRL;
+
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
     //弹窗星期的View集合
@@ -421,6 +424,11 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             case DEFAULT_TYPE:
                 DefaultProductData data = (DefaultProductData) resultBean.getData();
                 adapter.setData(data.getList());
+                if (data != null && data.getList() != null && data.getList().size() == 0){
+                    //显示UI
+                    nopurchaseRL.setVisibility(View.VISIBLE);
+
+                }
                 break;
             case COMMIT_TYPE:
                 bgView.setVisibility(View.VISIBLE);
@@ -514,6 +522,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                    adapter.setData(newList);
                    if (backList.size() > 0){
                        ToastUtil.show(mContext,"添加成功");
+                       nopurchaseRL.setVisibility(View.GONE);
                    }
                }
                break;
