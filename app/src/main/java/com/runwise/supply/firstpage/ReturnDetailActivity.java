@@ -20,11 +20,14 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.ReturnActivityRefreshEvent;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -210,7 +213,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 break;
             case R.id.uploadBtn:
                 Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
-                uIntent.putExtra("orderid", bean.getOrderID());
+                uIntent.putExtra("orderid", bean.getReturnOrderID());
                 uIntent.putExtra("ordername", bean.getName());
                 uIntent.putExtra("hasattachment", hasAttatchment);
                 startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
@@ -227,6 +230,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
             if (requestCode == REQUEST_CODE_UPLOAD){
                 //刷新界面
                 hasAttatchment = data.getBooleanExtra("has",false);
+                EventBus.getDefault().post(new ReturnActivityRefreshEvent());
                 updateReturnView();
             }
         }
