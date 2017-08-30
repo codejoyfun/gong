@@ -42,6 +42,7 @@ import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoScrollViewPager;
@@ -451,6 +452,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 bundle.putParcelable("order", lbean);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                EventBus.getDefault().post(new UpdateRepertory());
                 finish();
                 break;
             case TALLYING:
@@ -463,6 +465,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 dBundle.putParcelable("order", lbean);
                 dIntent.putExtras(dBundle);
                 startActivity(dIntent);
+                EventBus.getDefault().post(new UpdateRepertory());
                 finish();
                 break;
             case BEGIN_TALLY:
