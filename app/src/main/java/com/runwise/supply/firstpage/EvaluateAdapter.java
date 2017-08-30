@@ -82,7 +82,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
                 int start = name.indexOf(filterTxt);
                 SpannableStringBuilder builder = new SpannableStringBuilder(basicBean.getName());
                 ForegroundColorSpan cs = new ForegroundColorSpan(Color.parseColor("#9ACC35"));
-                builder.setSpan(cs,start,filterTxt.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                builder.setSpan(cs,start,start+filterTxt.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 itemHolder.nameTv.setText(builder);
             }else{
                 itemHolder.nameTv.setText(name);

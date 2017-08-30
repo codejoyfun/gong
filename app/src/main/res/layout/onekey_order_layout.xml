@@ -208,4 +208,31 @@
         android:scaleType="centerCrop"
         android:visibility="gone"
         />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/nopurchaseRL"
+        android:visibility="gone"
+        android:layout_marginBottom="55dp"
+        android:layout_below="@id/title_bar"
+        android:background="#F5F5F5">
+        <ImageView
+            android:id="@+id/nopurchaseIv"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="150dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/default_ico_purchasenone"/>
+        <TextView
+            android:id="@+id/nopurchaseTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:textSize="14sp"
+            android:textColor="#999999"
+            android:text="小主，暂时不用采购哦〜"
+            android:layout_below="@id/nopurchaseIv"/>
+    </RelativeLayout>
 </RelativeLayout>
