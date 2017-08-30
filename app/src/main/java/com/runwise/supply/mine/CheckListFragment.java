@@ -26,6 +26,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
+import com.runwise.supply.repertory.EditRepertoryListActivity;
 import com.runwise.supply.tools.TimeUtils;
 
 /**
@@ -47,6 +48,9 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
     private int page = 1;
     public OrderDataType orderDataType;
     private String mName;
+
+    @ViewInject(R.id.lableText)
+    private TextView lableText;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +87,12 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
         mName = GlobalApplication.getInstance().loadUserInfo().getUsername();
+        if(GlobalApplication.getInstance().getCanSeePrice()) {
+            lableText.setText("差异金额");
+        }
+        else{
+            lableText.setText("差异数量");
+        }
     }
 
 
@@ -153,10 +163,17 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         CheckResult.ListBean bean = (CheckResult.ListBean)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(mContext, CheckDetailActivity.class);
-        intent.putExtra("id",bean.getInventoryID()+"");
-        intent.putExtra("bean",bean);
-        startActivity(intent);
+        if ("confirm".equals(bean.getState()) && bean.getCreateUser().equals(mName)) {
+            Intent intent = new Intent(mContext, EditRepertoryListActivity.class);
+            intent.putExtra("checkBean", bean);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(mContext, CheckDetailActivity.class);
+            intent.putExtra("id", bean.getInventoryID() + "");
+            intent.putExtra("bean", bean);
+            startActivity(intent);
+        }
     }
 
 

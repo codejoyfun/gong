@@ -13,8 +13,6 @@ import com.kids.commonframe.base.util.ImageUtils;
 import com.kids.commonframe.base.util.LogUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
-import com.qiniu.android.storage.UploadManager;
-import com.qiniu.android.storage.UploadOptions;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.entity.QnTokenRepEntity;
 import com.runwise.supply.pictakelist.PicTake;
@@ -37,9 +35,9 @@ public class ActionRecordEditRequest implements  NetWorkHelper.NetWorkCallBack<B
     private Context context;
     private String token = null;
     private NetWorkHelper netWorkHelper;
-    private UploadManager uploadManager = null;
+//    private UploadManager uploadManager = null;
     public volatile boolean isCancelled = false;
-    private UploadOptions uploadOptions = null;
+//    private UploadOptions uploadOptions = null;
     private ArrayMap<String, PicTake> arrayPicMap = null;
 
 
@@ -52,7 +50,7 @@ public class ActionRecordEditRequest implements  NetWorkHelper.NetWorkCallBack<B
     private UserInfo userInfo;
     public ActionRecordEditRequest(Context context) {
         this.context = context;
-        this.uploadManager = new UploadManager();
+//        this.uploadManager = new UploadManager();
 //        this.uploadOptions = new UploadOptions(null, null, false, this, this);
         this.netWorkHelper = new NetWorkHelper<>(context, this);
         this.arrayPicMap = new ArrayMap<>();
@@ -156,20 +154,20 @@ public class ActionRecordEditRequest implements  NetWorkHelper.NetWorkCallBack<B
         try {
             if (uploadList != null && uploadList.size() > 0 ) {
                 for (PicTake picTake : uploadList) {
-                    if (uploadManager != null) {
-                        String filekey = picTake.getQiniuFileName();
-                        String filePath = ImageUtils.getScaledImage(context, picTake.getPicPath());
-                        if (filekey == null) {
-                            filekey = CommonUtils.generateImgFileName();
-                        }
-                        LogUtil.e(TAG, "----上传..." + filePath + "------" + filekey);
-                        arrayPicMap.put(filekey, picTake);
-//                        long ptime = Long.parseLong(picTake.getCreateTime());
-//                        if(!picTake.isNetResouce()){
-//                            ptime = ptime * 1000;
+//                    if (uploadManager != null) {
+//                        String filekey = picTake.getQiniuFileName();
+//                        String filePath = ImageUtils.getScaledImage(context, picTake.getPicPath());
+//                        if (filekey == null) {
+//                            filekey = CommonUtils.generateImgFileName();
 //                        }
-//                        uploadManager.put(filePath, filekey, token, this, uploadOptions);
-                    }
+//                        LogUtil.e(TAG, "----上传..." + filePath + "------" + filekey);
+//                        arrayPicMap.put(filekey, picTake);
+////                        long ptime = Long.parseLong(picTake.getCreateTime());
+////                        if(!picTake.isNetResouce()){
+////                            ptime = ptime * 1000;
+////                        }
+////                        uploadManager.put(filePath, filekey, token, this, uploadOptions);
+//                    }
                 }
             }else{
                 isCancelled = true;

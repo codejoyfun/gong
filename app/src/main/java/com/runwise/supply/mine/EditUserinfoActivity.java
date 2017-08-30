@@ -23,51 +23,31 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ImageUtils;
-import com.kids.commonframe.base.util.LogUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomBottomDialog;
-import com.kids.commonframe.base.view.CustomSelectDialog;
 import com.kids.commonframe.base.view.CustomUploadDialog;
-import com.kids.commonframe.base.view.widget.PickerClickListener;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.qiniu.android.http.ResponseInfo;
-import com.qiniu.android.storage.UpCompletionHandler;
-import com.qiniu.android.storage.UpProgressHandler;
-import com.qiniu.android.storage.UploadManager;
-import com.qiniu.android.storage.UploadOptions;
 import com.runwise.supply.ChangePhoneActivity;
 import com.runwise.supply.FindPasswordActivity;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
-import com.runwise.supply.business.entity.FilterItem;
-import com.runwise.supply.business.entity.FilterList;
-import com.runwise.supply.business.entity.Province;
-import com.runwise.supply.business.entity.ProvinceList;
-import com.runwise.supply.business.entity.ProvinceRequest;
-import com.runwise.supply.entity.QnTokenRepEntity;
-import com.runwise.supply.mine.entity.EditUserInfoRequest;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
-import com.runwise.supply.mine.entity.UpdateUserInfoRep;
 import com.runwise.supply.mine.entity.UploadImg;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import static com.runwise.supply.R.id.orderRed;
 
 
 public class EditUserinfoActivity extends NetWorkActivity {

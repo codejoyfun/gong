@@ -53,7 +53,7 @@
                 android:id="@+id/buyTimeTv"
                 android:layout_width="wrap_content"
                 android:layout_height="26dp"
-                android:text="创建日期："
+                android:text="下单时间："
                 android:gravity="center_vertical"
                 android:layout_below="@id/buyerTv"
                 android:textSize="14sp"
@@ -106,8 +106,10 @@
                 />
             <Button
                 android:id="@+id/uploadBtn"
-                android:layout_width="86dp"
+                android:layout_width="wrap_content"
                 android:layout_height="31dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
                 android:text="上传凭证"
                 android:visibility="gone"
                 android:layout_alignParentRight="true"

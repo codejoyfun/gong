@@ -24,6 +24,7 @@ import com.bigkoo.pickerview.listener.OnDismissListener;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
@@ -175,6 +176,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             name.setText(productBean.getName());
             number.setText(productBean.getDefaultCode() + " | ");
             content.setText(productBean.getUnit());
+            tv_product_date_value.setText("");
             tv_product_date_value.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -213,6 +215,12 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                         pvCustomTime = new TimePickerView.Builder(mContext, new TimePickerView.OnTimeSelectListener() {
                             @Override
                             public void onTimeSelect(Date date, View v) {//选中事件回调
+                                if( 0 == wheelView.getCurrentItem()) {
+                                    if(!DateFormateUtil.befToday(TimeUtils.getYMDHMS(date))) {
+                                        ToastUtil.show(mContext,"生产日期不能是未来时间");
+                                        return;
+                                    }
+                                }
                                 tv_product_date_value.setText(TimeUtils.getYMD(date));
                                 tv_product_date.setText(wheelView.getAdapter().getItem(wheelView.getCurrentItem()).toString());
                             }

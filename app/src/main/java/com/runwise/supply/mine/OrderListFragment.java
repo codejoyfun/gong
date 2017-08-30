@@ -344,9 +344,9 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                     }
                 });
             }
-            //已收货
+            //待评价
             else if("done".equals(bean.getState())) {
-                holder.payStatus.setText("已收货");
+                holder.payStatus.setText("待评价");
                 holder.payBtn.setVisibility(View.GONE);
                 holder.orderStatus.setImageResource(R.drawable.state_restaurant_2_certain);
                 holder.payBtn.setVisibility(View.VISIBLE);
@@ -400,6 +400,18 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             else {
                 holder.payMoney.setVisibility(View.GONE);
             }
+            if(bean.getHasReturn() > 0) {
+                holder.returnTv.setVisibility(View.VISIBLE);
+            }
+            else {
+                holder.returnTv.setVisibility(View.GONE);
+            }
+            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+               holder.realTv.setVisibility(View.VISIBLE);
+            }
+            else{
+                holder.realTv.setVisibility(View.GONE);
+            }
 //            holder.payMoney.setText(bean.getAmountTotal()+"");
             return convertView;
         }
@@ -418,6 +430,10 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             TextView payBtn;
             @ViewInject(R.id.orderStatus)
             ImageView orderStatus;
+            @ViewInject(R.id.returnTv)
+            TextView returnTv;
+            @ViewInject(R.id.realTv)
+            TextView realTv;
         }
     }
 }

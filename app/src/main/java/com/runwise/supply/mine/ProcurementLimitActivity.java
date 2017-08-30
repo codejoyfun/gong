@@ -14,9 +14,13 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.tools.UserUtils;
+
+import static com.runwise.supply.R.id.moneyNuit;
+import static com.runwise.supply.R.id.moneySum;
 
 public class ProcurementLimitActivity extends NetWorkActivity{
 
@@ -29,17 +33,36 @@ public class ProcurementLimitActivity extends NetWorkActivity{
 
     public static final String KEY_SUM_MONEY_DATA = "key_sum_money_data";
 
+    @ViewInject(R.id.amountTitle)
+    private TextView amountTitle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_procurement_limit);
         showBackBtn();
-        setTitleText(true,"上周采购额");
-
+        if(GlobalApplication.getInstance().getCanSeePrice()) {
+            setTitleText(true,"上周采购额");
+            amountTitle.setText("采购额");
+        }
+        else{
+            setTitleText(true,"上周采购量");
+            amountTitle.setText("采购量");
+        }
         mSumMoneyData = (SumMoneyData) getIntent().getSerializableExtra(KEY_SUM_MONEY_DATA);
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
 
-        tv_total_money.setText(UserUtils.formatPrice(String.valueOf(mSumMoneyData.getTotal_amount()))+"万元");
+        if(GlobalApplication.getInstance().getCanSeePrice()) {
+            if(mSumMoneyData.getTotal_amount() > 10000) {
+                double price = mSumMoneyData.getTotal_amount()/10000;
+                tv_total_money.setText(UserUtils.formatPrice(price+"")+"万元");
+            }
+            else {
+                tv_total_money.setText(UserUtils.formatPrice(mSumMoneyData.getTotal_amount()+"")+"元");
+            }
+        }
+        else{
+            tv_total_money.setText(mSumMoneyData.getTotal_number()+"件");
+        }
 
         CaiGouEAdapter caiGouEAdapter = new CaiGouEAdapter();
         caiGouEAdapter.setData(mSumMoneyData.getProduct_list());
@@ -60,8 +83,26 @@ public class ProcurementLimitActivity extends NetWorkActivity{
                 viewHolder = (ViewHolder)convertView.getTag();
             }
             viewHolder.tv_product_name.setText(mSumMoneyData.getProduct_list().get(position));
-            viewHolder.tv_price.setText(UserUtils.formatPrice(mSumMoneyData.getPurchase_volume_list().get(position)+"")+"元");
-            viewHolder.pbBar.setProgress((int)(mSumMoneyData.getPurchase_volume_list().get(position)/mSumMoneyData.getTotal_amount()*100));
+            if(GlobalApplication.getInstance().getCanSeePrice()) {
+                viewHolder.tv_price.setText(UserUtils.formatPrice(mSumMoneyData.getPurchase_volume_list().get(position) + "") + "元");
+                double progress = (mSumMoneyData.getPurchase_volume_list().get(position)/mSumMoneyData.getTotal_amount()*100);
+                if(progress >0 && progress <1) {
+                    viewHolder.pbBar.setProgress(1);
+                }
+                else{
+                    viewHolder.pbBar.setProgress((int)progress);
+                }
+            }
+            else{
+                viewHolder.tv_price.setText(mSumMoneyData.getPurchase_number_list().get(position) +  "件");
+                double progress = (mSumMoneyData.getPurchase_number_list().get(position)/((float)mSumMoneyData.getTotal_number())*100);
+                if(progress >0 && progress <1) {
+                    viewHolder.pbBar.setProgress(1);
+                }
+                else{
+                    viewHolder.pbBar.setProgress((int)progress);
+                }
+            }
             return convertView;
         }
     }

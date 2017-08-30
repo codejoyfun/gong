@@ -219,6 +219,10 @@ public class TimeUtils {
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 			return ft.format(date);
 	}
+	public static String getYMDHMS(Date date){
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return ft.format(date);
+	}
 	/**
 	 * 计算宝宝年龄
 	 *

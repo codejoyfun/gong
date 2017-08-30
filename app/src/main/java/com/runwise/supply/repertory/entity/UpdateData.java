@@ -9,6 +9,7 @@ import com.runwise.supply.orderpage.DataType;
 public class UpdateData {
     DataType type;
 
+
     public DataType getType() {
         return type;
     }

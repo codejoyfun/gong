@@ -1,6 +1,7 @@
 package com.runwise.supply.mine.entity;
 
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.entity.PandianResult;
 
 import java.io.Serializable;
 import java.util.List;
@@ -34,13 +35,13 @@ public class CheckResult {
          */
 
         private String state;
-        private double num;
+        private int num;
         private String name;
         private String createUser;
         private int inventoryID;
         private String createDate;
         private double value;
-        private List<LinesBean> lines;
+        private List<PandianResult.InventoryBean.LinesBean> lines;
 
 
         public String getState() {
@@ -51,11 +52,11 @@ public class CheckResult {
             this.state = state;
         }
 
-        public double getNum() {
+        public int getNum() {
             return num;
         }
 
-        public void setNum(double num) {
+        public void setNum(int num) {
             this.num = num;
         }
 
@@ -99,11 +100,11 @@ public class CheckResult {
             this.value = value;
         }
 
-        public List<LinesBean> getLines() {
+        public List<PandianResult.InventoryBean.LinesBean> getLines() {
             return lines;
         }
 
-        public void setLines(List<LinesBean> lines) {
+        public void setLines(List<PandianResult.InventoryBean.LinesBean> lines) {
             this.lines = lines;
         }
 
