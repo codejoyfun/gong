@@ -129,10 +129,11 @@ public class ReturnDetailActivity extends NetWorkActivity {
             }
         } else {
             rlBottom.setVisibility(View.GONE);
+            payStateTv.setVisibility(View.VISIBLE);
+            payStateValue.setVisibility(View.VISIBLE);
+            uploadBtn.setVisibility(View.VISIBLE);
         }
-        payStateTv.setVisibility(View.VISIBLE);
-        payStateValue.setVisibility(View.VISIBLE);
-        uploadBtn.setVisibility(View.VISIBLE);
+
         hasAttatchment = bean.getHasAttachment() >0;
         updateReturnView();
     }

@@ -138,9 +138,10 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                     }
                 } else {
                     //退货成功
-                    content.append("退货成功，退货商品：").append(bean.getAmount()).append("件");
+                    content.append("退货单号：").append(bean.getName()).append("\n")
+                    .append("退货商品：").append(bean.getAmount()).append("件");
                     if (GlobalApplication.getInstance().getCanSeePrice()){
-                        content.append("，共").append(bean.getAmountTotal()).append("元");
+                        content.append("，").append(bean.getAmountTotal()).append("元");
                     }
 
                 }
