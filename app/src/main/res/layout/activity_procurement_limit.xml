@@ -31,7 +31,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="食材"
+                android:text="商品"
                 android:textSize="16sp"
                 android:layout_weight="1"/>
             <TextView
@@ -70,6 +70,7 @@
                 android:layout_alignParentRight="true"/>
 
             <TextView
+                android:id="@+id/unitText"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"

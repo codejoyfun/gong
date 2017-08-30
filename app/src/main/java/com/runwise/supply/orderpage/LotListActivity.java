@@ -1,45 +1,39 @@
-package com.runwise.supply.mine;
+package com.runwise.supply.orderpage;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.mine.entity.CheckOrderData;
-import com.runwise.supply.mine.entity.MsgEntity;
-import com.runwise.supply.mine.entity.MsgList;
-import com.runwise.supply.mine.entity.MsgResult;
-import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.index.entity.CarImage;
+import com.runwise.supply.mine.NotiySettingDateActivity;
+import com.runwise.supply.mine.entity.CollectCar;
+import com.runwise.supply.mine.entity.CollectCarInfo;
+import com.runwise.supply.mine.entity.CollectData;
+import com.runwise.supply.mine.entity.CollectResult;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.tools.UserUtils;
-
-import static com.runwise.supply.tools.TimeUtils.getTimeStamps4;
 
 /**
- * 对账单
+ * 批次列表
  */
-public class AccountsListActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
+public class LotListActivity extends NetWorkActivity implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
@@ -48,25 +42,29 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
     private LoadingLayout loadingLayout;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
-    private CheckOrderAdapter adapter;
+    private NotifyListAdapter adapter;
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
+    private OrderResponse.ListBean.LinesBean detailBean;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
-        setContentView(R.layout.activity_title_list);
-        this.setTitleText(true,"对账单");
+        setContentView(R.layout.activity_notiy_list);
+        this.setTitleText(true,this.getIntent().getStringExtra("title"));
         this.setTitleLeftIcon(true,R.drawable.back_btn);
+        this.setTitleRigthIcon(false,R.drawable.nav_add);
+
+        detailBean = this.getIntent().getParcelableExtra("bean");
 
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setOnItemClickListener(this);
 
-        adapter = new CheckOrderAdapter();
+        adapter = new NotifyListAdapter();
 
         if(mOnRefreshListener2 == null){
             mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -89,9 +87,12 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        requestData(false, REQUEST_MAIN, page, 10);
-        loadingLayout.setStatusLoading();
-        loadingLayout.setOnRetryClickListener(this);
+//        loadingLayout.setStatusLoading();
+//        requestData(false, REQUEST_MAIN, page, 10);
+//        loadingLayout.setOnRetryClickListener(this);
+        adapter.setData(detailBean.getLotList());
+        loadingLayout.onSuccess(adapter.getCount(),"该商品无批次信息",R.drawable.default_ico_none);
+
     }
 
     @OnClick(R.id.left_layout)
@@ -99,11 +100,17 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
         this.finish();
     }
 
+    @OnClick(R.id.right_layout)
+    public void doRightClick(View view) {
+        Intent intent = new Intent(this ,NotiySettingDateActivity.class);
+        startActivity(intent);
+    }
+
     public void requestData (boolean showDialog,int where, int page,int limit) {
-        PageRequest request = null;
-//        request.setLimit(limit);
-//        request.setPz(page);
-        sendConnection("/gongfu/v2/account_invoice/list",request,where,showDialog,CheckOrderData.class);
+        PageRequest request = new PageRequest();
+        request.setLimit(limit);
+        request.setPz(page);
+        sendConnection("collect/list.json",request,where,showDialog,CollectResult.class);
     }
 
 
@@ -111,20 +118,21 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
-                CheckOrderData mainListResult = (CheckOrderData)result.getResult().getData();
-                adapter.setData(mainListResult.getBankStatement());
-                loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_nonepayorder);
-//                pullListView.onRefreshComplete(Integer.MAX_VALUE);
+                CollectResult mainResult = (CollectResult)result;
+                CollectData mainListResult = mainResult.getData();
+//                adapter.setData(mainListResult.getEntities());
+                loadingLayout.onSuccess(adapter.getCount(),"暂无推送",R.drawable.nonocitify_icon);
+                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
-                MsgResult startResult = (MsgResult) result;
-                MsgList startListResult = startResult.getData();
+                CollectResult startResult = (CollectResult) result;
+                CollectData startListResult = startResult.getData();
 //                adapter.setData(startListResult.getEntities());
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
-                MsgResult endResult = (MsgResult) result;
-                MsgList sndListResult = endResult.getData();
+                CollectResult endResult = (CollectResult) result;
+                CollectData sndListResult = endResult.getData();
                 if (sndListResult.getEntities() != null && !sndListResult.getEntities().isEmpty()) {
 //                    adapter.appendData(sndListResult.getEntities());
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);
@@ -138,19 +146,18 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        ToastUtil.show(mContext,errMsg);
-        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
+        loadingLayout.onFailure("",R.drawable.nonocitify_icon);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CheckOrderData.BankStatementBean bean = (CheckOrderData.BankStatementBean)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(mContext,AccountsDetailActivity.class);
-        intent.putExtra("bean",bean);
+        OrderResponse.ListBean.LinesBean.LotListBean bean = (OrderResponse.ListBean.LinesBean.LotListBean)parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext,LotListDetailActivity.class);
+        intent.putExtra("lotId",bean.getLotID()+"");
         startActivity(intent);
-    }
 
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -163,45 +170,30 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
         requestData(false, REQUEST_MAIN, page, 10);
     }
 
-
-    public class CheckOrderAdapter extends IBaseAdapter<CheckOrderData.BankStatementBean>{
+    public class NotifyListAdapter extends IBaseAdapter<OrderResponse.ListBean.LinesBean.LotListBean> {
         @Override
-        protected View getExView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder = null;
+        protected View getExView(int position, View convertView,
+                                 ViewGroup parent) {
+            ViewHolder holder = null;
             if (convertView == null) {
-                viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.item_accounts_list, null);
-                ViewUtils.inject(viewHolder,convertView);
-                convertView.setTag(viewHolder);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_lot, null);
+                holder = new ViewHolder();
+                holder.what = (TextView) convertView.findViewById(R.id.what);
+                holder.time = (TextView) convertView.findViewById(R.id.time);
+                convertView.setTag(holder);
             }
             else {
-                viewHolder = (ViewHolder) convertView.getTag();
+                holder = (ViewHolder) convertView.getTag();
             }
-            final CheckOrderData.BankStatementBean bean =  mList.get(position);
-            viewHolder.date.setText(getTimeStamps4(bean.getBeginDate())+"至"+getTimeStamps4(bean.getEndDate()));
-            viewHolder.name.setText(bean.getName());
-//           viewHolder.status.setText();
-            if(!TimeUtils.isTimeInner(bean.getBeginDate(),bean.getEndDate())) {
-                bean.setTimeLater(true);
-                viewHolder.status.setVisibility(View.VISIBLE);
-            }
-            else {
-                bean.setTimeLater(false);
-                viewHolder.status.setVisibility(View.GONE);
-            }
-            viewHolder.money.setText("￥"+ UserUtils.formatPrice(bean.getTotalPrice()));
+            OrderResponse.ListBean.LinesBean.LotListBean bean = mList.get(position);
+            holder.time.setText(bean.getName());
             return convertView;
         }
 
         class ViewHolder {
-            @ViewInject(R.id.date)
-            TextView            date;
-            @ViewInject(R.id.name)
-            TextView name;
-            @ViewInject(R.id.status)
-            TextView            status;
-            @ViewInject(R.id.money)
-            TextView money;
+            TextView what;
+            TextView time;
         }
+
     }
 }

@@ -22,6 +22,8 @@
         android:fadingEdgeLength="0dp"
         android:listSelector="#0000"
         ptr:ptrAnimationStyle="flip"
+        android:layout_marginTop="12dp"
+
         />
     <com.kids.commonframe.base.view.LoadingLayout
         android:id="@+id/loadingLayout"

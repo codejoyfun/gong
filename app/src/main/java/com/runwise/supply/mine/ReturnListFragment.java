@@ -122,7 +122,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
                 adapter.setData(allList);
                 break;
         }
-        loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+        loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
     }
 
 

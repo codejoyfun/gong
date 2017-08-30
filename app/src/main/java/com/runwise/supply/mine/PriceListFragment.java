@@ -113,7 +113,7 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
             case REQUEST_MAIN:
                 ProductData mainListResult = (ProductData)result.getResult().getData();
                 adapter.setData(handlerDataList(mainListResult.getList()));
-                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据哦");
+                loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
@@ -137,7 +137,7 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         ToastUtil.show(mContext,errMsg);
-        loadingLayout.onFailure(errMsg);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
     }
 

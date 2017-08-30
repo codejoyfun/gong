@@ -129,7 +129,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
                 else{
                     adapter.setData(handlerDataList(mainListResult.getReturnOrder().getLines()));
                 }
-                loadingLayout.onSuccess(adapter.getCount(),"暂无数据");
+                loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_goodsnone);
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
@@ -153,7 +153,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         ToastUtil.show(mContext,errMsg);
-        loadingLayout.onFailure(errMsg);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
     }
 

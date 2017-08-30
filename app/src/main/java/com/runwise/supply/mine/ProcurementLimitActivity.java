@@ -19,9 +19,6 @@ import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.tools.UserUtils;
 
-import static com.runwise.supply.R.id.moneyNuit;
-import static com.runwise.supply.R.id.moneySum;
-
 public class ProcurementLimitActivity extends NetWorkActivity{
 
 
@@ -35,6 +32,8 @@ public class ProcurementLimitActivity extends NetWorkActivity{
 
     @ViewInject(R.id.amountTitle)
     private TextView amountTitle;
+    @ViewInject(R.id.unitText)
+    private TextView unitText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +42,12 @@ public class ProcurementLimitActivity extends NetWorkActivity{
         if(GlobalApplication.getInstance().getCanSeePrice()) {
             setTitleText(true,"上周采购额");
             amountTitle.setText("采购额");
+            unitText.setText("总额");
         }
         else{
             setTitleText(true,"上周采购量");
             amountTitle.setText("采购量");
+            unitText.setText("总数");
         }
         mSumMoneyData = (SumMoneyData) getIntent().getSerializableExtra(KEY_SUM_MONEY_DATA);
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);

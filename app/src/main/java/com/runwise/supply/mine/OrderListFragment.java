@@ -32,10 +32,7 @@ import com.runwise.supply.firstpage.OrderDoAction;
 import com.runwise.supply.firstpage.ReceiveActivity;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
-import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.TimeUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 /**
  * 我的订单
@@ -125,7 +122,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 OrderResponse mainListResult = (OrderResponse)result.getResult().getData();
                 adapter.setData(mainListResult.getList());
 //                mainListResult.getEntities().get(0).setOrder_status(11);
-                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+                loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_ordernone);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
@@ -175,7 +172,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.no_network);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
 
     @Override
