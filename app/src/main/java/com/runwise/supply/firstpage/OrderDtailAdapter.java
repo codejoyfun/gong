@@ -1,24 +1,21 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.orderpage.LotListActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
@@ -33,7 +30,9 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
     private Context context;
     private boolean hasReturn;          //是否有退货，默认没有
     private boolean isTwoUnit;           //双单位,有值就显示
-
+    //当前状态
+    private String status;
+    private String orderName;
     public void setHasReturn(boolean hasReturn) {
         this.hasReturn = hasReturn;
     }
@@ -56,6 +55,12 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         notifyDataSetChanged();
     }
 
+    public void setStatus(String orderName,String status) {
+        this.status = status;
+        this.orderName = orderName;
+    }
+
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.orderdetail_list_item,parent,false);
@@ -66,10 +71,10 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        OrderResponse.ListBean.LinesBean bean = productList.get(position);
+        final OrderResponse.ListBean.LinesBean bean = productList.get(position);
         int pId = bean.getProductID();
         ViewHolder vh = (ViewHolder)holder;
-        ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
+        final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
         if (basicBean != null && basicBean.getImage() != null){
             FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
         }
@@ -101,6 +106,18 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         }else{
             vh.name.setText("");
         }
+        //发货状态订单
+//        if("peisong".equals(status)) {
+            vh.rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, LotListActivity.class);
+                    intent.putExtra("title",basicBean.getName());
+                    intent.putExtra("bean",bean);
+                    context.startActivity(intent);
+                }
+            });
+//        }
 
     }
 
@@ -115,8 +132,10 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         public TextView oldPriceTv;
         public TextView nowPriceTv;
         public TextView weightTv;
+        public View rootView;
         public ViewHolder(View itemView) {
             super(itemView);
+            rootView = itemView;
             productImage = (SimpleDraweeView) itemView.findViewById(R.id.productImage);
             name = (TextView) itemView.findViewById(R.id.name);
             content = (TextView)itemView.findViewById(R.id.content);
