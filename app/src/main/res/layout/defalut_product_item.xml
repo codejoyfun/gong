@@ -90,16 +90,26 @@
         android:layout_below="@id/name"
         />
     <TextView
+        android:id="@+id/unit1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:text="单位"
+        android:textSize="12sp"
+        android:textColor="#2E2E2E"
+        android:visibility="invisible"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/padding_right"
+        android:layout_alignParentRight="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/unit1"
         android:text="x14"
         android:textColor="#444444"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:layout_centerVertical="true"
         android:id="@+id/countTv"
-        android:layout_marginRight="15dp"
+        android:layout_marginRight="3dp"
         android:visibility="invisible"
         />
-
 </RelativeLayout>
