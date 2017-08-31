@@ -96,6 +96,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
             if (canSeePrice){
                 sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
             }
+            vh.unit1.setText(bean.getProductUom());
             vh.content.setText(sb.toString());
             if (isTwoUnit){
                 vh.weightTv.setText(bean.getSettleAmount()+basicBean.getSettleUomId());
@@ -132,6 +133,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         public TextView oldPriceTv;
         public TextView nowPriceTv;
         public TextView weightTv;
+        public TextView unit1;
         public View rootView;
         public ViewHolder(View itemView) {
             super(itemView);
@@ -142,6 +144,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
             oldPriceTv = (TextView)itemView.findViewById(R.id.oldPriceTv);
             nowPriceTv = (TextView)itemView.findViewById(R.id.nowPriceTv);
             weightTv = (TextView)itemView.findViewById(R.id.weightTv);
+            unit1 = (TextView)itemView.findViewById(R.id.unit1);
         }
     }
 }

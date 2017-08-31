@@ -193,9 +193,11 @@ public class ProductListFragment extends NetWorkFragment {
             if (countMap.get(String.valueOf(bean.getProductID())) > 0){
                 viewHolder.editLL.setVisibility(View.VISIBLE);
                 viewHolder.addBtn.setVisibility(View.INVISIBLE);
+                viewHolder.unit1.setVisibility(View.INVISIBLE);
             }else{
                 viewHolder.editLL.setVisibility(View.INVISIBLE);
                 viewHolder.addBtn.setVisibility(View.VISIBLE);
+                viewHolder.unit1.setVisibility(View.VISIBLE);
             }
             final EditText editText = viewHolder.editText;
             ischange = true;
@@ -203,10 +205,12 @@ public class ProductListFragment extends NetWorkFragment {
             ischange = false;
             final LinearLayout ll = viewHolder.editLL;
             final ImageButton addBtn = viewHolder.addBtn;
+            final TextView  unit1 = viewHolder.unit1;
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     view.setVisibility(View.INVISIBLE);
+                    unit1.setVisibility(View.INVISIBLE);
                     ll.setVisibility(View.VISIBLE);
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     ischange = true;
@@ -227,6 +231,7 @@ public class ProductListFragment extends NetWorkFragment {
                         countMap.put(String.valueOf(bean.getProductID()),currentNum);
                         if (currentNum == 0){
                             addBtn.setVisibility(View.VISIBLE);
+                            unit1.setVisibility(View.VISIBLE);
                             ll.setVisibility(View.INVISIBLE);
                         }
                     }
@@ -267,7 +272,7 @@ public class ProductListFragment extends NetWorkFragment {
                 viewHolder.content.setText(sb.toString());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
             }
-
+            viewHolder.unit1.setText(bean.getUom());
             return convertView;
         }
 
@@ -288,6 +293,8 @@ public class ProductListFragment extends NetWorkFragment {
             ImageButton         inputPBtn;//加
             @ViewInject(R.id.editText)
             EditText            editText; //输入框
+            @ViewInject(R.id.unit1)
+            TextView            unit1;  //单位
 
         }
     }
