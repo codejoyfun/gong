@@ -35,6 +35,7 @@ import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +79,8 @@ public class OrderDetailActivity extends NetWorkActivity{
     private TextView returnTv;
     @ViewInject(R.id.ygMoneyTv)
     private TextView ygMoneyTv;
+    @ViewInject(R.id.ygMoney)
+    private TextView ygMoney;
     @ViewInject(R.id.countTv)
     private TextView countTv;
     @ViewInject(R.id.indexLine)
@@ -455,7 +458,8 @@ public class OrderDetailActivity extends NetWorkActivity{
                     //已评价
                     bottom_bar.setVisibility(View.GONE);
                 }
-
+                //预计价钱改为，商品金额
+                ygMoney.setText("商品金额");
             }else if(bean.getState().equals("rated")){
                 state = "订单已评价";
                 bottom_bar.setVisibility(View.GONE);
@@ -505,7 +509,8 @@ public class OrderDetailActivity extends NetWorkActivity{
                 countTv.setText((int)bean.getAmount()+"件");
             }
             //商品数量/预估金额
-            ygMoneyTv.setText(bean.getAmountTotal()+"元");
+            DecimalFormat df = new DecimalFormat("#.##");
+            ygMoneyTv.setText("¥"+df.format(bean.getAmountTotal()));
 //            countTv.setText((int)bean.getAmount()+"件");
             //设置list
             listDatas = bean.getLines();

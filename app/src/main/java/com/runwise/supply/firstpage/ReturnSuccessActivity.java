@@ -27,7 +27,6 @@ public class ReturnSuccessActivity extends BaseActivity {
     TextView orderBtn;
     @BindView(R.id.uploadBtn)
     TextView uploadBtn;
-
     public static final String INTENT_KEY_RESULTBEAN = "intent_key_resultbean";
     FinishReturnResponse finishReturnResponse;
 
