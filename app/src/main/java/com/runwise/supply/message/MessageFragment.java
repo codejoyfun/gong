@@ -63,7 +63,8 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
     @ViewInject(R.id.tipLayout)
     private View tipLayout;
-    private boolean isLogin,firstLaunch;
+    public static boolean isLogin;
+    private boolean firstLaunch;
     private Handler handler = new Handler();
 
     @ViewInject(R.id.titleLayout)

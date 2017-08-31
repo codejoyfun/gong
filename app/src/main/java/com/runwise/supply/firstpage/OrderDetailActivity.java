@@ -505,7 +505,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 countTv.setText((int)bean.getAmount()+"件");
             }
             //商品数量/预估金额
-            ygMoneyTv.setText(bean.getAmountTotal()+"元");
+            ygMoneyTv.setText("¥"+ bean.getAmountTotal());
 //            countTv.setText((int)bean.getAmount()+"件");
             //设置list
             listDatas = bean.getLines();

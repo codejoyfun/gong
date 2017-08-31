@@ -36,6 +36,7 @@ import com.runwise.supply.ChangePhoneActivity;
 import com.runwise.supply.FindPasswordActivity;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.mine.entity.UploadImg;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -48,6 +49,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.runwise.supply.message.MessageFragment.isLogin;
 
 
 public class EditUserinfoActivity extends NetWorkActivity {
@@ -119,6 +122,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
+                MessageFragment.isLogin = false;
                 GlobalApplication.getInstance().cleanUesrInfo();
                 //退出登录
                 EventBus.getDefault().post(new UserLogoutEvent());

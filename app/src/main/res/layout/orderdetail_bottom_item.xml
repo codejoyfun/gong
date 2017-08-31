@@ -31,7 +31,7 @@
                 android:gravity="left"
                 android:text="商品数量"
                 android:textColor="#3F3F3F"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/countTv"
@@ -43,14 +43,16 @@
                 android:gravity="center"
                 android:text="36件"
                 android:textColor="#999999"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/priceLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="4dp"
+            >
 
             <TextView
                 android:id="@+id/ygMoney"
@@ -60,9 +62,10 @@
                 android:layout_marginLeft="15dp"
                 android:layout_weight="1"
                 android:gravity="left"
-                android:text="预计价钱"
+                android:text="商品金额"
                 android:textColor="#3F3F3F"
-                android:textSize="12sp" />
+                android:textSize="14sp"
+                />
 
             <TextView
 
@@ -75,7 +78,7 @@
                 android:gravity="center"
                 android:text="36件"
                 android:textColor="#999999"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 
