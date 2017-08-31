@@ -256,6 +256,9 @@ public class MainActivity extends NetWorkActivity {
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
         isLogin = true;
+        if (mTabHost != null) {
+            mTabHost.setCurrentTab(0);
+        }
         queryProductList();
     }
 
@@ -327,7 +330,5 @@ public class MainActivity extends NetWorkActivity {
     //跳转到哪个tab页下面
     public void gotoTabByIndex(int index){
         mTabHost.setCurrentTab(index);
-
-
     }
 }

@@ -75,9 +75,11 @@ public class ReturnDetailAdapter extends RecyclerView.Adapter {
                 }
             }
             viewHolder.contentTv.setText(sb.toString());
+            viewHolder.unit1.setText(basiclb.getUom());
         }
         int rCount = (int)lb.getDeliveredQty();
         viewHolder.countTV.setText("x"+rCount);
+
     }
 
     @Override
@@ -89,12 +91,14 @@ public class ReturnDetailAdapter extends RecyclerView.Adapter {
         public SimpleDraweeView sdv;
         public TextView contentTv;
         public TextView countTV;
+        public TextView unit1;
         public ViewHolder(View itemView) {
             super(itemView);
             nameTv = (TextView) itemView.findViewById(R.id.name);
             sdv = (SimpleDraweeView)itemView.findViewById(R.id.productImage);
             contentTv = (TextView)itemView.findViewById(R.id.content);
             countTV = (TextView)itemView.findViewById(R.id.nowPriceTv);
+            unit1 = (TextView)itemView.findViewById(R.id.unit1);
         }
     }
 }

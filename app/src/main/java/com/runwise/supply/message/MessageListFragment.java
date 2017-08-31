@@ -42,6 +42,7 @@ import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.message.entity.MsgListResult;
 import com.runwise.supply.message.entity.MsgSendRequest;
+import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 
 /**
@@ -96,7 +97,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         UserUtils.setOrderStatus(orderBean.getState(),chatStatus,chatIcon,normalOrder);
 
         chatName.setText(orderBean.getName());
-        chatTime.setText(orderBean.getEstimated_time());
+        chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));
         if(GlobalApplication.getInstance().getCanSeePrice()) {
             chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
         }
@@ -115,7 +116,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
             mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener<ListView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                    requestData(false, REQUEST_DEN, (++page), 10);
+                    requestData(false, REQUEST_DEN, 1, 30);
 
 //                @Override
 //                public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -137,7 +138,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         pullListView.setAdapter(adapter);
         page = 1;
 //        loadingLayout.setStatusLoading();
-        requestData(false, REQUEST_MAIN, page, 10);
+        requestData(false, REQUEST_MAIN, 1, 30);
         loadingLayout.setOnRetryClickListener(this);
         sendMsgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,7 +244,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
             case REQUEST_DEN:
                 MsgListResult endResult = (MsgListResult)result.getResult();
                 if (endResult.getList() != null && !endResult.getList().isEmpty()) {
-                    adapter.appendData(endResult.getList());
+                    adapter.setData(endResult.getList());
 //                    pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 }
 //                else {
@@ -252,7 +253,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                 pullListView. onRefreshComplete();
                 break;
             case REQUEST_SEND:
-                requestData(false, REQUEST_MAIN, 1, 10);
+                requestData(false, REQUEST_MAIN, 1, 30);
                 editText.setText("");
                 break;
         }
@@ -293,7 +294,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     public void retryOnClick(View view) {
         loadingLayout.setStatusLoading();
         page = 1;
-        requestData(false, REQUEST_MAIN, page, 10);
+        requestData(false, REQUEST_MAIN, 1, 30);
     }
 
     public void sendMessage(int orderId,String common) {

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -35,6 +36,8 @@ import com.runwise.supply.orderpage.entity.DefaultProductData;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -437,6 +440,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     @Override
                     public void run() {
                         finish();
+                        EventBus.getDefault().post(new OrderSuccessEvent());
                     }
                 },1500);
                 break;

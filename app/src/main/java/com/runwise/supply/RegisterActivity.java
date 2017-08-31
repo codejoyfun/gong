@@ -1,48 +1,27 @@
 package com.runwise.supply;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.text.Editable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.LinkMovementMethod;
-import android.text.method.PasswordTransformationMethod;
-import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.BaseManager;
 import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.WebViewActivity;
-import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CheckUtil;
-import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.entity.GetCodeRequest;
-import com.runwise.supply.entity.LoginRespone;
 import com.runwise.supply.entity.RegisterData;
 import com.runwise.supply.entity.RegisterRequest;
-import com.runwise.supply.mine.entity.UrlResult;
 import com.runwise.supply.tools.StatusBarUtil;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.io.Serializable;
-
-import static com.runwise.supply.LoginActivity.targerIntent;
 
 /**
  * 注册
@@ -137,7 +116,20 @@ public class RegisterActivity extends NetWorkActivity {
 
 	@OnClick({R.id.closeBtn,R.id.gotoLogin})
 	public void doBack (View view) {
-		this.finish();
+		switch (view.getId()) {
+			case R.id.closeBtn:
+				this.finish();
+				break;
+			case R.id.gotoLogin:
+				Activity act = BaseManager.getInstance().getActivity("LoginActivity");
+				if(act == null) {
+					Intent intent = new Intent(mContext,LoginActivity.class);
+					startActivity(intent);
+				}
+				finish();
+				break;
+		}
+
 	}
 
 	private class TextWatchListener implements TextWatcher{

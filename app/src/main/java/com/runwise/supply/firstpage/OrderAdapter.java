@@ -193,7 +193,8 @@ public class OrderAdapter extends IBaseAdapter {
             }else{
                 viewHolder.returnTv.setVisibility(View.INVISIBLE);
             }
-        }else{
+        }
+        else{
             final ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) mList.get(position);
             //发货单
             viewHolder.returnTv.setVisibility(View.INVISIBLE);
@@ -338,11 +339,11 @@ public class OrderAdapter extends IBaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (position < returnCount){
-            return TYPE_RETURN;
-        }else{
+         Object object =  mList.get(position);
+        if(object instanceof OrderResponse.ListBean) {
             return TYPE_ORDER;
         }
+        return TYPE_RETURN;
     }
 
     @Override

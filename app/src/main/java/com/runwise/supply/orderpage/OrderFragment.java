@@ -21,14 +21,19 @@ import com.bigkoo.pickerview.OptionsPickerView;
 import com.googlecode.mp4parser.authoring.Edit;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -60,7 +65,7 @@ public class OrderFragment extends NetWorkFragment {
     private OptionsPickerView opv;
     private List<String> safeArr = new ArrayList<>();
     private int selectedIndex = 109;                              //最近一次所选,默认在+10上
-
+    private boolean isBackFirstPage = false;
     @Override
     protected int createViewByLayoutId() {
         return R.layout.order_fragment_layout;
@@ -176,6 +181,16 @@ public class OrderFragment extends NetWorkFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (isBackFirstPage){
+            isBackFirstPage = false;
+            MainActivity ma = (MainActivity) getActivity();
+            ma.gotoTabByIndex(0);
+        }
+    }
+
+    @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case LASTBUY:
@@ -190,6 +205,11 @@ public class OrderFragment extends NetWorkFragment {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getOrderSuccessEvent(OrderSuccessEvent event){
+        isBackFirstPage = true;
 
     }
 }

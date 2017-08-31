@@ -91,7 +91,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
 //        loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
         adapter.setData(typeList);
-        loadingLayout.onSuccess(adapter.getCount(),"暂时没有记录");
+        loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
     }
 
     public void setData(CheckResult.ListBean dataBean) {

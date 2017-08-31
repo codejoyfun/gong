@@ -42,6 +42,10 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
+import static cn.jpush.android.api.JPushInterface.getRegistrationID;
+
 
 public class  LoginActivity extends NetWorkActivity {
 	private static final int LOGIN = 1;
@@ -173,12 +177,10 @@ public class  LoginActivity extends NetWorkActivity {
 		loginRequest = new LoginRequest();
 		loginRequest.setLogin(userName);
 		loginRequest.setPassword(passowrd);
-		loginRequest.setRegistrationID(CommonUtils.getDeviceId(this));
+		String registrationId = JPushInterface.getRegistrationID(this);
+		loginRequest.setRegistrationID(registrationId);
 		sendConnection("/gongfu/v2/authenticate",loginRequest,LOGIN,true,LoginData.class);
 	}
-	//	private void loadUserInfo() {
-//		sendConnection("members/profile.json",USER_INFO,true,UserInfoResult.class);
-//	}
 	/*
 	 * 注册
 	 */
@@ -237,9 +239,10 @@ public class  LoginActivity extends NetWorkActivity {
 				else {
 					EventBus.getDefault().post(new UserLoginEvent());
 					SPUtils.setLogin(mContext,true);
-					if (targerIntent != null) {
-						startActivity(targerIntent);
-					}
+//					JPushInterface.setAliasAndTags(getApplicationContext(),CommonUtils.getDeviceId(this) , null, null);
+//					if (targerIntent != null) {
+//						startActivity(targerIntent);
+//					}
 				}
 				this.finish();
 				break;

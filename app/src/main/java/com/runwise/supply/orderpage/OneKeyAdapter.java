@@ -102,6 +102,7 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.editText = (EditText)convertView.findViewById(R.id.editText);
             viewHolder.countTv = (TextView)convertView.findViewById(R.id.countTv);
             viewHolder.editLL = (LinearLayout)convertView.findViewById(R.id.editLL);
+            viewHolder.unit1 = (TextView)convertView.findViewById(R.id.unit1);
             convertView.setTag(viewHolder);
             final EditText edittext = viewHolder.editText;
             viewHolder.editText.addTextChangedListener(new TextWatcher() {
@@ -143,10 +144,12 @@ public class OneKeyAdapter extends IBaseAdapter {
             viewHolder.checkbox.setVisibility(View.VISIBLE);
             viewHolder.editLL.setVisibility(View.VISIBLE);
             viewHolder.countTv.setVisibility(View.INVISIBLE);
+            viewHolder.unit1.setVisibility(View.INVISIBLE);
         }else{
             viewHolder.editLL.setVisibility(View.INVISIBLE);
             viewHolder.checkbox.setVisibility(View.GONE);
             viewHolder.countTv.setVisibility(View.VISIBLE);
+            viewHolder.unit1.setVisibility(View.VISIBLE);
         }
         final EditText editText = viewHolder.editText;
         final TextView countTv = viewHolder.countTv;
@@ -163,6 +166,7 @@ public class OneKeyAdapter extends IBaseAdapter {
                 sb.append("  ").append(df.format(basicBean.getPrice())).append("元/").append(basicBean.getUom());
             }
             viewHolder.contentTv.setText(sb.toString());
+            viewHolder.unit1.setText(basicBean.getUom());
         }
         Integer proId = bean.getProductID();
         String count = String.valueOf(countMap.get(proId));
@@ -277,5 +281,6 @@ public class OneKeyAdapter extends IBaseAdapter {
         EditText editText;
         TextView countTv;
         LinearLayout editLL;
+        TextView unit1;
     }
 }

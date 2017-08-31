@@ -251,9 +251,9 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                                 else{
                                     viewHolder.editText.setTextColor(Color.parseColor("#444444"));
                                 }
-                                viewHolder.editText.setFocusable(true);
-                                viewHolder.editText.setFocusableInTouchMode(true);
-                                viewHolder.editText.requestFocus();
+//                                viewHolder.editText.setFocusable(true);
+//                                viewHolder.editText.setFocusableInTouchMode(true);
+//                                viewHolder.editText.requestFocus();
 //                                UpdateData updateData = new UpdateData();
 //                                updateData.setType(type);
 //                                EventBus.getDefault().post(updateData);
