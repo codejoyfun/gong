@@ -7,6 +7,7 @@
     android:background="#FFFFFF"
     >
     <include
+        android:id="@+id/titleLayout"
         layout="@layout/common_title_bar"
         />
     <include

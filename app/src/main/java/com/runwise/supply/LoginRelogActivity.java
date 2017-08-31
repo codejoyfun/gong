@@ -15,14 +15,12 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.ReLoginData;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
-import com.kids.commonframe.base.util.CheckUtil;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.entity.FindPwdRequest;
 import com.runwise.supply.entity.GetCodeRequest;
 import com.runwise.supply.entity.ReLoginRequest;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -30,6 +28,8 @@ import com.runwise.supply.tools.StatusBarUtil;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
+
+import cn.jpush.android.api.JPushInterface;
 
 
 /**
@@ -118,6 +118,7 @@ public class LoginRelogActivity extends NetWorkActivity {
 			case REQUEST_USERINFO:
 				UserInfo userInfo = (UserInfo)result.getResult().getData();
 				GlobalApplication.getInstance().saveUserInfo(userInfo);
+				JPushInterface.setAliasAndTags(getApplicationContext(),CommonUtils.getDeviceId(this) , null, null);
 				SPUtils.setLogin(mContext,true);
 				ToastUtil.show(mContext,"登录成功");
 				EventBus.getDefault().post(new UserLoginEvent());

@@ -256,6 +256,9 @@ public class MainActivity extends NetWorkActivity {
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
         isLogin = true;
+        if (mTabHost != null) {
+            mTabHost.setCurrentTab(0);
+        }
         queryProductList();
     }
 

@@ -242,9 +242,9 @@ public class MineFragment extends NetWorkFragment {
                     }
                 }
                 dialog.setModel(CustomDialog.BOTH);
-//                dialog.setTitle("联系客服");
+                dialog.setTitle("致电"+" "+ name +" 客服热线");
                 dialog.setMessageGravity();
-                dialog.setMessage("致电"+" "+ name +" 客服热线");
+                dialog.setMessage(number);
                 dialog.setLeftBtnListener("取消",null);
                 dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
                     @Override

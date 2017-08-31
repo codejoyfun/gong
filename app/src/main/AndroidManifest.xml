@@ -175,7 +175,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:taskAffinity=""
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            android:launchMode="singleTask"
+            />
         <!-- vitamio 的配置信息 -->
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"

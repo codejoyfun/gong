@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.util.SPUtils;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.RegisterActivity;
 
 import java.text.DecimalFormat;
 
@@ -28,7 +29,8 @@ public class UserUtils {
         boolean isLogin = SPUtils.isLogin(mContext);
         if (!isLogin) {
             LoginActivity.targerIntent = targerIntent;
-            Intent loginIntent = new Intent(mContext, LoginActivity.class);
+//            Intent loginIntent = new Intent(mContext, LoginActivity.class);
+            Intent loginIntent = new Intent(mContext, RegisterActivity.class);
             mContext.startActivity(loginIntent);
             return false;
         }

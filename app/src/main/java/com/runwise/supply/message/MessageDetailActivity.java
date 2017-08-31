@@ -14,7 +14,9 @@ import android.widget.RelativeLayout;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.CustomBottomDialog;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -24,6 +26,9 @@ import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import static com.runwise.supply.R.id.number;
+
 
 /**
  * 聊天详情
@@ -41,6 +46,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     public static final String INTENT_KEY_ORDER = "orderBean";
 
     private String mobel;
+    private String number;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,9 +135,17 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
                     public void onItemClick(View view) {
                         switch (view.getId()) {
                             case 0:
-                                final String number = GlobalApplication.getInstance().loadUserInfo().getCompanyHotLine();
+                                UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+                                boolean isLogin = SPUtils.isLogin(mContext);
+                                String name = "供鲜生";
+                                if(isLogin) {
+                                    if(userInfo != null) {
+                                        number = userInfo.getCompanyHotLine();
+                                        name = userInfo.getCompany();
+                                    }
+                                }
                                 dialog.setModel(CustomDialog.BOTH);
-                                dialog.setTitle("联系客服");
+                                dialog.setTitle("致电"+" "+ name +" 客服热线");
                                 dialog.setMessageGravity();
                                 dialog.setMessage(number);
                                 dialog.setLeftBtnListener("取消",null);
