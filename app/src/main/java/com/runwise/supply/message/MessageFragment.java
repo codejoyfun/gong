@@ -2,12 +2,13 @@ package com.runwise.supply.message;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -19,7 +20,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
@@ -32,17 +32,15 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
-import com.runwise.supply.mine.entity.CheckResult;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import android.os.Handler;
 
 /**
  * Created by mychao on 2017/7/14.
@@ -67,6 +65,9 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     private View tipLayout;
     private boolean isLogin,firstLaunch;
     private Handler handler = new Handler();
+
+    @ViewInject(R.id.titleLayout)
+    private View titleLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +122,12 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             tipLayout.setVisibility(View.VISIBLE);
             buildData();
         }
+        titleLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -163,7 +170,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     public void loginTipLayout(View view){
         switch (view.getId()) {
             case R.id.tipLayout:
-                Intent intent = new Intent(mContext, LoginActivity.class);
+                Intent intent = new Intent(mContext, RegisterActivity.class);
                 startActivity(intent);
                 break;
             case R.id.closeTip:
@@ -256,7 +263,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             }
         }
         else{
-            Intent intent = new Intent(mContext, LoginActivity.class);
+            Intent intent = new Intent(mContext, RegisterActivity.class);
             startActivity(intent);
         }
     }

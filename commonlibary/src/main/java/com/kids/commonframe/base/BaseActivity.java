@@ -35,6 +35,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
 
 /**
  * 基类activity 每一个acitivty都要继承该类
@@ -167,6 +169,7 @@ public abstract class BaseActivity extends FragmentActivity{
 		super.onPause();
 		isResume = false;
 		MobclickAgent.onPause(this);
+		JPushInterface.onPause(this);
 	}
 	@Override
 	protected void onStart() {
@@ -179,6 +182,7 @@ public abstract class BaseActivity extends FragmentActivity{
 		LogUtil.e("login", "onResume----" +  BaseActivity.this.getClass().getSimpleName());
 		//友盟数据统计
 		MobclickAgent.onResume(this);
+		JPushInterface.onResume(this);
 		//jpush推送统计
 		//		JPushInterface.onResume(this);
 		if (logout) {

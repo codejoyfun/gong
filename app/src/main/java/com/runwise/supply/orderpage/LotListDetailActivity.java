@@ -93,7 +93,12 @@ public class LotListDetailActivity extends NetWorkActivity implements AdapterVie
             case REQUEST_MAIN:
                 LotDetail mainResult = (LotDetail)result.getResult().getData();
                 adapter.setData(mainResult.getLot().getAttList());
-                loadingLayout.onSuccess(1,"该商品无批次信息",R.drawable.default_ico_none);
+                if( mainResult.getLot().getAttList().isEmpty() && mainResult.getLot().getAttachmentList().isEmpty()) {
+                    loadingLayout.onSuccess(0,"该商品无批次信息",R.drawable.default_ico_none);
+                }
+                else {
+                    loadingLayout.onSuccess(1, "该商品无批次信息", R.drawable.default_ico_none);
+                }
                 if(mainResult.getLot().getAttachmentList() != null && !mainResult.getLot().getAttachmentList().isEmpty()) {
                     imageLayout.setVisibility(View.VISIBLE);
                     for (Integer integer : mainResult.getLot().getAttachmentList()) {

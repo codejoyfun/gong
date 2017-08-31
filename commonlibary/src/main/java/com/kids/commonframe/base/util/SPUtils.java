@@ -302,7 +302,6 @@ public class SPUtils {
         SPUtils.put(context,"mLogin",false);
         SPUtils.put(context,"userInfo","");
     }
-
     /**
      * 是否是第一次运行
      * @param context

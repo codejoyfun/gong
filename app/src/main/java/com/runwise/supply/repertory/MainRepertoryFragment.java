@@ -3,6 +3,7 @@ package com.runwise.supply.repertory;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -12,8 +13,8 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.mine.RepertoryFragment;
 import com.runwise.supply.repertory.entity.PandianResult;
 
@@ -24,6 +25,9 @@ public class MainRepertoryFragment extends NetWorkFragment {
     private final int REQUEST_EXIT = 1;
     @ViewInject(R.id.tipLayout)
     private View tipLayout;
+
+    @ViewInject(R.id.titleLayout)
+    private View titleLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,12 @@ public class MainRepertoryFragment extends NetWorkFragment {
         else{
             tipLayout.setVisibility(View.VISIBLE);
         }
+        titleLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
     }
     @OnClick(R.id.left_layout)
     public void leftClick(View view){
@@ -52,7 +62,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
             sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
         }
         else{
-            Intent intent = new Intent(mContext, LoginActivity.class);
+            Intent intent = new Intent(mContext, RegisterActivity.class);
             startActivity(intent);
         }
     }
@@ -60,7 +70,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
     public void loginTipLayout(View view){
         switch (view.getId()) {
             case R.id.tipLayout:
-                Intent intent = new Intent(mContext, LoginActivity.class);
+                Intent intent = new Intent(mContext, RegisterActivity.class);
                 startActivity(intent);
                 break;
             case R.id.closeTip:
