@@ -26,6 +26,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
+import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -202,7 +203,7 @@ public class ReceiveFragment extends BaseFragment {
                 }
                 viewHolder.content.setText(sb.toString());
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
-
+                viewHolder.receivedTv.setSaveEnabled(false);
                 if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
 //                    viewHolder.receivedTv.setFocusable(false);
                     viewHolder.inputAdd.setVisibility(View.GONE);
@@ -211,6 +212,11 @@ public class ReceiveFragment extends BaseFragment {
                         public void onClick(View v) {
                             Intent intent = new Intent(mContext,EditBatchActivity.class);
                             intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT,bean);
+                            if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
+                                ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
+                                ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) rb.getLot_list();
+                                intent.putExtra(EditBatchActivity.INTENT_KEY_BATCH_ENTITIES,lotBeens);
+                            }
                             startActivityForResult(intent,REQUEST_CODE_ADD_BATCH);
                         }
                     });
@@ -234,7 +240,7 @@ public class ReceiveFragment extends BaseFragment {
                         Log.i("receivedTv", String.valueOf(rb.getCount()));
 //                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());
                     } else {
-                        viewHolder.receivedTv.setText("1");
+                        viewHolder.receivedTv.setText("0");
                         Log.i("receivedTv", "011");
 //                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
                     }

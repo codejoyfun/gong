@@ -511,8 +511,19 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 receiveBean.setTracking(basicBean.getTracking());
 //                        receiveBean.setCount((int)bean.getProductUomQty());
                 int count =0;
+            List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
                 for (BatchEntity batchEntity :batchEntities){
                     count += Integer.parseInt(batchEntity.getProductCount());
+                    ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
+                    lotBean.setHeight(Integer.parseInt(batchEntity.getProductCount()));
+                    lotBean.setQty(Integer.parseInt(batchEntity.getProductCount()));
+                    if (batchEntity.isProductDate()){
+                        lotBean.setProduce_datetime(batchEntity.getProductDate());
+                    }else{
+                        lotBean.setLife_datetime(batchEntity.getProductDate());
+                    }
+                    lotBean.setLot_name(batchEntity.getBatchNum());
+                    lot_list.add(lotBean);
                 }
                 receiveBean.setCount(count);
                 receiveBean.setProductId(bean.getProductID());
@@ -526,8 +537,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 } else {
                     receiveBean.setTwoUnit(false);
                 }
+                receiveBean.setLot_list(lot_list);
                 countMap.put(String.valueOf(receiveBean.getProductId()),receiveBean);
-                EventBus.getDefault().post(new ReceiveProEvent());
+            ReceiveProEvent receiveProEvent = new ReceiveProEvent();
+            receiveProEvent.setNotifyDataSetChange(true);
+                EventBus.getDefault().post(receiveProEvent);
             }
     }
 
@@ -568,6 +582,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 //更新进度条
                 updatePbProgress();
                 //更新fragment列表内容
+
                 EventBus.getDefault().post(new ReceiveProEvent());
             }
 
@@ -733,6 +748,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 @Override
                 public void doClickButton(Button btn, CustomDialog dialog) {
                     startOrEndTally(false);
+                }
+            });
+            dialog.setLeftBtnListener("取消", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    dialog.dismiss();
                 }
             });
             dialog.show();

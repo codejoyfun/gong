@@ -11,6 +11,7 @@ public class BatchEntity implements Serializable{
     String batchNum;
     String productDate;
     String productCount;
+    boolean isProductDate;
 
     public String getBatchNum() {
         return batchNum;
@@ -34,6 +35,13 @@ public class BatchEntity implements Serializable{
 
     public void setProductCount(String productCount) {
         this.productCount = productCount;
+    }
+    public boolean isProductDate() {
+        return isProductDate;
+    }
+
+    public void setProductDate(boolean productDate) {
+        isProductDate = productDate;
     }
 
 }

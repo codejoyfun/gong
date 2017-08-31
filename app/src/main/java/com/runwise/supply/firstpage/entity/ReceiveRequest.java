@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -67,7 +68,7 @@ public class ReceiveRequest {
         }
 
 
-        public class LotBean {
+        public static class LotBean implements Serializable{
 
             private int qty;
             private String produce_datetime;
