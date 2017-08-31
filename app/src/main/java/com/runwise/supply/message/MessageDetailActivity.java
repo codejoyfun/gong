@@ -52,11 +52,9 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
 //        isWebFrom = getIntent().getBooleanExtra("isWebFrom",false);
         MessageResult.OrderBean orderBean = (MessageResult.OrderBean)(getIntent().getSerializableExtra(INTENT_KEY_ORDER));
 
-        String deliveryType =  orderBean.getDeliveryType();
-        if (deliveryType != null && (deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)
-                ||deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
-                ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)
-                ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY))){
+        String deliveryType =  orderBean.getDelivery_type();
+        if (deliveryType != null && (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)
+                ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH))){
             //中间添加两个切换按钮
             addTitleBarBtn();
 

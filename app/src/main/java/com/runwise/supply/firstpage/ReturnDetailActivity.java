@@ -32,6 +32,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.List;
 
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 
 /**
  * Created by libin on 2017/8/1.
@@ -119,20 +121,22 @@ public class ReturnDetailActivity extends NetWorkActivity {
         String deliveryType = bean.getDeliveryType();
         //不显示
         if (bean.getState().equals("process")) {
-            if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH) || deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)) {
+            if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
+                    deliveryType.equals(TYPE_VENDOR_DELIVERY)
+                    ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
+                    &&bean.isReturnThirdPartLog())
+                    ){
+                rlBottom.setVisibility(View.VISIBLE);
+            }else{
                 rlBottom.setVisibility(View.GONE);
-            }
-            if (deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY) || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)) {
-                if (bean.getWaybill() == null || bean.getWaybill().getDeliverUser() == null || TextUtils.isEmpty(bean.getWaybill().getDeliverUser().getName())) {
-                    rlBottom.setVisibility(View.GONE);
-                }
             }
         } else {
             rlBottom.setVisibility(View.GONE);
+            payStateTv.setVisibility(View.VISIBLE);
+            payStateValue.setVisibility(View.VISIBLE);
+            uploadBtn.setVisibility(View.VISIBLE);
         }
-        payStateTv.setVisibility(View.VISIBLE);
-        payStateValue.setVisibility(View.VISIBLE);
-        uploadBtn.setVisibility(View.VISIBLE);
+
         hasAttatchment = bean.getHasAttachment() >0;
         updateReturnView();
     }

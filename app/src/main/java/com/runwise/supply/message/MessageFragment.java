@@ -183,7 +183,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             case REQUEST_MAIN:
                 MessageResult mainListResult = (MessageResult)result.getResult();
                 adapter.setData(handlerMessageList(mainListResult));
-                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+                loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_newsnone);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
@@ -235,7 +235,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure(errMsg);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

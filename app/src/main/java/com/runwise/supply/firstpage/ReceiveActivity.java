@@ -158,6 +158,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
     }
 
+    public String getDeliveryType(){
+        return lbean.getDeliveryType();
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -572,6 +576,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             if (datas != null && datas.size() > 0) {
                 bundle.putParcelableArrayList("datas", datas);
             }
+            bundle.putParcelable("order",lbean);
             ReceiveFragment allFragment = new ReceiveFragment();
             allFragment.type = DataType.ALL;
             allFragment.setCallback(ReceiveActivity.this);

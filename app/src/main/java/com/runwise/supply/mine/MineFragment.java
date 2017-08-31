@@ -16,6 +16,7 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
@@ -177,13 +178,13 @@ public class MineFragment extends NetWorkFragment {
     protected int createViewByLayoutId() {
         return R.layout.fragment_mine;
     }
-
+    UserInfo mUserInfo;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_USERINFO:
-                UserInfo userInfo = (UserInfo) result.getResult().getData();
-                if(userInfo.isHasNewInvoice()) {
+                mUserInfo = (UserInfo) result.getResult().getData();
+                if(mUserInfo.isHasNewInvoice()) {
                     orderRed.setVisibility(View.VISIBLE);
                 }
                 else{
@@ -326,8 +327,12 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.rl_procurement:
-                intent = new Intent(mContext, ProcurementActivity.class);
-                startActivity(intent);
+                if(mUserInfo.isZicai()){
+                    intent = new Intent(mContext, ProcurementActivity.class);
+                    startActivity(intent);
+                }else{
+                    ToastUtil.show(mContext,"没有自采权限");
+                }
                 break;
             case R.id.ll_cai_gou_e:
                 intent = new Intent(mContext,ProcurementLimitActivity.class);

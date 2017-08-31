@@ -313,6 +313,7 @@ public class OrderDetailActivity extends NetWorkActivity{
                 BaseEntity.ResultBean resultBean= result.getResult();
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
+                adapter.setStatus(bean.getName(),bean.getState());
                 updateUI();
                 loadingLayout.onSuccess(1,"暂时没有数据哦");
                 break;

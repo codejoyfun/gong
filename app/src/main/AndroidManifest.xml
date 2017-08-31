@@ -207,6 +207,15 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".orderpage.LotListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".orderpage.LotListDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".RegisterActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
@@ -466,7 +475,8 @@
         <activity android:name=".mine.ProcurementAddActivity" />
         <activity android:name=".mine.ProcurementLimitActivity" />
         <activity android:name=".firstpage.ReturnSuccessActivity" />
-        <activity android:name=".firstpage.UploadReturnPicActivity"></activity>
+        <activity android:name=".firstpage.UploadReturnPicActivity" />
+        <activity android:name=".firstpage.EditBatchActivity"></activity>
     </application>
 
 </manifest>

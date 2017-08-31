@@ -129,7 +129,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
             case REQUEST_MAIN:
                 CheckResult mainListResult = (CheckResult)result.getResult().getData();
                 adapter.setData(mainListResult.getList());
-                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+                loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_checkrecordsnone);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
@@ -157,7 +157,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.no_network);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
 
     @Override

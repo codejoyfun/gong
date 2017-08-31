@@ -61,7 +61,8 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
         private String confirmation_date;
         private String estimated_time;
         private WaybillBean waybill;
-        private String deliveryType;
+
+        private String delivery_type;
         private int amount;
         private String end_unload_datetime;
         private boolean isThirdPartLog;
@@ -74,6 +75,14 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
         private String loading_time;
         private int id;
         private double amount_total;
+
+        public String getDelivery_type() {
+            return delivery_type;
+        }
+
+        public void setDelivery_type(String delivery_type) {
+            this.delivery_type = delivery_type;
+        }
 
         public String getOrderID() {
             return orderID;
@@ -139,13 +148,6 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
             this.waybill = waybill;
         }
 
-        public String getDeliveryType() {
-            return deliveryType;
-        }
-
-        public void setDeliveryType(String deliveryType) {
-            this.deliveryType = deliveryType;
-        }
 
         public int getAmount() {
             return amount;

@@ -73,7 +73,7 @@ public class RepertoryListFragment extends NetWorkFragment {
         });
         if(dataList != null) {
             adapter.setData(dataList);
-            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+            loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_goodsnone);
         }
     }
     @Override
@@ -97,8 +97,8 @@ public class RepertoryListFragment extends NetWorkFragment {
         }
         if(adapter != null) {
             adapter.setData(dataList);
-            loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
-        }
+            loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_goodsnone);
+            }
         if(pullListView != null) {
             pullListView.onRefreshComplete();
         }
@@ -107,6 +107,8 @@ public class RepertoryListFragment extends NetWorkFragment {
     public void onDataSynEvent(SearchKeyAct event) {
         if(mContext.getClass().getSimpleName().equals(event.getActName())) {
             adapter.setData(findArrayByWord(event.getKeyWork()));
+            loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_searchnone);
+
         }
     }
 

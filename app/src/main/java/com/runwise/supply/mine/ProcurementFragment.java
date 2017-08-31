@@ -63,6 +63,7 @@ public class ProcurementFragment extends NetWorkFragment {
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
         requestData();
+        loadingLayout.setStatusLoading();
     }
     @Override
     protected int createViewByLayoutId() {
@@ -72,7 +73,7 @@ public class ProcurementFragment extends NetWorkFragment {
     private void requestData() {
         ProcurementRequest procurementRequest = new ProcurementRequest();
         procurementRequest.setType(type);
-        sendConnection("/gongfu/shop/zicai/list",procurementRequest,REQUEST_CODE_PROCUREMENT, true, ProcurementEntity.class);
+        sendConnection("/gongfu/shop/zicai/list",procurementRequest,REQUEST_CODE_PROCUREMENT, false, ProcurementEntity.class);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -99,15 +100,15 @@ public class ProcurementFragment extends NetWorkFragment {
                 }
                 if(dataList != null) {
                     adapter.setData(dataList);
-                    loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
                 }
+                loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 break;
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        loadingLayout.onSuccess(0,"哎呀！这里是空哒~~",R.drawable.default_ico_none);
     }
 
     public class ProductAdapter extends IBaseAdapter<ProcurementEntity.ListBean.ProductsBean> {
