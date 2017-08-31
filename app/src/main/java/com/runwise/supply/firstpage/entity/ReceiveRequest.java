@@ -25,24 +25,21 @@ public class ReceiveRequest {
          * height : 3
          */
 
-        private int qty;
         private int product_id;
         private double height;
 
-        private String product_datetime;
         private String tracking;
-        private String lot_name;
-        private String life_datetime;
 
+        List<LotBean> lot_list;
 
-
-        public int getQty() {
-            return qty;
+        public List<LotBean> getLot_list() {
+            return lot_list;
         }
 
-        public void setQty(int qty) {
-            this.qty = qty;
+        public void setLot_list(List<LotBean> lot_list) {
+            this.lot_list = lot_list;
         }
+
 
         public int getProduct_id() {
             return product_id;
@@ -59,13 +56,7 @@ public class ReceiveRequest {
         public void setHeight(double height) {
             this.height = height;
         }
-        public String getProduct_datetime() {
-            return product_datetime;
-        }
 
-        public void setProduct_datetime(String product_datetime) {
-            this.product_datetime = product_datetime;
-        }
 
         public String getTracking() {
             return tracking;
@@ -75,20 +66,55 @@ public class ReceiveRequest {
             this.tracking = tracking;
         }
 
-        public String getLot_name() {
-            return lot_name;
-        }
 
-        public void setLot_name(String lot_name) {
-            this.lot_name = lot_name;
-        }
+        public class LotBean {
 
-        public String getLife_datetime() {
-            return life_datetime;
-        }
+            private int qty;
+            private String produce_datetime;
+            private String life_datetime;
+            private String lot_name;
+            private int height;
 
-        public void setLife_datetime(String life_datetime) {
-            this.life_datetime = life_datetime;
+            public void setQty(int qty) {
+                this.qty = qty;
+            }
+
+            public int getQty() {
+                return qty;
+            }
+
+            public void setProduce_datetime(String produce_datetime) {
+                this.produce_datetime = produce_datetime;
+            }
+
+            public String getProduce_datetime() {
+                return produce_datetime;
+            }
+
+            public void setLife_datetime(String life_datetime) {
+                this.life_datetime = life_datetime;
+            }
+
+            public String getLife_datetime() {
+                return life_datetime;
+            }
+
+            public void setLot_name(String lot_name) {
+                this.lot_name = lot_name;
+            }
+
+            public String getLot_name() {
+                return lot_name;
+            }
+
+            public void setHeight(int height) {
+                this.height = height;
+            }
+
+            public int getHeight() {
+                return height;
+            }
+
         }
     }
 }

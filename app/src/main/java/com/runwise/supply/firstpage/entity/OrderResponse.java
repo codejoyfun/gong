@@ -791,7 +791,18 @@ public class OrderResponse {
             private List<String> lotIDs;
             private List<LotListBean> lotList;
 
+            //自定义字段
+            private boolean isChanged;
 
+
+
+            public boolean isChanged() {
+                return isChanged;
+            }
+
+            public void setChanged(boolean changed) {
+                isChanged = changed;
+            }
 
             public String getProductUom() {
                 return productUom;

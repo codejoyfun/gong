@@ -37,7 +37,15 @@ public abstract class IBaseAdapter<T> extends BaseAdapter {
 		}
 		mList.clear();
 		mList.addAll(list);
+		onSetData();
 		notifyDataSetChanged();
+	}
+
+	/**
+	 * 添加数据需要进行其他操作
+	 */
+	public void onSetData(){
+
 	}
 	public void removeList(List<T> list){
 		if ( list == null ) {
