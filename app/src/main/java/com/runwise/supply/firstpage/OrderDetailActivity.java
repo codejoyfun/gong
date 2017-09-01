@@ -32,6 +32,7 @@ import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -411,21 +412,24 @@ public class OrderDetailActivity extends NetWorkActivity{
                     tv.setTextColor(Color.parseColor("#999999"));
                     tv.setGravity(Gravity.CENTER_VERTICAL);
                     tv.setTag(returnId);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                            CommonUtils.dip2px(mContext,40));
-                    SpannableString ss = new SpannableString("退货单号：RSO"+returnId);
-                    ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2F96D8")),5,8+returnId.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    tv.setText(ss);
-                    returnContainer.addView(tv,params);
-                    tv.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //跳转到退货单详情
-                            Intent intent = new Intent(mContext,ReturnDetailActivity.class);
-                            intent.putExtra("rid",returnId);
-                            startActivity(intent);
-                        }
-                    });
+                    String returnName = ProductBasicUtils.getReturnMap().get(returnId);
+                    if (!TextUtils.isEmpty(returnName)){
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                CommonUtils.dip2px(mContext,40));
+                        SpannableString ss = new SpannableString("退货单号："+returnName);
+                        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2F96D8")),5,5+returnName.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                        tv.setText(ss);
+                        returnContainer.addView(tv,params);
+                        tv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //跳转到退货单详情
+                                Intent intent = new Intent(mContext,ReturnDetailActivity.class);
+                                intent.putExtra("rid",returnId);
+                                startActivity(intent);
+                            }
+                        });
+                    }
                 }
 
             }

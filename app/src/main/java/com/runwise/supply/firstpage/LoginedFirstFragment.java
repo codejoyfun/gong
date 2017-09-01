@@ -41,6 +41,7 @@ import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -214,6 +215,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     adapter.setReturnCount(rob.getList().size());
                     adapter.setData(orderList);
                 }
+                cachReturnList(rob.getList());
                 Object request = null;
                 sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
                 break;
@@ -225,6 +227,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 startActivity(intent);
 //                requestReturnList();
                 break;
+        }
+    }
+
+    private void cachReturnList(List<ReturnOrderBean.ListBean> list) {
+        ProductBasicUtils.getReturnMap().clear();
+        if (list != null){
+            for (ReturnOrderBean.ListBean rlb : list){
+                ProductBasicUtils.getReturnMap().put(String.valueOf(rlb.getReturnOrderID()),rlb.getName());
+            }
         }
     }
 

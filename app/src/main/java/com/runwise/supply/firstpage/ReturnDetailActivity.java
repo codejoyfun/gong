@@ -117,28 +117,29 @@ public class ReturnDetailActivity extends NetWorkActivity {
         recyclerView.setNestedScrollingEnabled(false);
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("return");
-
-        String deliveryType = bean.getDeliveryType();
-        //不显示
-        if (bean.getState().equals("process")) {
-            if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
-                    deliveryType.equals(TYPE_VENDOR_DELIVERY)
-                    ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
-                    &&bean.isReturnThirdPartLog())
-                    ){
-                rlBottom.setVisibility(View.VISIBLE);
-            }else{
+        if (bean != null){
+            String deliveryType = bean.getDeliveryType();
+            //不显示
+            if (bean.getState().equals("process")) {
+                if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
+                        deliveryType.equals(TYPE_VENDOR_DELIVERY)
+                        ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
+                        &&bean.isReturnThirdPartLog())
+                        ){
+                    rlBottom.setVisibility(View.VISIBLE);
+                }else{
+                    rlBottom.setVisibility(View.GONE);
+                }
+            } else {
                 rlBottom.setVisibility(View.GONE);
+                payStateTv.setVisibility(View.VISIBLE);
+                payStateValue.setVisibility(View.VISIBLE);
+                uploadBtn.setVisibility(View.VISIBLE);
             }
-        } else {
-            rlBottom.setVisibility(View.GONE);
-            payStateTv.setVisibility(View.VISIBLE);
-            payStateValue.setVisibility(View.VISIBLE);
-            uploadBtn.setVisibility(View.VISIBLE);
-        }
 
-        hasAttatchment = bean.getHasAttachment() >0;
-        updateReturnView();
+            hasAttatchment = bean.getHasAttachment() >0;
+            updateReturnView();
+        }
     }
 
     private void updateReturnView(){
@@ -197,7 +198,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
             case R.id.gotoStateBtn:
                 Intent intent = new Intent(mContext, OrderStateActivity.class);
                 intent.putExtra("mode", true);
-                Bundle bundle = getIntent().getExtras();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("order",bean);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 break;
