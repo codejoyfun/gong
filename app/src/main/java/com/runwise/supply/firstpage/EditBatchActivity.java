@@ -30,7 +30,6 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
-import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.TimeUtils;
@@ -79,25 +78,25 @@ public class EditBatchActivity extends NetWorkActivity {
         setContentView(R.layout.activity_edit_batch);
         ButterKnife.bind(this);
         mBatchEntities = new ArrayList<>();
-        Object o = getIntent().getSerializableExtra(INTENT_KEY_BATCH_ENTITIES);
-        if (o != null){
-            ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) o;
-            for (ReceiveRequest.ProductsBean.LotBean lotBean :lotBeens){
-                BatchEntity batchEntity =  new BatchEntity();
-                batchEntity.setBatchNum(lotBean.getLot_name());
-                if (!TextUtils.isEmpty(lotBean.getLife_datetime())){
-                    batchEntity.setProductDate(lotBean.getLife_datetime());
-                    batchEntity.setProductDate(false);
-                }else {
-                    batchEntity.setProductDate(lotBean.getProduce_datetime());
-                    batchEntity.setProductDate(true);
-                }
-                batchEntity.setProductCount(String.valueOf(lotBean.getHeight()));
-                mBatchEntities.add(batchEntity);
-            }
-        }else{
+//        Object o = getIntent().getSerializableExtra(INTENT_KEY_BATCH_ENTITIES);
+//        if (o != null){
+//            ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) o;
+//            for (ReceiveRequest.ProductsBean.LotBean lotBean :lotBeens){
+//                BatchEntity batchEntity =  new BatchEntity();
+//                batchEntity.setBatchNum(lotBean.getLot_name());
+//                if (!TextUtils.isEmpty(lotBean.getLife_datetime())){
+//                    batchEntity.setProductDate(lotBean.getLife_datetime());
+//                    batchEntity.setProductDate(false);
+//                }else {
+//                    batchEntity.setProductDate(lotBean.getProduce_datetime());
+//                    batchEntity.setProductDate(true);
+//                }
+//                batchEntity.setProductCount(String.valueOf(lotBean.getHeight()));
+//                mBatchEntities.add(batchEntity);
+//            }
+//        }else{
             mBatchEntities.add(new BatchEntity());
-        }
+//        }
 
         final BatchListAdapter batchListAdapter = new BatchListAdapter();
         View addBatchView = LayoutInflater.from(EditBatchActivity.this).inflate(R.layout.edit_batch_foot_view, null);
