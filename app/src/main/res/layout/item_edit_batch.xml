@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/base_background_color"
-    android:paddingLeft="10dp">
+    android:paddingLeft="15dp">
 
 
 
@@ -12,17 +12,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/msg_context_bg"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="15dp"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/tv_batch"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:gravity="center"
             android:text="批次号"
             android:textColor="@color/bottom_dialog_textcolor"
-            android:textSize="16sp" />
+            android:textSize="13sp" />
 
         <com.runwise.supply.view.NoWatchEditText
             android:id="@+id/et_batch"
@@ -38,7 +38,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textColorHint="@color/bottom_dialog_divider"
-            android:textSize="16sp" />
+            android:textSize="13sp" />
 
         <View
             android:id="@+id/v_line"
@@ -51,13 +51,13 @@
         <TextView
             android:id="@+id/tv_product_date"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:layout_below="@id/v_line"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="生产日期"
             android:textColor="@color/bottom_dialog_textcolor"
-            android:textSize="16sp" />
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tv_product_date_value"
@@ -73,7 +73,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textColorHint="@color/bottom_dialog_divider"
-            android:textSize="16sp" />
+            android:textSize="13sp" />
 
         <View
             android:id="@+id/v_line1"
@@ -86,13 +86,13 @@
         <TextView
             android:id="@+id/tv_product_count"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:layout_below="@id/v_line1"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="商品数量"
             android:textColor="@color/bottom_dialog_textcolor"
-            android:textSize="16sp" />
+            android:textSize="13sp" />
 
         <com.runwise.supply.view.NoWatchEditText
             android:id="@+id/et_product_count"
@@ -109,7 +109,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textColorHint="@color/bottom_dialog_divider"
-            android:textSize="16sp" />
+            android:textSize="13sp" />
 
 
     </RelativeLayout>

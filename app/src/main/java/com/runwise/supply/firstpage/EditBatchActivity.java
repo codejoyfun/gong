@@ -30,6 +30,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.TimeUtils;
@@ -61,12 +62,16 @@ public class EditBatchActivity extends NetWorkActivity {
     @BindView(R.id.btn_confirm)
     Button mBtnConfirm;
 
-    TimePickerView pvCustomTime;
     WheelView wheelView;
+    TimePickerView pvCustomTime;
 
     public static final String INTENT_KEY_PRODUCT = "intent_key_product";
     public static final String INTENT_KEY_BATCH_ENTITIES = "intent_key_batch_entities";
     private OrderResponse.ListBean.LinesBean mBean;
+
+    interface CallBack{
+        void onCall(int position);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +79,26 @@ public class EditBatchActivity extends NetWorkActivity {
         setContentView(R.layout.activity_edit_batch);
         ButterKnife.bind(this);
         mBatchEntities = new ArrayList<>();
-        mBatchEntities.add(new BatchEntity());
+        Object o = getIntent().getSerializableExtra(INTENT_KEY_BATCH_ENTITIES);
+        if (o != null){
+            ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) o;
+            for (ReceiveRequest.ProductsBean.LotBean lotBean :lotBeens){
+                BatchEntity batchEntity =  new BatchEntity();
+                batchEntity.setBatchNum(lotBean.getLot_name());
+                if (!TextUtils.isEmpty(lotBean.getLife_datetime())){
+                    batchEntity.setProductDate(lotBean.getLife_datetime());
+                    batchEntity.setProductDate(false);
+                }else {
+                    batchEntity.setProductDate(lotBean.getProduce_datetime());
+                    batchEntity.setProductDate(true);
+                }
+                batchEntity.setProductCount(String.valueOf(lotBean.getHeight()));
+                mBatchEntities.add(batchEntity);
+            }
+        }else{
+            mBatchEntities.add(new BatchEntity());
+        }
+
         final BatchListAdapter batchListAdapter = new BatchListAdapter();
         View addBatchView = LayoutInflater.from(EditBatchActivity.this).inflate(R.layout.edit_batch_foot_view, null);
         addBatchView.setOnClickListener(new View.OnClickListener() {
@@ -99,6 +123,57 @@ public class EditBatchActivity extends NetWorkActivity {
             sb.append("  ").append(basicBean.getUnit()).append("\n").append(mBean.getPriceUnit()).append("元/").append(mBean.getProductUom());
         }
         mContent.setText(sb.toString());
+        CallBack callBack = new CallBack() {
+            @Override
+            public void onCall(final int position) {
+                 pvCustomTime = new TimePickerView.Builder(mContext, new TimePickerView.OnTimeSelectListener() {
+                    @Override
+                    public void onTimeSelect(Date date, View v) {//选中事件回调
+                        mBatchEntities.get(position).setProductDate(TimeUtils.getYMD(date));
+                        mBatchEntities.get(position).setProductDate(wheelView.getCurrentItem() == 0);
+                        batchListAdapter.notifyDataSetChanged();
+                    }
+                }).setLayoutRes(R.layout.custom_time_picker, new CustomListener() {
+
+                    @Override
+                    public void customLayout(View v) {
+                        final Button btnSubmit = (Button) v.findViewById(R.id.btnSubmit);
+                        Button btnCancel = (Button) v.findViewById(R.id.btnCancel);
+                        wheelView = (WheelView) v.findViewById(R.id.options);
+                        ArrayList<String> stringArrayList = new ArrayList<String>();
+                        stringArrayList.add("生产日期");
+                        stringArrayList.add("到期日期");
+                        wheelView.setAdapter(new ArrayWheelAdapter(stringArrayList));
+                        wheelView.setCyclic(false);
+                        wheelView.setTextSize(18);
+                        wheelView.setLineSpacingMultiplier(1.6F);
+
+                        btnSubmit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                pvCustomTime.returnData();
+                                pvCustomTime.dismiss();
+                            }
+                        });
+                        btnCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                pvCustomTime.dismiss();
+                            }
+                        });
+                    }
+                })
+                        .setType(new boolean[]{true, true, true, false, false, false})
+                        .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
+                        .build();
+                pvCustomTime.show();
+
+
+
+
+            }
+        };
+        batchListAdapter.setCallback(callBack);
     }
 
     @Override
@@ -150,7 +225,10 @@ public class EditBatchActivity extends NetWorkActivity {
 
 
     public class BatchListAdapter extends BaseAdapter {
-
+        CallBack mCallBack;
+        public void setCallback(CallBack callBack){
+            mCallBack = callBack;
+        }
         @Override
         public int getCount() {
             return mBatchEntities.size();
@@ -184,56 +262,18 @@ public class EditBatchActivity extends NetWorkActivity {
                     notifyDataSetChanged();
                 }
             });
-            final ViewHolder finalViewHolder = viewHolder;
+            viewHolder.tvProductDateValue.setText(mBatchEntities.get(position).getProductDate());
             viewHolder.tvProductDateValue.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (pvCustomTime == null) {
-                        pvCustomTime = new TimePickerView.Builder(mContext, new TimePickerView.OnTimeSelectListener() {
-                            @Override
-                            public void onTimeSelect(Date date, View v) {//选中事件回调
-                                finalViewHolder.tvProductDateValue.setText(TimeUtils.getYMD(date));
-                                mBatchEntities.get(position).setProductDate(TimeUtils.getYMD(date));
-                            }
-                        }).setLayoutRes(R.layout.custom_time_picker, new CustomListener() {
-
-                            @Override
-                            public void customLayout(View v) {
-                                final Button btnSubmit = (Button) v.findViewById(R.id.btnSubmit);
-                                Button btnCancel = (Button) v.findViewById(R.id.btnCancel);
-                                wheelView = (WheelView) v.findViewById(R.id.options);
-                                ArrayList<String> stringArrayList = new ArrayList<String>();
-                                stringArrayList.add("生产日期");
-                                stringArrayList.add("到期日期");
-                                wheelView.setAdapter(new ArrayWheelAdapter(stringArrayList));
-                                wheelView.setCyclic(false);
-                                wheelView.setTextSize(18);
-                                wheelView.setLineSpacingMultiplier(1.6F);
-
-                                btnSubmit.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        pvCustomTime.returnData();
-                                        pvCustomTime.dismiss();
-                                    }
-                                });
-                                btnCancel.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        pvCustomTime.dismiss();
-                                    }
-                                });
-                            }
-                        })
-                                .setType(new boolean[]{true, true, true, false, false, false})
-                                .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
-                                .build();
-                    }
-                    pvCustomTime.show();
+                        if (mCallBack != null){
+                            mCallBack.onCall(position);
+                        }
                 }
             });
 
             viewHolder.etBatch.removeTextChangedListener();
+            viewHolder.etBatch.setText(mBatchEntities.get(position).getBatchNum());
             viewHolder.etBatch.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -250,7 +290,9 @@ public class EditBatchActivity extends NetWorkActivity {
                     mBatchEntities.get(position).setBatchNum(s.toString().trim());
                 }
             });
+
             viewHolder.etProductCount.removeTextChangedListener();
+            viewHolder.etProductCount.setText(mBatchEntities.get(position).getProductCount());
             viewHolder.etProductCount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {

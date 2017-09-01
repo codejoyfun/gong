@@ -330,7 +330,8 @@ public class MineFragment extends NetWorkFragment {
                 if(mUserInfo.isZicai()){
                     intent = new Intent(mContext, ProcurementActivity.class);
                     startActivity(intent);
-                }else{
+                }
+                else{
                     ToastUtil.show(mContext,"没有自采权限");
                 }
                 break;

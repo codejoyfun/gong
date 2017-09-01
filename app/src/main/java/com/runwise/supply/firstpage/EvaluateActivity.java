@@ -32,15 +32,20 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.entity.ChangeOrderRequest;
 import com.runwise.supply.firstpage.entity.EvaluateLineRequest;
 import com.runwise.supply.firstpage.entity.EvaluateRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.view.ClearEditText;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -90,6 +95,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private ClearEditText evaluateEditText;
     private static final int ORDERREQUST = 1;
     private static final int LINEREQUEST = 2;
+    private static final int CHANGE_ORDER = 3;
 
     private EvaluateAdapter adapter;
     private EvaluateAdapter searchAdapter;
@@ -364,14 +370,19 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             case LINEREQUEST:
                 flag++;
                 break;
+            case CHANGE_ORDER:
+                dismissIProgressDialog();
+                EventBus.getDefault().post(new OrderUpdateEvent());
+                ToastUtil.show(mContext,"提交成功");
+                finish();
+                break;
 
         }
-        if (flag == 2){
-            dismissIProgressDialog();
-            ToastUtil.show(mContext,"提交成功");
-            finish();
+        if (flag >= 2){
+            ChangeOrderRequest changeOrderRequest = new ChangeOrderRequest();
+            changeOrderRequest.setState("rated");
+            sendConnection("/gongfu/order/"+ bean.getOrderID() +"/state",changeOrderRequest,CHANGE_ORDER,false,null);
         }
-
     }
 
     @Override

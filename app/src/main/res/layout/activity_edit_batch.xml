@@ -8,7 +8,6 @@
     tools:context="com.runwise.supply.firstpage.EditBatchActivity">
 
 
-
     <RelativeLayout
         android:id="@+id/rl_head"
         android:layout_width="match_parent"
@@ -50,16 +49,11 @@
             android:layout_marginTop="5dp"
             android:maxLines="2"
             android:text=""
+            android:lineSpacingExtra="5dp"
             android:textColor="#999999"
             android:textSize="11sp" />
 
-        <ImageView
-            android:id="@+id/iv_cancle"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:padding="8dp"
-            android:src="@drawable/dialog_btn_closed"
-            android:layout_alignParentRight="true"/>
+
 
         <View
             android:layout_width="match_parent"
@@ -84,10 +78,18 @@
     <Button
         android:id="@+id/btn_confirm"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:text="确认"
         android:textColor="@color/white"
         android:layout_alignParentBottom="true"
         android:background="@color/base_color"/>
+
+    <ImageView
+        android:id="@+id/iv_cancle"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="8dp"
+        android:src="@drawable/dialog_btn_closed"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
