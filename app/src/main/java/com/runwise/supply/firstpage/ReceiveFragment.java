@@ -97,7 +97,7 @@ public class ReceiveFragment extends BaseFragment {
                 OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) datas.get(position);
                 String pId = String.valueOf(bean.getProductID());
                 ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-                adapter.setReceiveCount((int)bean.getProductUomQty(), basicBean, bean);
+                adapter.setReceiveCount((int) bean.getProductUomQty(), basicBean, bean);
                 adapter.notifyDataSetChanged();
                 return false;
             }
@@ -119,7 +119,6 @@ public class ReceiveFragment extends BaseFragment {
         adapter.setData(datas);
 
     }
-
 
 
     @Override
@@ -196,29 +195,29 @@ public class ReceiveFragment extends BaseFragment {
                 if (basicBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                if (canSeePrice){
+                if (canSeePrice) {
                     sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }
                 viewHolder.content.setText(sb.toString());
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
                 viewHolder.receivedTv.setSaveEnabled(false);
-                if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
+                if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                     viewHolder.receivedTv.setFocusable(false);
                     viewHolder.inputAdd.setVisibility(View.GONE);
                     viewHolder.countLL.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(mContext,EditBatchActivity.class);
-                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT,bean);
+                            Intent intent = new Intent(mContext, EditBatchActivity.class);
+                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT, bean);
                             if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                                 ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
                                 ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) rb.getLot_list();
-                                intent.putExtra(EditBatchActivity.INTENT_KEY_BATCH_ENTITIES,lotBeens);
+                                intent.putExtra(EditBatchActivity.INTENT_KEY_BATCH_ENTITIES, lotBeens);
                             }
-                            startActivityForResult(intent,REQUEST_CODE_ADD_BATCH);
+                            startActivityForResult(intent, REQUEST_CODE_ADD_BATCH);
                         }
                     });
-                }else{
+                } else {
                     viewHolder.receivedTv.setFocusable(true);
                     viewHolder.receivedTv.setFocusableInTouchMode(true);
                     viewHolder.receivedTv.requestFocus();
@@ -229,7 +228,7 @@ public class ReceiveFragment extends BaseFragment {
                 //优先用已输入的数据，没有，则用默认
                 if (mode == 2) {
                     viewHolder.receivedTv.setText(bean.getTallyingAmount() + "");
-                    Log.i("receivedTv", "022  "+bean.getTallyingAmount());
+                    Log.i("receivedTv", "022  " + bean.getTallyingAmount());
 //                    viewHolder.weightTv.setText(bean.getSettleAmount() + basicBean.getSettleUomId());
                 } else {
                     if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
@@ -268,7 +267,7 @@ public class ReceiveFragment extends BaseFragment {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
+                        if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                             return;
                         }
                         if (TextUtils.isEmpty(s.toString())) {
@@ -312,7 +311,7 @@ public class ReceiveFragment extends BaseFragment {
                 } else {
                     rb.setTwoUnit(false);
                 }
-                countMap.put(String.valueOf(bean.getProductID()),rb);
+                countMap.put(String.valueOf(bean.getProductID()), rb);
                 if (callback != null) {
                     callback.doAction(rb);
                 }
@@ -330,7 +329,7 @@ public class ReceiveFragment extends BaseFragment {
             TextView countTv;
             @ViewInject(R.id.receivedTv)
             EditText receivedTv;
-            //            @ViewInject(R.id.doBtn)
+            //@ViewInject(R.id.doBtn)
 //            Button doBtn;
             @ViewInject(R.id.input_add)
             ImageButton inputAdd;

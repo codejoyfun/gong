@@ -402,8 +402,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
             pb.setHeight(bean.getCount());
+            pb.setQty(bean.getCount());
+            pb.setTracking(bean.getTracking());
             if (bean.getTracking().equals("lot")) {
-                pb.setTracking(bean.getTracking());
                 pb.setLot_list(bean.getLot_list());
             }
             pbList.add(pb);
