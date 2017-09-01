@@ -20,6 +20,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 import com.android.internal.http.multipart.FilePart;
 import com.android.internal.http.multipart.Part;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -68,6 +74,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
     private int uploadCount;
     private int orderId;
     private int currentDelete;      //记录当前要删除的位置
+    private int indexInt;
     private Handler mHandler = new Handler(){};
     private Runnable mRunnalbe = new Runnable(){
         @Override
@@ -139,6 +146,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
                     dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                         @Override
                         public void doClickButton(Button btn, CustomDialog dialog) {
+
                             goLastPage();
                         }
                     });
@@ -274,6 +282,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
             dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                 @Override
                 public void doClickButton(Button btn, CustomDialog dialog) {
+                    indexInt --;
                     if (picList.get(position).contains(Constant.BASE_URL)){
                         currentDelete = position;
                         deletePicRequest(position);
@@ -478,6 +487,15 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
                     updateImgUri = UCrop.getOutput(data);
 //                    showUploadDialog();
                     String path1Scaled = ImageUtils.getScaledImage(this, updateImgUri.getPath());
+                    try {
+                        indexInt = indexInt +1;
+                        File localFile = new File(mContext.getFilesDir().getPath(),"退货凭证("+indexInt+").jpg");
+                        InputStream in = new FileInputStream(path1Scaled);
+                        ImageUtils.writeToFile(localFile,in);
+                        path1Scaled = localFile.getAbsolutePath();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     //在这里改变添加框个数
                     if (picList.size() < 3){
                         picList.add(0,path1Scaled);
