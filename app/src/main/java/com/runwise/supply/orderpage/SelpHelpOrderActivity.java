@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -25,6 +26,8 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
@@ -471,6 +474,13 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             case COMMIT_TYPE:
                 bgView.setVisibility(View.VISIBLE);
                 orderSuccessIv.setVisibility(View.VISIBLE);
+                AnimatorSet set = new AnimatorSet();
+                set.playTogether(
+                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleX", 1, 0.7f),
+                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleY", 1, 0.7f)
+                );
+                set.setInterpolator(new AccelerateDecelerateInterpolator());
+                set.setDuration(1000).start();
                 orderSuccessIv.postDelayed(new Runnable() {
                     @Override
                     public void run() {
