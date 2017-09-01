@@ -184,7 +184,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
             orderTimeValue.setText(bean.getCreateDate());
             List<ReturnOrderBean.ListBean.LinesBean> list = bean.getLines();
             adapter.setReturnList(list);
-            recyclerView.getLayoutParams().height = list.size() * CommonUtils.dip2px(mContext, 86);
+//            recyclerView.getLayoutParams().height = list.size() * CommonUtils.dip2px(mContext, 86);
             countTv.setText((int) bean.getAmount() + "件");
             ygMoneyTv.setText(bean.getAmountTotal() + "元");
 
