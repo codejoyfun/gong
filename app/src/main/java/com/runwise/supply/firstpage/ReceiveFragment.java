@@ -5,8 +5,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,12 +166,6 @@ public class ReceiveFragment extends BaseFragment {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
                 ViewUtils.inject(viewHolder, convertView);
-                //双人收货模式下，按钮隐藏
-//                if (mode == 2) {
-//                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
-//                } else {
-//                    viewHolder.doBtn.setVisibility(View.VISIBLE);
-//                }
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -282,7 +279,8 @@ public class ReceiveFragment extends BaseFragment {
                             setReceiveCount(0, basicBean, bean);
                             return;
                         }
-                        int editCount = Integer.parseInt(s.toString());
+
+                        int editCount = Double.valueOf(s.toString()).intValue();
                         ReceiveBean receiveBean = countMap.get(String.valueOf(bean.getProductID()));
                         if (receiveBean != null && receiveBean.getCount() == editCount) {
                             return;
@@ -291,12 +289,39 @@ public class ReceiveFragment extends BaseFragment {
                     }
                 });
             }
-            //双单位是跟订单相关，所以拿订单里面的字段判断.
+            //双单位相关
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
             int paddingLeft = CommonUtils.dip2px(mContext,15);
             if (isSettle) {
                 //显示双单位信息，加号按钮隐藏
-                
+                StringBuffer  receiveStr = new StringBuffer();
+                StringBuffer  weightStr = new StringBuffer();
+                if (mode == 2){
+                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+                    receiveStr.append(bean.getTallyingAmount());
+                    weightStr.append(bean.getSettleAmount()).append(basicBean.getSettleUomId());
+                }else{
+                    viewHolder.doBtn.setVisibility(View.VISIBLE);
+                    if (mode == 1){
+                        viewHolder.doBtn.setText("点货");
+                    }else{
+                        viewHolder.doBtn.setText("收货");
+                    }
+                    if (countMap.containsKey(String.valueOf(bean.getProductID()))){
+                        ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
+                        receiveStr.append(rb.getCount());
+                        weightStr.append(rb.getTwoUnitValue()).append(rb.getUnit());
+                    }else{
+                        receiveStr.append("0");
+                        weightStr.append("0"+basicBean.getSettleUomId());
+                    }
+                }
+                receiveStr.append(" /"+(int)bean.getProductUomQty()+basicBean.getUom());
+                SpannableString builder = new SpannableString(receiveStr.toString());
+                int end = receiveStr.indexOf(" ");
+                builder.setSpan(new AbsoluteSizeSpan(16,true),0,end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                viewHolder.settleTv.setText(builder);
+                viewHolder.weightTv.setText(weightStr.toString());
                 viewHolder.countLL.setVisibility(View.GONE);
                 viewHolder.settleLL.setVisibility(View.VISIBLE);
                 params.setMargins(paddingLeft,CommonUtils.dip2px(mContext,42),0,0);
@@ -356,6 +381,10 @@ public class ReceiveFragment extends BaseFragment {
             ImageButton inputAdd;
             @ViewInject(R.id.line)
             View line;
+            @ViewInject(R.id.settleTv)
+            TextView settleTv;
+            @ViewInject(R.id.weightTv)
+            TextView weightTv;
 
 
         }

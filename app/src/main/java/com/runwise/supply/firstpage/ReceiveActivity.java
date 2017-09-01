@@ -376,7 +376,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 //更新进度条
                 updatePbProgress();
                 //更新fragment列表内容
-                EventBus.getDefault().post(new ReceiveProEvent());
+                EventBus.getDefault().post(new ReceiveProEvent(true));
             }
         });
 
@@ -438,7 +438,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         //完成收货/点货／双人收货
                         if (mode == 0) {
-                            receiveProductRequest();
+                            if (isSettle && !lbean.getDeliveryType().equals("fresh_vendor_delivery")){
+                                receiveProductRequest2();
+                            }else{
+                                receiveProductRequest();
+                            }
                         } else if (mode == 1) {
                             tallyRequest();
                         } else if (mode == 2) {
@@ -490,6 +494,23 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         StringBuffer sb = new StringBuffer("/gongfu/order/");
         sb.append(lbean.getOrderID()).append("/receive/");
         sendConnection(sb.toString(), rr, RECEIVE, true, BaseEntity.ResultBean.class);
+
+    }
+    //双单位收货的请求
+    private void receiveProductRequest2() {
+        ReceiveRequest rr = new ReceiveRequest();
+        List<ReceiveRequest.ProductsBean> pbList = new ArrayList<>();
+        for (ReceiveBean bean : countMap.values()){
+            ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
+            pb.setProduct_id(bean.getProductId());
+            pb.setQty(bean.getCount());
+            pb.setHeight(bean.getTwoUnitValue());
+            pbList.add(pb);
+        }
+        rr.setProducts(pbList);
+        StringBuffer sb = new StringBuffer("/gongfu/order/");
+        sb.append(lbean.getOrderID()).append("/receive/");
+        sendConnection(sb.toString(),rr,RECEIVE,true, BaseEntity.ResultBean.class);
 
     }
 
