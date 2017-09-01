@@ -7,6 +7,13 @@ package com.kids.commonframe.base.bean;
 public class ReceiveProEvent {
     private boolean notifyDataSetChange;
 
+    public ReceiveProEvent(boolean notifyDataSetChange) {
+        this.notifyDataSetChange = notifyDataSetChange;
+    }
+
+    public ReceiveProEvent() {
+    }
+
     public boolean isNotifyDataSetChange() {
         return notifyDataSetChange;
     }

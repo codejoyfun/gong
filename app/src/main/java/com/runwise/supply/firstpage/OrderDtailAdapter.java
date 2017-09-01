@@ -80,14 +80,15 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         }
         int puq = (int)bean.getProductUomQty();
         int dq = (int)bean.getDeliveredQty();
-        if(bean.getDeliveredQty() != bean.getProductUomQty()) {
+        if( "done".equals(status) && bean.getDeliveredQty() != bean.getProductUomQty()) {
             vh.oldPriceTv.setText("x"+puq);
+            vh.nowPriceTv.setText("x"+dq);
             vh.oldPriceTv.setVisibility(View.VISIBLE);
         }
         else{
-            vh.oldPriceTv.setVisibility(View.INVISIBLE);
+            vh.oldPriceTv.setVisibility(View.GONE);
+            vh.nowPriceTv.setText("x"+puq);
         }
-        vh.nowPriceTv.setText("x"+dq);
 
         if (basicBean != null){
             vh.name.setText(basicBean.getName());

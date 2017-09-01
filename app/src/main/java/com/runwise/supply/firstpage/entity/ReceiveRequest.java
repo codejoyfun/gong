@@ -28,7 +28,6 @@ public class ReceiveRequest {
         private int qty;
         private int product_id;
         private double height;
-
         private String tracking;
 
         List<LotBean> lot_list;
@@ -57,7 +56,6 @@ public class ReceiveRequest {
         public void setHeight(double height) {
             this.height = height;
         }
-
 
         public String getTracking() {
             return tracking;
