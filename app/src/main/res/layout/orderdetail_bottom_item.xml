@@ -41,7 +41,7 @@
                 android:layout_alignTop="@id/proTv"
                 android:layout_marginRight="15dp"
                 android:gravity="center"
-                android:text="36件"
+                android:text="件"
                 android:textColor="#999999"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -68,7 +68,6 @@
                 />
 
             <TextView
-
                 android:id="@+id/ygMoneyTv"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
@@ -76,9 +75,9 @@
                 android:layout_below="@id/countTv"
                 android:layout_marginRight="15dp"
                 android:gravity="center"
-                android:text="36件"
-                android:textColor="#999999"
-                android:textSize="14sp" />
+                android:text="¥"
+                android:textColor="#FC5646"
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 

@@ -173,11 +173,10 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:taskAffinity=""
-            android:windowSoftInputMode="adjustPan"
-            android:launchMode="singleTask"
-            />
+            android:windowSoftInputMode="adjustPan" />
         <!-- vitamio 的配置信息 -->
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"
@@ -216,7 +215,6 @@
             android:name=".orderpage.LotListDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".RegisterActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -478,7 +476,8 @@
         <activity android:name=".mine.ProcurementLimitActivity" />
         <activity android:name=".firstpage.ReturnSuccessActivity" />
         <activity android:name=".firstpage.UploadReturnPicActivity" />
-        <activity android:name=".firstpage.EditBatchActivity"></activity>
+        <activity android:name=".firstpage.EditBatchActivity" />
+        <activity android:name=".firstpage.GuideActivity"></activity>
     </application>
 
 </manifest>

@@ -20,12 +20,18 @@ import java.util.List;
 public class ProductBasicUtils {
     //productId -> 基本信息对象,便于后续使用查询
     private static HashMap<String,ProductBasicList.ListBean> basicMap = new HashMap<>();
+    //退货单map,return id -> name
+    private static HashMap<String,String> returnMap = new HashMap<>();
+
+    public static HashMap<String, String> getReturnMap() {
+        return returnMap;
+    }
+
     private static List<ProductBasicList.ListBean> basicArr = new ArrayList<>();
 
     public static List<ProductBasicList.ListBean> getBasicArr() {
         return basicArr;
     }
-
     public static void setBasicArr(List<ProductBasicList.ListBean> basicArr) {
         ProductBasicUtils.basicArr = basicArr;
     }

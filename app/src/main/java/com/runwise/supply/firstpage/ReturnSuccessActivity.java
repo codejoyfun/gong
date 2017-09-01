@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.message.OrderMsgDetailActivity;
@@ -27,11 +28,10 @@ public class ReturnSuccessActivity extends BaseActivity {
     TextView orderBtn;
     @BindView(R.id.uploadBtn)
     TextView uploadBtn;
-
     public static final String INTENT_KEY_RESULTBEAN = "intent_key_resultbean";
     FinishReturnResponse finishReturnResponse;
 
-    public static final int REQUEST_CODE_UPLOAD = 1<<0;
+    public static final int REQUEST_CODE_UPLOAD = 1 << 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,22 +40,39 @@ public class ReturnSuccessActivity extends BaseActivity {
         ButterKnife.bind(this);
         setTitleText(true, "退货成功");
         showBackBtn();
-        finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
-        tvReturnCount.setText("退货数量: " +
-                finishReturnResponse.getReturnOrder().getLines().size() +
-                "件\n" +
-                "退货金额: " +
-                finishReturnResponse.getReturnOrder().getAmountTotal() +
-                "\n退货成功时间: " +
-                finishReturnResponse.getReturnOrder().getDoneDate());
 
+        String text;
+        if(GlobalApplication.getInstance().getCanSeePrice()){
+            text = "退货数量: " +
+                    finishReturnResponse.getReturnOrder().getAmount() +
+                    "件\n" +
+                    "退货金额: " +
+                    finishReturnResponse.getReturnOrder().getAmountTotal() +
+                    "\n退货成功时间: " +
+                    finishReturnResponse.getReturnOrder().getDoneDate();
+        }else{
+            text = "退货数量: " +
+                    finishReturnResponse.getReturnOrder().getAmount() +
+                    "件\n" +
+                    "退货成功时间: " +
+                    finishReturnResponse.getReturnOrder().getDoneDate();
+        }
+
+        finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
+        tvReturnCount.setText(text);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            if (requestCode == REQUEST_CODE_UPLOAD){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_UPLOAD) {
                 finish();
             }
         }
@@ -66,16 +83,16 @@ public class ReturnSuccessActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.orderBtn:
                 Intent intent = new Intent(mContext, OrderMsgDetailActivity.class);
-                intent.putExtra("title",finishReturnResponse.getReturnOrder().getName());
-                intent.putExtra("normalOrder",false);
-                intent.putExtra("orderId",finishReturnResponse.getReturnOrder().getOrderID()+"");
+                intent.putExtra("title", finishReturnResponse.getReturnOrder().getName());
+                intent.putExtra("normalOrder", false);
+                intent.putExtra("orderId", finishReturnResponse.getReturnOrder().getReturnOrderID() + "");
                 startActivity(intent);
                 break;
             case R.id.uploadBtn:
                 Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
                 uIntent.putExtra("orderid", finishReturnResponse.getReturnOrder().getOrderID());
                 uIntent.putExtra("ordername", finishReturnResponse.getReturnOrder().getName());
-                startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
+                startActivityForResult(uIntent, REQUEST_CODE_UPLOAD);
                 break;
         }
     }

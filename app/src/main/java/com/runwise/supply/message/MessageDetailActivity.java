@@ -27,8 +27,6 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
 
-import static com.runwise.supply.R.id.number;
-
 
 /**
  * 聊天详情
@@ -58,7 +56,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
 //        isWebFrom = getIntent().getBooleanExtra("isWebFrom",false);
         MessageResult.OrderBean orderBean = (MessageResult.OrderBean)(getIntent().getSerializableExtra(INTENT_KEY_ORDER));
 
-        String deliveryType =  orderBean.getDelivery_type();
+        String deliveryType =  orderBean.getDeliveryType();
         if (deliveryType != null && (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)
                 ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH))){
             //中间添加两个切换按钮

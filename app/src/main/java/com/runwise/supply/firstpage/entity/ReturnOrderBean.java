@@ -77,6 +77,7 @@ public class ReturnOrderBean implements Serializable {
         private String driveMobile;
         private List<LinesBean> lines;
         private List<String> stateTracker;
+        private boolean returnThirdPartLog;
 
         public boolean isReturnThirdPartLog() {
             return returnThirdPartLog;
@@ -86,7 +87,6 @@ public class ReturnOrderBean implements Serializable {
             this.returnThirdPartLog = returnThirdPartLog;
         }
 
-        private boolean returnThirdPartLog;
 
         public String getDeliveryType() {
             return deliveryType;
@@ -220,9 +220,9 @@ public class ReturnOrderBean implements Serializable {
             driveMobile = in.readString();
             deliveryType = in.readString();
             hasAttachment = in.readInt();
-            returnThirdPartLog = in.readByte() != 0;
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
+            returnThirdPartLog = in.readByte() != 0;
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
