@@ -296,8 +296,11 @@ public class NetWorkHelper<T extends BaseEntity> {
 		//请求体参数,优先使用
 		private String paramsStr;
 		private List<Part> filePartList;
+		String url;
+
 		public HttpCallBack(String url, Listener<T> listener, ErrorListener errorListener, int where, int method, Map<String,String> paramsMap, String paramsStr, List<Part> partList,Class<?> targerClass) {
 			super(method, url, listener, errorListener);
+			this.url = url;
 			RetryPolicy policy = new DefaultRetryPolicy(DEFAULT_TIMEOUT_MS , DEFAULT_MAX_RETRIES, DEFAULT_BACKOFF_MULT );
 			this.setRetryPolicy( policy );
 			this.where = where;
@@ -317,13 +320,13 @@ public class NetWorkHelper<T extends BaseEntity> {
 			if(parsed.length() > 4000) {
 				for(int i=0;i<parsed.length();i+=4000){
 					if(i+4000<parsed.length())
-						LogUtils.e(parsed.substring(i, i + 4000));
+						LogUtils.e(url+" " + parsed.substring(i, i + 4000));
 					else
-						LogUtils.e(parsed.substring(i, parsed.length()));
+						LogUtils.e(url+" " + parsed.substring(i, parsed.length()));
 				}
 			}
 			else {
-				LogUtils.e( parsed);
+				LogUtils.e(url+" " + parsed);
 			}
 			T resultObj = null;
 			if ( newWorkCallBack != null ) {
