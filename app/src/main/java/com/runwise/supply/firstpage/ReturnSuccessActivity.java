@@ -40,7 +40,7 @@ public class ReturnSuccessActivity extends BaseActivity {
         ButterKnife.bind(this);
         setTitleText(true, "退货成功");
         showBackBtn();
-
+        finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
         String text;
         if(GlobalApplication.getInstance().getCanSeePrice()){
             text = "退货数量: " +
@@ -58,7 +58,7 @@ public class ReturnSuccessActivity extends BaseActivity {
                     finishReturnResponse.getReturnOrder().getDoneDate();
         }
 
-        finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
+
         tvReturnCount.setText(text);
 
     }

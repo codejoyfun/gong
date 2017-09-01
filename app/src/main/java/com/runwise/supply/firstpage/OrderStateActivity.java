@@ -97,7 +97,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
         Bundle bundle = getIntent().getExtras();
         if (isReturnMode){
             ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) bundle.getSerializable("order");
-            orderBean.setId(bean.getOrderID());
+            orderBean.setId(bean.getReturnOrderID());
             orderBean.setAmount((int)bean.getAmount());
             orderBean.setAmount_total((int)bean.getAmountTotal());
             orderBean.setState(bean.getState());
