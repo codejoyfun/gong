@@ -45,6 +45,7 @@ public class MineFragment extends NetWorkFragment {
     private final int REQUEST_SYSTEM = 1;
     private final int REQUEST_SUM = 2;
     private static final int REQUEST_USERINFO = 3;
+    private static final int REQUEST_USERINFO_REFRESH = 4;
 
     //电话
     @ViewInject(R.id.minePhone)
@@ -143,6 +144,10 @@ public class MineFragment extends NetWorkFragment {
         Object paramBean = null;
         this.sendConnection("/gongfu/v2/user/information",paramBean ,REQUEST_USERINFO, false, UserInfo.class);
     }
+    private void refreshUserInfo() {
+        Object paramBean = null;
+        this.sendConnection("/gongfu/v2/user/information",paramBean ,REQUEST_USERINFO_REFRESH, false, UserInfo.class);
+    }
 
     private void setLogoutStatus() {
         isLogin = false;
@@ -189,6 +194,14 @@ public class MineFragment extends NetWorkFragment {
                 }
                 else{
                     orderRed.setVisibility(View.GONE);
+                }
+                break;
+            case REQUEST_USERINFO_REFRESH:
+                mUserInfo = (UserInfo) result.getResult().getData();
+                if(mUserInfo.isZicai()){
+                    startActivity(new Intent(mContext, ProcurementActivity.class));
+                }else{
+                    ToastUtil.show(mContext,"没有自采权限");
                 }
                 break;
             case  REQUEST_SUM:
@@ -327,12 +340,7 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.rl_procurement:
-                if(mUserInfo.isZicai()){
-                    intent = new Intent(mContext, ProcurementActivity.class);
-                    startActivity(intent);
-                }else{
-                    ToastUtil.show(mContext,"没有自采权限");
-                }
+                refreshUserInfo();
                 break;
             case R.id.ll_cai_gou_e:
                 intent = new Intent(mContext,ProcurementLimitActivity.class);

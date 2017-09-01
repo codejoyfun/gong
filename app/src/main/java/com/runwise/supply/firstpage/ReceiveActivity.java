@@ -502,6 +502,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         for (ReceiveBean bean : countMap.values()) {
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
+            pb.setQty(bean.getCount());
             pb.setHeight(bean.getCount());
             pbList.add(pb);
         }

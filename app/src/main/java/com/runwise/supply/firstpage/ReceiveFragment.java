@@ -10,10 +10,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -146,13 +146,24 @@ public class ReceiveFragment extends BaseFragment {
         }
     }
 
-    public class ReceiveAdapter extends IBaseAdapter {
+    public class ReceiveAdapter extends IBaseAdapter implements ListAdapter {
         private boolean isSettle;       //是不是双单位
         private boolean canSeePrice;
 
         public ReceiveAdapter() {
             super();
             canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
+            String pId = String.valueOf(bean.getProductID());
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
+            if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
+                return false;
+            }
+                return super.isEnabled(position);
         }
 
         @Override
