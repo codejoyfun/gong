@@ -10,14 +10,18 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
@@ -69,6 +73,8 @@ public class ReceiveFragment extends BaseFragment {
     private int mode;
     OrderResponse.ListBean orderBean;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +112,7 @@ public class ReceiveFragment extends BaseFragment {
         ArrayList<OrderResponse.ListBean.LinesBean> linesList = getArguments().getParcelableArrayList("datas");
         orderBean = getArguments().getParcelable("order");
         mode = getArguments().getInt("mode");
-
+        adapter.isSettle = orderBean.isIsTwoUnit() && !orderBean.getDeliveryType().equals("fresh_vendor_delivery");
         if (type == DataType.ALL) {
             datas.addAll(linesList);
         } else {
@@ -119,6 +125,7 @@ public class ReceiveFragment extends BaseFragment {
         adapter.setData(datas);
 
     }
+
 
 
     @Override
@@ -168,28 +175,28 @@ public class ReceiveFragment extends BaseFragment {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-//            viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    ReceiveBean rb = new ReceiveBean();
-//                    if (basicBean != null) {
-//                        rb.setName(basicBean.getName());
-////                        rb.setCount((int)bean.getProductUomQty());
-//                        rb.setCount(0);
-//                        rb.setProductId(bean.getProductID());
-//                        if (isSettle) {
-//                            rb.setTwoUnit(true);
-//                            rb.setUnit(basicBean.getSettleUomId());
-//                        } else {
-//                            rb.setTwoUnit(false);
-//                        }
-//                        if (callback != null) {
-//                            callback.doAction(rb);
-//                        }
-//                    }
-//
-//                }
-//            });
+            viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReceiveBean rb = new ReceiveBean();
+                    if (basicBean != null) {
+                        rb.setName(basicBean.getName());
+//                        rb.setCount((int)bean.getProductUomQty());
+                        rb.setCount(0);
+                        rb.setProductId(bean.getProductID());
+                        if (isSettle) {
+                            rb.setTwoUnit(true);
+                            rb.setUnit(basicBean.getSettleUomId());
+                        } else {
+                            rb.setTwoUnit(false);
+                        }
+                        if (callback != null) {
+                            callback.doAction(rb);
+                        }
+                    }
+
+                }
+            });
             if (basicBean != null) {
                 viewHolder.name.setText(basicBean.getName());
                 if (basicBean.getImage() != null)
@@ -284,11 +291,20 @@ public class ReceiveFragment extends BaseFragment {
                 });
             }
             //双单位是跟订单相关，所以拿订单里面的字段判断.
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
+            int paddingLeft = CommonUtils.dip2px(mContext,15);
             if (isSettle) {
-                //显示双单位信息
-//                viewHolder.weightTv.setVisibility(View.VISIBLE);
+                //显示双单位信息，加号按钮隐藏
+
+                viewHolder.countLL.setVisibility(View.GONE);
+                viewHolder.settleLL.setVisibility(View.VISIBLE);
+                params.setMargins(paddingLeft,CommonUtils.dip2px(mContext,42),0,0);
+
             } else {
-//                viewHolder.weightTv.setVisibility(View.INVISIBLE);
+                viewHolder.countLL.setVisibility(View.VISIBLE);
+                viewHolder.settleLL.setVisibility(View.GONE);
+                params.setMargins(paddingLeft,paddingLeft,0,0);
+
             }
             return convertView;
         }
@@ -329,12 +345,16 @@ public class ReceiveFragment extends BaseFragment {
             TextView countTv;
             @ViewInject(R.id.receivedTv)
             EditText receivedTv;
-            //@ViewInject(R.id.doBtn)
-//            Button doBtn;
+            @ViewInject(R.id.settleLL)
+            LinearLayout settleLL;
+            @ViewInject(R.id.countLL)
+            LinearLayout countLL;
+            @ViewInject(R.id.doBtn)
+            TextView doBtn;
             @ViewInject(R.id.input_add)
             ImageButton inputAdd;
-            @ViewInject(R.id.countLL)
-            View countLL;
+            @ViewInject(R.id.line)
+            View line;
 
 
         }

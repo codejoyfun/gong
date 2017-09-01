@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -90,8 +92,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TextView pbValue;
     private TabPageIndicatorAdapter adapter;
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
-    private PopupWindow mPopWindow; //底部弹出
-    private View dialogView;       //弹窗的view
+    private PopupWindow mPopWindow;     //底部弹出
+    private PopupWindow mPopWindow2;    //双单位的弹框
+    private View dialogView;            //弹窗的view
+    private View dialogView2;           //双单位的弹框view
     //做为底部弹窗数据传值
     private ReceiveBean bottomData;
     //存放收货对应数据记录productId -----> ReceiveBean
@@ -109,6 +113,14 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private CaptureClient mClient;
     TimePickerView pvCustomTime;
     WheelView wheelView;
+
+    private TextView titleTv;
+    private AppCompatEditText edEt;
+    private TextView unitTv;
+    private EditText unitValueTv;
+    private RelativeLayout twoUnitRL;
+
+
 
     public Map<String, ReceiveBean> getCountMap() {
         return countMap;
@@ -150,6 +162,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         smartTabLayout.setViewPager(viewPager);
         setDefalutProgressBar();
         initPopWindow();
+        initPopWindow2();       //单独初始化一下双单位的popview
         Capture.init(getApplicationContext());
 //        mClient = new CaptureClient();
 //        mClient.setListener(this);
@@ -302,6 +315,71 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 EventBus.getDefault().post(receiveProEvent);
             }
         });
+    }
+    private void initPopWindow2(){
+        dialogView2 = LayoutInflater.from(this).inflate(R.layout.dialog_edit_layout2,null);
+        RelativeLayout rl = (RelativeLayout) dialogView2.findViewById(R.id.dialog_main);
+        mPopWindow2 = new PopupWindow(dialogView2, ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT,true);
+        mPopWindow2.setContentView(dialogView2);
+        mPopWindow2.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mPopWindow2.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mPopWindow2.setFocusable(true);
+        mPopWindow2.setOutsideTouchable(true);
+//        fitPopupWindowOverStatusBar(true);  //全屏
+        ImageButton input_minus = (ImageButton)dialogView2.findViewById(R.id.input_minus);
+        ImageButton input_add = (ImageButton)dialogView2.findViewById(R.id.input_add);
+        titleTv = (TextView)dialogView2.findViewById(R.id.title);
+        edEt  = (AppCompatEditText)dialogView2.findViewById(R.id.acet);
+        unitTv = (TextView)dialogView2.findViewById(R.id.unitTv);
+        unitValueTv = (EditText)dialogView2.findViewById(R.id.unitValue);
+        twoUnitRL = (RelativeLayout)dialogView2.findViewById(R.id.twoUnitRL);
+        rl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v instanceof RelativeLayout){
+                    mPopWindow2.dismiss();
+                }
+            }
+        });
+        input_minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = Integer.valueOf(edEt.getText().toString());
+                if (count > 0){
+                    count--;
+                    edEt.setText(String.valueOf(count));
+                    edEt.setSelection(String.valueOf(String.valueOf(count)).length());
+                }
+
+            }
+        });
+        input_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = Integer.valueOf(edEt.getText().toString());
+                count++;
+                edEt.setText(String.valueOf(count));
+                edEt.setSelection(String.valueOf(String.valueOf(count)).length());
+            }
+        });
+        Button sureBtn = (Button) dialogView2.findViewById(R.id.sureBtn);
+        sureBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String pId = String.valueOf(bottomData.getProductId());
+                int count = Integer.valueOf(edEt.getText().toString());
+                double settleCount = TextUtils.isEmpty(unitValueTv.getText().toString()) ? 0 : Double.valueOf(unitValueTv.getText().toString());
+                bottomData.setCount(count);
+                bottomData.setTwoUnitValue(settleCount);    //双单位的值
+                countMap.put(pId,bottomData);
+                mPopWindow2.dismiss();
+                //更新进度条
+                updatePbProgress();
+                //更新fragment列表内容
+                EventBus.getDefault().post(new ReceiveProEvent());
+            }
+        });
+
     }
 
     private void updatePbProgress() {
@@ -549,9 +627,47 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     @Override
     public void doAction(ReceiveBean bean) {
         bottomData = bean;
-        if (mPopWindow.isShowing()) {
+        if (mPopWindow != null && mPopWindow.isShowing()) {
             mPopWindow.dismiss();
-        } else {
+
+            return;
+        }
+        if (mPopWindow2 != null && mPopWindow2.isShowing()){
+            mPopWindow2.dismiss();
+            return;
+        }
+            //单独处理双单位的,不管其它维护的分类
+            if(bean.isTwoUnit() && !lbean.getDeliveryType().equals("fresh_vendor_delivery")){
+                View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
+                mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
+                titleTv.setText(bottomData.getName());
+                if (countMap.containsKey(String.valueOf(bean.getProductId()))){ //如果countMap里面有，则优先用countMap。
+                    ReceiveBean rb = countMap.get(String.valueOf(bean.getProductId()));
+                    edEt.setText(String.valueOf(rb.getCount()));
+                    edEt.setSelection(String.valueOf(rb.getCount()).length());
+                    unitTv.setText(rb.getUnit());
+                    if (rb.getTwoUnitValue() == 0){
+                        unitValueTv.setText("");
+                    }else{
+                        unitValueTv.setText(rb.getTwoUnitValue()+"");
+                    }
+
+                }else{
+                    edEt.setText(bottomData.getCount()+"");
+                    edEt.setSelection(String.valueOf(bottomData.getCount()).length());
+                    unitTv.setText(bottomData.getUnit());
+//                unitValueTv.setText(bottomData.getTwoUnitValue()+"");
+                    unitValueTv.setText("");
+                }
+
+                //双人点货
+                if (isSettle){
+                    twoUnitRL.setVisibility(View.VISIBLE);
+                }else{
+                    twoUnitRL.setVisibility(View.GONE);
+                }
+            return;
+            }
             if (lbean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                 Intent intent = new Intent(mContext, EditBatchActivity.class);
                 intent.putExtra(INTENT_KEY_PRODUCT, bottomData.getProductId());
@@ -594,7 +710,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //            }else{
 //                twoUnitRL.setVisibility(View.GONE);
 //            }
-        }
 
     }
 

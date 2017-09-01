@@ -23,7 +23,7 @@
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible">
+        android:visibility="invisible">
         <EditText
             android:id="@+id/receivedTv"
             android:layout_width="40dp"
@@ -57,6 +57,44 @@
             android:layout_marginLeft="10dp"
             />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/settleLL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/nameTv"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/settleTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:textSize="11sp"
+            android:textColor="#343434"
+            android:text="10／12条"/>
+        <TextView
+            android:id="@+id/weightTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_marginTop="6dp"
+            android:layout_gravity="right"
+            android:textSize="12sp"
+            android:textColor="#2E2E2E"
+            android:text="25斤"/>
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="28dp"
+            android:id="@+id/doBtn"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="right"
+            android:background="@drawable/firstpage_do_circle"
+            android:text="收货"/>
+    </LinearLayout>
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
@@ -84,10 +122,11 @@
         android:layout_below="@id/name"
         />
     <View
+        android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#E5E5E5"
         android:layout_below="@id/productImage"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="42dp"
         />
 </RelativeLayout>
