@@ -175,9 +175,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean)parent.getAdapter().getItem(position);
         Intent intent = new Intent(mContext,ReturnDetailActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("return",bean);
-        intent.putExtras(bundle);
+        intent.putExtra("rid",bean.getReturnOrderID()+"");
         startActivity(intent);
     }
 

@@ -167,7 +167,12 @@ public class OrderAdapter extends IBaseAdapter {
                 }
             });
             StringBuffer sb = new StringBuffer("共");
-            sb.append((int)bean.getAmount()).append("件商品");
+            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+                sb.append((int)bean.getDeliveredQty()).append("件商品");
+            }
+            else {
+                sb.append((int)bean.getAmount()).append("件商品");
+            }
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(bean.getAmountTotal()+"");
             StringBuffer drawableSb = new StringBuffer("state_restaurant_");
@@ -191,13 +196,20 @@ public class OrderAdapter extends IBaseAdapter {
             if(bean.getHasReturn() != 0){
                 viewHolder.returnTv.setVisibility(View.VISIBLE);
             }else{
-                viewHolder.returnTv.setVisibility(View.INVISIBLE);
+                viewHolder.returnTv.setVisibility(View.GONE);
+            }
+            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+                viewHolder.realTv.setVisibility(View.VISIBLE);
+            }
+            else{
+                viewHolder.realTv.setVisibility(View.GONE);
             }
         }
         else{
             final ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) mList.get(position);
             //发货单
-            viewHolder.returnTv.setVisibility(View.INVISIBLE);
+            viewHolder.returnTv.setVisibility(View.GONE);
+            viewHolder.realTv.setVisibility(View.GONE);
             viewHolder.imgIv.setImageResource(R.drawable.more_restaurant_returnrecord);
             viewHolder.titleTv.setText(bean.getName());
             viewHolder.stateTv.setText("退货中");
@@ -323,6 +335,8 @@ public class OrderAdapter extends IBaseAdapter {
         LinearLayout driverLL;
         @ViewInject(R.id.returnTv)
         TextView returnTv;
+        @ViewInject(R.id.realTv)
+        TextView realTv;
 
     }
 

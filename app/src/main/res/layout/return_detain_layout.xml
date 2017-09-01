@@ -76,4 +76,11 @@
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_below="@id/include_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
 </RelativeLayout>

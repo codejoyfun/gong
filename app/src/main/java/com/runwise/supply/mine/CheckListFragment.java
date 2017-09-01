@@ -28,6 +28,9 @@ import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.repertory.EditRepertoryListActivity;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.tools.UserUtils;
+
+import static com.runwise.supply.R.id.moneySum;
 
 /**
  * 盘点记录
@@ -225,7 +228,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
             }
             else {
                 if(GlobalApplication.getInstance().getCanSeePrice()) {
-                    holder.money.setText("¥"+bean.getValue()+"");
+                    holder.money.setText("¥"+UserUtils.formatPrice(bean.getValue()+"")+"");
                     if(bean.getValue() >= 0) {
                         holder.money.setTextColor(Color.parseColor("#9cb62e"));
                     }

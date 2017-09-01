@@ -17,10 +17,10 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,8 @@ public class NavigationActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navigation_main);
-		 inflater = LayoutInflater.from(this);
+		StatusBarUtil.StatusBarLightMode(this);
+		inflater = LayoutInflater.from(this);
 		final List<Integer> viewList = new ArrayList<Integer>();
 		viewList.add(R.drawable.guidepage_1);
 		viewList.add(R.drawable.guidepage_2);

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,9 @@ public class UserGuidActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navigation_main);
-		 inflater = LayoutInflater.from(this);
+		StatusBarUtil.StatusBarLightMode(this);
+
+		inflater = LayoutInflater.from(this);
 		List<Integer> viewList = new ArrayList<Integer>();
 		viewList.add(R.drawable.restaurant_guide_1);
 		viewList.add(R.drawable.restaurant_guide_2);
@@ -101,7 +104,7 @@ public class UserGuidActivity extends BaseActivity {
 		public Object instantiateItem(ViewGroup container, int arg1) {
 			View mainView = inflater.inflate( R.layout.item_guid, null);
 			ImageView imageView = (ImageView)mainView.findViewById(R.id.guid_bg);
-
+			imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 			if ( arg1 == views.size()-1 ) {
 				imageView.setOnClickListener(new OnClickListener() {
 					@Override

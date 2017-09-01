@@ -281,7 +281,7 @@ public class ReceiveFragment extends BaseFragment {
                             setReceiveCount(0, basicBean, bean);
                             return;
                         }
-                        int editCount = Integer.parseInt(s.toString());
+                        int editCount = (int)Double.parseDouble(s.toString());
                         ReceiveBean receiveBean = countMap.get(String.valueOf(bean.getProductID()));
                         if (receiveBean != null && receiveBean.getCount() == editCount) {
                             return;
