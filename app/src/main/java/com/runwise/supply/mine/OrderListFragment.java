@@ -342,6 +342,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                                 startActivity(sIntent);
                                 break;
                             case SELFTALLY:
+                                dialog.setModel(CustomDialog.RIGHT);
                                 dialog.setMessageGravity();
                                 dialog.setMessage("您已经点过货了，应由其他人完成收货");
                                 dialog.setRightBtnListener("确认", null);

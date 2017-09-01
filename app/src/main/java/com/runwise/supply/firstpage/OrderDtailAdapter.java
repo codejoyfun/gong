@@ -80,13 +80,15 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         }
         int puq = (int)bean.getProductUomQty();
         int dq = (int)bean.getDeliveredQty();
-        if (hasReturn){
-            vh.oldPriceTv.setText("x"+dq);
+        if( "done".equals(status) && bean.getDeliveredQty() != bean.getProductUomQty()) {
+            vh.oldPriceTv.setText("x"+puq);
+            vh.nowPriceTv.setText("x"+dq);
             vh.oldPriceTv.setVisibility(View.VISIBLE);
-        }else{
-            vh.oldPriceTv.setVisibility(View.INVISIBLE);
         }
-        vh.nowPriceTv.setText("x"+puq);
+        else{
+            vh.oldPriceTv.setVisibility(View.GONE);
+            vh.nowPriceTv.setText("x"+puq);
+        }
 
         if (basicBean != null){
             vh.name.setText(basicBean.getName());
@@ -109,15 +111,15 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         }
         //发货状态订单
 //        if("peisong".equals(status)) {
-            vh.rootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, LotListActivity.class);
-                    intent.putExtra("title",basicBean.getName());
-                    intent.putExtra("bean",bean);
-                    context.startActivity(intent);
-                }
-            });
+        vh.rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, LotListActivity.class);
+                intent.putExtra("title",basicBean.getName());
+                intent.putExtra("bean",bean);
+                context.startActivity(intent);
+            }
+        });
 //        }
 
     }

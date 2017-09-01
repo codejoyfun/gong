@@ -98,7 +98,8 @@ public class MineFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         isLogin = SPUtils.isLogin(mContext);
         if (isLogin) {
-            setLoginStatus();
+            userInfo = GlobalApplication.getInstance().loadUserInfo();
+            setLoginStatus(userInfo);
         }
         else {
             setLogoutStatus();
@@ -109,9 +110,8 @@ public class MineFragment extends NetWorkFragment {
         observableScrollView.setSlowlyChange(true);
     }
 
-    private void setLoginStatus() {
+    private void setLoginStatus(UserInfo userInfo) {
         isLogin = true;
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
         if (userInfo != null) {
             LogUtils.e(Constant.BASE_URL + userInfo.getAvatarUrl());
 
@@ -183,13 +183,12 @@ public class MineFragment extends NetWorkFragment {
     protected int createViewByLayoutId() {
         return R.layout.fragment_mine;
     }
-    UserInfo mUserInfo;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_USERINFO:
-                mUserInfo = (UserInfo) result.getResult().getData();
-                if(mUserInfo.isHasNewInvoice()) {
+                userInfo = (UserInfo) result.getResult().getData();
+                if(userInfo.isHasNewInvoice()) {
                     orderRed.setVisibility(View.VISIBLE);
                 }
                 else{
@@ -197,6 +196,8 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case REQUEST_USERINFO_REFRESH:
+                userInfo = (UserInfo) result.getResult().getData();
+                if(userInfo.isZicai()){
                 mUserInfo = (UserInfo) result.getResult().getData();
                 if(Boolean.parseBoolean(mUserInfo.getIsZicai())){
                     startActivity(new Intent(mContext, ProcurementActivity.class));
@@ -353,7 +354,8 @@ public class MineFragment extends NetWorkFragment {
 
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
-        setLoginStatus();
+        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        setLoginStatus(userInfo);
         isLogin = true;
     }
 
@@ -365,6 +367,7 @@ public class MineFragment extends NetWorkFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateUserInfo(UpdateUserInfo userLoginEvent) {
-        setLoginStatus();
+        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        setLoginStatus(userInfo);
     }
 }

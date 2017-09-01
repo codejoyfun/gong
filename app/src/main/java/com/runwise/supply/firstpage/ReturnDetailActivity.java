@@ -16,6 +16,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -29,6 +30,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
@@ -80,7 +82,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
 
     private boolean hasAttatchment = false;
 
-
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout loadingLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,17 +94,12 @@ public class ReturnDetailActivity extends NetWorkActivity {
         setTitleLeftIcon(true, R.drawable.nav_back);
         String rid = getIntent().getStringExtra("rid");
         initViews();
-        if (TextUtils.isEmpty(rid)) {
-            updateUI();
-        } else {
-            //发网络请求获取
-            Object request = null;
-            StringBuffer sb = new StringBuffer("/gongfu/v2/return_order/");
-            sb.append(rid).append("/");
-            sendConnection(sb.toString(), request, DETAIL, true, ReturnDetailResponse.class);
-        }
-
-
+        //发网络请求获取
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/return_order/");
+        sb.append(rid).append("/");
+        sendConnection(sb.toString(), request, DETAIL, false, ReturnDetailResponse.class);
+        loadingLayout.setStatusLoading();
     }
 
     private void initViews() {
@@ -198,6 +196,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
             case R.id.gotoStateBtn:
                 Intent intent = new Intent(mContext, OrderStateActivity.class);
                 intent.putExtra("mode", true);
+                intent.putStringArrayListExtra("tracker",(ArrayList<String>) bean.getStateTracker());
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("order",bean);
                 intent.putExtras(bundle);
@@ -250,6 +249,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
                 bean = rdr.getReturnOrder();
                 updateUI();
+                loadingLayout.onSuccess(1,"暂无数据");
                 break;
             case FINISHRETURN:
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();

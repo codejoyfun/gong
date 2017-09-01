@@ -1,5 +1,6 @@
 package com.runwise.supply.message.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -488,7 +489,7 @@ public class OrderMsgDetail {
                 }
             }
 
-            public static class DeliverVehicleBean {
+            public static class DeliverVehicleBean implements Serializable{
                 /**
                  * licensePlate : 999999999999
                  * name : Audi/A4/999999999999
