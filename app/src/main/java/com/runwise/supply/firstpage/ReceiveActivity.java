@@ -551,6 +551,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         if (mPopWindow.isShowing()) {
             mPopWindow.dismiss();
         } else {
+            //单独处理双单位的,不管其它维护的分类
+            if(bean.isTwoUnit() && !lbean.getDeliveryType().equals("vendor_delivery") && !lbean.getDeliveryType().equals("fresh_vendor_delivery")){
+                View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
+//                mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
+                return;
+            }
             if (lbean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                 Intent intent = new Intent(mContext, EditBatchActivity.class);
                 intent.putExtra(INTENT_KEY_PRODUCT, bottomData.getProductId());
