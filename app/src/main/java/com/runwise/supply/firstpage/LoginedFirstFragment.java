@@ -154,17 +154,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     @Override
     public void onResume() {
         super.onResume();
-        if (!SPUtils.isLogin(mContext)) {
-            MainActivity ma = (MainActivity) getActivity();
-            if (ma.getCurrentTabIndex() == 0)
-                this.switchContent(this, new UnLoginedFirstFragment());
-        } else {
-            if (this.isVisible()) {
-                if (adapter.getCount() == 0) {
-                    pullListView.setRefreshing(true);
-                } else {
-                    requestReturnList();
-                }
+        if (this.isVisible()) {
+            if (adapter.getCount() == 0) {
+                pullListView.setRefreshing(true);
+            }
+            else {
+                requestReturnList();
             }
         }
     }
@@ -237,6 +232,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 ProductBasicUtils.getReturnMap().put(String.valueOf(rlb.getReturnOrderID()),rlb.getName());
             }
         }
+    }
+
+    @Override
+    public void onUserLoginout() {
+        super.onUserLoginout();
+        MainActivity ma = (MainActivity) getActivity();
+        if (ma.getCurrentTabIndex() == 0)
+            this.switchContent(this, new UnLoginedFirstFragment());
     }
 
     @Override

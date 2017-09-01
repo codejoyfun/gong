@@ -6,7 +6,7 @@ package com.runwise.supply.firstpage.entity;
 
 public enum OrderState {
         DRAFT("draft","待确认"),SALE("sale","已确认"),PEISONG("peisong","已发货"),
-        DONE("done","已收货"),RATED("rated","已评价"),CANCEL("cancel","已取消");
+        DONE("done","待评价"),RATED("rated","已评价"),CANCEL("cancel","已取消");
         private String name;
         private String value;
         private OrderState(String name,String value){

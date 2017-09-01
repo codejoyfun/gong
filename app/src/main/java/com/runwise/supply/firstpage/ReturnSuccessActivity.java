@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.message.OrderMsgDetailActivity;
@@ -39,18 +40,26 @@ public class ReturnSuccessActivity extends BaseActivity {
         ButterKnife.bind(this);
         setTitleText(true, "退货成功");
         showBackBtn();
-        finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
-        int count = 0;
-        for (FinishReturnResponse.ReturnOrder.Lines line : finishReturnResponse.getReturnOrder().getLines()) {
-            count += line.getPickupNum();
+
+        String text;
+        if(GlobalApplication.getInstance().getCanSeePrice()){
+            text = "退货数量: " +
+                    finishReturnResponse.getReturnOrder().getAmount() +
+                    "件\n" +
+                    "退货金额: " +
+                    finishReturnResponse.getReturnOrder().getAmountTotal() +
+                    "\n退货成功时间: " +
+                    finishReturnResponse.getReturnOrder().getDoneDate();
+        }else{
+            text = "退货数量: " +
+                    finishReturnResponse.getReturnOrder().getAmount() +
+                    "件\n" +
+                    "退货成功时间: " +
+                    finishReturnResponse.getReturnOrder().getDoneDate();
         }
-        tvReturnCount.setText("退货数量: " +
-                count +
-                "件\n" +
-                "退货金额: " +
-                finishReturnResponse.getReturnOrder().getAmountTotal() +
-                "\n退货成功时间: " +
-                finishReturnResponse.getReturnOrder().getDoneDate());
+
+        finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
+        tvReturnCount.setText(text);
 
     }
 

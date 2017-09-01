@@ -12,14 +12,12 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
-import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.mine.UserGuidActivity;
 
 import org.greenrobot.eventbus.EventBus;
-
-import cn.jpush.android.api.JPushInterface;
 
 
 public class InfoActivity extends NetWorkActivity {
@@ -156,6 +154,7 @@ public class InfoActivity extends NetWorkActivity {
 //                    startActivity(targerIntent);
 //                }
                 EventBus.getDefault().post(new UserLoginEvent());
+                startActivity(new Intent(mContext, UserGuidActivity.class));
                 finish();
                 break;
         }

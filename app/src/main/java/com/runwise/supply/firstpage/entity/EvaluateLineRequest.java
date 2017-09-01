@@ -20,7 +20,7 @@ public class EvaluateLineRequest {
 
     public static class OrderBean {
         /**
-         * line_id : 562
+         * line_id : 1068
          * quality_score : 5
          */
 

@@ -38,6 +38,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomBottomDialog;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
@@ -49,6 +50,7 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -82,6 +84,8 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
     private int uploadCount;
     private int orderId;
     private int currentDelete;      //记录当前要删除的位置
+
+    private int indexInt;
     private Handler mHandler = new Handler(){};
     private Runnable mRunnalbe = new Runnable(){
         @Override
@@ -216,6 +220,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     List<Part> partList = new ArrayList<>();
                     FilePart fp = new FilePart("attachment_file",new File(path));
                     partList.add(fp);
+                    LogUtils.e("上传支付凭证路径："+ path);
                     sendConnection(urlSb.toString(),partList,UPLOAD_FILE,false,BaseEntity.ResultBean.class);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -287,6 +292,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
             dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                 @Override
                 public void doClickButton(Button btn, CustomDialog dialog) {
+                    indexInt --;
                     if (picList.get(position).contains(Constant.BASE_URL)){
                         currentDelete = position;
                         deletePicRequest(position);
@@ -491,6 +497,16 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     updateImgUri = UCrop.getOutput(data);
 //                    showUploadDialog();
                     String path1Scaled = ImageUtils.getScaledImage(this, updateImgUri.getPath());
+                    try {
+                        indexInt = indexInt +1;
+                        File localFile = new File(mContext.getFilesDir().getPath(),"支付凭证("+indexInt+").jpg");
+                        InputStream in = new FileInputStream(path1Scaled);
+                        ImageUtils.writeToFile(localFile,in);
+                        path1Scaled = localFile.getAbsolutePath();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     //在这里改变添加框个数
                     if (picList.size() < 3){
                         picList.add(0,path1Scaled);

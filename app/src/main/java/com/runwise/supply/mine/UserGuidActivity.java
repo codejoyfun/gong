@@ -1,22 +1,18 @@
 package com.runwise.supply.mine;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 
 import java.util.ArrayList;
@@ -35,15 +31,17 @@ public class UserGuidActivity extends BaseActivity {
 	private boolean isLast;
 	private int currentPosition;
 	private int currentPageScrollStatus;
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navigation_main);
 		 inflater = LayoutInflater.from(this);
 		List<Integer> viewList = new ArrayList<Integer>();
-		viewList.add(R.drawable.guid_1);
-		viewList.add(R.drawable.guid_2);
-		viewList.add(R.drawable.guid_3);
+		viewList.add(R.drawable.restaurant_guide_1);
+		viewList.add(R.drawable.restaurant_guide_2);
+		viewList.add(R.drawable.restaurant_guide_3);
 		 adapter = new NavAdapter(viewList);
 		viewPager.setAdapter(adapter);
 		viewPager.setOnPageChangeListener(new OnPageChangeListener() {

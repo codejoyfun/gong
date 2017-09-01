@@ -25,10 +25,9 @@ public class ReceiveRequest {
          * product_id : 8
          * height : 3
          */
-
+        private int qty;
         private int product_id;
         private double height;
-        private int qty;
         private String tracking;
 
         List<LotBean> lot_list;
@@ -58,20 +57,20 @@ public class ReceiveRequest {
             this.height = height;
         }
 
-        public int getQty() {
-            return qty;
-        }
-
-        public void setQty(int qty) {
-            this.qty = qty;
-        }
-
         public String getTracking() {
             return tracking;
         }
 
         public void setTracking(String tracking) {
             this.tracking = tracking;
+        }
+
+        public int getQty() {
+            return qty;
+        }
+
+        public void setQty(int qty) {
+            this.qty = qty;
         }
 
 

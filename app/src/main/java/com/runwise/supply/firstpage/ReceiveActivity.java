@@ -43,6 +43,7 @@ import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -484,8 +485,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
             pb.setHeight(bean.getCount());
+            pb.setQty(bean.getCount());
+            pb.setTracking(bean.getTracking());
             if (bean.getTracking().equals("lot")) {
-                pb.setTracking(bean.getTracking());
                 pb.setLot_list(bean.getLot_list());
             }
             pbList.add(pb);
@@ -557,6 +559,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 intent.putExtras(bundle);
                 startActivity(intent);
                 EventBus.getDefault().post(new UpdateRepertory());
+                EventBus.getDefault().post(new OrderUpdateEvent());
                 finish();
                 break;
             case TALLYING:
@@ -570,6 +573,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 dIntent.putExtras(dBundle);
                 startActivity(dIntent);
                 EventBus.getDefault().post(new UpdateRepertory());
+                EventBus.getDefault().post(new OrderUpdateEvent());
                 finish();
                 break;
             case BEGIN_TALLY:

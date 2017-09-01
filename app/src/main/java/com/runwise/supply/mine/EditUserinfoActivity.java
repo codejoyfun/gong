@@ -35,6 +35,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.ChangePhoneActivity;
 import com.runwise.supply.FindPasswordActivity;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
@@ -126,6 +127,8 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 GlobalApplication.getInstance().cleanUesrInfo();
                 //退出登录
                 EventBus.getDefault().post(new UserLogoutEvent());
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
                 finish();
                 break;
             case REQUEST_USERINFO:

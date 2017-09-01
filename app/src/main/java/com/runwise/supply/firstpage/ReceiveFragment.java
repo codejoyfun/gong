@@ -390,3 +390,4 @@ public class ReceiveFragment extends BaseFragment {
         }
     }
 }
+

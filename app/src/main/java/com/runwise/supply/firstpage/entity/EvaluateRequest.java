@@ -7,14 +7,12 @@ import java.util.List;
  */
 
 public class EvaluateRequest {
-
     /**
-     * service_evaluation :
-     * tags : []
-     * service_score : 5
-     * quality_evaluation :
+     * service_evaluation : 未确认收货就离开，迟到且无提前告知
+     * tags : ["迟到且无提前告知","未确认收货就离开"]
+     * service_score : 3
+     * quality_evaluation : 好的
      */
-
     private String service_evaluation;
     private int service_score;
     private String quality_evaluation;

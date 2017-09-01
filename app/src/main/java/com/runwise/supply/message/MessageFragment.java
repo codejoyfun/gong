@@ -135,6 +135,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     public void onResume() {
         super.onResume();
         if(firstLaunch && isLogin) {
+            page = 1;
             pullListView.setRefreshing();
         }
         firstLaunch = true;
