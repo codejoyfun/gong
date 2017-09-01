@@ -3,6 +3,7 @@ package com.runwise.supply.mine;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -60,8 +61,16 @@ public class ProcurementFragment extends NetWorkFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ProductAdapter();
-        pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
+        pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        pullListView.setPullToRefreshOverScrollEnabled(false);
+        pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setAdapter(adapter);
+        pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                requestData();
+            }
+        });
         requestData();
         loadingLayout.setStatusLoading();
     }
@@ -101,6 +110,7 @@ public class ProcurementFragment extends NetWorkFragment {
                 if(dataList != null) {
                     adapter.setData(dataList);
                 }
+                pullListView.onRefreshComplete();
                 loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 break;
         }

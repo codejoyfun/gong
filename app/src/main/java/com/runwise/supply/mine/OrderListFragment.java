@@ -2,6 +2,7 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -32,7 +34,11 @@ import com.runwise.supply.firstpage.OrderDoAction;
 import com.runwise.supply.firstpage.ReceiveActivity;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.tools.TimeUtils;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * 我的订单
@@ -93,6 +99,10 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
         requestData(false, REQUEST_MAIN_PAGE, page, 1000);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onOrderUpdate(OrderUpdateEvent orderUpdateEvent) {
+        requestData(false, REQUEST_MAIN, 1, 10);
+    }
 
     public void requestData (boolean showDialog,int where, int page,int limit) {
         PageRequest request = new PageRequest();

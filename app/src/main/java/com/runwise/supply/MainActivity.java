@@ -265,6 +265,9 @@ public class MainActivity extends NetWorkActivity {
     @Override
     public void onUserLoginout() {
         isLogin = false;
+        if (mTabHost != null) {
+            mTabHost.setCurrentTab(0);
+        }
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN)

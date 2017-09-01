@@ -255,6 +255,10 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
             case REQUEST_SEND:
                 requestData(false, REQUEST_MAIN, 1, 30);
                 editText.setText("");
+//                editText.setFocusable(true);
+//                editText.setFocusableInTouchMode(true);
+//                editText.requestFocus();
+//                editText.findFocus();
                 break;
         }
     }

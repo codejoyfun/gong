@@ -999,6 +999,7 @@ public class OrderResponse {
                 };
             }
 
+
             @Override
             public int describeContents() {
                 return 0;
@@ -1020,6 +1021,7 @@ public class OrderResponse {
                 dest.writeDouble(this.productUomQty);
                 dest.writeStringList(this.lotIDs);
                 dest.writeTypedList(this.lotList);
+                dest.writeByte(this.isChanged ? (byte) 1 : (byte) 0);
             }
 
             public LinesBean() {
@@ -1040,6 +1042,7 @@ public class OrderResponse {
                 this.productUomQty = in.readDouble();
                 this.lotIDs = in.createStringArrayList();
                 this.lotList = in.createTypedArrayList(LotListBean.CREATOR);
+                this.isChanged = in.readByte() != 0;
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

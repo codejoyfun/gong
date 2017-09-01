@@ -5,8 +5,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,8 +82,6 @@ public class ReceiveFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ReceiveAdapter();
-        ReceiveActivity activity = (ReceiveActivity) getActivity();
-        adapter.isSettle = activity.isSettle();
 
         pullListView.setAdapter(adapter);
 
@@ -103,7 +104,7 @@ public class ReceiveFragment extends BaseFragment {
                 OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) datas.get(position);
                 String pId = String.valueOf(bean.getProductID());
                 ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-                adapter.setReceiveCount((int) bean.getProductUomQty(), basicBean, bean);
+                adapter.setReceiveCount((int)bean.getProductUomQty(), basicBean, bean);
                 adapter.notifyDataSetChanged();
                 return false;
             }
@@ -176,12 +177,6 @@ public class ReceiveFragment extends BaseFragment {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
                 ViewUtils.inject(viewHolder, convertView);
-                //双人收货模式下，按钮隐藏
-//                if (mode == 2) {
-//                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
-//                } else {
-//                    viewHolder.doBtn.setVisibility(View.VISIBLE);
-//                }
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -213,48 +208,50 @@ public class ReceiveFragment extends BaseFragment {
                 if (basicBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                if (canSeePrice) {
+                if (canSeePrice){
                     sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }
                 viewHolder.content.setText(sb.toString());
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
                 viewHolder.receivedTv.setSaveEnabled(false);
-                if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
-                    viewHolder.receivedTv.setFocusable(false);
+                if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
+//                    viewHolder.receivedTv.setFocusable(false);
                     viewHolder.inputAdd.setVisibility(View.GONE);
-                    viewHolder.countLL.setOnClickListener(new View.OnClickListener() {
+                    convertView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(mContext, EditBatchActivity.class);
-                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT, bean);
+                            Intent intent = new Intent(mContext,EditBatchActivity.class);
+                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT,bean);
                             if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                                 ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
                                 ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) rb.getLot_list();
-                                intent.putExtra(EditBatchActivity.INTENT_KEY_BATCH_ENTITIES, lotBeens);
+                                intent.putExtra(EditBatchActivity.INTENT_KEY_BATCH_ENTITIES,lotBeens);
                             }
-                            startActivityForResult(intent, REQUEST_CODE_ADD_BATCH);
+                            startActivityForResult(intent,REQUEST_CODE_ADD_BATCH);
                         }
                     });
-                } else {
+                }else{
                     viewHolder.receivedTv.setFocusable(true);
                     viewHolder.receivedTv.setFocusableInTouchMode(true);
                     viewHolder.receivedTv.requestFocus();
                     viewHolder.receivedTv.findFocus();
-                    viewHolder.countLL.setOnClickListener(null);
+                    convertView.setOnClickListener(null);
                     viewHolder.inputAdd.setVisibility(View.VISIBLE);
                 }
                 //优先用已输入的数据，没有，则用默认
                 if (mode == 2) {
                     viewHolder.receivedTv.setText(bean.getTallyingAmount() + "");
-                    Log.i("receivedTv", "022  " + bean.getTallyingAmount());
+                    Log.i("receivedTv", "022  "+bean.getTallyingAmount());
 //                    viewHolder.weightTv.setText(bean.getSettleAmount() + basicBean.getSettleUomId());
                 } else {
                     if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                         ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
                         viewHolder.receivedTv.setText(rb.getCount() + "");
+                        Log.i("receivedTv", String.valueOf(rb.getCount()));
 //                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());
                     } else {
                         viewHolder.receivedTv.setText("0");
+                        Log.i("receivedTv", "011");
 //                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
                     }
                 }
@@ -285,14 +282,16 @@ public class ReceiveFragment extends BaseFragment {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+                        if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
                             return;
                         }
+                        Log.i("receivedTv", "afterTextChanged");
                         if (TextUtils.isEmpty(s.toString())) {
                             setReceiveCount(0, basicBean, bean);
                             return;
                         }
-                        int editCount = Integer.parseInt(s.toString());
+
+                        int editCount = Double.valueOf(s.toString()).intValue();
                         ReceiveBean receiveBean = countMap.get(String.valueOf(bean.getProductID()));
                         if (receiveBean != null && receiveBean.getCount() == editCount) {
                             return;
@@ -301,12 +300,39 @@ public class ReceiveFragment extends BaseFragment {
                     }
                 });
             }
-            //双单位是跟订单相关，所以拿订单里面的字段判断.
+            //双单位相关
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
             int paddingLeft = CommonUtils.dip2px(mContext,15);
             if (isSettle) {
                 //显示双单位信息，加号按钮隐藏
-
+                StringBuffer  receiveStr = new StringBuffer();
+                StringBuffer  weightStr = new StringBuffer();
+                if (mode == 2){
+                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+                    receiveStr.append(bean.getTallyingAmount());
+                    weightStr.append(bean.getSettleAmount()).append(basicBean.getSettleUomId());
+                }else{
+                    viewHolder.doBtn.setVisibility(View.VISIBLE);
+                    if (mode == 1){
+                        viewHolder.doBtn.setText("点货");
+                    }else{
+                        viewHolder.doBtn.setText("收货");
+                    }
+                    if (countMap.containsKey(String.valueOf(bean.getProductID()))){
+                        ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
+                        receiveStr.append(rb.getCount());
+                        weightStr.append(rb.getTwoUnitValue()).append(rb.getUnit());
+                    }else{
+                        receiveStr.append("0");
+                        weightStr.append("0"+basicBean.getSettleUomId());
+                    }
+                }
+                receiveStr.append(" /"+(int)bean.getProductUomQty()+basicBean.getUom());
+                SpannableString builder = new SpannableString(receiveStr.toString());
+                int end = receiveStr.indexOf(" ");
+                builder.setSpan(new AbsoluteSizeSpan(16,true),0,end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                viewHolder.settleTv.setText(builder);
+                viewHolder.weightTv.setText(weightStr.toString());
                 viewHolder.countLL.setVisibility(View.GONE);
                 viewHolder.settleLL.setVisibility(View.VISIBLE);
                 params.setMargins(paddingLeft,CommonUtils.dip2px(mContext,42),0,0);
@@ -338,7 +364,7 @@ public class ReceiveFragment extends BaseFragment {
                 } else {
                     rb.setTwoUnit(false);
                 }
-                countMap.put(String.valueOf(bean.getProductID()), rb);
+                countMap.put(String.valueOf(bean.getProductID()),rb);
                 if (callback != null) {
                     callback.doAction(rb);
                 }
@@ -366,8 +392,13 @@ public class ReceiveFragment extends BaseFragment {
             ImageButton inputAdd;
             @ViewInject(R.id.line)
             View line;
+            @ViewInject(R.id.settleTv)
+            TextView settleTv;
+            @ViewInject(R.id.weightTv)
+            TextView weightTv;
 
 
         }
     }
 }
+

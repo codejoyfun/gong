@@ -70,7 +70,7 @@ public class RepertoryFragment extends NetWorkFragment {
     }
 
     private void getProductDetail(int productId) {
-        sendConnection("/gongfu/v2/product/"+productId,null,PRODUCT_DETAIL,true, ProductOne.class);
+        sendConnection("/gongfu/v2/product/"+productId,null,PRODUCT_DETAIL,false, ProductOne.class);
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

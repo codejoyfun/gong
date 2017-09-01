@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class ImageUtils {
 	//---------------图片压缩与图片旋转处理
@@ -320,5 +321,37 @@ public class ImageUtils {
 			return  sourceUrl;
 		}
         return new StringBuffer(sourceUrl).append("?imageMogr2/thumbnail/" + width +"x" + height).toString();
+	}
+	/**
+	 * 写文件
+	 *
+	 * @param inputStream
+	 * @return
+	 */
+	public static File writeToFile(File file, InputStream inputStream) {
+		File folder = new File(file.getParentFile().getPath());
+		if (!folder.exists()) {
+			folder.mkdir();
+		}
+		OutputStream outStream = null;
+		try {
+			file.createNewFile();
+			outStream = new FileOutputStream(file);
+			byte[] buffer = new byte[4 * 1024];
+			int count;
+			while ((count = inputStream.read(buffer)) != -1) {
+				outStream.write(buffer, 0, count);
+			}
+			outStream.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				outStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return file;
 	}
 }
