@@ -374,7 +374,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
             }
             if (content.equals(ADDBUTTON)){
 //                Uri imageUri = CommonUtils.getUriFromDrawableRes(mContext,R.drawable.icon_payorder);
-                itemHolder.addIb.setImageResource(R.drawable.icon_payorder);
+                itemHolder.addIb.setImageResource(R.drawable.icon_returned_order);
                 itemHolder.deleteIv.setVisibility(View.INVISIBLE);
                 itemHolder.sdv.setVisibility(View.INVISIBLE);
                 itemHolder.addIb.setVisibility(View.VISIBLE);

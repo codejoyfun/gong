@@ -930,6 +930,35 @@ public class OrderResponse {
                 private int lotID;
                 private String name;
                 private double qty;
+                private double height;
+                private String produce_datetime;
+                private String life_datetime;
+
+                public String getProduce_datetime() {
+                    return produce_datetime;
+                }
+
+                public void setProduce_datetime(String produce_datetime) {
+                    this.produce_datetime = produce_datetime;
+                }
+
+                public String getLife_datetime() {
+                    return life_datetime;
+                }
+
+                public void setLife_datetime(String life_datetime) {
+                    this.life_datetime = life_datetime;
+                }
+
+                public double getHeight() {
+                    return height;
+                }
+
+                public void setHeight(double height) {
+                    this.height = height;
+                }
+
+
 
                 public String getLotPk() {
                     return lotPk;
@@ -974,6 +1003,9 @@ public class OrderResponse {
                     dest.writeInt(this.lotID);
                     dest.writeString(this.name);
                     dest.writeDouble(this.qty);
+                    dest.writeDouble(this.height);
+                    dest.writeString(this.produce_datetime);
+                    dest.writeString(this.life_datetime);
                 }
 
                 public LotListBean() {
@@ -984,6 +1016,9 @@ public class OrderResponse {
                     this.lotID = in.readInt();
                     this.name = in.readString();
                     this.qty = in.readDouble();
+                    this.height = in.readDouble();
+                    this.produce_datetime = in.readString();
+                    this.life_datetime = in.readString();
                 }
 
                 public static final Creator<LotListBean> CREATOR = new Creator<LotListBean>() {

@@ -198,7 +198,7 @@ public class MineFragment extends NetWorkFragment {
                 break;
             case REQUEST_USERINFO_REFRESH:
                 mUserInfo = (UserInfo) result.getResult().getData();
-                if(mUserInfo.isZicai()){
+                if(Boolean.parseBoolean(mUserInfo.getIsZicai())){
                     startActivity(new Intent(mContext, ProcurementActivity.class));
                 }else{
                     ToastUtil.show(mContext,"没有自采权限");

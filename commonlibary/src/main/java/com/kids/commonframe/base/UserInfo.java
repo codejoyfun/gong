@@ -59,15 +59,17 @@ public class UserInfo implements Serializable{
     private String isAgreeItem;
     private boolean hasNewInvoice;
     private String company;
-    private boolean isZicai;
 
-    public boolean isZicai() {
+    public String getIsZicai() {
         return isZicai;
     }
 
-    public void setZicai(boolean zicai) {
-        isZicai = zicai;
+    public void setIsZicai(String isZicai) {
+        this.isZicai = isZicai;
     }
+
+    private String isZicai;
+
 
     public boolean isHasNewInvoice() {
         return hasNewInvoice;

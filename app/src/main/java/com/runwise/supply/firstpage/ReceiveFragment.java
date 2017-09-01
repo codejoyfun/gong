@@ -77,7 +77,6 @@ public class ReceiveFragment extends BaseFragment {
     OrderResponse.ListBean orderBean;
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +103,7 @@ public class ReceiveFragment extends BaseFragment {
                 OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) datas.get(position);
                 String pId = String.valueOf(bean.getProductID());
                 ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-                adapter.setReceiveCount((int)bean.getProductUomQty(), basicBean, bean);
+                adapter.setReceiveCount((int) bean.getProductUomQty(), basicBean, bean);
                 adapter.notifyDataSetChanged();
                 return false;
             }
@@ -126,7 +125,6 @@ public class ReceiveFragment extends BaseFragment {
         adapter.setData(datas);
 
     }
-
 
 
     @Override
@@ -158,13 +156,16 @@ public class ReceiveFragment extends BaseFragment {
 
         @Override
         public boolean isEnabled(int position) {
+            if (((ReceiveActivity)getActivity()).ShuangRensShouHuoQueRen){
+                return false;
+            }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-            if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
+            if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                 return false;
             }
-                return super.isEnabled(position);
+            return super.isEnabled(position);
         }
 
         @Override
@@ -208,40 +209,49 @@ public class ReceiveFragment extends BaseFragment {
                 if (basicBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                if (canSeePrice){
+                if (canSeePrice) {
                     sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }
                 viewHolder.content.setText(sb.toString());
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
+
+
+
                 viewHolder.receivedTv.setSaveEnabled(false);
-                if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
-//                    viewHolder.receivedTv.setFocusable(false);
+                if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+                    viewHolder.receivedTv.setFocusable(false);
                     viewHolder.inputAdd.setVisibility(View.GONE);
-                    convertView.setOnClickListener(new View.OnClickListener() {
+                    viewHolder.countLL.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(mContext,EditBatchActivity.class);
-                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT,bean);
+                            Intent intent = new Intent(mContext, EditBatchActivity.class);
+                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT, bean);
                             if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                                 ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
                                 ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) rb.getLot_list();
-                                intent.putExtra(EditBatchActivity.INTENT_KEY_BATCH_ENTITIES,lotBeens);
+                                intent.putExtra(EditBatchActivity.INTENT_KEY_BATCH_ENTITIES, lotBeens);
                             }
-                            startActivityForResult(intent,REQUEST_CODE_ADD_BATCH);
+                            startActivityForResult(intent, REQUEST_CODE_ADD_BATCH);
                         }
                     });
-                }else{
+                } else {
                     viewHolder.receivedTv.setFocusable(true);
                     viewHolder.receivedTv.setFocusableInTouchMode(true);
                     viewHolder.receivedTv.requestFocus();
                     viewHolder.receivedTv.findFocus();
-                    convertView.setOnClickListener(null);
+                    viewHolder.countLL.setOnClickListener(null);
                     viewHolder.inputAdd.setVisibility(View.VISIBLE);
+                }
+
+                if (((ReceiveActivity)getActivity()).ShuangRensShouHuoQueRen){
+                    viewHolder.receivedTv.setFocusable(false);
+                    viewHolder.inputAdd.setVisibility(View.GONE);
+                    viewHolder.countLL.setOnClickListener(null);
                 }
                 //优先用已输入的数据，没有，则用默认
                 if (mode == 2) {
                     viewHolder.receivedTv.setText(bean.getTallyingAmount() + "");
-                    Log.i("receivedTv", "022  "+bean.getTallyingAmount());
+                    Log.i("receivedTv", "022  " + bean.getTallyingAmount());
 //                    viewHolder.weightTv.setText(bean.getSettleAmount() + basicBean.getSettleUomId());
                 } else {
                     if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
@@ -282,7 +292,7 @@ public class ReceiveFragment extends BaseFragment {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)){
+                        if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                             return;
                         }
                         Log.i("receivedTv", "afterTextChanged");
@@ -302,45 +312,45 @@ public class ReceiveFragment extends BaseFragment {
             }
             //双单位相关
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
-            int paddingLeft = CommonUtils.dip2px(mContext,15);
+            int paddingLeft = CommonUtils.dip2px(mContext, 15);
             if (isSettle) {
                 //显示双单位信息，加号按钮隐藏
-                StringBuffer  receiveStr = new StringBuffer();
-                StringBuffer  weightStr = new StringBuffer();
-                if (mode == 2){
+                StringBuffer receiveStr = new StringBuffer();
+                StringBuffer weightStr = new StringBuffer();
+                if (mode == 2) {
                     viewHolder.doBtn.setVisibility(View.INVISIBLE);
                     receiveStr.append(bean.getTallyingAmount());
                     weightStr.append(bean.getSettleAmount()).append(basicBean.getSettleUomId());
-                }else{
+                } else {
                     viewHolder.doBtn.setVisibility(View.VISIBLE);
-                    if (mode == 1){
+                    if (mode == 1) {
                         viewHolder.doBtn.setText("点货");
-                    }else{
+                    } else {
                         viewHolder.doBtn.setText("收货");
                     }
-                    if (countMap.containsKey(String.valueOf(bean.getProductID()))){
+                    if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                         ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
                         receiveStr.append(rb.getCount());
                         weightStr.append(rb.getTwoUnitValue()).append(rb.getUnit());
-                    }else{
+                    } else {
                         receiveStr.append("0");
-                        weightStr.append("0"+basicBean.getSettleUomId());
+                        weightStr.append("0" + basicBean.getSettleUomId());
                     }
                 }
-                receiveStr.append(" /"+(int)bean.getProductUomQty()+basicBean.getUom());
+                receiveStr.append(" /" + (int) bean.getProductUomQty() + basicBean.getUom());
                 SpannableString builder = new SpannableString(receiveStr.toString());
                 int end = receiveStr.indexOf(" ");
-                builder.setSpan(new AbsoluteSizeSpan(16,true),0,end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                builder.setSpan(new AbsoluteSizeSpan(16, true), 0, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 viewHolder.settleTv.setText(builder);
                 viewHolder.weightTv.setText(weightStr.toString());
                 viewHolder.countLL.setVisibility(View.GONE);
                 viewHolder.settleLL.setVisibility(View.VISIBLE);
-                params.setMargins(paddingLeft,CommonUtils.dip2px(mContext,42),0,0);
+                params.setMargins(paddingLeft, CommonUtils.dip2px(mContext, 42), 0, 0);
 
             } else {
                 viewHolder.countLL.setVisibility(View.VISIBLE);
                 viewHolder.settleLL.setVisibility(View.GONE);
-                params.setMargins(paddingLeft,paddingLeft,0,0);
+                params.setMargins(paddingLeft, paddingLeft, 0, 0);
 
             }
             return convertView;
@@ -364,7 +374,7 @@ public class ReceiveFragment extends BaseFragment {
                 } else {
                     rb.setTwoUnit(false);
                 }
-                countMap.put(String.valueOf(bean.getProductID()),rb);
+                countMap.put(String.valueOf(bean.getProductID()), rb);
                 if (callback != null) {
                     callback.doAction(rb);
                 }

@@ -137,6 +137,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     static final int REQUEST_CODE_ADD_BATCH = 1 << 0;
 
+    public boolean ShuangRensShouHuoQueRen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,6 +151,34 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mode = bundle.getInt("mode");
         if (mode == 1) {
             setTitleText(true, "点货");
+            String tallyingUserName = lbean.getTallyingUserName();
+            if (!TextUtils.isEmpty(tallyingUserName)){
+                if (!tallyingUserName.equals(GlobalApplication.getInstance().getUserName())){
+                    ShuangRensShouHuoQueRen = true;
+                    //双人收货模式下的确认人(不能编辑,只能确认)
+                    for (OrderResponse.ListBean.LinesBean linesBean:lbean.getLines()){
+                        ReceiveBean receiveBean = new ReceiveBean();
+                        receiveBean.setProductId(linesBean.getProductID());
+                        receiveBean.setCount((int) linesBean.getTallyingAmount());
+                        final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
+                        receiveBean.setTracking(basicBean.getTracking());
+                        if (basicBean.getTracking().equals("lot")) {
+                            List<ReceiveRequest.ProductsBean.LotBean> lot_list =  new ArrayList<>();
+                            for (OrderResponse.ListBean.LinesBean.LotListBean lotListBean:linesBean.getLotList()){
+                                ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
+                                lotBean.setLot_name(lotListBean.getName());
+                                lotBean.setHeight((int) lotListBean.getHeight());
+                                lotBean.setQty((int) lotListBean.getQty());
+                                lotBean.setLife_datetime(lotListBean.getLife_datetime());
+                                lotBean.setProduce_datetime(lotListBean.getProduce_datetime());
+                                lot_list.add(lotBean);
+                            }
+                            receiveBean.setLot_list(lot_list);
+                        }
+                        countMap.put(String.valueOf(linesBean.getProductID()),receiveBean);
+                    }
+                }
+            }
         } else {
             setTitleText(true, "收货");
         }
@@ -519,13 +549,18 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     //点货接口{"products":[{"qty":5,"product_id":11,"height":2}]},
     // URL	http://develop.runwise.cn/api/order/572/tallying/
     private void tallyRequest() {
+
         ReceiveRequest rr = new ReceiveRequest();
         List<ReceiveRequest.ProductsBean> pbList = new ArrayList<>();
         for (ReceiveBean bean : countMap.values()) {
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
-            pb.setQty(bean.getCount());
             pb.setHeight(bean.getCount());
+            pb.setQty(bean.getCount());
+            pb.setTracking(bean.getTracking());
+            if (bean.getTracking().equals("lot")) {
+                pb.setLot_list(bean.getLot_list());
+            }
             pbList.add(pb);
         }
         rr.setProducts(pbList);
@@ -643,6 +678,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 }
                 receiveBean.setLot_list(lot_list);
                 countMap.put(String.valueOf(receiveBean.getProductId()),receiveBean);
+            updatePbProgress();
             ReceiveProEvent receiveProEvent = new ReceiveProEvent();
             receiveProEvent.setNotifyDataSetChange(true);
                 EventBus.getDefault().post(receiveProEvent);
@@ -651,6 +687,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     @Override
     public void doAction(ReceiveBean bean) {
+        if (ShuangRensShouHuoQueRen){
+            return;
+        }
         bottomData = bean;
         if (mPopWindow != null && mPopWindow.isShowing()) {
             mPopWindow.dismiss();
