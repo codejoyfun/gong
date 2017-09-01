@@ -516,9 +516,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             pb.setProduct_id(bean.getProductId());
             pb.setHeight(bean.getCount());
             pb.setQty(bean.getCount());
-            pb.setTracking(bean.getTracking());
             if (bean.getTracking().equals("lot")) {
                 pb.setLot_list(bean.getLot_list());
+                pb.setTracking(bean.getTracking());
             }
             pbList.add(pb);
         }
@@ -557,9 +557,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             pb.setProduct_id(bean.getProductId());
             pb.setHeight(bean.getCount());
             pb.setQty(bean.getCount());
-            pb.setTracking(bean.getTracking());
             if (bean.getTracking().equals("lot")) {
                 pb.setLot_list(bean.getLot_list());
+                pb.setTracking(bean.getTracking());
+
             }
             pbList.add(pb);
         }

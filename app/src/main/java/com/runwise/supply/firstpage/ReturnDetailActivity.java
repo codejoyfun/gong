@@ -138,6 +138,9 @@ public class ReturnDetailActivity extends NetWorkActivity {
             hasAttatchment = bean.getHasAttachment() >0;
             updateReturnView();
         }
+        else{
+            rlBottom.setVisibility(View.GONE);
+        }
     }
 
     private void updateReturnView(){
@@ -184,6 +187,28 @@ public class ReturnDetailActivity extends NetWorkActivity {
             recyclerView.getLayoutParams().height = list.size() * CommonUtils.dip2px(mContext, 86);
             countTv.setText((int) bean.getAmount() + "件");
             ygMoneyTv.setText(bean.getAmountTotal() + "元");
+
+            String deliveryType = bean.getDeliveryType();
+            //不显示
+            if (bean.getState().equals("process")) {
+                if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
+                        deliveryType.equals(TYPE_VENDOR_DELIVERY)
+                        ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
+                        &&bean.isReturnThirdPartLog())
+                        ){
+                    rlBottom.setVisibility(View.VISIBLE);
+                }else{
+                    rlBottom.setVisibility(View.GONE);
+                }
+            } else {
+                rlBottom.setVisibility(View.GONE);
+                payStateTv.setVisibility(View.VISIBLE);
+                payStateValue.setVisibility(View.VISIBLE);
+                uploadBtn.setVisibility(View.VISIBLE);
+            }
+
+            hasAttatchment = bean.getHasAttachment() >0;
+            updateReturnView();
         }
     }
 
