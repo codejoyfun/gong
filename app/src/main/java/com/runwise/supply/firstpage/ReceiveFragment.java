@@ -79,8 +79,6 @@ public class ReceiveFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ReceiveAdapter();
-        ReceiveActivity activity = (ReceiveActivity) getActivity();
-        adapter.isSettle = activity.isSettle();
 
         pullListView.setAdapter(adapter);
 
@@ -112,7 +110,7 @@ public class ReceiveFragment extends BaseFragment {
         ArrayList<OrderResponse.ListBean.LinesBean> linesList = getArguments().getParcelableArrayList("datas");
         orderBean = getArguments().getParcelable("order");
         mode = getArguments().getInt("mode");
-
+        adapter.isSettle = orderBean.isIsTwoUnit() && !orderBean.getDeliveryType().equals("fresh_vendor_delivery");
         if (type == DataType.ALL) {
             datas.addAll(linesList);
         } else {
@@ -298,9 +296,11 @@ public class ReceiveFragment extends BaseFragment {
             int paddingLeft = CommonUtils.dip2px(mContext,15);
             if (isSettle) {
                 //显示双单位信息，加号按钮隐藏
+                
                 viewHolder.countLL.setVisibility(View.GONE);
                 viewHolder.settleLL.setVisibility(View.VISIBLE);
                 params.setMargins(paddingLeft,CommonUtils.dip2px(mContext,42),0,0);
+
             } else {
                 viewHolder.countLL.setVisibility(View.VISIBLE);
                 viewHolder.settleLL.setVisibility(View.GONE);
@@ -351,7 +351,7 @@ public class ReceiveFragment extends BaseFragment {
             @ViewInject(R.id.countLL)
             LinearLayout countLL;
             @ViewInject(R.id.doBtn)
-            Button doBtn;
+            TextView doBtn;
             @ViewInject(R.id.input_add)
             ImageButton inputAdd;
             @ViewInject(R.id.line)
