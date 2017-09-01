@@ -29,18 +29,18 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -66,6 +66,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.vov.vitamio.utils.Log;
+
+import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_ENTITIES;
+import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
 
 /**
  * Created by libin on 2017/7/16.
@@ -97,9 +100,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TextView mTvSerialNumber;
     private TextView mTvSpecifications;
     private EditText mEtBatchNumber;
-    private  TextView mTvProductDateValue;
-    private  TextView mTvProductDate;
-    private  EditText mEtProductAmount;
+    private TextView mTvProductDateValue;
+    private TextView mTvProductDate;
+    private EditText mEtProductAmount;
     private SimpleDraweeView productImage;
     private int totalQty;           //预计总的商品总数
     private OrderResponse.ListBean lbean;
@@ -119,6 +122,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         return isSettle;
     }
 
+    static final int REQUEST_CODE_ADD_BATCH = 1 << 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,10 +134,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         lbean = bundle.getParcelable("order");
         isSettle = lbean.isIsTwoUnit();
         mode = bundle.getInt("mode");
-        if(mode == 1){
-            setTitleText(true,"点货");
-        }else{
-            setTitleText(true,"收货");
+        if (mode == 1) {
+            setTitleText(true, "点货");
+        } else {
+            setTitleText(true, "收货");
         }
         setTitleLeftIcon(true, R.drawable.nav_back);
         setTitleRightText(true, "完成");
@@ -158,7 +163,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
     }
 
-    public String getDeliveryType(){
+    public String getDeliveryType() {
         return lbean.getDeliveryType();
     }
 
@@ -204,7 +209,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mTvProductDateValue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(pvCustomTime == null){
+                if (pvCustomTime == null) {
                     pvCustomTime = new TimePickerView.Builder(ReceiveActivity.this, new TimePickerView.OnTimeSelectListener() {
                         @Override
                         public void onTimeSelect(Date date, View v) {//选中事件回调
@@ -273,19 +278,19 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 String pId = String.valueOf(bottomData.getProductId());
                 String productAmountString = mEtProductAmount.getText().toString();
                 int count;
-                if(TextUtils.isEmpty(productAmountString)){
+                if (TextUtils.isEmpty(productAmountString)) {
                     count = 0;
-                }else{
+                } else {
                     count = Integer.valueOf(mEtProductAmount.getText().toString());
                 }
                 bottomData.setCount(count);
-                bottomData.setLot_name(mEtBatchNumber.getText().toString());
-                if (wheelView == null || wheelView.getCurrentItem() == 0){
-                    bottomData.setProduct_datetime(mTvProductDateValue.getText().toString());
-                    bottomData.setLife_datetime("");
-                }else{
-                    bottomData.setProduct_datetime("");
-                    bottomData.setLife_datetime(mTvProductDateValue.getText().toString());
+//                bottomData.setLot_name(mEtBatchNumber.getText().toString());
+                if (wheelView == null || wheelView.getCurrentItem() == 0) {
+//                    bottomData.setProduct_datetime(mTvProductDateValue.getText().toString());
+//                    bottomData.setLife_datetime("");
+                } else {
+//                    bottomData.setProduct_datetime("");
+//                    bottomData.setLife_datetime(mTvProductDateValue.getText().toString());
                 }
                 countMap.put(pId, bottomData);
                 mPopWindow.dismiss();
@@ -321,7 +326,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
-                if (mode == 1){
+                if (mode == 1) {
                     dialog.setTitle("提示");
                     dialog.setMessage("确认取消点货?");
                     dialog.setMessageGravity();
@@ -333,7 +338,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         }
                     });
                     dialog.show();
-                }else{
+                } else {
                     finish();
                 }
                 break;
@@ -396,14 +401,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         for (ReceiveBean bean : countMap.values()) {
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
-            pb.setQty(bean.getCount());
             pb.setHeight(bean.getCount());
-            if(bean.getTracking().equals("lot")){
+            if (bean.getTracking().equals("lot")) {
                 pb.setTracking(bean.getTracking());
+                pb.setLot_list(bean.getLot_list());
             }
-            pb.setProduct_datetime(bean.getProduct_datetime());
-            pb.setLife_datetime(bean.getLife_datetime());
-            pb.setLot_name(bean.getLot_name());
             pbList.add(pb);
         }
         rr.setProducts(pbList);
@@ -421,7 +423,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         for (ReceiveBean bean : countMap.values()) {
             ReceiveRequest.ProductsBean pb = new ReceiveRequest.ProductsBean();
             pb.setProduct_id(bean.getProductId());
-            pb.setQty(bean.getCount());
             pb.setHeight(bean.getCount());
             pbList.add(pb);
         }
@@ -499,30 +500,79 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+                OrderResponse.ListBean.LinesBean bean = data.getParcelableExtra(INTENT_KEY_PRODUCT);
+                ArrayList<BatchEntity> batchEntities = (ArrayList<BatchEntity>) data.getSerializableExtra(INTENT_KEY_BATCH_ENTITIES);
+                final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
+                ReceiveBean receiveBean = new ReceiveBean();
+                receiveBean.setName(basicBean.getName());
+                receiveBean.setTracking(basicBean.getTracking());
+//                        receiveBean.setCount((int)bean.getProductUomQty());
+                int count =0;
+            List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
+                for (BatchEntity batchEntity :batchEntities){
+                    count += Integer.parseInt(batchEntity.getProductCount());
+                    ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
+                    lotBean.setHeight(Integer.parseInt(batchEntity.getProductCount()));
+                    lotBean.setQty(Integer.parseInt(batchEntity.getProductCount()));
+                    if (batchEntity.isProductDate()){
+                        lotBean.setProduce_datetime(batchEntity.getProductDate());
+                    }else{
+                        lotBean.setLife_datetime(batchEntity.getProductDate());
+                    }
+                    lotBean.setLot_name(batchEntity.getBatchNum());
+                    lot_list.add(lotBean);
+                }
+                receiveBean.setCount(count);
+                receiveBean.setProductId(bean.getProductID());
+                receiveBean.setImageBean(basicBean.getImage());
+                receiveBean.setDefaultCode(basicBean.getDefaultCode());
+                receiveBean.setUnit(basicBean.getUnit());
+                receiveBean.setStockType(bean.getStockType());
+                if (isSettle) {
+                    receiveBean.setTwoUnit(true);
+                    receiveBean.setUnit(basicBean.getSettleUomId());
+                } else {
+                    receiveBean.setTwoUnit(false);
+                }
+                receiveBean.setLot_list(lot_list);
+                countMap.put(String.valueOf(receiveBean.getProductId()),receiveBean);
+            ReceiveProEvent receiveProEvent = new ReceiveProEvent();
+            receiveProEvent.setNotifyDataSetChange(true);
+                EventBus.getDefault().post(receiveProEvent);
+            }
+    }
+
+    @Override
     public void doAction(ReceiveBean bean) {
         bottomData = bean;
         if (mPopWindow.isShowing()) {
             mPopWindow.dismiss();
         } else {
             if (lbean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
-                View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
-                mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
-                mTvProductName.setText(bottomData.getName());
-                FrecoFactory.getInstance(mContext).disPlay(productImage, Constant.BASE_URL + bottomData.getImageBean().getImageSmall());
-                mTvSerialNumber.setText(bottomData.getDefaultCode());
-                mTvSpecifications.setText(bottomData.getUnit());
-                mEtBatchNumber.setText(bottomData.getLot_name());
-
-                if (countMap.containsKey(String.valueOf(bean.getProductId()))) { //如果countMap里面有，则优先用countMap。
-                    ReceiveBean rb = countMap.get(String.valueOf(bean.getProductId()));
-                    mEtProductAmount.setText(String.valueOf(rb.getCount()));
-                    mEtProductAmount.setSelection(String.valueOf(rb.getCount()).length());
-
-                } else {
-                    mEtProductAmount.setText(bottomData.getCount()+"");
-                    mEtProductAmount.setSelection(String.valueOf(bottomData.getCount()).length());
-                }
-            }else{
+                Intent intent = new Intent(mContext, EditBatchActivity.class);
+                intent.putExtra(INTENT_KEY_PRODUCT, bottomData.getProductId());
+                startActivity(intent);
+//                View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
+//                mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
+//                mTvProductName.setText(bottomData.getName());
+//                FrecoFactory.getInstance(mContext).disPlay(productImage, Constant.BASE_URL + bottomData.getImageBean().getImageSmall());
+//                mTvSerialNumber.setText(bottomData.getDefaultCode());
+//                mTvSpecifications.setText(bottomData.getUnit());
+//                mEtBatchNumber.setText(bottomData.getLot_name());
+//
+//                if (countMap.containsKey(String.valueOf(bean.getProductId()))) { //如果countMap里面有，则优先用countMap。
+//                    ReceiveBean receiveBean = countMap.get(String.valueOf(bean.getProductId()));
+//                    mEtProductAmount.setText(String.valueOf(receiveBean.getCount()));
+//                    mEtProductAmount.setSelection(String.valueOf(receiveBean.getCount()).length());
+//
+//                } else {
+//                    mEtProductAmount.setText(bottomData.getCount()+"");
+//                    mEtProductAmount.setSelection(String.valueOf(bottomData.getCount()).length());
+//                }
+            } else {
                 String pId = String.valueOf(bottomData.getProductId());
 //                double settleCount = TextUtils.isEmpty(unitValueTv.getText().toString()) ? 0 : Double.valueOf(unitValueTv.getText().toString());
                 bottomData.setCount(bean.getCount());
@@ -532,6 +582,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 //更新进度条
                 updatePbProgress();
                 //更新fragment列表内容
+
                 EventBus.getDefault().post(new ReceiveProEvent());
             }
 
@@ -576,7 +627,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             if (datas != null && datas.size() > 0) {
                 bundle.putParcelableArrayList("datas", datas);
             }
-            bundle.putParcelable("order",lbean);
+            bundle.putParcelable("order", lbean);
             ReceiveFragment allFragment = new ReceiveFragment();
             allFragment.type = DataType.ALL;
             allFragment.setCallback(ReceiveActivity.this);
@@ -697,6 +748,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 @Override
                 public void doClickButton(Button btn, CustomDialog dialog) {
                     startOrEndTally(false);
+                }
+            });
+            dialog.setLeftBtnListener("取消", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    dialog.dismiss();
                 }
             });
             dialog.show();

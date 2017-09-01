@@ -2,6 +2,8 @@ package com.runwise.supply.firstpage.entity;
 
 import com.runwise.supply.orderpage.entity.ImageBean;
 
+import java.util.List;
+
 /**
  * Created by libin on 2017/7/17.
  */
@@ -30,13 +32,17 @@ public class ReceiveBean {
 
 
 
-    private String product_datetime;
-    private String lot_name;
-    private String life_datetime;
+    List<ReceiveRequest.ProductsBean.LotBean> lot_list;
 
     public ReceiveBean() {
     }
+    public List<ReceiveRequest.ProductsBean.LotBean> getLot_list() {
+        return lot_list;
+    }
 
+    public void setLot_list(List<ReceiveRequest.ProductsBean.LotBean> lot_list) {
+        this.lot_list = lot_list;
+    }
     public String getName() {
         return name;
     }
@@ -108,12 +114,6 @@ public class ReceiveBean {
         return productId;
     }
 
-    public void setProduct_datetime(String product_datetime) {
-        this.product_datetime = product_datetime;
-    }
-    public String getProduct_datetime() {
-        return product_datetime;
-    }
 
     public String getTracking() {
         return tracking;
@@ -123,21 +123,6 @@ public class ReceiveBean {
         this.tracking = tracking;
     }
 
-    public String getLot_name() {
-        return lot_name;
-    }
-
-    public void setLot_name(String lot_name) {
-        this.lot_name = lot_name;
-    }
-
-    public String getLife_datetime() {
-        return life_datetime;
-    }
-
-    public void setLife_datetime(String life_datetime) {
-        this.life_datetime = life_datetime;
-    }
 
     public ImageBean getImageBean() {
         return imageBean;
@@ -146,4 +131,5 @@ public class ReceiveBean {
     public void setImageBean(ImageBean imageBean) {
         this.imageBean = imageBean;
     }
+
 }

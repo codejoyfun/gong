@@ -406,9 +406,9 @@ public class ReturnOrderBean implements Serializable {
             dest.writeString(driveMobile);
             dest.writeString(deliveryType);
             dest.writeInt(hasAttachment);
+            dest.writeByte((byte)(returnThirdPartLog?1:0));
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
-            dest.writeByte((byte)(returnThirdPartLog?1:0));
         }
 
 

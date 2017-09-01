@@ -30,7 +30,7 @@ public class ReturnSuccessActivity extends BaseActivity {
     public static final String INTENT_KEY_RESULTBEAN = "intent_key_resultbean";
     FinishReturnResponse finishReturnResponse;
 
-    public static final int REQUEST_CODE_UPLOAD = 1<<0;
+    public static final int REQUEST_CODE_UPLOAD = 1 << 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +40,12 @@ public class ReturnSuccessActivity extends BaseActivity {
         setTitleText(true, "退货成功");
         showBackBtn();
         finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
+        int count = 0;
+        for (FinishReturnResponse.ReturnOrder.Lines line : finishReturnResponse.getReturnOrder().getLines()) {
+            count += line.getPickupNum();
+        }
         tvReturnCount.setText("退货数量: " +
-                finishReturnResponse.getReturnOrder().getLines().size() +
+                count +
                 "件\n" +
                 "退货金额: " +
                 finishReturnResponse.getReturnOrder().getAmountTotal() +
@@ -53,8 +57,8 @@ public class ReturnSuccessActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            if (requestCode == REQUEST_CODE_UPLOAD){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_UPLOAD) {
                 finish();
             }
         }
@@ -65,16 +69,16 @@ public class ReturnSuccessActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.orderBtn:
                 Intent intent = new Intent(mContext, OrderMsgDetailActivity.class);
-                intent.putExtra("title",finishReturnResponse.getReturnOrder().getName());
-                intent.putExtra("normalOrder",false);
-                intent.putExtra("orderId",finishReturnResponse.getReturnOrder().getOrderID()+"");
+                intent.putExtra("title", finishReturnResponse.getReturnOrder().getName());
+                intent.putExtra("normalOrder", false);
+                intent.putExtra("orderId", finishReturnResponse.getReturnOrder().getReturnOrderID() + "");
                 startActivity(intent);
                 break;
             case R.id.uploadBtn:
                 Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
                 uIntent.putExtra("orderid", finishReturnResponse.getReturnOrder().getOrderID());
                 uIntent.putExtra("ordername", finishReturnResponse.getReturnOrder().getName());
-                startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
+                startActivityForResult(uIntent, REQUEST_CODE_UPLOAD);
                 break;
         }
     }
