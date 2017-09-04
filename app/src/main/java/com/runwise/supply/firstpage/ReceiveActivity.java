@@ -765,7 +765,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 updatePbProgress();
                 //更新fragment列表内容
 
-                EventBus.getDefault().post(new ReceiveProEvent());
+                EventBus.getDefault().post(new ReceiveProEvent(true));
             }
 
 
