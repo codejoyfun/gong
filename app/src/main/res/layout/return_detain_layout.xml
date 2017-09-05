@@ -44,16 +44,8 @@
                 />
             <include layout="@layout/returndetail_info_item"
                 />
-            <TextView android:layout_width="match_parent"
-                android:id="@+id/plKey"
-                android:layout_height="40dp"
-                android:text="商品清单"
-                android:textSize="14sp"
-                android:textColor="#666666"
-                android:paddingLeft="15dp"
-                android:background="#FFFFFF"
-                android:gravity="center_vertical"
-                />
+            <!--种类bar-->
+            <include layout="@layout/orderdetail_type_item" />
             <View
                 android:id="@+id/line"
                 android:layout_width="match_parent"

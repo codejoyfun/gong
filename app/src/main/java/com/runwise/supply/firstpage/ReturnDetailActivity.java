@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -19,6 +18,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ReturnActivityRefreshEvent;
@@ -26,6 +26,7 @@ import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -76,6 +77,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
     private TextView payStateTv;
     @ViewInject(R.id.uploadBtn)
     private Button uploadBtn;
+    @ViewInject(R.id.indexLine)
+    private View indexLine;
 
     private ReturnOrderBean.ListBean bean;
     public static final int REQUEST_CODE_UPLOAD = 1<<0;
@@ -156,6 +159,9 @@ public class ReturnDetailActivity extends NetWorkActivity {
         }
     }
 
+    List<ReturnOrderBean.ListBean.LinesBean> listDatas;
+    private List<ReturnOrderBean.ListBean.LinesBean> typeDatas = new ArrayList<>();
+
     private void updateUI() {
         if (bean != null) {
             //获取物流状态
@@ -182,8 +188,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
             orderNumTv.setText(bean.getName());
             buyerValue.setText(bean.getCreateUser());
             orderTimeValue.setText(bean.getCreateDate());
-            List<ReturnOrderBean.ListBean.LinesBean> list = bean.getLines();
-            adapter.setReturnList(list);
+            listDatas = bean.getLines();
+
+
+            adapter.setReturnList(listDatas);
 //            recyclerView.getLayoutParams().height = list.size() * CommonUtils.dip2px(mContext, 86);
             countTv.setText((int) bean.getAmount() + "件");
             ygMoneyTv.setText(bean.getAmountTotal() + "元");
@@ -212,7 +220,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
         }
     }
 
-    @OnClick({R.id.title_iv_left, R.id.gotoStateBtn, R.id.doBtn,R.id.uploadBtn})
+    @OnClick({R.id.title_iv_left, R.id.gotoStateBtn, R.id.doBtn,R.id.uploadBtn,R.id.allBtn,R.id.coldBtn,R.id.freezeBtn,R.id.dryBtn})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
@@ -247,6 +255,20 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 uIntent.putExtra("ordername", bean.getName());
                 uIntent.putExtra("hasattachment", hasAttatchment);
                 startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
+                break;
+            case R.id.allBtn:
+                //切换页签到全部上面
+                switchTabBy(DataType.ALL);
+                break;
+            case R.id.coldBtn:
+                switchTabBy(DataType.LENGCANGHUO);
+                //
+                break;
+            case R.id.freezeBtn:
+                switchTabBy(DataType.FREEZE);
+                break;
+            case R.id.dryBtn:
+                switchTabBy(DataType.DRY);
                 break;
             default:
                 break;
@@ -290,6 +312,45 @@ public class ReturnDetailActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+
+    }
+
+    private void switchTabBy(DataType type) {
+        int padding = (CommonUtils.getScreenWidth(this)/4 - CommonUtils.dip2px(mContext,36))/2;
+        int tabWidth = CommonUtils.getScreenWidth(this)/4;
+        float translationX = 0.0F;
+        switch (type){
+            case ALL:
+                adapter.setReturnList(listDatas);
+                translationX = padding;
+                break;
+            case LENGCANGHUO:
+                translationX = tabWidth + padding;
+                break;
+            case FREEZE:
+                translationX = 2*tabWidth + padding;
+                break;
+            case DRY:
+                translationX = 3 * tabWidth + padding;
+                break;
+        }
+        ViewPropertyAnimator.animate(indexLine).translationX(translationX);
+        typeDatas.clear();
+        if (type == DataType.ALL){
+            adapter.setReturnList(listDatas);
+        }else{
+            for (ReturnOrderBean.ListBean.LinesBean bean : listDatas){
+                if (bean.getStockType().equals(DataType.LENGCANGHUO.getType()) && type == DataType.LENGCANGHUO){
+                    typeDatas.add(bean);
+                }else if (bean.getStockType().equals(DataType.FREEZE.getType())  && type == DataType.FREEZE){
+                    typeDatas.add(bean);
+                }else if (bean.getStockType().equals(DataType.DRY.getType())  && type == DataType.DRY){
+                    typeDatas.add(bean);
+                }
+
+            }
+            adapter.setReturnList(typeDatas);
+        }
 
     }
 }
