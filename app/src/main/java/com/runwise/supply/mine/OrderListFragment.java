@@ -2,7 +2,6 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -112,6 +110,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             case BENZHOU:
                 request.setStart(TimeUtils.getThisWeekStart());
                 request.setEnd(TimeUtils.getCurrentDate());
+//                request.setStart("2017-09-02");
+//                request.setEnd("2017-09-06");
                 break;
             case SHANGZHOU:
                 request.setStart(TimeUtils.getPerWeekStart());
