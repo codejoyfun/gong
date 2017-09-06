@@ -6,7 +6,6 @@
                 android:background="#FFFFFF">
 
 
-
     <RelativeLayout
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
@@ -38,18 +37,19 @@
             android:visibility="invisible"/>
     </RelativeLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/nsv"
+    <github.chenupt.dragtoplayout.DragTopLayout
+        android:id="@+id/drag_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_bar"
-        android:layout_alignWithParentIfMissing="true"
         android:layout_below="@+id/title_bar"
         android:background="#F0F0F0">
 
         <LinearLayout
+            android:id="@+id/top_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:background="#F0F0F0"
             android:orientation="vertical">
             <!--订单状态-->
@@ -58,35 +58,22 @@
             <include layout="@layout/orderdetail_info_item"/>
             <!-- 退货单信息 -->
             <include layout="@layout/return_info_item"/>
+        </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/rl_tab_viewpage"
+        <LinearLayout
+            android:id="@+id/drag_content_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <!--种类bar-->
+            <include
+                layout="@layout/tab_viewpage_wrap"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/tv_open"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:gravity="center"
-                    android:text="展开"/>
-                <!--种类bar-->
-                <include
-                    layout="@layout/tab_viewpage_wrap"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/tv_open"
-                    />
-
-
-            </RelativeLayout>
-
+                android:layout_height="wrap_content"/>
             <!--汇总信息-->
             <include layout="@layout/orderdetail_bottom_item"/>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </github.chenupt.dragtoplayout.DragTopLayout>
 
     <com.kids.commonframe.base.view.LoadingLayout
         android:id="@+id/loadingLayout"
@@ -95,6 +82,7 @@
         android:layout_below="@id/title_bar"
         android:visibility="gone"
         />
+
     <include
         android:id="@+id/title_bar"
         layout="@layout/common_title_bar"

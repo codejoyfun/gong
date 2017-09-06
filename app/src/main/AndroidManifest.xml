@@ -373,8 +373,7 @@
         <activity
             android:name=".firstpage.OrderDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".firstpage.OrderStateActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -459,8 +458,7 @@
         <activity
             android:name=".firstpage.ReturnDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".mine.ChangeHostActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

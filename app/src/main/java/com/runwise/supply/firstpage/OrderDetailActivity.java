@@ -10,9 +10,16 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,6 +34,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
+import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -45,6 +53,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import github.chenupt.dragtoplayout.DragTopLayout;
 import me.shaohui.bottomdialog.BottomDialog;
 
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
@@ -109,6 +118,10 @@ public class OrderDetailActivity extends NetWorkActivity {
     private TabLayout tablayout;
     @ViewInject(R.id.viewpager)
     private YourScrollableViewPager viewpager;
+    @ViewInject(R.id.drag_layout)
+    private DragTopLayout dragLayout;
+    @ViewInject(R.id.tv_open)
+    private ImageView ivOpen;
     private boolean isModifyOrder;          //可修改订单
     private int orderId;                    //如果有orderId, 需要重新刷新
 
@@ -123,6 +136,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             }).setLayoutRes(R.layout.return_replace_layout)
             .setCancelOutside(true)
             .setDimAmount(0.5f);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,9 +166,10 @@ public class OrderDetailActivity extends NetWorkActivity {
         sb.append(orderId).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
+        dragLayout.setOverDrag(false);
     }
 
-    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth, R.id.uploadBtn, R.id.gotoStateBtn, R.id.rightBtn, R.id.rightBtn2,R.id.tv_open})
+    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth, R.id.uploadBtn, R.id.gotoStateBtn, R.id.rightBtn, R.id.rightBtn2, R.id.tv_open})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
@@ -296,17 +311,49 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.tv_open:
-                View nsv = findViewById(R.id.nsv);
-                View rl_tab_viewpage = findViewById(R.id.rl_tab_viewpage);
-                View title_bar = findViewById(R.id.title_bar);
-                int height = title_bar.getHeight();
-                float title_barY = title_bar.getY();
-                float top = rl_tab_viewpage.getY() - title_barY;
-                RelativeLayout.LayoutParams lp1 =  (RelativeLayout.LayoutParams) nsv.getLayoutParams();
-                lp1.topMargin = (int) -top;
-                nsv.requestLayout();
+                if (dragLayout.getState() == DragTopLayout.PanelState.EXPANDED) {
+                    dragLayout.toggleTopView();
+                    canShow = true;
+                }else{
+                    if (mProductTypeWindow.isShowing()){
+                        mProductTypeWindow.dismiss();
+                    }else{
+                        showPopWindow();
+                    }
+                }
+                dragLayout.listener(new DragTopLayout.PanelListener() {
+                    @Override
+                    public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
+                        if (panelState == DragTopLayout.PanelState.COLLAPSED) {
+                            if (canShow){
+                                showPopWindow();
+                                canShow = false;
+                            }
+                        } else {
+                            mProductTypeWindow.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onSliding(float ratio) {
+
+                    }
+
+                    @Override
+                    public void onRefresh() {
+
+                    }
+                });
+
                 break;
         }
+    }
+    boolean canShow = false;
+    private void showPopWindow(){
+        int y = findViewById(R.id.title_bar).getHeight() + tablayout.getHeight();
+        mProductTypeWindow.showAtLocation(findViewById(R.id.rl_content), Gravity.NO_GRAVITY, 0, y);
+        mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
+        ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
     @Override
@@ -516,38 +563,59 @@ public class OrderDetailActivity extends NetWorkActivity {
 //            countTv.setText((int)bean.getAmount()+"件");
             //设置list
             listDatas = bean.getLines();
-            List<Fragment> orderProductFragmentList = new ArrayList<>();
-            List<Fragment> tabFragmentList = new ArrayList<>();
-            List<String> titles = new ArrayList<>();
-            titles.add("全部");
-
-            HashMap<String, ArrayList<ListBean.LinesBean>> map = new HashMap<>();
-            for (ListBean.LinesBean linesBean : listDatas) {
-                ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getStockType());
-                if (linesBeen == null) {
-                    linesBeen = new ArrayList<>();
-                    map.put(linesBean.getStockType(), linesBeen);
-                }
-                linesBeen.add(linesBean);
-            }
-            Iterator iter = map.entrySet().iterator();
-            while (iter.hasNext()) {
-                Map.Entry entry = (Map.Entry) iter.next();
-                String key = (String) entry.getKey();
-                ArrayList<ListBean.LinesBean> value = (ArrayList<ListBean.LinesBean>) entry.getValue();
-                titles.add(key);
-                orderProductFragmentList.add(newProductFragment(value));
-                tabFragmentList.add(TabFragment.newInstance(key));
-            }
-            orderProductFragmentList.add(0, newProductFragment((ArrayList<ListBean.LinesBean>) listDatas));
-
-            FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
-            viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
-            tablayout.setupWithViewPager(viewpager);//将TabLayout和ViewPager关联起来
-            //默认线在全部上
-            int padding = (CommonUtils.getScreenWidth(this) / 4 - CommonUtils.dip2px(mContext, 36)) / 2;
+            setUpDataForViewPage();
 
         }
+    }
+
+    private void setUpDataForViewPage() {
+        List<Fragment> orderProductFragmentList = new ArrayList<>();
+        List<Fragment> tabFragmentList = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+        titles.add("全部");
+
+        HashMap<String, ArrayList<ListBean.LinesBean>> map = new HashMap<>();
+        for (ListBean.LinesBean linesBean : listDatas) {
+            ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getStockType());
+            if (linesBeen == null) {
+                linesBeen = new ArrayList<>();
+                map.put(linesBean.getStockType(), linesBeen);
+            }
+            linesBeen.add(linesBean);
+        }
+        Iterator iter = map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String key = (String) entry.getKey();
+            ArrayList<ListBean.LinesBean> value = (ArrayList<ListBean.LinesBean>) entry.getValue();
+            titles.add(key);
+            orderProductFragmentList.add(newProductFragment(value));
+            tabFragmentList.add(TabFragment.newInstance(key));
+        }
+        orderProductFragmentList.add(0, newProductFragment((ArrayList<ListBean.LinesBean>) listDatas));
+
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
+        viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
+        tablayout.setupWithViewPager(viewpager);//将TabLayout和ViewPager关联起来
+        tablayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                viewpager.setCurrentItem(position);
+                mProductTypeWindow.dismiss();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        initPopWindow((ArrayList<String>) titles);
     }
 
     public OrderProductFragment newProductFragment(ArrayList<ListBean.LinesBean> value) {
@@ -584,4 +652,44 @@ public class OrderDetailActivity extends NetWorkActivity {
         sendConnection(urlSb.toString(), request, CANCEL, true, BaseEntity.ResultBean.class);
 
     }
+    private PopupWindow mProductTypeWindow;
+    ProductTypeAdapter mProductTypeAdapter;
+    private void initPopWindow(ArrayList<String> typeList) {
+        View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
+        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
+        mProductTypeAdapter = new ProductTypeAdapter(typeList);
+        gridView.setAdapter(mProductTypeAdapter);
+        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        mProductTypeWindow.setContentView(dialog);
+        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mProductTypeWindow.setFocusable(false);
+        mProductTypeWindow.setOutsideTouchable(false);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mProductTypeWindow.dismiss();
+                viewpager.setCurrentItem(position);
+                tablayout.getTabAt(position).select();
+                for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
+                    mProductTypeAdapter.selectList.set(i,new Boolean(false));
+                }
+                mProductTypeAdapter.selectList.set(position,new Boolean(true));
+                mProductTypeAdapter.notifyDataSetChanged();
+            }
+        });
+        dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mProductTypeWindow.dismiss();
+            }
+        });
+        mProductTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                ivOpen.setImageResource(R.drawable.arrow);
+            }
+        });
+    }
+
 }

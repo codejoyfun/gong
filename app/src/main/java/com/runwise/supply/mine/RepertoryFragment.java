@@ -18,10 +18,11 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
+import com.runwise.supply.fragment.OrderProductFragment;
+import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.mine.entity.RefreshPepertoy;
 import com.runwise.supply.mine.entity.RepertoryEntity;
-import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
@@ -31,7 +32,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 库存列表
@@ -56,9 +60,12 @@ public class RepertoryFragment extends NetWorkFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new TabPageIndicatorAdapter(this.getActivity().getSupportFragmentManager());
+    }
+
+    private void initUI(List<String> titles,List<RepertoryListFragment> repertoryEntityFragmentList){
+        adapter = new TabPageIndicatorAdapter(this.getActivity().getSupportFragmentManager(),titles,repertoryEntityFragmentList);
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(4);
+        viewPager.setOffscreenPageLimit(repertoryEntityFragmentList.size());
         smartTabLayout.setViewPager(viewPager);
         isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
@@ -289,6 +296,7 @@ public class RepertoryFragment extends NetWorkFragment {
                     }
                 }
                 if(!nullProductExit) {
+                    setUpDataForViewPage();
                     EventBus.getDefault().post(repertoryEntity);
                 }
                 break;
@@ -301,6 +309,7 @@ public class RepertoryFragment extends NetWorkFragment {
                         break;
                     }
                 }
+                setUpDataForViewPage();
                 EventBus.getDefault().post(repertoryEntity);
                 break;
         }
@@ -311,33 +320,50 @@ public class RepertoryFragment extends NetWorkFragment {
         ToastUtil.show(mContext,errMsg);
     }
 
+    private void setUpDataForViewPage() {
+        List<RepertoryListFragment> repertoryEntityFragmentList = new ArrayList<>();
+        List<Fragment> tabFragmentList = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+        titles.add("全部");
+
+        HashMap<String, ArrayList<RepertoryEntity.ListBean>> map = new HashMap<>();
+        for (RepertoryEntity.ListBean listBean : repertoryEntity.getList()) {
+            ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getStockType());
+            if (listBeen == null) {
+                listBeen = new ArrayList<>();
+                map.put(listBean.getProduct().getStockType(), listBeen);
+            }
+            listBeen.add(listBean);
+        }
+        Iterator iter = map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String key = (String) entry.getKey();
+            ArrayList<RepertoryEntity.ListBean> value = (ArrayList<RepertoryEntity.ListBean>) entry.getValue();
+            titles.add(key);
+            repertoryEntityFragmentList.add(newRepertoryListFragment(value));
+            tabFragmentList.add(TabFragment.newInstance(key));
+        }
+        repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<RepertoryEntity.ListBean>) repertoryEntity.getList()));
+        initUI(titles,repertoryEntityFragmentList);
+//        initPopWindow((ArrayList<String>) titles);
+    }
+
+    public RepertoryListFragment newRepertoryListFragment(ArrayList<RepertoryEntity.ListBean> value) {
+        RepertoryListFragment repertoryListFragment = new RepertoryListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(OrderProductFragment.BUNDLE_KEY_LIST, value);
+        repertoryListFragment.setArguments(bundle);
+        return repertoryListFragment;
+    }
+
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
         private List<String> titleList = new ArrayList<>();
         private List<RepertoryListFragment> fragmentList = new ArrayList<>();
-        public TabPageIndicatorAdapter(FragmentManager fm) {
+        public TabPageIndicatorAdapter(FragmentManager fm,List<String> titles,List<RepertoryListFragment> repertoryEntityFragmentList) {
             super(fm);
-            titleList.add("全部");
-            titleList.add("冷藏货");
-            titleList.add("冻货");
-            titleList.add("干货");
-            Bundle bundle = new Bundle();
-            RepertoryListFragment allFragment = new RepertoryListFragment();
-            allFragment.type = DataType.ALL;
-            allFragment.setArguments(bundle);
-            RepertoryListFragment coldFragment = new RepertoryListFragment();
-            coldFragment.type = DataType.LENGCANGHUO;
-            coldFragment.setArguments(bundle);
-            RepertoryListFragment freezeFragment = new RepertoryListFragment();
-            freezeFragment.type = DataType.FREEZE;
-            freezeFragment.setArguments(bundle);
-            RepertoryListFragment dryFragment = new RepertoryListFragment();
-            dryFragment.type = DataType.DRY;
-            dryFragment.setArguments(bundle);
-
-            fragmentList.add(allFragment);
-            fragmentList.add(coldFragment);
-            fragmentList.add(freezeFragment);
-            fragmentList.add(dryFragment);
+            titleList = titles;
+            fragmentList.addAll(repertoryEntityFragmentList);
         }
         public List<RepertoryListFragment> getFragmentList() {
             return  fragmentList;

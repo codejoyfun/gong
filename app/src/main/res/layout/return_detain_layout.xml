@@ -1,74 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+                android:id="@+id/rl_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
     <include
-        android:id="@+id/include_title"
+        android:id="@+id/title_bar"
         layout="@layout/common_title_bar"
         />
+
     <RelativeLayout
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_alignParentBottom="true"
         android:gravity="center_vertical"
-        android:paddingRight="15dp"
-        android:layout_alignParentBottom="true">
+        android:paddingRight="15dp">
 
 
         <TextView
             android:id="@+id/doBtn"
             android:layout_width="86dp"
             android:layout_height="31dp"
-            android:text="完成退货"
-            android:textSize="14sp"
-            android:textColor="#333333"
-            android:gravity="center"
             android:layout_alignParentRight="true"
-            android:background="@drawable/firstpage_do_circle"/>
+            android:background="@drawable/firstpage_do_circle"
+            android:gravity="center"
+            android:text="完成退货"
+            android:textColor="#333333"
+            android:textSize="14sp"/>
     </RelativeLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <github.chenupt.dragtoplayout.DragTopLayout
+        android:id="@+id/drag_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/include_title"
+        android:layout_height="match_parent"
         android:layout_above="@id/rl_bottom"
+        android:layout_below="@id/title_bar"
         android:background="#F0F0F0">
+
         <LinearLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <include layout="@layout/orderdetain_state_item"/>
+
+            <include layout="@layout/returndetail_info_item"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/drag_content_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-            <include layout="@layout/orderdetain_state_item"
-                />
-            <include layout="@layout/returndetail_info_item"
-                />
+            android:orientation="vertical">
             <!--种类bar-->
-            <include layout="@layout/orderdetail_type_item" />
-            <View
-                android:id="@+id/line"
+            <include
+                layout="@layout/tab_viewpage_wrap"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#F5F5F5"
-                />
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                />
-
-            <include layout="@layout/orderdetail_bottom_item"
-                />
+                android:layout_height="wrap_content"/>
+            <!--汇总信息-->
+            <include layout="@layout/orderdetail_bottom_item"/>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </github.chenupt.dragtoplayout.DragTopLayout>
 
     <com.kids.commonframe.base.view.LoadingLayout
         android:id="@+id/loadingLayout"
-        android:layout_below="@id/include_title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/title_bar"
         android:visibility="gone"
         />
 </RelativeLayout>

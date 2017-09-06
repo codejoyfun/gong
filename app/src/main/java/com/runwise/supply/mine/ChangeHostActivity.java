@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
@@ -24,8 +23,6 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.HashMap;
 
 /**
  * Created by libin on 2017/8/11.
@@ -42,8 +39,8 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.tipTv)
     private TextView tipTv;
     private ArrayAdapter<String> adapter;
-    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","GoldenClient2017Test2","TestFor...Company数据库"};
-    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","GoldenClient2017Test2","Testfor...Company"};
+    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","GoldenClient2017Test10","TestFor...Company数据库"};
+    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","GoldenClient2017Test10","Testfor...Company"};
     private int which;
     private boolean isLogin;
     @Override
@@ -123,7 +120,7 @@ public class ChangeHostActivity extends NetWorkActivity {
 
                         break;
                     case 3:
-                        dialog.setMessage("即将切换到GoldenClient2017Test2数据库");
+                        dialog.setMessage("即将切换到GoldenClient2017Test10数据库");
                         dialog.setMessageGravity();
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                             @Override

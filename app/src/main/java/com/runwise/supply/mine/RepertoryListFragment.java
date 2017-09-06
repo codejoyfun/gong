@@ -47,19 +47,19 @@ public class RepertoryListFragment extends NetWorkFragment {
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
-    public  DataType type;
+    public DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
     private List<RepertoryEntity.ListBean> dataList;
     private String keyWork;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ProductAdapter();
-        if(mContext instanceof MainActivity) {
+        if (mContext instanceof MainActivity) {
             pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-        }
-        else {
+        } else {
             pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         }
         pullListView.setPullToRefreshOverScrollEnabled(false);
@@ -71,11 +71,12 @@ public class RepertoryListFragment extends NetWorkFragment {
                 EventBus.getDefault().post(new RefreshPepertoy());
             }
         });
-        if(dataList != null) {
+        if (dataList != null) {
             adapter.setData(dataList);
-            loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_goodsnone);
+            loadingLayout.onSuccess(adapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
         }
     }
+
     @Override
     protected int createViewByLayoutId() {
         return R.layout.product_layout_list;
@@ -83,31 +84,21 @@ public class RepertoryListFragment extends NetWorkFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(RepertoryEntity event) {
-        List<RepertoryEntity.ListBean> typeList = new ArrayList<>();
-        for (RepertoryEntity.ListBean bean : event.getList()){
-            if (bean.getProduct().getStockType().equals(type.getType())){
-                typeList.add(bean);
-            }
-        }
-        if(type == DataType.ALL) {
-            dataList = event.getList();
-        }
-        else {
-            dataList = typeList;
-        }
-        if(adapter != null) {
+        dataList = event.getList();
+        if (adapter != null) {
             adapter.setData(dataList);
-            loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_goodsnone);
-            }
-        if(pullListView != null) {
+            loadingLayout.onSuccess(adapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+        }
+        if (pullListView != null) {
             pullListView.onRefreshComplete();
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(SearchKeyAct event) {
-        if(mContext.getClass().getSimpleName().equals(event.getActName())) {
+        if (mContext.getClass().getSimpleName().equals(event.getActName())) {
             adapter.setData(findArrayByWord(event.getKeyWork()));
-            loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_searchnone);
+            loadingLayout.onSuccess(adapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_searchnone);
 
         }
     }
@@ -116,10 +107,10 @@ public class RepertoryListFragment extends NetWorkFragment {
     private List<RepertoryEntity.ListBean> findArrayByWord(String word) {
         keyWork = word;
         List<RepertoryEntity.ListBean> findList = new ArrayList<>();
-        if(TextUtils.isEmpty(word)) {
+        if (TextUtils.isEmpty(word)) {
             return dataList;
         }
-        for (RepertoryEntity.ListBean bean : dataList){
+        for (RepertoryEntity.ListBean bean : dataList) {
             if (bean.getProduct().getName().contains(word)) {
                 findList.add(bean);
             }
@@ -137,38 +128,36 @@ public class RepertoryListFragment extends NetWorkFragment {
 
     }
 
-    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean>{
+    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean> {
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.repertory_layout_item, null);
-                ViewUtils.inject(viewHolder,convertView);
+                ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-            }
-            else {
+            } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final RepertoryEntity.ListBean bean =  mList.get(position);
+            final RepertoryEntity.ListBean bean = mList.get(position);
             ProductBasicList.ListBean productBean = bean.getProduct();
-            if (productBean != null){
-                if(!TextUtils.isEmpty(keyWork)) {
+            if (productBean != null) {
+                if (!TextUtils.isEmpty(keyWork)) {
                     int index = productBean.getName().indexOf(keyWork);
-                    if(index != -1) {
+                    if (index != -1) {
                         SpannableString spannStr = new SpannableString(productBean.getName());
-                        spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#6bb400")), index, index + keyWork.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#6bb400")), index, index + keyWork.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         viewHolder.name.setText(spannStr);
                     }
-                }
-                else {
+                } else {
                     viewHolder.name.setText(productBean.getName());
                 }
                 viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
             }
-            viewHolder.value.setText(bean.getQty()+"");
+            viewHolder.value.setText(bean.getQty() + "");
             viewHolder.uom.setText(bean.getUom());
             viewHolder.dateNumber.setText(bean.getLotNum());
             viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLifeEndDate()));
@@ -177,21 +166,21 @@ public class RepertoryListFragment extends NetWorkFragment {
 
         class ViewHolder {
             @ViewInject(R.id.name)
-            TextView            name;
+            TextView name;
             @ViewInject(R.id.productImage)
-            SimpleDraweeView    sDv;
+            SimpleDraweeView sDv;
             @ViewInject(R.id.number)
-            TextView            number;
+            TextView number;
             @ViewInject(R.id.content)
             TextView content;
             @ViewInject(R.id.value)
-            TextView         value;
+            TextView value;
             @ViewInject(R.id.uom)
-            TextView         uom;
+            TextView uom;
             @ViewInject(R.id.dateNumber)
-            TextView         dateNumber;
+            TextView dateNumber;
             @ViewInject(R.id.dateLate)
-            TextView            dateLate;
+            TextView dateLate;
         }
     }
 }

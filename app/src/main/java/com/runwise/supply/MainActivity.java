@@ -22,7 +22,6 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.repertory.MainRepertoryFragment;
 import com.runwise.supply.entity.UnReadData;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.message.MessageFragment;
@@ -30,19 +29,18 @@ import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.MainRepertoryFragment;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import java.util.HashMap;
+import java.util.List;
+
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;
 //import com.socketmobile.capture.events.DataDecodedEvent;
 //import com.socketmobile.capture.events.DeviceAvailabilityEvent;
 //import com.socketmobile.capture.types.DecodedData;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends NetWorkActivity {
     //缓存全部商品列表的标识
