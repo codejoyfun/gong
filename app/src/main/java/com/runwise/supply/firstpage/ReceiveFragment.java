@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -225,7 +226,7 @@ public class ReceiveFragment extends BaseFragment {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(mContext, EditBatchActivity.class);
-                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT, bean);
+                            intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT, (Parcelable) bean);
                             if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                                 ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
                                 ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) rb.getLot_list();

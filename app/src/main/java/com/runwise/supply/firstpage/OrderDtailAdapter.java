@@ -3,6 +3,7 @@ package com.runwise.supply.firstpage;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -116,7 +117,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
             public void onClick(View v) {
                 Intent intent = new Intent(context, LotListActivity.class);
                 intent.putExtra("title",basicBean.getName());
-                intent.putExtra("bean",bean);
+                intent.putExtra("bean", (Parcelable) bean);
                 context.startActivity(intent);
             }
         });

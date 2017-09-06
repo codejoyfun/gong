@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/base_background_color">
+    android:background="@color/colorAccent">
 
     <include
         android:id="@+id/titleLayout"

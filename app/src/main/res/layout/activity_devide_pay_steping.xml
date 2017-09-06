@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.runwise.supply.message.DividePayStepFinishActivity"
-    android:background="@color/base_background_color"
+    android:background="@color/colorAccent"
     >
     <include
         android:id="@+id/title_layout"

@@ -1,75 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FFFFFF"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <include layout="@layout/common_title_bar"
-        android:id="@+id/title_bar"/>
+                android:id="@+id/rl_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF">
+
+
+
     <RelativeLayout
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_alignParentBottom="true"
         android:gravity="center_vertical"
-        android:paddingRight="15dp"
-        android:layout_alignParentBottom="true">
+        android:paddingRight="15dp">
+
         <Button
             android:id="@+id/rightBtn"
             android:layout_width="86dp"
             android:layout_height="31dp"
-            android:text="评价"
-            android:textSize="14sp"
-            android:textColor="#333333"
             android:layout_alignParentRight="true"
-            android:background="@drawable/firstpage_do_circle"/>
+            android:background="@drawable/firstpage_do_circle"
+            android:text="评价"
+            android:textColor="#333333"
+            android:textSize="14sp"/>
+
         <Button
             android:id="@+id/rightBtn2"
             android:layout_width="86dp"
             android:layout_height="31dp"
-            android:text="售后订单"
-            android:textSize="14sp"
-            android:textColor="#333333"
-            android:visibility="invisible"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/rightBtn"
-            android:background="@drawable/firstpage_do_circle"/>
+            android:background="@drawable/firstpage_do_circle"
+            android:text="售后订单"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:visibility="invisible"/>
     </RelativeLayout>
+
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/title_bar"
         android:layout_above="@id/bottom_bar"
-        android:background="#F0F0F0"
-        android:layout_alignWithParentIfMissing="true">
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_below="@+id/title_bar"
+        android:background="#F0F0F0">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#F0F0F0"
             android:orientation="vertical">
             <!--订单状态-->
-            <include layout="@layout/orderdetain_state_item" />
+            <include layout="@layout/orderdetain_state_item"/>
             <!--订单信息-->
-            <include layout="@layout/orderdetail_info_item" />
+            <include layout="@layout/orderdetail_info_item"/>
             <!-- 退货单信息 -->
-            <include layout="@layout/return_info_item" />
-            <!--种类bar-->
-            <include layout="@layout/orderdetail_type_item" />
-            <!--列表-->
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                >
+            <include layout="@layout/return_info_item"/>
 
-            </android.support.v7.widget.RecyclerView>
+            <RelativeLayout
+                android:id="@+id/rl_tab_viewpage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_open"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="展开"/>
+                <!--种类bar-->
+                <include
+                    layout="@layout/tab_viewpage_wrap"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/tv_open"
+                    />
+
+
+            </RelativeLayout>
+
             <!--汇总信息-->
-            <include layout="@layout/orderdetail_bottom_item" />
+            <include layout="@layout/orderdetail_bottom_item"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
     <com.kids.commonframe.base.view.LoadingLayout
         android:id="@+id/loadingLayout"
-        android:layout_below="@id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/title_bar"
         android:visibility="gone"
+        />
+    <include
+        android:id="@+id/title_bar"
+        layout="@layout/common_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         />
 </RelativeLayout>

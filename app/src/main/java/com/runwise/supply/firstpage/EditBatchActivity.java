@@ -2,6 +2,7 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -215,7 +216,7 @@ public class EditBatchActivity extends NetWorkActivity {
                 }
                 Intent intent = new Intent();
                 intent.putExtra(INTENT_KEY_BATCH_ENTITIES, mBatchEntities);
-                intent.putExtra(INTENT_KEY_PRODUCT, mBean);
+                intent.putExtra(INTENT_KEY_PRODUCT, (Parcelable) mBean);
                 setResult(RESULT_OK, intent);
                 finish();
                 break;

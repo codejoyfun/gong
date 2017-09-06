@@ -3,6 +3,7 @@ package com.runwise.supply.firstpage.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -758,7 +759,7 @@ public class OrderResponse {
             }
         }
 
-        public static class LinesBean implements Parcelable {
+        public static class LinesBean implements Parcelable,Serializable {
             /**
              * productUom : 条
              * priceUnit : 8.0

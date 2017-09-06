@@ -3,8 +3,8 @@ package com.runwise.supply.firstpage;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -24,40 +24,45 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
-import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.fragment.OrderProductFragment;
+import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.view.YourScrollableViewPager;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import me.shaohui.bottomdialog.BottomDialog;
+
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
 
 /**
  * Created by libin on 2017/7/14.
  */
 
-public class OrderDetailActivity extends NetWorkActivity{
+public class OrderDetailActivity extends NetWorkActivity {
     private static final int UPLOAD = 100;
     private static final int DETAIL = 1;          //网络请求
     private static final int CANCEL = 2;
-    private OrderResponse.ListBean bean;
+    private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
     private OrderDtailAdapter adapter;
     @ViewInject(R.id.dateTv)
     private TextView dateTv;
-    @ViewInject(R.id.recyclerView)
-    private RecyclerView recyclerView;
     @ViewInject(R.id.orderStateTv)
     private TextView orderStateTv;
     @ViewInject(R.id.tipTv)
@@ -84,8 +89,6 @@ public class OrderDetailActivity extends NetWorkActivity{
     private TextView ygMoney;
     @ViewInject(R.id.countTv)
     private TextView countTv;
-    @ViewInject(R.id.indexLine)
-    private View indexLine;         //指示线
     @ViewInject(R.id.gotoStateBtn)
     private Button gotoStateBtn;    //查看更多状态
     @ViewInject(R.id.rightBtn2)
@@ -102,13 +105,17 @@ public class OrderDetailActivity extends NetWorkActivity{
     private boolean isHasAttachment;        //默认无凭证
     @ViewInject(R.id.priceLL)
     private View priceLL;
+    @ViewInject(R.id.tablayout)
+    private TabLayout tablayout;
+    @ViewInject(R.id.viewpager)
+    private YourScrollableViewPager viewpager;
     private boolean isModifyOrder;          //可修改订单
     private int orderId;                    //如果有orderId, 需要重新刷新
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
-            .setViewListener(new BottomDialog.ViewListener(){
+            .setViewListener(new BottomDialog.ViewListener() {
                 @Override
                 public void bindView(View v) {
                     initDialogViews(v);
@@ -126,55 +133,36 @@ public class OrderDetailActivity extends NetWorkActivity{
 //        if (AndroidWorkaround.checkDeviceHasNavigationBar(this)){
 //            AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
 //        }
-        setTitleText(true,"订单详情");
-        setTitleLeftIcon(true,R.drawable.nav_back);
+        setTitleText(true, "订单详情");
+        setTitleLeftIcon(true, R.drawable.nav_back);
         Bundle bundle = getIntent().getExtras();
         adapter = new OrderDtailAdapter(mContext);
-        orderId = bundle.getInt("orderid",0);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(adapter);
+        orderId = bundle.getInt("orderid", 0);
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-        if (!canSeePrice){
+        if (!canSeePrice) {
             priceLL.setVisibility(View.GONE);
         }
         bean = bundle.getParcelable("order");
-        if ( bean != null) {
+        if (bean != null) {
             orderId = bean.getOrderID();
         }
         //需要自己刷新
         Object request = null;
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(orderId).append("/");
-        sendConnection(sb.toString(),request,DETAIL,false, OrderDetailResponse.class);
+        sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
     }
 
-    @OnClick({R.id.title_iv_left,R.id.allBtn,R.id.coldBtn,R.id.title_tv_rigth,R.id.uploadBtn,
-            R.id.freezeBtn,R.id.dryBtn,R.id.gotoStateBtn,R.id.rightBtn,R.id.rightBtn2})
-    public void btnClick(View view){
-        switch (view.getId()){
+    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth, R.id.uploadBtn, R.id.gotoStateBtn, R.id.rightBtn, R.id.rightBtn2,R.id.tv_open})
+    public void btnClick(View view) {
+        switch (view.getId()) {
             case R.id.title_iv_left:
                 finish();
                 break;
-            case R.id.allBtn:
-                //切换页签到全部上面
-                switchTabBy(DataType.ALL);
-                break;
-            case R.id.coldBtn:
-                switchTabBy(DataType.LENGCANGHUO);
-                //
-                break;
-            case R.id.freezeBtn:
-                switchTabBy(DataType.FREEZE);
-                break;
-            case R.id.dryBtn:
-                switchTabBy(DataType.DRY);
-                break;
             case R.id.gotoStateBtn:
-                if (bean != null){
-                    Intent intent = new Intent(this,OrderStateActivity.class);
+                if (bean != null) {
+                    Intent intent = new Intent(this, OrderStateActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("order", bean);
                     intent.putExtras(bundle);
@@ -182,25 +170,25 @@ public class OrderDetailActivity extends NetWorkActivity{
                 }
                 break;
             case R.id.title_tv_rigth:
-                if (isModifyOrder){
-                    Intent mIntent = new Intent(this,OrderModifyActivity.class);
+                if (isModifyOrder) {
+                    Intent mIntent = new Intent(this, OrderModifyActivity.class);
                     Bundle mBundle = new Bundle();
                     mBundle.putParcelable("order", bean);
                     mIntent.putExtras(mBundle);
                     startActivity(mIntent);
                     finish();
-                }else{
-                    if (!bDialog.isVisible()){
+                } else {
+                    if (!bDialog.isVisible()) {
                         bDialog.show();
-                    }else{
+                    } else {
                         bDialog.dismiss();
                     }
                 }
                 break;
             case R.id.rightBtn:
                 Intent intent2;
-                OrderDoAction action = OrderActionUtils.getDoActionByText(rightBtn.getText().toString(),bean);
-                switch(action){
+                OrderDoAction action = OrderActionUtils.getDoActionByText(rightBtn.getText().toString(), bean);
+                switch (action) {
                     case CANCLE:
                         dialog.setTitle("提示");
                         dialog.setMessage("确认取消订单?");
@@ -216,20 +204,20 @@ public class OrderDetailActivity extends NetWorkActivity{
                         dialog.show();
                         break;
                     case TALLY:
-                        if (bean != null){
-                            Intent tIntent = new Intent(mContext,ReceiveActivity.class);
+                        if (bean != null) {
+                            Intent tIntent = new Intent(mContext, ReceiveActivity.class);
                             Bundle tBundle = new Bundle();
-                            tBundle.putParcelable("order",bean);
-                            tBundle.putInt("mode",1);
+                            tBundle.putParcelable("order", bean);
+                            tBundle.putInt("mode", 1);
                             tIntent.putExtras(tBundle);
                             startActivity(tIntent);
                         }
                         break;
                     case TALLYING:
-                        if (bean != null){
+                        if (bean != null) {
                             String name = bean.getTallyingUserName();
                             dialog.setMessageGravity();
-                            dialog.setMessage(name+"正在点货");
+                            dialog.setMessage(name + "正在点货");
                             dialog.setModel(CustomDialog.RIGHT);
                             dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
                                 @Override
@@ -241,30 +229,30 @@ public class OrderDetailActivity extends NetWorkActivity{
                         }
                         break;
                     case RATE:
-                        if (bean != null){
-                            Intent rIntent = new Intent(mContext,EvaluateActivity.class);
+                        if (bean != null) {
+                            Intent rIntent = new Intent(mContext, EvaluateActivity.class);
                             Bundle rBundle = new Bundle();
-                            rBundle.putParcelable("order",bean);
+                            rBundle.putParcelable("order", bean);
                             rIntent.putExtras(rBundle);
                             startActivity(rIntent);
                         }
                         break;
                     case RECEIVE://正常收货
-                        if (bean != null){
-                            Intent reIntent = new Intent(mContext,ReceiveActivity.class);
+                        if (bean != null) {
+                            Intent reIntent = new Intent(mContext, ReceiveActivity.class);
                             Bundle reBundle = new Bundle();
-                            reBundle.putParcelable("order",bean);
-                            reBundle.putInt("mode",0);
+                            reBundle.putParcelable("order", bean);
+                            reBundle.putInt("mode", 0);
                             reIntent.putExtras(reBundle);
                             startActivity(reIntent);
                         }
                         break;
                     case SETTLERECEIVE:
                         //点货，计入结算单位
-                        Intent sIntent = new Intent(mContext,ReceiveActivity.class);
+                        Intent sIntent = new Intent(mContext, ReceiveActivity.class);
                         Bundle sBundle = new Bundle();
-                        sBundle.putParcelable("order",bean);
-                        sBundle.putInt("mode",2);
+                        sBundle.putParcelable("order", bean);
+                        sBundle.putInt("mode", 2);
                         sIntent.putExtras(sBundle);
                         startActivity(sIntent);
                         break;
@@ -299,27 +287,38 @@ public class OrderDetailActivity extends NetWorkActivity{
                 break;
             case R.id.uploadBtn:
                 //凭证
-                if (bean != null){
-                    Intent intent3 = new Intent(mContext,UploadPayedPicActivity.class);
-                    intent3.putExtra("orderid",bean.getOrderID());
-                    intent3.putExtra("ordername",bean.getName());
-                    intent3.putExtra("hasattachment",isHasAttachment);
-                    startActivityForResult(intent3,UPLOAD);
+                if (bean != null) {
+                    Intent intent3 = new Intent(mContext, UploadPayedPicActivity.class);
+                    intent3.putExtra("orderid", bean.getOrderID());
+                    intent3.putExtra("ordername", bean.getName());
+                    intent3.putExtra("hasattachment", isHasAttachment);
+                    startActivityForResult(intent3, UPLOAD);
                 }
+                break;
+            case R.id.tv_open:
+                View nsv = findViewById(R.id.nsv);
+                View rl_tab_viewpage = findViewById(R.id.rl_tab_viewpage);
+                View title_bar = findViewById(R.id.title_bar);
+                int height = title_bar.getHeight();
+                float title_barY = title_bar.getY();
+                float top = rl_tab_viewpage.getY() - title_barY;
+                RelativeLayout.LayoutParams lp1 =  (RelativeLayout.LayoutParams) nsv.getLayoutParams();
+                lp1.topMargin = (int) -top;
+                nsv.requestLayout();
                 break;
         }
     }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch(where){
+        switch (where) {
             case DETAIL:
-                BaseEntity.ResultBean resultBean= result.getResult();
+                BaseEntity.ResultBean resultBean = result.getResult();
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
-                adapter.setStatus(bean.getName(),bean.getState());
+                adapter.setStatus(bean.getName(), bean.getState());
                 updateUI();
-                loadingLayout.onSuccess(1,"暂时没有数据哦");
+                loadingLayout.onSuccess(1, "暂时没有数据哦");
                 break;
             case CANCEL:
                 finish();
@@ -334,15 +333,15 @@ public class OrderDetailActivity extends NetWorkActivity{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case UPLOAD:
                 //来判断上传页有没有图片
-                if (resultCode == 200){
-                    isHasAttachment = data.getBooleanExtra("has",false);
-                    if (isHasAttachment){
+                if (resultCode == 200) {
+                    isHasAttachment = data.getBooleanExtra("has", false);
+                    if (isHasAttachment) {
                         payStateValue.setText("已上传支付凭证");
                         uploadBtn.setText("查看凭证");
-                    }else{
+                    } else {
                         payStateValue.setText("未有支付凭证");
                         uploadBtn.setText("上传凭证");
                     }
@@ -353,13 +352,13 @@ public class OrderDetailActivity extends NetWorkActivity{
 
     private void initDialogViews(View v) {
         TextView returnTv = (TextView) v.findViewById(R.id.returnTv);
-        TextView replaceTv = (TextView)v.findViewById(R.id.replaceTv);
-        TextView cancleTv = (TextView)v.findViewById(R.id.cancleTv);
+        TextView replaceTv = (TextView) v.findViewById(R.id.replaceTv);
+        TextView cancleTv = (TextView) v.findViewById(R.id.cancleTv);
         returnTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //跳转到退换流程：如果超过7天,不支持退货
-                if (isMoreThanReturnData()){
+                if (isMoreThanReturnData()) {
                     dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");
                     dialog.setMessageGravity();
                     dialog.setModel(CustomDialog.RIGHT);
@@ -371,8 +370,8 @@ public class OrderDetailActivity extends NetWorkActivity{
                     });
                     dialog.show();
                     bDialog.dismiss();
-                }else{
-                    Intent intent = new Intent(OrderDetailActivity.this,ReturnActivity.class);
+                } else {
+                    Intent intent = new Intent(OrderDetailActivity.this, ReturnActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("order", bean);
                     intent.putExtras(bundle);
@@ -385,7 +384,7 @@ public class OrderDetailActivity extends NetWorkActivity{
         replaceTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtil.show(mContext,"暂不支持");
+                ToastUtil.show(mContext, "暂不支持");
             }
         });
         cancleTv.setOnClickListener(new View.OnClickListener() {
@@ -401,31 +400,31 @@ public class OrderDetailActivity extends NetWorkActivity{
     }
 
     private void updateUI() {
-        if (bean != null){
-            if (bean.getHasReturn() != 0){
+        if (bean != null) {
+            if (bean.getHasReturn() != 0) {
                 adapter.setHasReturn(true);
                 returnLL.setVisibility(View.VISIBLE);
                 //可能有多个退货单。
-                for (final String returnId : bean.getReturnOrders()){
+                for (final String returnId : bean.getReturnOrders()) {
                     TextView tv = new TextView(mContext);
                     tv.setTextSize(14);
                     tv.setTextColor(Color.parseColor("#999999"));
                     tv.setGravity(Gravity.CENTER_VERTICAL);
                     tv.setTag(returnId);
                     String returnName = ProductBasicUtils.getReturnMap().get(returnId);
-                    if (!TextUtils.isEmpty(returnName)){
+                    if (!TextUtils.isEmpty(returnName)) {
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                                CommonUtils.dip2px(mContext,40));
-                        SpannableString ss = new SpannableString("退货单号："+returnName);
-                        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2F96D8")),5,5+returnName.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                CommonUtils.dip2px(mContext, 40));
+                        SpannableString ss = new SpannableString("退货单号：" + returnName);
+                        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2F96D8")), 5, 5 + returnName.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                         tv.setText(ss);
-                        returnContainer.addView(tv,params);
+                        returnContainer.addView(tv, params);
                         tv.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 //跳转到退货单详情
-                                Intent intent = new Intent(mContext,ReturnDetailActivity.class);
-                                intent.putExtra("rid",returnId);
+                                Intent intent = new Intent(mContext, ReturnDetailActivity.class);
+                                intent.putExtra("rid", returnId);
                                 startActivity(intent);
                             }
                         });
@@ -433,38 +432,38 @@ public class OrderDetailActivity extends NetWorkActivity{
                 }
 
             }
-            if (bean.isIsTwoUnit()){
+            if (bean.isIsTwoUnit()) {
                 adapter.setTwoUnit(true);
             }
             String state = "";
             String tip = "";
-            if (bean.getState().equals("draft")){
+            if (bean.getState().equals("draft")) {
                 state = "订单已提交";
-                tip = "订单号："+bean.getName();
-            }else if(bean.getState().equals("sale")){
+                tip = "订单号：" + bean.getName();
+            } else if (bean.getState().equals("sale")) {
                 state = "订单已确认";
                 tip = "正在为您挑拣商品";
                 bottom_bar.setVisibility(View.GONE);
-            }else if(bean.getState().equals("peisong")){
+            } else if (bean.getState().equals("peisong")) {
                 state = "订单已发货";
-                tip = "预计发达时间："+bean.getEstimatedTime();
-            }else if (bean.getState().equals("done")){
+                tip = "预计发达时间：" + bean.getEstimatedTime();
+            } else if (bean.getState().equals("done")) {
                 state = "订单已收货";
                 String recdiveName = bean.getReceiveUserName();
 //                tip = "收货人："+ recdiveName;
                 tip = "配送已完成，如有问题请联系客服";
                 //TODO:退货单没有收货人姓名，暂时处理
-                if(TextUtils.isEmpty(recdiveName)) {
+                if (TextUtils.isEmpty(recdiveName)) {
                     tip = "已退货";
                     state = "订单已退货";
                 }
-                if (!TextUtils.isEmpty(bean.getAppraisalUserName())){
+                if (!TextUtils.isEmpty(bean.getAppraisalUserName())) {
                     //已评价
                     bottom_bar.setVisibility(View.GONE);
                 }
                 //预计价钱改为，商品金额
                 ygMoney.setText("商品金额");
-            }else if(bean.getState().equals("rated")){
+            } else if (bean.getState().equals("rated")) {
                 state = "订单已评价";
                 bottom_bar.setVisibility(View.GONE);
             }
@@ -474,103 +473,102 @@ public class OrderDetailActivity extends NetWorkActivity{
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
             //支付凭证在收货流程后，才显示
             if ((bean.getState().equals("rated") || bean.getState().equals("done"))
-                    && bean.getOrderSettleName().contains("单次结算")){
+                    && bean.getOrderSettleName().contains("单次结算")) {
                 payStateTv.setVisibility(View.VISIBLE);
                 payStateValue.setVisibility(View.VISIBLE);
                 uploadBtn.setVisibility(View.VISIBLE);
-                if (bean.getHasAttachment() == 0){
+                if (bean.getHasAttachment() == 0) {
                     payStateValue.setText("未有支付凭证");
                     uploadBtn.setText("上传凭证");
                     isHasAttachment = false;
-                }else{
+                } else {
                     payStateValue.setText("已上传支付凭证");
                     uploadBtn.setText("查看凭证");
                     isHasAttachment = true;
                 }
                 //同时，显示右上角，申请售后
-                setTitleRightText(true,"申请售后");
+                setTitleRightText(true, "申请售后");
                 isModifyOrder = false;
-            }else if(bean.getState().equals(OrderState.DRAFT.getName())){
-                setTitleRightText(true,"修改");
+            } else if (bean.getState().equals(OrderState.DRAFT.getName())) {
+                setTitleRightText(true, "修改");
                 isModifyOrder = true;
             }
             //订单信息
             orderNumTv.setText(bean.getName());
             buyerValue.setText(bean.getCreateUserName());
             orderTimeValue.setText(bean.getCreateDate());
-            if (bean.getHasReturn() == 0){
+            if (bean.getHasReturn() == 0) {
                 returnTv.setVisibility(View.INVISIBLE);
-            }else{
+            } else {
                 returnTv.setVisibility(View.VISIBLE);
             }
             //实收判断
-            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+            if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
                 receivtTv.setVisibility(View.VISIBLE);
-                countTv.setText((int)bean.getDeliveredQty()+"件");
-            }
-            else{
+                countTv.setText((int) bean.getDeliveredQty() + "件");
+            } else {
                 receivtTv.setVisibility(View.GONE);
-                countTv.setText((int)bean.getAmount()+"件");
+                countTv.setText((int) bean.getAmount() + "件");
             }
             //商品数量/预估金额
             DecimalFormat df = new DecimalFormat("#.##");
-            ygMoneyTv.setText("¥"+df.format(bean.getAmountTotal()));
+            ygMoneyTv.setText("¥" + df.format(bean.getAmountTotal()));
 //            countTv.setText((int)bean.getAmount()+"件");
             //设置list
             listDatas = bean.getLines();
-            adapter.setProductList(listDatas);
-            //默认线在全部上
-            int padding = (CommonUtils.getScreenWidth(this)/4 - CommonUtils.dip2px(mContext,36))/2;
-            indexLine.setTranslationX(padding);
+            List<Fragment> orderProductFragmentList = new ArrayList<>();
+            List<Fragment> tabFragmentList = new ArrayList<>();
+            List<String> titles = new ArrayList<>();
+            titles.add("全部");
 
-        }
-    }
-
-    private void switchTabBy(DataType type) {
-        int padding = (CommonUtils.getScreenWidth(this)/4 - CommonUtils.dip2px(mContext,36))/2;
-        int tabWidth = CommonUtils.getScreenWidth(this)/4;
-        float translationX = 0.0F;
-        switch (type){
-            case ALL:
-                adapter.setProductList(listDatas);
-                translationX = padding;
-                break;
-            case LENGCANGHUO:
-                translationX = tabWidth + padding;
-                break;
-            case FREEZE:
-                translationX = 2*tabWidth + padding;
-                break;
-            case DRY:
-                translationX = 3 * tabWidth + padding;
-                break;
-        }
-        ViewPropertyAnimator.animate(indexLine).translationX(translationX);
-        typeDatas.clear();
-        if (type == DataType.ALL){
-            adapter.setProductList(listDatas);
-        }else{
-            for (OrderResponse.ListBean.LinesBean bean : listDatas){
-                if (bean.getStockType().equals(DataType.LENGCANGHUO.getType()) && type == DataType.LENGCANGHUO){
-                    typeDatas.add(bean);
-                }else if (bean.getStockType().equals(DataType.FREEZE.getType())  && type == DataType.FREEZE){
-                    typeDatas.add(bean);
-                }else if (bean.getStockType().equals(DataType.DRY.getType())  && type == DataType.DRY){
-                    typeDatas.add(bean);
+            HashMap<String, ArrayList<ListBean.LinesBean>> map = new HashMap<>();
+            for (ListBean.LinesBean linesBean : listDatas) {
+                ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getStockType());
+                if (linesBeen == null) {
+                    linesBeen = new ArrayList<>();
+                    map.put(linesBean.getStockType(), linesBeen);
                 }
-
+                linesBeen.add(linesBean);
             }
-            adapter.setProductList(typeDatas);
-        }
+            Iterator iter = map.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                String key = (String) entry.getKey();
+                ArrayList<ListBean.LinesBean> value = (ArrayList<ListBean.LinesBean>) entry.getValue();
+                titles.add(key);
+                orderProductFragmentList.add(newProductFragment(value));
+                tabFragmentList.add(TabFragment.newInstance(key));
+            }
+            orderProductFragmentList.add(0, newProductFragment((ArrayList<ListBean.LinesBean>) listDatas));
 
+            FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
+            viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
+            tablayout.setupWithViewPager(viewpager);//将TabLayout和ViewPager关联起来
+            //默认线在全部上
+            int padding = (CommonUtils.getScreenWidth(this) / 4 - CommonUtils.dip2px(mContext, 36)) / 2;
+
+        }
     }
+
+    public OrderProductFragment newProductFragment(ArrayList<ListBean.LinesBean> value) {
+        OrderProductFragment orderProductFragment = new OrderProductFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(OrderProductFragment.BUNDLE_KEY_LIST, value);
+        bundle.putString(OrderProductFragment.BUNDLE_KEY_NAME, bean.getName());
+        bundle.putString(OrderProductFragment.BUNDLE_KEY_STATE, bean.getState());
+        bundle.putBoolean(OrderProductFragment.BUNDLE_KEY_RETURN, bean.getHasReturn() != 0);
+        bundle.putBoolean(OrderProductFragment.BUNDLE_KEY_TWO_UNIT, bean.isIsTwoUnit());
+        orderProductFragment.setArguments(bundle);
+        return orderProductFragment;
+    }
+
 
     //实收代表收货数量和原本下单数量不相等
     private boolean isRealReceive() {
-        List<OrderResponse.ListBean.LinesBean> listBeanArr =  bean.getLines();
-        if (listBeanArr != null){
-            for (OrderResponse.ListBean.LinesBean lBean : listBeanArr){
-                if (lBean.getDeliveredQty() !=lBean.getProductUomQty()){
+        List<OrderResponse.ListBean.LinesBean> listBeanArr = bean.getLines();
+        if (listBeanArr != null) {
+            for (ListBean.LinesBean lBean : listBeanArr) {
+                if (lBean.getDeliveredQty() != lBean.getProductUomQty()) {
                     return true;
                 }
             }
@@ -583,7 +581,7 @@ public class OrderDetailActivity extends NetWorkActivity{
         urlSb.append(bean.getOrderID()).append("/state");
         CancleRequest request = new CancleRequest();
         request.setState("cancel");
-        sendConnection(urlSb.toString(),request,CANCEL,true,BaseEntity.ResultBean.class);
+        sendConnection(urlSb.toString(), request, CANCEL, true, BaseEntity.ResultBean.class);
 
     }
 }
