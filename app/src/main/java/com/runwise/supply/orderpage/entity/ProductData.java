@@ -1,12 +1,13 @@
 package com.runwise.supply.orderpage.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by libin on 2017/7/5.
  */
 
-public class ProductData {
+public class ProductData implements Serializable{
     private List<ListBean> list;
 
     public List<ListBean> getList() {
@@ -17,7 +18,7 @@ public class ProductData {
         this.list = list;
     }
 
-    public static class ListBean {
+    public static class ListBean implements Serializable{
         /**
          * actualQty : 0
          * isTwoUnit : false
@@ -39,10 +40,20 @@ public class ProductData {
         private int productID;
         private String priceID;
         private String stockType;
+        private String category;
         private String settleUomId;
         private String uomID;
         private double price;
         private String uom;
+
+
+        public String getCategory() {
+            return category;
+        }
+
+        public void setCategory(String category) {
+            this.category = category;
+        }
 
         public int getActualQty() {
             return actualQty;

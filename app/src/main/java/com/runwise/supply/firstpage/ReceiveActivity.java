@@ -251,8 +251,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         });
         if(titles.size()<=TAB_EXPAND_COUNT){
             ivOpen.setVisibility(View.GONE);
+            smartTabLayout.setDistributeEvenly(true);
+            smartTabLayout.requestLayout();
         }else{
             ivOpen.setVisibility(View.VISIBLE);
+            smartTabLayout.setDistributeEvenly(false);
+            smartTabLayout.requestLayout();
         }
         initPopWindow((ArrayList<String>) titles);
     }

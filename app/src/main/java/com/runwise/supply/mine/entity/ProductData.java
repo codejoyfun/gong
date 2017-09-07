@@ -43,11 +43,20 @@ public class ProductData implements Serializable{
         private String defaultCode;
         private String settlePrice;
         private String stockType;
+        private String category;
         private String uom;
         private String settleUomId;
         private String price;
         private String unit;
         private String productID;
+
+        public String getCategory() {
+            return category;
+        }
+
+        public void setCategory(String category) {
+            this.category = category;
+        }
 
         public String getName() {
             return name;

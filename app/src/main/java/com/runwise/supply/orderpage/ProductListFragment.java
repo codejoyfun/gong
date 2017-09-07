@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -19,13 +18,11 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.ProductCountChangeEvent;
-import com.kids.commonframe.base.bean.ProductGetEvent;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.AddedProduct;
@@ -40,7 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.vov.vitamio.utils.Log;
+import static com.runwise.supply.fragment.OrderProductFragment.BUNDLE_KEY_LIST;
 
 /**
  * Created by libin on 2017/7/3.
@@ -75,20 +72,18 @@ public class ProductListFragment extends NetWorkFragment {
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-
+        setUpListData();
     }
     @Override
     protected int createViewByLayoutId() {
         return R.layout.product_layout_list;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataSynEvent(ProductGetEvent event) {
+    public void setUpListData() {
         //得到数据，更新UI
         if (arrayList == null) {
-            arrayList = ((ProductActivity)getActivity()).getDataList();
+            arrayList = (ArrayList<ProductData.ListBean>) getArguments().getSerializable(BUNDLE_KEY_LIST);
         }
-        if (type == DataType.ALL){
             //先统计一次id,个数
             for (ProductData.ListBean bean : arrayList){
                 countMap.put(String.valueOf(bean.getProductID()),Integer.valueOf(0));
@@ -98,15 +93,6 @@ public class ProductListFragment extends NetWorkFragment {
             }
 
             adapter.setData(arrayList);
-        }else{
-            ArrayList<ProductData.ListBean> typeList = new ArrayList<>();
-            for (ProductData.ListBean bean : arrayList){
-                    if (bean.getStockType().equals(type.getType())){
-                        typeList.add(bean);
-                    }
-            }
-            adapter.setData(typeList);
-        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(ProductCountChangeEvent event){
@@ -122,23 +108,12 @@ public class ProductListFragment extends NetWorkFragment {
     //返回当前标签下名称包含的
     private List<ProductData.ListBean> findArrayByWord(String word) {
         List<ProductData.ListBean> findList = new ArrayList<>();
-        if (type == DataType.ALL){
             for (ProductData.ListBean bean : arrayList){
                 ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
                 if (basicBean.getName().contains(word)) {
                     findList.add(bean);
                 }
             }
-        }else{
-            for (ProductData.ListBean bean : arrayList){
-                if (bean.getStockType().equals(type.getType())){
-                    ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
-                    if (basicBean.getName().contains(word)) {
-                        findList.add(bean);
-                    }
-                }
-            }
-        }
         return findList;
     }
 

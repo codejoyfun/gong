@@ -3,19 +3,24 @@ package com.runwise.supply.orderpage;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
-import android.os.Parcelable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -25,8 +30,10 @@ import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
+import com.runwise.supply.adapter.ProductTypeAdapter;
+import com.runwise.supply.fragment.OrderProductFragment;
+import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -38,7 +45,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
+import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 /**
  * Created by libin on 2017/7/3.
@@ -50,7 +58,9 @@ public class ProductActivity extends NetWorkActivity {
     @ViewInject(R.id.editText)
     private EditText editText;
     @ViewInject(R.id.indicator)
-    private SmartTabLayout smartTabLayout;
+    private TabLayout smartTabLayout;
+    @ViewInject(R.id.iv_open)
+    private ImageView ivOpen;
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
     private TabPageIndicatorAdapter adapter;
@@ -73,10 +83,6 @@ public class ProductActivity extends NetWorkActivity {
         Bundle bundle = fromIntent.getBundleExtra("apbundle");
         addedPros = bundle.getParcelableArrayList("ap");
 
-        adapter = new TabPageIndicatorAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(4);
-        smartTabLayout.setViewPager(viewPager);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -123,7 +129,128 @@ public class ProductActivity extends NetWorkActivity {
         sendRequest();
 
     }
-    @OnClick({R.id.title_iv_left,R.id.addBtn})
+    private void setUpDataForViewPage() {
+        List<Fragment> repertoryEntityFragmentList = new ArrayList<>();
+        List<Fragment> tabFragmentList = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+        titles.add("全部");
+
+        HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
+        for (ProductData.ListBean listBean : dataList) {
+            ArrayList<ProductData.ListBean> listBeen = map.get(listBean.getCategory());
+            if (listBeen == null) {
+                listBeen = new ArrayList<>();
+                map.put(listBean.getCategory(), listBeen);
+            }
+            listBeen.add(listBean);
+        }
+        Iterator iter = map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String key = (String) entry.getKey();
+            ArrayList<ProductData.ListBean> value = (ArrayList<ProductData.ListBean>) entry.getValue();
+            titles.add(key);
+            repertoryEntityFragmentList.add(newRepertoryListFragment(value));
+            tabFragmentList.add(TabFragment.newInstance(key));
+        }
+        repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<ProductData.ListBean>) dataList));
+        initUI(titles,repertoryEntityFragmentList);
+        initPopWindow((ArrayList<String>) titles);
+    }
+
+    public ProductListFragment newRepertoryListFragment(ArrayList<ProductData.ListBean> value) {
+        ProductListFragment repertoryListFragment = new ProductListFragment();
+        Bundle bundle = new Bundle();
+        if (addedPros != null && addedPros.size() > 0){
+            bundle.putParcelableArrayList("ap",addedPros);
+        }
+        bundle.putSerializable(OrderProductFragment.BUNDLE_KEY_LIST, value);
+        repertoryListFragment.setArguments(bundle);
+        return repertoryListFragment;
+    }
+
+
+    private PopupWindow mProductTypeWindow;
+    ProductTypeAdapter mProductTypeAdapter;
+    private void initPopWindow(ArrayList<String> typeList) {
+        View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
+        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
+        mProductTypeAdapter = new ProductTypeAdapter(typeList);
+        gridView.setAdapter(mProductTypeAdapter);
+        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        mProductTypeWindow.setContentView(dialog);
+        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mProductTypeWindow.setFocusable(false);
+        mProductTypeWindow.setOutsideTouchable(false);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mProductTypeWindow.dismiss();
+                viewPager.setCurrentItem(position);
+                smartTabLayout.getTabAt(position).select();
+                for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
+                    mProductTypeAdapter.selectList.set(i,new Boolean(false));
+                }
+                mProductTypeAdapter.selectList.set(position,new Boolean(true));
+                mProductTypeAdapter.notifyDataSetChanged();
+            }
+        });
+        dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mProductTypeWindow.dismiss();
+            }
+        });
+        mProductTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                ivOpen.setImageResource(R.drawable.arrow);
+            }
+        });
+    }
+
+    private void showPopWindow(){
+        final int[] location = new int[2];
+        smartTabLayout.getLocationOnScreen(location);
+        int y = (int) (location[1] + smartTabLayout.getHeight());
+        mProductTypeWindow.showAtLocation(getRootView(ProductActivity.this), Gravity.NO_GRAVITY, 0, y);
+        mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
+        ivOpen.setImageResource(R.drawable.arrow_up);
+    }
+
+    private void initUI(List<String> titles,List<Fragment> repertoryEntityFragmentList){
+        adapter = new TabPageIndicatorAdapter(getSupportFragmentManager(),titles,repertoryEntityFragmentList);
+        viewPager.setAdapter(adapter);
+        smartTabLayout.setupWithViewPager(viewPager);
+        smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                viewPager.setCurrentItem(position);
+                mProductTypeWindow.dismiss();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        if(titles.size()<=TAB_EXPAND_COUNT){
+            ivOpen.setVisibility(View.GONE);
+            smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        }else{
+            ivOpen.setVisibility(View.VISIBLE);
+            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        }
+    }
+
+    @OnClick({R.id.title_iv_left,R.id.addBtn,R.id.iv_open})
     public void btnClick(View view){
         switch(view.getId()){
             case R.id.title_iv_left:
@@ -163,6 +290,16 @@ public class ProductActivity extends NetWorkActivity {
                 setResult(2000,intent);
                 finish();
                 break;
+            case R.id.iv_open:
+                if (mProductTypeWindow == null){
+                    return;
+                }
+                if (!mProductTypeWindow.isShowing()){
+                    showPopWindow();
+                }else{
+                    mProductTypeWindow.dismiss();
+                }
+                break;
             default:
                 break;
         }
@@ -185,6 +322,7 @@ public class ProductActivity extends NetWorkActivity {
                     //传给子Fragment
                     ProductGetEvent event = new ProductGetEvent();
                     EventBus.getDefault().post(event);
+                    setUpDataForViewPage();
                 }
                 break;
             default:
@@ -201,32 +339,10 @@ public class ProductActivity extends NetWorkActivity {
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
         private List<String> titleList = new ArrayList<>();
         private List<Fragment> fragmentList = new ArrayList<>();
-        public TabPageIndicatorAdapter(FragmentManager fm) {
+        public TabPageIndicatorAdapter(FragmentManager fm,List<String> titles,List<Fragment> repertoryEntityFragmentList) {
             super(fm);
-            titleList.add("全部");
-            titleList.add("冷藏货");
-            titleList.add("冻货");
-            titleList.add("干货");
-            Bundle bundle = new Bundle();
-            if (addedPros != null && addedPros.size() > 0){
-               bundle.putParcelableArrayList("ap",addedPros);
-            }
-            ProductListFragment allFragment = new ProductListFragment();
-            allFragment.type = DataType.ALL;
-            allFragment.setArguments(bundle);
-            ProductListFragment coldFragment = new ProductListFragment();
-            coldFragment.type = DataType.LENGCANGHUO;
-            coldFragment.setArguments(bundle);
-            ProductListFragment freezeFragment = new ProductListFragment();
-            freezeFragment.type = DataType.FREEZE;
-            freezeFragment.setArguments(bundle);
-            ProductListFragment dryFragment = new ProductListFragment();
-            dryFragment.type = DataType.DRY;
-            dryFragment.setArguments(bundle);
-            fragmentList.add(allFragment);
-            fragmentList.add(coldFragment);
-            fragmentList.add(freezeFragment);
-            fragmentList.add(dryFragment);
+            fragmentList.addAll(repertoryEntityFragmentList);
+            titleList = titles;
         }
         @Override
         public Fragment getItem(int position) {

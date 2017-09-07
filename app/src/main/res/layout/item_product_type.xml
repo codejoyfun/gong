@@ -6,6 +6,7 @@
           android:paddingBottom="5dp"
           android:text="全部"
           android:gravity="center"
+          android:singleLine="true"
           android:background="@drawable/selector_base_color_corner"
           android:textColor="@color/selector_white_black"
           >

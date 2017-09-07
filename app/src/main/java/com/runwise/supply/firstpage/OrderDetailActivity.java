@@ -66,6 +66,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private static final int UPLOAD = 100;
     private static final int DETAIL = 1;          //网络请求
     private static final int CANCEL = 2;
+//    private static final int CANCEL = 2;
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -167,6 +168,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(orderId).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
+//        sendConnection("/api/product/category", request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
         dragLayout.setOverDrag(false);
     }
@@ -619,8 +621,10 @@ public class OrderDetailActivity extends NetWorkActivity {
         });
         if(titles.size()<=TAB_EXPAND_COUNT){
             ivOpen.setVisibility(View.GONE);
+            tablayout.setTabMode(TabLayout.MODE_FIXED);
         }else{
             ivOpen.setVisibility(View.VISIBLE);
+            tablayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
         initPopWindow((ArrayList<String>) titles);
     }

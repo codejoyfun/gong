@@ -284,8 +284,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
         });
         if(titles.size()<=TAB_EXPAND_COUNT){
             ivOpen.setVisibility(View.GONE);
+            tablayout.setTabMode(TabLayout.MODE_FIXED);
         }else{
             ivOpen.setVisibility(View.VISIBLE);
+            tablayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
         initPopWindow((ArrayList<String>) titles);
     }

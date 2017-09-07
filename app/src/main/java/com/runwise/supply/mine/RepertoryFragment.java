@@ -2,6 +2,7 @@ package com.runwise.supply.mine;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -25,7 +26,6 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.fragment.OrderProductFragment;
@@ -60,7 +60,7 @@ public class RepertoryFragment extends NetWorkFragment {
 
 
     @ViewInject(R.id.indicator)
-    private SmartTabLayout smartTabLayout;
+    private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
     @ViewInject(R.id.iv_open)
@@ -119,7 +119,7 @@ public class RepertoryFragment extends NetWorkFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mProductTypeWindow.dismiss();
                 viewPager.setCurrentItem(position);
-                smartTabLayout.getTabAt(position).setSelected(true);
+                smartTabLayout.getTabAt(position).select();
                 for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
                     mProductTypeAdapter.selectList.set(i,new Boolean(false));
                 }
@@ -154,18 +154,31 @@ public class RepertoryFragment extends NetWorkFragment {
         adapter = new TabPageIndicatorAdapter(this.getActivity().getSupportFragmentManager(),titles,repertoryEntityFragmentList);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(repertoryEntityFragmentList.size());
-        smartTabLayout.setViewPager(viewPager);
-        smartTabLayout.setOnTabClickListener(new SmartTabLayout.OnTabClickListener() {
+        smartTabLayout.setupWithViewPager(viewPager);
+        smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onTabClicked(int position) {
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
                 viewPager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
         if(titles.size()<=TAB_EXPAND_COUNT){
             ivOpen.setVisibility(View.GONE);
+            smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
         }else{
             ivOpen.setVisibility(View.VISIBLE);
+            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
     }
 

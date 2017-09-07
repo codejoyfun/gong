@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:paddingTop="10dp">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:paddingTop="10dp">
     <LinearLayout
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
@@ -52,24 +54,28 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
-            <com.ogaclejapan.smarttablayout.SmartTabLayout
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/indicator"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:background="#f6f6f6"
-                app:stl_customTabTextLayoutId="@layout/custom_tab"
-                app:stl_defaultTabTextColor="@color/base_color"
-                app:stl_defaultTabTextSize="16dp"
-                app:stl_distributeEvenly="true"
-                app:stl_dividerColor="@color/transparent"
-                app:stl_indicatorColor="@color/base_color"
-                app:stl_indicatorCornerRadius="2dp"
-                app:stl_indicatorInterpolation="smart"
-                app:stl_indicatorThickness="4dp"
-                app:stl_overlineColor="@color/transparent"
-                app:stl_underlineThickness="0dp" />
+                android:layout_height="42dp">
+
+                <ImageView
+                    android:id="@+id/iv_open"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/arrow"
+                    android:padding="15dp"
+                    android:background="@color/white"
+                    android:layout_alignParentRight="true"/>
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/indicator"
+                    style="@style/MyCustomTabLayout"
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:layout_height="42dp"
+                    app:tabMode="scrollable"
+                    android:layout_toLeftOf="@id/iv_open"/>
+            </RelativeLayout>
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewPager"
                     android:layout_width="match_parent"

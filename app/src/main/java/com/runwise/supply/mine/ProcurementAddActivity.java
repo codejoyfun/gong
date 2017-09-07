@@ -3,6 +3,7 @@ package com.runwise.supply.mine;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -38,7 +39,6 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.fragment.TabFragment;
@@ -71,7 +71,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
     private final int PRODUCT_ADD_2 = 3;
 
     @ViewInject(R.id.indicator)
-    private SmartTabLayout smartTabLayout;
+    private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
     private TabPageIndicatorAdapter adapter;
@@ -421,18 +421,31 @@ public class ProcurementAddActivity extends NetWorkActivity {
     private void initUI(List<String> titles, List<Fragment> priceFragmentList) {
         adapter = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, priceFragmentList);
         viewPager.setAdapter(adapter);
-        smartTabLayout.setViewPager(viewPager);
-        smartTabLayout.setOnTabClickListener(new SmartTabLayout.OnTabClickListener() {
+        smartTabLayout.setupWithViewPager(viewPager);
+        smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onTabClicked(int position) {
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
                 viewPager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
             }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
         });
-        if (titles.size() <= TAB_EXPAND_COUNT) {
+        if(titles.size()<=TAB_EXPAND_COUNT){
             ivOpen.setVisibility(View.GONE);
-        } else {
+            smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        }else{
             ivOpen.setVisibility(View.VISIBLE);
+            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
         int position = this.getIntent().getIntExtra("position", 0);
         viewPager.setCurrentItem(position, false);
@@ -464,7 +477,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mProductTypeWindow.dismiss();
                 viewPager.setCurrentItem(position);
-                smartTabLayout.getTabAt(position).setSelected(true);
+                smartTabLayout.getTabAt(position).select();
                 for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
                     mProductTypeAdapter.selectList.set(i, new Boolean(false));
                 }

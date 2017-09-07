@@ -1,6 +1,7 @@
 package com.runwise.supply.mine;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -19,7 +20,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.PageRequest;
@@ -41,7 +41,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
  */
 public class PriceActivity extends NetWorkActivity {
     @ViewInject(R.id.indicator)
-    private SmartTabLayout smartTabLayout;
+    private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
     @ViewInject(R.id.iv_open)
@@ -54,7 +54,7 @@ public class PriceActivity extends NetWorkActivity {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
-        setContentView(R.layout.acticity_tabs_layout);
+        setContentView(R.layout.activity_price);
 
         this.setTitleText(true, "价目表");
         this.setTitleLeftIcon(true, R.drawable.back_btn);
@@ -108,10 +108,10 @@ public class PriceActivity extends NetWorkActivity {
 
         HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
         for (ProductData.ListBean listBean : listBeen) {
-            ArrayList<ProductData.ListBean> tempListBeen = map.get(listBean.getStockType());
+            ArrayList<ProductData.ListBean> tempListBeen = map.get(listBean.getCategory());
             if (tempListBeen == null) {
                 tempListBeen = new ArrayList<>();
-                map.put(listBean.getStockType(), tempListBeen);
+                map.put(listBean.getCategory(), tempListBeen);
             }
             tempListBeen.add(listBean);
         }
@@ -133,18 +133,31 @@ public class PriceActivity extends NetWorkActivity {
         adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager(), titles, priceFragmentList);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(priceFragmentList.size());
-        smartTabLayout.setViewPager(viewPager);
-        smartTabLayout.setOnTabClickListener(new SmartTabLayout.OnTabClickListener() {
+        smartTabLayout.setupWithViewPager(viewPager);
+        smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onTabClicked(int position) {
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
                 viewPager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
             }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
         });
-        if (titles.size() <= TAB_EXPAND_COUNT) {
+        if(titles.size()<=TAB_EXPAND_COUNT){
             ivOpen.setVisibility(View.GONE);
-        } else {
+            smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        }else{
             ivOpen.setVisibility(View.VISIBLE);
+            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
         int position = this.getIntent().getIntExtra("position", 0);
         viewPager.setCurrentItem(position, false);
@@ -177,7 +190,7 @@ public class PriceActivity extends NetWorkActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mProductTypeWindow.dismiss();
                 viewPager.setCurrentItem(position);
-                smartTabLayout.getTabAt(position).setSelected(true);
+                smartTabLayout.getTabAt(position).select();
                 for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
                     mProductTypeAdapter.selectList.set(i, new Boolean(false));
                 }
