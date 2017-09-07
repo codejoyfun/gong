@@ -39,8 +39,11 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
+import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProcurementAddResult;
 import com.runwise.supply.mine.entity.ProcurenmentAddRequest;
@@ -61,6 +64,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 public class ProcurementAddActivity extends NetWorkActivity {
@@ -371,20 +375,29 @@ public class ProcurementAddActivity extends NetWorkActivity {
             finalButton.setEnabled(false);
         }
     }
-
+    CategoryRespone categoryRespone;
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
+    List<EditHotResult.ListBean> hotList;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case PRODUCT_GET:
                 EditHotResult editHotResult = (EditHotResult) result.getResult().getData();
-                List<EditHotResult.ListBean> hotList = editHotResult.getList();
-                setUpDataForViewPage(hotList);
+                hotList = editHotResult.getList();
+                GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+
                 break;
             case PRODUCT_ADD_1:
                 ProcurementAddResult procurementAddResult = (ProcurementAddResult) result.getResult();
                 EventBus.getDefault().post(procurementAddResult);
                 finish();
+                break;
+            case CATEGORY:
+                BaseEntity.ResultBean resultBean1 = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean1.getData();
+                setUpDataForViewPage(hotList);
                 break;
         }
     }
@@ -393,23 +406,27 @@ public class ProcurementAddActivity extends NetWorkActivity {
         List<Fragment> productDataFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        titles.add("全部");
-
         HashMap<String, ArrayList<EditHotResult.ListBean>> map = new HashMap<>();
+        titles.add("全部");
+        for(String category:categoryRespone.getCategoryList()){
+            titles.add(category);
+            map.put(category,new ArrayList<EditHotResult.ListBean>());
+        }
         for (EditHotResult.ListBean listBean : listBeen) {
-            ArrayList<EditHotResult.ListBean> tempListBeen = map.get(listBean.getProduct().getCategory());
-            if (tempListBeen == null) {
-                tempListBeen = new ArrayList<>();
-                map.put(listBean.getProduct().getCategory(), tempListBeen);
+            if (!TextUtils.isEmpty(listBean.getProduct().getCategory())){
+                ArrayList<EditHotResult.ListBean> tempListBeen = map.get(listBean.getProduct().getCategory());
+                if (tempListBeen == null) {
+                    tempListBeen = new ArrayList<>();
+                    map.put(listBean.getProduct().getCategory(), tempListBeen);
+                }
+                tempListBeen.add(listBean);
             }
-            tempListBeen.add(listBean);
         }
         Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             ArrayList<EditHotResult.ListBean> value = (ArrayList<EditHotResult.ListBean>) entry.getValue();
-            titles.add(key);
             productDataFragmentList.add(newSearchListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(key));
         }

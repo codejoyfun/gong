@@ -53,7 +53,7 @@ public class ProductListFragment extends NetWorkFragment {
     //选中数量map
     private static HashMap<String,Integer> countMap = new HashMap<>();
     //缓存全部商品列表
-    private static ArrayList<ProductData.ListBean> arrayList;
+    private  ArrayList<ProductData.ListBean> arrayList;
 
     public static HashMap<String, Integer> getCountMap() {
         return countMap;

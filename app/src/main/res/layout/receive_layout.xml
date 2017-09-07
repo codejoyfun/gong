@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:id="@+id/main"
-    android:background="#FFFFFF">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/main"
+                android:background="#FFFFFF">
     <include  layout="@layout/common_title_bar"
         android:id="@+id/titleBar"/>
     <LinearLayout
@@ -70,25 +72,15 @@
                     android:background="@color/white"
                     android:layout_alignParentRight="true"/>
 
-                <com.ogaclejapan.smarttablayout.SmartTabLayout
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/indicator"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:background="#FFFFFF"
-                    android:layout_toLeftOf="@id/iv_open"
-                    app:stl_customTabTextLayoutId="@layout/custom_tab"
-                    app:stl_defaultTabTextColor="@color/base_color"
-                    app:stl_defaultTabTextSize="16dp"
-                    app:stl_distributeEvenly="false"
-                    app:stl_dividerColor="@color/transparent"
-                    app:stl_indicatorColor="@color/base_color"
-                    app:stl_indicatorCornerRadius="2dp"
-                    app:stl_indicatorInterpolation="smart"
-                    app:stl_indicatorThickness="4dp"
-                    app:stl_overlineColor="@color/transparent"
-                    app:stl_underlineThickness="0dp" />
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/indicator"
+                        style="@style/MyCustomTabLayout"
+                        android:layout_width="match_parent"
+                        android:background="@color/white"
+                        android:layout_height="40dp"
+                        app:tabMode="scrollable"
+                        android:layout_toLeftOf="@id/iv_open"/>
+
                 </RelativeLayout>
                 <View
                     android:layout_width="match_parent"

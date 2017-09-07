@@ -3,6 +3,7 @@ package com.runwise.supply.firstpage;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -37,11 +38,12 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.BatchEntity;
+import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
@@ -77,6 +79,7 @@ import io.vov.vitamio.utils.Log;
 
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_ENTITIES;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
+import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 /**
@@ -90,7 +93,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private static final int BEGIN_TALLY = 400;           //开始点货
     private static final int END_TALLY = 500;           //退出点货
     @ViewInject(R.id.indicator)
-    private SmartTabLayout smartTabLayout;
+    private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private NoScrollViewPager viewPager;
     @ViewInject(R.id.pbBar)
@@ -209,7 +212,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startOrEndTally(true);
             }
         }
-        setUpDataForViewPage();
+        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
     }
 
 
@@ -217,23 +222,29 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         List<Fragment> receiveFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        titles.add("全部");
-
         HashMap<String, ArrayList<OrderResponse.ListBean.LinesBean>> map = new HashMap<>();
+        titles.add("全部");
+        for(String category:categoryRespone.getCategoryList()){
+            titles.add(category);
+            map.put(category,new ArrayList<OrderResponse.ListBean.LinesBean>());
+        }
+
         for (OrderResponse.ListBean.LinesBean lineBean : lbean.getLines()) {
-            ArrayList<OrderResponse.ListBean.LinesBean> listBeen = map.get(lineBean.getCategory());
-            if (listBeen == null) {
-                listBeen = new ArrayList<>();
-                map.put(lineBean.getCategory(), listBeen);
+            if (!TextUtils.isEmpty(lineBean.getCategory())){
+                ArrayList<OrderResponse.ListBean.LinesBean> listBeen = map.get(lineBean.getCategory());
+                if (listBeen == null) {
+                    listBeen = new ArrayList<>();
+                    map.put(lineBean.getCategory(), listBeen);
+                }
+                listBeen.add(lineBean);
             }
-            listBeen.add(lineBean);
+
         }
         Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             ArrayList<OrderResponse.ListBean.LinesBean> value = (ArrayList<OrderResponse.ListBean.LinesBean>) entry.getValue();
-            titles.add(key);
             receiveFragmentList.add(newReceiveFragment(value));
             tabFragmentList.add(TabFragment.newInstance(key));
         }
@@ -241,22 +252,31 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager(),titles,receiveFragmentList);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(receiveFragmentList.size());
-        smartTabLayout.setViewPager(viewPager);
-        smartTabLayout.setOnTabClickListener(new SmartTabLayout.OnTabClickListener() {
+        smartTabLayout.setupWithViewPager(viewPager);
+        smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onTabClicked(int position) {
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
                 viewPager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
         if(titles.size()<=TAB_EXPAND_COUNT){
             ivOpen.setVisibility(View.GONE);
-            smartTabLayout.setDistributeEvenly(true);
-            smartTabLayout.requestLayout();
+            smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
         }else{
             ivOpen.setVisibility(View.VISIBLE);
-            smartTabLayout.setDistributeEvenly(false);
-            smartTabLayout.requestLayout();
+            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
         initPopWindow((ArrayList<String>) titles);
     }
@@ -266,7 +286,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         Bundle bundle = new Bundle();
         bundle.putInt("mode", mode); //mode:0正常收货，1点货，2双人收货
         bundle.putParcelable("order", lbean);
-        bundle.putParcelableArrayList("datas", datas);
+        bundle.putParcelableArrayList("datas", value);
         receiveFragment.setArguments(bundle);
         receiveFragment.setCallback(ReceiveActivity.this);
         return receiveFragment;
@@ -513,7 +533,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mProductTypeWindow.dismiss();
                 viewPager.setCurrentItem(position);
-                smartTabLayout.getTabAt(position).setSelected(true);
+                smartTabLayout.getTabAt(position).select();
                 for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
                     mProductTypeAdapter.selectList.set(i,new Boolean(false));
                 }
@@ -708,7 +728,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
         return true;
     }
-
+    CategoryRespone categoryRespone;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -740,6 +760,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 break;
             case END_TALLY:
                 finish();
+                break;
+            case CATEGORY:
+                BaseEntity.ResultBean resultBean1 = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean1.getData();
+                setUpDataForViewPage();
                 break;
         }
 

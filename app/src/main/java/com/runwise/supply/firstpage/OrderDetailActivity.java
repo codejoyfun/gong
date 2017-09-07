@@ -35,6 +35,8 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.adapter.ProductTypeAdapter;
+import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -66,7 +68,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private static final int UPLOAD = 100;
     private static final int DETAIL = 1;          //网络请求
     private static final int CANCEL = 2;
-//    private static final int CANCEL = 2;
+    public static final int CATEGORY = 3333;
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -168,7 +170,6 @@ public class OrderDetailActivity extends NetWorkActivity {
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(orderId).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
-//        sendConnection("/api/product/category", request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
         dragLayout.setOverDrag(false);
     }
@@ -359,7 +360,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
-
+    CategoryRespone categoryRespone;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -368,11 +369,18 @@ public class OrderDetailActivity extends NetWorkActivity {
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
                 adapter.setStatus(bean.getName(), bean.getState());
-                updateUI();
+                GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 loadingLayout.onSuccess(1, "暂时没有数据哦");
                 break;
             case CANCEL:
                 finish();
+                break;
+            case CATEGORY:
+                BaseEntity.ResultBean resultBean1 = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean1.getData();
+                updateUI();
                 break;
         }
     }
@@ -576,23 +584,27 @@ public class OrderDetailActivity extends NetWorkActivity {
         List<Fragment> orderProductFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        titles.add("全部");
-
         HashMap<String, ArrayList<ListBean.LinesBean>> map = new HashMap<>();
+        titles.add("全部");
+        for(String category:categoryRespone.getCategoryList()){
+            titles.add(category);
+            map.put(category,new ArrayList<ListBean.LinesBean>());
+        }
         for (ListBean.LinesBean linesBean : listDatas) {
-            ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
-            if (linesBeen == null) {
-                linesBeen = new ArrayList<>();
-                map.put(linesBean.getCategory(), linesBeen);
+            if (!TextUtils.isEmpty(linesBean.getCategory())){
+                ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
+                if (linesBeen == null) {
+                    linesBeen = new ArrayList<>();
+                    map.put(linesBean.getCategory(), linesBeen);
+                }
+                linesBeen.add(linesBean);
             }
-            linesBeen.add(linesBean);
         }
         Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             ArrayList<ListBean.LinesBean> value = (ArrayList<ListBean.LinesBean>) entry.getValue();
-            titles.add(key);
             orderProductFragmentList.add(newProductFragment(value));
             tabFragmentList.add(TabFragment.newInstance(key));
         }

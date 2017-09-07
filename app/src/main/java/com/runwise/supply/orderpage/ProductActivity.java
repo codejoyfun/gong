@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,8 +31,11 @@ import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
+import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.entity.AddedProduct;
@@ -46,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 /**
@@ -132,24 +137,28 @@ public class ProductActivity extends NetWorkActivity {
     private void setUpDataForViewPage() {
         List<Fragment> repertoryEntityFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
+        HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
         List<String> titles = new ArrayList<>();
         titles.add("全部");
-
-        HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
+        for(String category:categoryRespone.getCategoryList()){
+            titles.add(category);
+            map.put(category,new ArrayList<ProductData.ListBean>());
+        }
         for (ProductData.ListBean listBean : dataList) {
-            ArrayList<ProductData.ListBean> listBeen = map.get(listBean.getCategory());
-            if (listBeen == null) {
-                listBeen = new ArrayList<>();
-                map.put(listBean.getCategory(), listBeen);
+            if (!TextUtils.isEmpty(listBean.getCategory())) {
+                ArrayList<ProductData.ListBean> listBeen = map.get(listBean.getCategory());
+                if (listBeen == null) {
+                    listBeen = new ArrayList<>();
+                    map.put(listBean.getCategory(), listBeen);
+                }
+                listBeen.add(listBean);
             }
-            listBeen.add(listBean);
         }
         Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             ArrayList<ProductData.ListBean> value = (ArrayList<ProductData.ListBean>) entry.getValue();
-            titles.add(key);
             repertoryEntityFragmentList.add(newRepertoryListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(key));
         }
@@ -309,7 +318,7 @@ public class ProductActivity extends NetWorkActivity {
         Object request = null;
         sendConnection("/gongfu/v3/shop/product/list",request,PRODUCT_GET,true, ProductData.class);
     }
-
+    CategoryRespone categoryRespone;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
@@ -319,11 +328,18 @@ public class ProductActivity extends NetWorkActivity {
                 if (products != null && products.getList() != null){
                     dataList.clear();
                     dataList.addAll(products.getList());
-                    //传给子Fragment
-                    ProductGetEvent event = new ProductGetEvent();
-                    EventBus.getDefault().post(event);
-                    setUpDataForViewPage();
+                    GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+                    getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                    sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 }
+                break;
+            case CATEGORY:
+                BaseEntity.ResultBean resultBean1 = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean1.getData();
+                //传给子Fragment
+                ProductGetEvent event = new ProductGetEvent();
+                EventBus.getDefault().post(event);
+                setUpDataForViewPage();
                 break;
             default:
                 break;

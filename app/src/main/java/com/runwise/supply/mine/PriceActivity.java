@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +21,11 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
+import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
@@ -34,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 /**
@@ -88,13 +93,22 @@ public class PriceActivity extends NetWorkActivity {
         }
 
     }
-
+    CategoryRespone categoryRespone;
+    List<ProductData.ListBean> listBeen;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
                 ProductData mainListResult = (ProductData) result.getResult().getData();
-                List<ProductData.ListBean> listBeen = mainListResult.getList();
+               listBeen = mainListResult.getList();
+                GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+
+                break;
+            case CATEGORY:
+                BaseEntity.ResultBean resultBean1 = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage(listBeen);
                 break;
         }
@@ -104,23 +118,28 @@ public class PriceActivity extends NetWorkActivity {
         List<Fragment> productDataFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        titles.add("全部");
-
         HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
+        titles.add("全部");
+        for(String category:categoryRespone.getCategoryList()){
+            titles.add(category);
+            map.put(category,new ArrayList<ProductData.ListBean>());
+        }
+
         for (ProductData.ListBean listBean : listBeen) {
-            ArrayList<ProductData.ListBean> tempListBeen = map.get(listBean.getCategory());
-            if (tempListBeen == null) {
-                tempListBeen = new ArrayList<>();
-                map.put(listBean.getCategory(), tempListBeen);
+            if (!TextUtils.isEmpty(listBean.getCategory())){
+                ArrayList<ProductData.ListBean> tempListBeen = map.get(listBean.getCategory());
+                if (tempListBeen == null) {
+                    tempListBeen = new ArrayList<>();
+                    map.put(listBean.getCategory(), tempListBeen);
+                }
+                tempListBeen.add(listBean);
             }
-            tempListBeen.add(listBean);
         }
         Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             ArrayList<ProductData.ListBean> value = (ArrayList<ProductData.ListBean>) entry.getValue();
-            titles.add(key);
             productDataFragmentList.add(newPriceListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(key));
         }

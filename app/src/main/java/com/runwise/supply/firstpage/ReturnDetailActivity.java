@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,8 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.adapter.ProductTypeAdapter;
+import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.ReturnActivityRefreshEvent;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -49,6 +52,7 @@ import java.util.Map;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
 
+import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
@@ -239,23 +243,28 @@ public class ReturnDetailActivity extends NetWorkActivity {
         List<Fragment> orderProductFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        titles.add("全部");
-
         HashMap<String, ArrayList<ReturnOrderBean.ListBean.LinesBean>> map = new HashMap<>();
+        titles.add("全部");
+        for(String category:categoryRespone.getCategoryList()){
+            titles.add(category);
+            map.put(category,new ArrayList<ReturnOrderBean.ListBean.LinesBean>());
+        }
+
         for (ReturnOrderBean.ListBean.LinesBean linesBean : listDatas) {
-            ArrayList<ReturnOrderBean.ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
-            if (linesBeen == null) {
-                linesBeen = new ArrayList<>();
-                map.put(linesBean.getCategory(), linesBeen);
+            if (!TextUtils.isEmpty(linesBean.getCategory())){
+                ArrayList<ReturnOrderBean.ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
+                if (linesBeen == null) {
+                    linesBeen = new ArrayList<>();
+                    map.put(linesBean.getCategory(), linesBeen);
+                }
+                linesBeen.add(linesBean);
             }
-            linesBeen.add(linesBean);
         }
         Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             ArrayList<ReturnOrderBean.ListBean.LinesBean> value = (ArrayList<ReturnOrderBean.ListBean.LinesBean>) entry.getValue();
-            titles.add(key);
             orderProductFragmentList.add(newProductFragment(value));
             tabFragmentList.add(TabFragment.newInstance(key));
         }
@@ -434,7 +443,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
             }
         }
     }
-
+    CategoryRespone categoryRespone;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -442,7 +451,9 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 BaseEntity.ResultBean rb = result.getResult();
                 ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
                 bean = rdr.getReturnOrder();
-                updateUI();
+                GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 loadingLayout.onSuccess(1,"暂无数据");
                 break;
             case FINISHRETURN:
@@ -452,6 +463,11 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 intent.putExtra(INTENT_KEY_RESULTBEAN, finishReturnResponse);
                 startActivity(intent);
                 rlBottom.setVisibility(View.GONE);
+                break;
+            case CATEGORY:
+                BaseEntity.ResultBean resultBean1 = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean1.getData();
+                updateUI();
                 break;
         }
 

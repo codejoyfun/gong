@@ -38,6 +38,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.runwise.supply.fragment.OrderProductFragment.BUNDLE_KEY_LIST;
+
 /**
  * Created by libin on 2017/7/3.
  * 根据传入的数据集合，显示全部、冷藏、冻货、干货集合
@@ -47,7 +49,6 @@ public class RepertoryListFragment extends NetWorkFragment {
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
-    public DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
     private List<RepertoryEntity.ListBean> dataList;
@@ -71,9 +72,33 @@ public class RepertoryListFragment extends NetWorkFragment {
                 EventBus.getDefault().post(new RefreshPepertoy());
             }
         });
+        dataList = (List<RepertoryEntity.ListBean>) getArguments().getSerializable(BUNDLE_KEY_LIST);
         if (dataList != null) {
             adapter.setData(dataList);
             loadingLayout.onSuccess(adapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+        }
+    }
+    DataType type;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDataSynEvent(RepertoryEntity event) {
+        List<RepertoryEntity.ListBean> typeList = new ArrayList<>();
+        for (RepertoryEntity.ListBean bean : event.getList()){
+            if (bean.getProduct().getStockType().equals(type.getType())){
+                typeList.add(bean);
+            }
+        }
+        if(type == DataType.ALL) {
+            dataList = event.getList();
+        }
+        else {
+            dataList = typeList;
+        }
+        if(adapter != null) {
+            adapter.setData(dataList);
+            loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_goodsnone);
+        }
+        if(pullListView != null) {
+            pullListView.onRefreshComplete();
         }
     }
 
@@ -82,17 +107,6 @@ public class RepertoryListFragment extends NetWorkFragment {
         return R.layout.product_layout_list;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDataSynEvent(RepertoryEntity event) {
-        dataList = event.getList();
-        if (adapter != null) {
-            adapter.setData(dataList);
-            loadingLayout.onSuccess(adapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
-        }
-        if (pullListView != null) {
-            pullListView.onRefreshComplete();
-        }
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(SearchKeyAct event) {

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +27,12 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
+import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.firstpage.OrderDetailActivity;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProductOne;
@@ -37,7 +42,6 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -383,7 +387,7 @@ public class RepertoryFragment extends NetWorkFragment {
     protected int createViewByLayoutId() {
         return R.layout.fragment_repertory_layout;
     }
-
+    CategoryRespone categoryRespone;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -402,8 +406,9 @@ public class RepertoryFragment extends NetWorkFragment {
                     }
                 }
                 if(!nullProductExit) {
-                    setUpDataForViewPage();
-                    EventBus.getDefault().post(repertoryEntity);
+                    GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+                    getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                    sendConnection("/api/product/category", getCategoryRequest, OrderDetailActivity.CATEGORY, false, CategoryRespone.class);
                 }
                 break;
             case PRODUCT_DETAIL:
@@ -416,8 +421,12 @@ public class RepertoryFragment extends NetWorkFragment {
                     }
                 }
                 setUpDataForViewPage();
-                EventBus.getDefault().post(repertoryEntity);
                 break;
+            case OrderDetailActivity.CATEGORY:
+                BaseEntity.ResultBean resultBean1 = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean1.getData();
+                    setUpDataForViewPage();
+            break;
         }
     }
 
@@ -429,24 +438,30 @@ public class RepertoryFragment extends NetWorkFragment {
     private void setUpDataForViewPage() {
         List<RepertoryListFragment> repertoryEntityFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
+        HashMap<String, ArrayList<RepertoryEntity.ListBean>> map = new HashMap<>();
         List<String> titles = new ArrayList<>();
         titles.add("全部");
+        for(String category:categoryRespone.getCategoryList()){
+            titles.add(category);
+            map.put(category,new ArrayList<RepertoryEntity.ListBean>());
+        }
 
-        HashMap<String, ArrayList<RepertoryEntity.ListBean>> map = new HashMap<>();
+
         for (RepertoryEntity.ListBean listBean : repertoryEntity.getList()) {
-            ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getCategory());
-            if (listBeen == null) {
-                listBeen = new ArrayList<>();
-                map.put(listBean.getProduct().getCategory(), listBeen);
+            if(!TextUtils.isEmpty(listBean.getProduct().getCategory())){
+                ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getCategory());
+                if (listBeen == null) {
+                    listBeen = new ArrayList<>();
+                    map.put(listBean.getProduct().getCategory(), listBeen);
+                }
+                listBeen.add(listBean);
             }
-            listBeen.add(listBean);
         }
         Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             ArrayList<RepertoryEntity.ListBean> value = (ArrayList<RepertoryEntity.ListBean>) entry.getValue();
-            titles.add(key);
             repertoryEntityFragmentList.add(newRepertoryListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(key));
         }
