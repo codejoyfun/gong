@@ -787,6 +787,7 @@ public class OrderResponse {
             private double tallyingAmount;
             private int saleOrderProductID;
             private String stockType;
+            private String category;
             private double settleAmount;
             private double productUomQty;
             private List<String> lotIDs;
@@ -795,7 +796,13 @@ public class OrderResponse {
             //自定义字段
             private boolean isChanged;
 
+            public String getCategory() {
+                return category;
+            }
 
+            public void setCategory(String category) {
+                this.category = category;
+            }
 
             public boolean isChanged() {
                 return isChanged;
@@ -1053,6 +1060,7 @@ public class OrderResponse {
                 dest.writeDouble(this.tallyingAmount);
                 dest.writeInt(this.saleOrderProductID);
                 dest.writeString(this.stockType);
+                dest.writeString(this.category);
                 dest.writeDouble(this.settleAmount);
                 dest.writeDouble(this.productUomQty);
                 dest.writeStringList(this.lotIDs);
@@ -1074,6 +1082,7 @@ public class OrderResponse {
                 this.tallyingAmount = in.readDouble();
                 this.saleOrderProductID = in.readInt();
                 this.stockType = in.readString();
+                this.category = in.readString();
                 this.settleAmount = in.readDouble();
                 this.productUomQty = in.readDouble();
                 this.lotIDs = in.createStringArrayList();

@@ -13,9 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -37,11 +40,12 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
-import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -65,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +77,7 @@ import io.vov.vitamio.utils.Log;
 
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_ENTITIES;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
+import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 /**
  * Created by libin on 2017/7/16.
@@ -91,6 +97,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private ProgressBar pbBar;
     @ViewInject(R.id.pbValue)
     private TextView pbValue;
+    @ViewInject(R.id.iv_open)
+    private ImageView ivOpen;
     private TabPageIndicatorAdapter adapter;
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
     private PopupWindow mPopWindow;     //底部弹出
@@ -187,10 +195,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         if (lbean != null && lbean.getLines() != null) {
             datas.addAll(lbean.getLines());
         }
-        adapter = new TabPageIndicatorAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(4);
-        smartTabLayout.setViewPager(viewPager);
         setDefalutProgressBar();
         initPopWindow();
         initPopWindow2();       //单独初始化一下双单位的popview
@@ -205,6 +209,63 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startOrEndTally(true);
             }
         }
+        setUpDataForViewPage();
+    }
+
+
+    private void setUpDataForViewPage() {
+        List<Fragment> receiveFragmentList = new ArrayList<>();
+        List<Fragment> tabFragmentList = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+        titles.add("全部");
+
+        HashMap<String, ArrayList<OrderResponse.ListBean.LinesBean>> map = new HashMap<>();
+        for (OrderResponse.ListBean.LinesBean lineBean : lbean.getLines()) {
+            ArrayList<OrderResponse.ListBean.LinesBean> listBeen = map.get(lineBean.getCategory());
+            if (listBeen == null) {
+                listBeen = new ArrayList<>();
+                map.put(lineBean.getCategory(), listBeen);
+            }
+            listBeen.add(lineBean);
+        }
+        Iterator iter = map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String key = (String) entry.getKey();
+            ArrayList<OrderResponse.ListBean.LinesBean> value = (ArrayList<OrderResponse.ListBean.LinesBean>) entry.getValue();
+            titles.add(key);
+            receiveFragmentList.add(newReceiveFragment(value));
+            tabFragmentList.add(TabFragment.newInstance(key));
+        }
+        receiveFragmentList.add(0, newReceiveFragment((ArrayList<OrderResponse.ListBean.LinesBean>) lbean.getLines()));
+        adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager(),titles,receiveFragmentList);
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(receiveFragmentList.size());
+        smartTabLayout.setViewPager(viewPager);
+        smartTabLayout.setOnTabClickListener(new SmartTabLayout.OnTabClickListener() {
+            @Override
+            public void onTabClicked(int position) {
+                viewPager.setCurrentItem(position);
+                mProductTypeWindow.dismiss();
+            }
+        });
+        if(titles.size()<=TAB_EXPAND_COUNT){
+            ivOpen.setVisibility(View.GONE);
+        }else{
+            ivOpen.setVisibility(View.VISIBLE);
+        }
+        initPopWindow((ArrayList<String>) titles);
+    }
+
+    public ReceiveFragment newReceiveFragment(ArrayList<OrderResponse.ListBean.LinesBean> value) {
+        ReceiveFragment receiveFragment = new ReceiveFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("mode", mode); //mode:0正常收货，1点货，2双人收货
+        bundle.putParcelable("order", lbean);
+        bundle.putParcelableArrayList("datas", datas);
+        receiveFragment.setArguments(bundle);
+        receiveFragment.setCallback(ReceiveActivity.this);
+        return receiveFragment;
     }
 
     public String getDeliveryType() {
@@ -430,10 +491,68 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         pbBar.setMax(totalQty);
         pbBar.setProgress(0);
     }
+    private PopupWindow mProductTypeWindow;
+    ProductTypeAdapter mProductTypeAdapter;
+    private void initPopWindow(ArrayList<String> typeList) {
+        View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
+        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
+        mProductTypeAdapter = new ProductTypeAdapter(typeList);
+        gridView.setAdapter(mProductTypeAdapter);
+        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        mProductTypeWindow.setContentView(dialog);
+        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mProductTypeWindow.setFocusable(false);
+        mProductTypeWindow.setOutsideTouchable(false);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mProductTypeWindow.dismiss();
+                viewPager.setCurrentItem(position);
+                smartTabLayout.getTabAt(position).setSelected(true);
+                for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
+                    mProductTypeAdapter.selectList.set(i,new Boolean(false));
+                }
+                mProductTypeAdapter.selectList.set(position,new Boolean(true));
+                mProductTypeAdapter.notifyDataSetChanged();
+            }
+        });
+        dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mProductTypeWindow.dismiss();
+            }
+        });
+        mProductTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                ivOpen.setImageResource(R.drawable.arrow);
+            }
+        });
+    }
 
-    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth})
+    private void showPopWindow(){
+        final int[] location = new int[2];
+        smartTabLayout.getLocationOnScreen(location);
+        int y = (int) (location[1] + smartTabLayout.getHeight());
+        mProductTypeWindow.showAtLocation(getRootView(ReceiveActivity.this), Gravity.NO_GRAVITY, 0, y);
+        mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
+        ivOpen.setImageResource(R.drawable.arrow_up);
+    }
+
+    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth,R.id.iv_open})
     public void btnClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_open:
+                if (mProductTypeWindow == null){
+                    return;
+                }
+                if (!mProductTypeWindow.isShowing()){
+                    showPopWindow();
+                }else{
+                    mProductTypeWindow.dismiss();
+                }
+                break;
             case R.id.title_iv_left:
                 if (mode == 1) {
                     dialog.setTitle("提示");
@@ -797,38 +916,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         private List<String> titleList = new ArrayList<>();
         private List<Fragment> fragmentList = new ArrayList<>();
 
-        public TabPageIndicatorAdapter(FragmentManager fm) {
+        public TabPageIndicatorAdapter(FragmentManager fm,List<String> titleList,List<Fragment> fragmentList) {
             super(fm);
-            titleList.add("全部");
-            titleList.add("冷藏货");
-            titleList.add("冻货");
-            titleList.add("干货");
-            Bundle bundle = new Bundle();
-            bundle.putInt("mode", mode); //mode:0正常收货，1点货，2双人收货
-            if (datas != null && datas.size() > 0) {
-                bundle.putParcelableArrayList("datas", datas);
-            }
-            bundle.putParcelable("order", lbean);
-            ReceiveFragment allFragment = new ReceiveFragment();
-            allFragment.type = DataType.ALL;
-            allFragment.setCallback(ReceiveActivity.this);
-            allFragment.setArguments(bundle);
-            ReceiveFragment coldFragment = new ReceiveFragment();
-            coldFragment.type = DataType.LENGCANGHUO;
-            coldFragment.setCallback(ReceiveActivity.this);
-            coldFragment.setArguments(bundle);
-            ReceiveFragment freezeFragment = new ReceiveFragment();
-            freezeFragment.setCallback(ReceiveActivity.this);
-            freezeFragment.type = DataType.FREEZE;
-            freezeFragment.setArguments(bundle);
-            ReceiveFragment dryFragment = new ReceiveFragment();
-            dryFragment.setCallback(ReceiveActivity.this);
-            dryFragment.type = DataType.DRY;
-            dryFragment.setArguments(bundle);
-            fragmentList.add(allFragment);
-            fragmentList.add(coldFragment);
-            fragmentList.add(freezeFragment);
-            fragmentList.add(dryFragment);
+            this.titleList = titleList;
+            this.fragmentList = fragmentList;
         }
 
         @Override

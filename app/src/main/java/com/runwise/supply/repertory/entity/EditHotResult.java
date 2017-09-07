@@ -78,12 +78,22 @@ public class EditHotResult {
 
             private String tracking;
             private String stockType;
+
+            private String category;
             private String name;
             private String barcode;
             private ImageBean image;
             private String defaultCode;
             private String unit;
             private int productID;
+
+            public String getCategory() {
+                return category;
+            }
+
+            public void setCategory(String category) {
+                this.category = category;
+            }
 
             public String getTracking() {
                 return tracking;

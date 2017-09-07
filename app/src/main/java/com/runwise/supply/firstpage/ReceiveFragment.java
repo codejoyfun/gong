@@ -61,6 +61,8 @@ import static com.runwise.supply.firstpage.ReceiveActivity.REQUEST_CODE_ADD_BATC
 public class ReceiveFragment extends BaseFragment {
     private DoActionCallback callback;
 
+    public static final String BUNDLE_KEY_LIST = "bundle_key_list";
+
     public void setCallback(DoActionCallback callback) {
         this.callback = callback;
     }
@@ -114,15 +116,7 @@ public class ReceiveFragment extends BaseFragment {
         orderBean = getArguments().getParcelable("order");
         mode = getArguments().getInt("mode");
         adapter.isSettle = orderBean.isIsTwoUnit() && !orderBean.getDeliveryType().equals("fresh_vendor_delivery");
-        if (type == DataType.ALL) {
-            datas.addAll(linesList);
-        } else {
-            for (OrderResponse.ListBean.LinesBean bean : linesList) {
-                if (bean.getStockType().equals(type.getType())) {
-                    datas.add(bean);
-                }
-            }
-        }
+        datas.addAll(linesList);
         adapter.setData(datas);
 
     }
@@ -157,7 +151,7 @@ public class ReceiveFragment extends BaseFragment {
 
         @Override
         public boolean isEnabled(int position) {
-            if (((ReceiveActivity)getActivity()).ShuangRensShouHuoQueRen){
+            if (((ReceiveActivity) getActivity()).ShuangRensShouHuoQueRen) {
                 return false;
             }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
@@ -217,7 +211,6 @@ public class ReceiveFragment extends BaseFragment {
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
 
 
-
                 viewHolder.receivedTv.setSaveEnabled(false);
                 if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                     viewHolder.receivedTv.setFocusable(false);
@@ -244,7 +237,7 @@ public class ReceiveFragment extends BaseFragment {
                     viewHolder.inputAdd.setVisibility(View.VISIBLE);
                 }
 
-                if (((ReceiveActivity)getActivity()).ShuangRensShouHuoQueRen){
+                if (((ReceiveActivity) getActivity()).ShuangRensShouHuoQueRen) {
                     viewHolder.receivedTv.setFocusable(false);
                     viewHolder.inputAdd.setVisibility(View.GONE);
                     viewHolder.countLL.setOnClickListener(null);

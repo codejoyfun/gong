@@ -444,6 +444,7 @@ public class ReturnOrderBean implements Serializable {
             private double pickupWeight;
             private double pickupNum;
             private String stockType;
+            private String category;
             private double productUomQty;
             private List<String> lotIDs;
             private List<LotListBean> lotList;
@@ -460,6 +461,7 @@ public class ReturnOrderBean implements Serializable {
                 pickupWeight = in.readDouble();
                 pickupNum = in.readDouble();
                 stockType = in.readString();
+                category = in.readString();
                 productUomQty = in.readDouble();
                 lotIDs = in.createStringArrayList();
                 lotList = in.createTypedArrayList(LotListBean.CREATOR);
@@ -477,6 +479,14 @@ public class ReturnOrderBean implements Serializable {
                 }
             };
 
+
+            public String getCategory() {
+                return category;
+            }
+
+            public void setCategory(String category) {
+                this.category = category;
+            }
             public String getProductUom() {
                 return productUom;
             }
@@ -607,6 +617,7 @@ public class ReturnOrderBean implements Serializable {
                 dest.writeDouble(pickupWeight);
                 dest.writeDouble(pickupNum);
                 dest.writeString(stockType);
+                dest.writeString(category);
                 dest.writeDouble(productUomQty);
                 dest.writeStringList(lotIDs);
                 dest.writeTypedList(lotList);

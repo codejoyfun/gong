@@ -30,7 +30,7 @@ import com.runwise.supply.tools.UserUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.runwise.supply.R.id.moneySum;
+import static com.runwise.supply.fragment.OrderProductFragment.BUNDLE_KEY_LIST;
 
 /**
  * 价目表
@@ -81,9 +81,12 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        requestData(false, REQUEST_MAIN, page, 10);
+//        requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
+        List<ProductData.ListBean> listBeen = (List<ProductData.ListBean>) getArguments().getSerializable(BUNDLE_KEY_LIST);
+        adapter.setData(listBeen);
+        loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
     }
 
 

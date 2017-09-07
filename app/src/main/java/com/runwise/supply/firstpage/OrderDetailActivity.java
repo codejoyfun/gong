@@ -125,6 +125,8 @@ public class OrderDetailActivity extends NetWorkActivity {
     private boolean isModifyOrder;          //可修改订单
     private int orderId;                    //如果有orderId, 需要重新刷新
 
+    public static final int TAB_EXPAND_COUNT = 4;
+
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
@@ -576,10 +578,10 @@ public class OrderDetailActivity extends NetWorkActivity {
 
         HashMap<String, ArrayList<ListBean.LinesBean>> map = new HashMap<>();
         for (ListBean.LinesBean linesBean : listDatas) {
-            ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getStockType());
+            ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
             if (linesBeen == null) {
                 linesBeen = new ArrayList<>();
-                map.put(linesBean.getStockType(), linesBeen);
+                map.put(linesBean.getCategory(), linesBeen);
             }
             linesBeen.add(linesBean);
         }
@@ -615,6 +617,11 @@ public class OrderDetailActivity extends NetWorkActivity {
 
             }
         });
+        if(titles.size()<=TAB_EXPAND_COUNT){
+            ivOpen.setVisibility(View.GONE);
+        }else{
+            ivOpen.setVisibility(View.VISIBLE);
+        }
         initPopWindow((ArrayList<String>) titles);
     }
 

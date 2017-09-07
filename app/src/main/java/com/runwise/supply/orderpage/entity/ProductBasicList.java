@@ -24,7 +24,7 @@ public class ProductBasicList {
         this.list = list;
     }
 
-    public static class ListBean implements Serializable{
+    public static class ListBean implements Serializable {
         /**
          * name : 黑鱼（大型）
          * image : {"imageMedium":"/gongfu/image/product/8/image_medium/","image":"/gongfu/image/product/8/image/","imageSmall":"/gongfu/image/product/8/image_small/","imageID":8}
@@ -55,6 +55,8 @@ public class ProductBasicList {
         @Column
         private String stockType;
         @Column
+        private String category;
+        @Column
         private String unit;
         @Id
         @NoAutoIncrement
@@ -74,6 +76,14 @@ public class ProductBasicList {
         public static final String TRACKING_TYPE_LOT = "lot";
         public static final String TRACKING_TYPE_SERIAL = "serial";
         public static final String TRACKING_TYPE_NONE = "none";
+
+        public String getCategory() {
+            return category;
+        }
+
+        public void setCategory(String category) {
+            this.category = category;
+        }
 
         public String getName() {
             return name;

@@ -2,13 +2,14 @@ package com.runwise.supply.mine.entity;
 
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by mychao on 2017/7/14.
  */
 
-public class RepertoryEntity{
+public class RepertoryEntity implements Serializable{
 
     private List<ListBean> list;
 
@@ -20,7 +21,7 @@ public class RepertoryEntity{
         this.list = list;
     }
 
-    public static class ListBean {
+    public static class ListBean implements Serializable{
         /**
          * code : 11012215
          * inventoryValue : 108.0

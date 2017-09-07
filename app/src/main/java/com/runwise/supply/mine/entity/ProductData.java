@@ -1,12 +1,13 @@
 package com.runwise.supply.mine.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by mychao on 2017/7/17.
  */
 
-public class ProductData {
+public class ProductData implements Serializable{
 
     private List<ListBean> list;
 
@@ -18,7 +19,7 @@ public class ProductData {
         this.list = list;
     }
 
-    public static class ListBean {
+    public static class ListBean implements Serializable{
 
         /**
          * name : 手撕鸡

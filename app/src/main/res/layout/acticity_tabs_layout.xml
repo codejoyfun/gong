@@ -16,6 +16,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="42dp">
+
+            <ImageView
+                android:id="@+id/iv_open"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:src="@drawable/arrow"
+                android:padding="15dp"
+                android:background="@color/white"
+                android:visibility="gone"
+                android:layout_alignParentRight="true"/>
 
             <com.ogaclejapan.smarttablayout.SmartTabLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -24,6 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:background="#ffff"
+                android:layout_toLeftOf="@id/iv_open"
                 app:stl_customTabTextLayoutId="@layout/custom_tab"
                 app:stl_defaultTabTextColor="@color/base_color"
                 app:stl_defaultTabTextSize="16dp"
@@ -35,6 +49,7 @@
                 app:stl_indicatorThickness="4dp"
                 app:stl_overlineColor="@color/transparent"
                 app:stl_underlineThickness="0.5dp" />
+            </RelativeLayout>
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewPager"
                     android:layout_width="match_parent"

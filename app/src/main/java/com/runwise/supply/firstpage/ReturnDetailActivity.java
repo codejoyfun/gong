@@ -49,6 +49,7 @@ import java.util.Map;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
 
+import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
@@ -122,6 +123,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
         sb.append(rid).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, ReturnDetailResponse.class);
         loadingLayout.setStatusLoading();
+        dragLayout.setOverDrag(false);
     }
 
     private void initViews() {
@@ -241,10 +243,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
 
         HashMap<String, ArrayList<ReturnOrderBean.ListBean.LinesBean>> map = new HashMap<>();
         for (ReturnOrderBean.ListBean.LinesBean linesBean : listDatas) {
-            ArrayList<ReturnOrderBean.ListBean.LinesBean> linesBeen = map.get(linesBean.getStockType());
+            ArrayList<ReturnOrderBean.ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
             if (linesBeen == null) {
                 linesBeen = new ArrayList<>();
-                map.put(linesBean.getStockType(), linesBeen);
+                map.put(linesBean.getCategory(), linesBeen);
             }
             linesBeen.add(linesBean);
         }
@@ -280,6 +282,11 @@ public class ReturnDetailActivity extends NetWorkActivity {
 
             }
         });
+        if(titles.size()<=TAB_EXPAND_COUNT){
+            ivOpen.setVisibility(View.GONE);
+        }else{
+            ivOpen.setVisibility(View.VISIBLE);
+        }
         initPopWindow((ArrayList<String>) titles);
     }
 

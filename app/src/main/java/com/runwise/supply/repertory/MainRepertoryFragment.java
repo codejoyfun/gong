@@ -50,6 +50,8 @@ public class MainRepertoryFragment extends NetWorkFragment {
             }
         });
     }
+
+
     @OnClick(R.id.left_layout)
     public void leftClick(View view){
         startActivity(new Intent(mContext,DealerSearchActivity.class));
