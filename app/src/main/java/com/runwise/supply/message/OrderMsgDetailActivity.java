@@ -30,13 +30,15 @@ import com.runwise.supply.tools.StatusBarUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.runwise.supply.R.id.tablayout;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
+import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 /**
  * 消息订单详情
  */
 public class OrderMsgDetailActivity extends NetWorkActivity {
-    @ViewInject(R.id.tablayout)
+    @ViewInject(tablayout)
     private TabLayout smartTabLayout;
     @ViewInject(R.id.viewpager)
     private ViewPager viewPager;
@@ -168,6 +170,13 @@ public class OrderMsgDetailActivity extends NetWorkActivity {
                 fragmentList.add(orderMsgDetailListFragment);
             }
             initPopWindow((ArrayList<String>) titleList);
+            if(titleList.size()<=TAB_EXPAND_COUNT){
+                ivOpen.setVisibility(View.GONE);
+                smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
+            }else{
+                ivOpen.setVisibility(View.VISIBLE);
+                smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+            }
         }
 
         @Override
