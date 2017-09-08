@@ -44,7 +44,6 @@ import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.fragment.TabFragment;
-import com.runwise.supply.mine.ProcurementAddActivity;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -66,7 +65,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.baidu.mapapi.BMapManager.getContext;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
@@ -354,7 +352,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     product.setStockType(productBean.getStockType());
                     product.setDefaultCode(productBean.getDefaultCode());
                     product.setUnit(productBean.getUnit());
-                    ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(productBean.getProductID()));
+                    ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
                     if (listBean != null){
                         product.setUom(listBean.getUom());
                     }

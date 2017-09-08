@@ -64,7 +64,6 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 	@ViewInject(R.id.textView2)
 	private TextView textView2;
 
-	private EditRepertoryListFragment allFragment;
 
 	private PandianResult pandianResult;
 	private int inventoryID;
@@ -106,9 +105,9 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 	CategoryRespone categoryRespone;
 
 
-
+	List<Fragment> orderProductFragmentList;
 	private void setUpDataForViewPage() {
-		List<Fragment> orderProductFragmentList = new ArrayList<>();
+		orderProductFragmentList = new ArrayList<>();
 		List<Fragment> tabFragmentList = new ArrayList<>();
 		List<String> titles = new ArrayList<>();
 		HashMap<String, ArrayList<PandianResult.InventoryBean.LinesBean>> map = new HashMap<>();
@@ -244,7 +243,7 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 				break;
 			//提交
 			case R.id.right_layout:
-                if(allFragment != null) {
+                if(orderProductFragmentList != null && orderProductFragmentList.size()>0) {
 					dialog.setModel(CustomDialog.BOTH);
 					dialog.setLeftBtnListener("取消",null);
 					dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
@@ -253,7 +252,7 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 							EditRequest editRequest = new EditRequest();
 							editRequest.setId(inventoryID);
 							editRequest.setState("done");
-							List<PandianResult.InventoryBean.LinesBean> finalDataList = allFragment.getFinalDataList();
+							List<PandianResult.InventoryBean.LinesBean> finalDataList = ((EditRepertoryListFragment)orderProductFragmentList.get(0)).getFinalDataList();
 							List<EditRequest.ProductBean> editListBean = new ArrayList<>();
 							for(PandianResult.InventoryBean.LinesBean bean : finalDataList) {
 								if(bean.getType() == 0) {
