@@ -154,14 +154,12 @@ public class ProductActivity extends NetWorkActivity {
                 listBeen.add(listBean);
             }
         }
-        Iterator iter = map.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String key = (String) entry.getKey();
-            ArrayList<ProductData.ListBean> value = (ArrayList<ProductData.ListBean>) entry.getValue();
+        for(String category:categoryRespone.getCategoryList()){
+            ArrayList<ProductData.ListBean> value = map.get(category);
             repertoryEntityFragmentList.add(newRepertoryListFragment(value));
-            tabFragmentList.add(TabFragment.newInstance(key));
+            tabFragmentList.add(TabFragment.newInstance(category));
         }
+
         repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<ProductData.ListBean>) dataList));
         initUI(titles,repertoryEntityFragmentList);
         initPopWindow((ArrayList<String>) titles);

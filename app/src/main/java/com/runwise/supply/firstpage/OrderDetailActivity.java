@@ -51,9 +51,7 @@ import com.runwise.supply.view.YourScrollableViewPager;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
 import me.shaohui.bottomdialog.BottomDialog;
@@ -602,13 +600,11 @@ public class OrderDetailActivity extends NetWorkActivity {
                 linesBeen.add(linesBean);
             }
         }
-        Iterator iter = map.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String key = (String) entry.getKey();
-            ArrayList<ListBean.LinesBean> value = (ArrayList<ListBean.LinesBean>) entry.getValue();
+
+        for(String category:categoryRespone.getCategoryList()){
+            ArrayList<ListBean.LinesBean> value = map.get(category);
             orderProductFragmentList.add(newProductFragment(value));
-            tabFragmentList.add(TabFragment.newInstance(key));
+            tabFragmentList.add(TabFragment.newInstance(category));
         }
         orderProductFragmentList.add(0, newProductFragment((ArrayList<ListBean.LinesBean>) listDatas));
 

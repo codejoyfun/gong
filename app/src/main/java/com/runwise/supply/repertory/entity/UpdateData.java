@@ -10,11 +10,11 @@ public class UpdateData {
     DataType type;
 
 
-    public DataType getType() {
-        return type;
-    }
-
-    public void setType(DataType type) {
-        this.type = type;
-    }
+//    public DataType getType() {
+//        return type;
+//    }
+//
+//    public void setType(DataType type) {
+//        this.type = type;
+//    }
 }

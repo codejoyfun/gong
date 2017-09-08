@@ -34,9 +34,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
@@ -135,14 +133,13 @@ public class PriceActivity extends NetWorkActivity {
                 tempListBeen.add(listBean);
             }
         }
-        Iterator iter = map.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String key = (String) entry.getKey();
-            ArrayList<ProductData.ListBean> value = (ArrayList<ProductData.ListBean>) entry.getValue();
+
+        for(String category:categoryRespone.getCategoryList()){
+            ArrayList<ProductData.ListBean> value = map.get(category);
             productDataFragmentList.add(newPriceListFragment(value));
-            tabFragmentList.add(TabFragment.newInstance(key));
+            tabFragmentList.add(TabFragment.newInstance(category));
         }
+
         productDataFragmentList.add(0, newPriceListFragment((ArrayList<ProductData.ListBean>) listBeen));
         initUI(titles, productDataFragmentList);
         initPopWindow((ArrayList<String>) titles);

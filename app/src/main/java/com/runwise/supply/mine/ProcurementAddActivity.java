@@ -60,9 +60,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
@@ -422,13 +420,11 @@ public class ProcurementAddActivity extends NetWorkActivity {
                 tempListBeen.add(listBean);
             }
         }
-        Iterator iter = map.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String key = (String) entry.getKey();
-            ArrayList<EditHotResult.ListBean> value = (ArrayList<EditHotResult.ListBean>) entry.getValue();
+
+        for(String category:categoryRespone.getCategoryList()){
+            ArrayList<EditHotResult.ListBean> value = map.get(category);
             productDataFragmentList.add(newSearchListFragment(value));
-            tabFragmentList.add(TabFragment.newInstance(key));
+            tabFragmentList.add(TabFragment.newInstance(category));
         }
         productDataFragmentList.add(0, newSearchListFragment((ArrayList<EditHotResult.ListBean>) listBeen));
         initUI(titles, productDataFragmentList);

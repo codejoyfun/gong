@@ -71,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -240,14 +239,13 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }
 
         }
-        Iterator iter = map.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String key = (String) entry.getKey();
-            ArrayList<OrderResponse.ListBean.LinesBean> value = (ArrayList<OrderResponse.ListBean.LinesBean>) entry.getValue();
+
+        for(String category:categoryRespone.getCategoryList()){
+            ArrayList<OrderResponse.ListBean.LinesBean> value = map.get(category);
             receiveFragmentList.add(newReceiveFragment(value));
-            tabFragmentList.add(TabFragment.newInstance(key));
+            tabFragmentList.add(TabFragment.newInstance(category));
         }
+
         receiveFragmentList.add(0, newReceiveFragment((ArrayList<OrderResponse.ListBean.LinesBean>) lbean.getLines()));
         adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager(),titles,receiveFragmentList);
         viewPager.setAdapter(adapter);

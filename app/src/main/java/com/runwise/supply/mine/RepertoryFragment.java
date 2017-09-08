@@ -47,9 +47,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
@@ -453,8 +451,6 @@ public class RepertoryFragment extends NetWorkFragment {
             titles.add(category);
             map.put(category,new ArrayList<RepertoryEntity.ListBean>());
         }
-
-
         for (RepertoryEntity.ListBean listBean : repertoryEntity.getList()) {
             if(!TextUtils.isEmpty(listBean.getProduct().getCategory())){
                 ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getCategory());
@@ -465,13 +461,10 @@ public class RepertoryFragment extends NetWorkFragment {
                 listBeen.add(listBean);
             }
         }
-        Iterator iter = map.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String key = (String) entry.getKey();
-            ArrayList<RepertoryEntity.ListBean> value = (ArrayList<RepertoryEntity.ListBean>) entry.getValue();
+        for(String category:categoryRespone.getCategoryList()){
+            ArrayList<RepertoryEntity.ListBean> value = map.get(category);
             repertoryEntityFragmentList.add(newRepertoryListFragment(value));
-            tabFragmentList.add(TabFragment.newInstance(key));
+            tabFragmentList.add(TabFragment.newInstance(category));
         }
         repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<RepertoryEntity.ListBean>) repertoryEntity.getList()));
         initUI(titles,repertoryEntityFragmentList);

@@ -26,7 +26,6 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.OrderMsgDetail;
-import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.UserUtils;
@@ -50,7 +49,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
 
     private int page = 1;
-    public DataType type;
+    public String type;
     private boolean normal;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,12 +105,13 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
     }
 
     public List<OrderMsgDetail.OrderBean.LinesBean> handlerDataList(List<OrderMsgDetail.OrderBean.LinesBean> prodectList) {
-        if(type == DataType.ALL) {
+        if(type.equals("全部")) {
             return prodectList;
         }
         List<OrderMsgDetail.OrderBean.LinesBean> typeList = new ArrayList<>();
         for (OrderMsgDetail.OrderBean.LinesBean bean : prodectList){
-            if (bean.getStockType().equals(type.getType())){
+            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(bean.getProductID()));
+            if (listBean.getCategory().equals(type)){
                 typeList.add(bean);
             }
         }
