@@ -291,6 +291,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                     }
                     viewHolder.value.setText("库存" + bean.getTheoreticalQty()+"");
                     viewHolder.uom.setText(productBean.getUom());
+                    viewHolder.uom_other.setText(productBean.getUom());
                     if(!TextUtils.isEmpty(bean.getLotNum())) {
                         viewHolder.dateNumber.setText(bean.getLotNum());
                         viewHolder.dateNumber.setVisibility(View.VISIBLE);
@@ -346,6 +347,8 @@ public class EditRepertoryListFragment extends NetWorkFragment {
             TextView         value;
             @ViewInject(R.id.uom)
             TextView         uom;
+            @ViewInject(R.id.uom_other)
+            TextView         uom_other;
             @ViewInject(R.id.dateNumber)
             TextView         dateNumber;
             @ViewInject(R.id.dateLate)

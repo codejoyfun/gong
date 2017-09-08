@@ -25,6 +25,8 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditHotResult;
 
 import org.greenrobot.eventbus.EventBus;
@@ -142,6 +144,12 @@ public class SearchListFragment extends NetWorkFragment {
                     }
                 });
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
+                ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(productBean.getProductID()));
+                if (listBean != null){
+                    viewHolder.uom.setText(listBean.getUom());
+                }else{
+                    viewHolder.uom.setText("");
+                }
             }
             return convertView;
         }
@@ -155,6 +163,8 @@ public class SearchListFragment extends NetWorkFragment {
             TextView            number;
             @ViewInject(R.id.content)
             TextView content;
+            @ViewInject(R.id.uom)
+            TextView uom;
             @ViewInject(R.id.addBtn)
             ImageView addBtn;
         }

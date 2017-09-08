@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="#ffff"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="#ffff"
+              android:orientation="horizontal"
     >
+
     <LinearLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
@@ -12,140 +14,158 @@
         android:orientation="horizontal"
         android:padding="10dp"
         >
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        >
-        <com.facebook.drawee.view.SimpleDraweeView
-            xmlns:fresco="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/productImage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            fresco:placeholderImageScaleType="focusCrop"
-            fresco:placeholderImage="@drawable/car"
-            android:layout_alignParentLeft="true"
-            fresco:viewAspectRatio="1"
-            />
-    </FrameLayout>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="4"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginLeft="8dp"
-        >
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="黑鱼(大型)"
-            android:textColor="#444444"
-            android:textSize="16sp"
-            />
+            android:layout_weight="1"
+            >
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/productImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                fresco:placeholderImage="@drawable/car"
+                fresco:placeholderImageScaleType="focusCrop"
+                fresco:viewAspectRatio="1"
+                />
+        </FrameLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="4"
+            android:orientation="vertical"
             >
-            <TextView
-                android:id="@+id/number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="330533 |"
-                android:textColor="#999999"
-                android:maxLines="2"
-                android:textSize="13sp"
-                />
 
             <TextView
-                android:id="@+id/content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text=" 2-3斤／条"
-                android:textColor="#999999"
-                android:maxLines="2"
-                android:textSize="13sp"
-                />
-            <com.runwise.supply.view.NoWatchEditText
-                android:id="@+id/editText"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#0000"
+                android:text="黑鱼(大型)"
                 android:textColor="#444444"
-                android:textSize="17sp"
-                android:textColorHint="#dddddd"
-                android:text="0"
-                android:inputType="number"
-                android:maxLength="4"
-                android:minWidth="40dp"
-                android:gravity="right"
+                android:textSize="16sp"
                 />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:text="330533 |"
+                    android:textColor="#999999"
+                    android:textSize="13sp"
+                    />
+
+                <TextView
+                    android:id="@+id/content"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:text=" 2-3斤／条"
+                    android:textColor="#999999"
+                    android:textSize="13sp"
+                    />
+
+                <com.runwise.supply.view.NoWatchEditText
+                    android:id="@+id/editText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#0000"
+                    android:gravity="right"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:minWidth="40dp"
+                    android:text="0"
+                    android:textColor="#444444"
+                    android:textColorHint="#dddddd"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:id="@+id/uom_other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:text="公斤"
+                    android:textColor="#444444"
+                    android:textSize="13sp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/dateNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/repertory_bg"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:paddingTop="2dp"
+                    android:text="黑鱼(大型)"
+                    android:textColor="#444444"
+                    android:textSize="12sp"
+                    />
+
+                <TextView
+                    android:id="@+id/dateLate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="天到期"
+                    android:textColor="#f55f5e"
+                    android:textSize="14sp"
+                    />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    >
+
+                    <TextView
+                        android:id="@+id/value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:maxLength="10"
+                        android:text="54"
+                        android:textColor="#999999"
+                        android:textSize="13sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/uom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:text="公斤"
+                        android:textColor="#999999"
+                        android:textSize="13sp"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
-
-     <LinearLayout
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:orientation="horizontal"
-         android:layout_marginTop="4dp"
-         >
-         <TextView
-             android:id="@+id/dateNumber"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="黑鱼(大型)"
-             android:textColor="#444444"
-             android:textSize="12sp"
-             android:background="@drawable/repertory_bg"
-             android:paddingTop="2dp"
-             android:paddingBottom="2dp"
-             android:paddingLeft="4dp"
-             android:paddingRight="4dp"
-             />
-         <TextView
-             android:id="@+id/dateLate"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="天到期"
-             android:textColor="#f55f5e"
-             android:textSize="14sp"
-             android:layout_marginLeft="8dp"
-             />
-         <LinearLayout
-             android:layout_width="0dp"
-             android:layout_weight="1"
-             android:layout_height="wrap_content"
-             android:layout_marginTop="3dp"
-             android:gravity="right"
-             >
-
-             <TextView
-                 android:id="@+id/value"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="54"
-                 android:textColor="#999999"
-                 android:textSize="13sp"
-                 android:maxLength="10"
-                 android:layout_gravity="right"
-                 />
-             <TextView
-                 android:id="@+id/uom"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="公斤"
-                 android:textColor="#999999"
-                 android:textSize="13sp"
-                 android:layout_gravity="right"
-                 />
-         </LinearLayout>
-
-     </LinearLayout>
-    </LinearLayout>
     </LinearLayout>
 </LinearLayout>

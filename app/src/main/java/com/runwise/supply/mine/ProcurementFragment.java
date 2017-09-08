@@ -158,7 +158,7 @@ public class ProcurementFragment extends NetWorkFragment {
 //                    }
                 }
                 viewHolder.content.setText(sb.toString());
-                viewHolder.tvCount.setText(String.valueOf((int)bean.getQty()));
+                viewHolder.tvCount.setText(String.valueOf((int)bean.getQty()) + basicBean.getUom());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 if (isHead(position)){
                     viewHolder.rl_head.setVisibility(View.VISIBLE);

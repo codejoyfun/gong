@@ -204,7 +204,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
                     viewHolder.dateNumber.setVisibility(View.GONE);
                 }
             }
-            viewHolder.uom.setText(bean.getProductUomQty()+"");
+            viewHolder.uom.setText(bean.getProductUomQty()+"" + bean.getProductUom());
             return convertView;
         }
 

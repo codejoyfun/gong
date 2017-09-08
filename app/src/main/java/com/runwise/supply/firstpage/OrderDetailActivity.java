@@ -545,12 +545,14 @@ public class OrderDetailActivity extends NetWorkActivity {
                     uploadBtn.setText("查看凭证");
                     isHasAttachment = true;
                 }
-                //同时，显示右上角，申请售后
-                setTitleRightText(true, "申请售后");
                 isModifyOrder = false;
             } else if (bean.getState().equals(OrderState.DRAFT.getName())) {
                 setTitleRightText(true, "修改");
                 isModifyOrder = true;
+            }
+            if(bean.getState().equals("rated") || bean.getState().equals("done")){
+                //同时，显示右上角，申请售后
+                setTitleRightText(true, "申请售后");
             }
             //订单信息
             orderNumTv.setText(bean.getName());

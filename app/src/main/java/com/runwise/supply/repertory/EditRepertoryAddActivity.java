@@ -34,6 +34,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.AddRepertoryData;
@@ -50,6 +51,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.baidu.mapapi.BMapManager.getContext;
 
 
 /**
@@ -333,12 +336,15 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     product.setStockType(productBean.getStockType());
                     product.setDefaultCode(productBean.getDefaultCode());
                     product.setUnit(productBean.getUnit());
+                    ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(productBean.getProductID()));
+                    if (listBean != null){
+                        product.setUom(listBean.getUom());
+                    }
                     ImageBean imageBean = new ImageBean();
                     imageBean.setImage(productBean.getImage().getImage());
                     imageBean.setImageSmall(productBean.getImage().getImageSmall());
                     imageBean.setImageMedium(productBean.getImage().getImageMedium());
                     product.setImage(imageBean);
-
                     bean.setProduct(product);
 
                     NewAdd newAddBean = new NewAdd();
@@ -429,7 +435,10 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 imageBean.setImageSmall(productBean.getImage().getImageSmall());
                 imageBean.setImageMedium(productBean.getImage().getImageMedium());
                 product.setImage(imageBean);
-
+                ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
+                if (listBean != null){
+                    product.setUom(listBean.getUom());
+                }
                 bean.setProduct(product);
 
                 NewAdd newAddBean = new NewAdd();
