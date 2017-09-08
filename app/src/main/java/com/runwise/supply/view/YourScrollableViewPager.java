@@ -30,16 +30,19 @@ public class YourScrollableViewPager extends ViewPager {
         setOffscreenPageLimit(pageCount);
     }
 
+    int maxHeight = 0;
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int height = 0;
         if (getChildCount() != 0) {
             View child = getChildAt(currentPageNumber);
             child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             int h = child.getMeasuredHeight();
-            if (h > height) height = h;
+            if (h>maxHeight){
+                maxHeight = h;
+            }
         }
-        heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 

@@ -316,7 +316,7 @@ public class ProductActivity extends NetWorkActivity {
     private void sendRequest() {
         ///gongfu/v3/shop/product/list
         Object request = null;
-        sendConnection("/gongfu/v3/shop/product/list",request,PRODUCT_GET,true, ProductData.class);
+        sendConnection("/gongfu/v2/product/list",request,PRODUCT_GET,true, ProductData.class);
     }
     CategoryRespone categoryRespone;
     @Override

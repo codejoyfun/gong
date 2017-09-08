@@ -28,6 +28,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
 
     @ViewInject(R.id.titleLayout)
     private View titleLayout;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +50,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 return true;
             }
         });
+
     }
 
 

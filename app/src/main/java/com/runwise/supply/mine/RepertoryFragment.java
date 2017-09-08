@@ -81,9 +81,15 @@ public class RepertoryFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
-            requestData();
+            requestCategory();
         }
         else{
+            mUnLoginCategoryRespone = new CategoryRespone();
+            List<String> categoryList = new ArrayList<>();
+            categoryList.add("冷藏货");
+            categoryList.add("冻货");
+            categoryList.add("干货");
+            mUnLoginCategoryRespone.setCategoryList(categoryList);
             buildData();
         }
     }
@@ -192,13 +198,13 @@ public class RepertoryFragment extends NetWorkFragment {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateEvent(UpdateRepertory event) {
-        requestData();
+        requestCategory();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPullEvent(RefreshPepertoy event) {
         if(isLogin) {
-            requestData();
+            requestCategory();
         }
         else {
             handler.postDelayed(new Runnable() {
@@ -211,6 +217,11 @@ public class RepertoryFragment extends NetWorkFragment {
     }
     private void requestData() {
         sendConnection("/api/stock/list",null,PRODUCT_GET,true, RepertoryEntity.class);
+    }
+    private void requestCategory(){
+        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+        sendConnection("/api/product/category", getCategoryRequest, OrderDetailActivity.CATEGORY, false, CategoryRespone.class);
     }
     private  void buildData() {
         String xmlStr = "{\n" +
@@ -239,7 +250,7 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                \"tracking\": \"lot\",\n" +
                 "                \"name\": \"一号灌汤包馅料\",\n" +
                 "                \"defaultCode\": \"11012213\",\n" +
-                "                \"stockType\": \"donghuo\",\n" +
+                "                \"category\": \"冻货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 15.200000000000001,\n" +
                 "                \"uom\": \"包\"\n" +
@@ -269,7 +280,7 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                \"tracking\": \"none\",\n" +
                 "                \"name\": \"一次性碗 - 直无批\",\n" +
                 "                \"defaultCode\": \"11012214\",\n" +
-                "                \"stockType\": \"other\",\n" +
+                "                \"category\": \"other\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 1.11,\n" +
                 "                \"uom\": \"件\"\n" +
@@ -299,7 +310,7 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                \"tracking\": \"lot\",\n" +
                 "                \"name\": \"中盐牌加碘精制盐\",\n" +
                 "                \"defaultCode\": \"11012215\",\n" +
-                "                \"stockType\": \"ganhuo\",\n" +
+                "                \"category\": \"干货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 58.910000000000004,\n" +
                 "                \"uom\": \"包\"\n" +
@@ -329,7 +340,7 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                \"tracking\": \"lot\",\n" +
                 "                \"name\": \"【五得利】高筋小麦粉\",\n" +
                 "                \"defaultCode\": \"11012216\",\n" +
-                "                \"stockType\": \"ganhuo\",\n" +
+                "                \"category\": \"干货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 104.48,\n" +
                 "                \"uom\": \"包\"\n" +
@@ -359,7 +370,7 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                \"tracking\": \"lot\",\n" +
                 "                \"name\": \"元宝调和油\",\n" +
                 "                \"defaultCode\": \"11012217\",\n" +
-                "                \"stockType\": \"ganhuo\",\n" +
+                "                \"category\": \"干货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 100.04,\n" +
                 "                \"uom\": \"桶\"\n" +
@@ -368,14 +379,12 @@ public class RepertoryFragment extends NetWorkFragment {
                 "    ]\n" +
                 "}";
         RepertoryEntity repertoryEntity =  JSON.parseObject(xmlStr,RepertoryEntity.class);
-        for(RepertoryListFragment fragment : adapter.getFragmentList()){
-            fragment.onDataSynEvent(repertoryEntity);
-        }
+        setUpDataForViewPage(mUnLoginCategoryRespone,repertoryEntity);
     }
 
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
-        requestData();
+        requestCategory();
     }
 
     @Override
@@ -388,6 +397,7 @@ public class RepertoryFragment extends NetWorkFragment {
         return R.layout.fragment_repertory_layout;
     }
     CategoryRespone categoryRespone;
+    CategoryRespone mUnLoginCategoryRespone;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -406,9 +416,7 @@ public class RepertoryFragment extends NetWorkFragment {
                     }
                 }
                 if(!nullProductExit) {
-                    GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                    getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
-                    sendConnection("/api/product/category", getCategoryRequest, OrderDetailActivity.CATEGORY, false, CategoryRespone.class);
+                    setUpDataForViewPage(categoryRespone,repertoryEntity);
                 }
                 break;
             case PRODUCT_DETAIL:
@@ -420,12 +428,12 @@ public class RepertoryFragment extends NetWorkFragment {
                         break;
                     }
                 }
-                setUpDataForViewPage();
+                setUpDataForViewPage(categoryRespone,repertoryEntity);
                 break;
             case OrderDetailActivity.CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
-                    setUpDataForViewPage();
+                requestData();
             break;
         }
     }
@@ -435,7 +443,7 @@ public class RepertoryFragment extends NetWorkFragment {
         ToastUtil.show(mContext,errMsg);
     }
 
-    private void setUpDataForViewPage() {
+    private void setUpDataForViewPage(CategoryRespone categoryRespone,RepertoryEntity repertoryEntity) {
         List<RepertoryListFragment> repertoryEntityFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         HashMap<String, ArrayList<RepertoryEntity.ListBean>> map = new HashMap<>();
