@@ -231,11 +231,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
 
         for (OrderResponse.ListBean.LinesBean lineBean : lbean.getLines()) {
-            if (!TextUtils.isEmpty(lineBean.getCategory())){
-                ArrayList<OrderResponse.ListBean.LinesBean> listBeen = map.get(lineBean.getCategory());
+            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(lineBean.getProductID()));
+            if (listBean!=null&&!TextUtils.isEmpty(listBean.getCategory())){
+                ArrayList<OrderResponse.ListBean.LinesBean> listBeen = map.get(listBean.getCategory());
                 if (listBeen == null) {
                     listBeen = new ArrayList<>();
-                    map.put(lineBean.getCategory(), listBeen);
+                    map.put(listBean.getCategory(), listBeen);
                 }
                 listBeen.add(lineBean);
             }

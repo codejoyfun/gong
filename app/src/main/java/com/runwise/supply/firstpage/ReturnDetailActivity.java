@@ -39,6 +39,8 @@ import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.fragment.ReturnProductFragment;
 import com.runwise.supply.fragment.TabFragment;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.view.YourScrollableViewPager;
@@ -250,11 +252,12 @@ public class ReturnDetailActivity extends NetWorkActivity {
         }
 
         for (ReturnOrderBean.ListBean.LinesBean linesBean : listDatas) {
-            if (!TextUtils.isEmpty(linesBean.getCategory())){
-                ArrayList<ReturnOrderBean.ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
+            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(linesBean.getProductID()));
+            if (listBean != null && !TextUtils.isEmpty(listBean.getCategory())){
+                ArrayList<ReturnOrderBean.ListBean.LinesBean> linesBeen = map.get(listBean.getCategory());
                 if (linesBeen == null) {
                     linesBeen = new ArrayList<>();
-                    map.put(linesBean.getCategory(), linesBeen);
+                    map.put(listBean.getCategory(), linesBeen);
                 }
                 linesBeen.add(linesBean);
             }

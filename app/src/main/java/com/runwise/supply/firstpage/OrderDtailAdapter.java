@@ -19,6 +19,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.LotListActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,9 +99,9 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
             if (canSeePrice){
                 if (isTwoUnit){
-                    sb.append("\n").append(basicBean.getSettlePrice()).append("元/").append(basicBean.getSettleUomId());
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getSettlePrice()))).append("元/").append(basicBean.getSettleUomId());
                 }else{
-                    sb.append("\n").append(basicBean.getPrice()).append("元/").append(bean.getProductUom());
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getPrice()))).append("元/").append(bean.getProductUom());
                 }
             }
             vh.unit1.setText(bean.getProductUom());

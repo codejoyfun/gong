@@ -44,6 +44,7 @@ import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
@@ -592,11 +593,12 @@ public class OrderDetailActivity extends NetWorkActivity {
             map.put(category,new ArrayList<ListBean.LinesBean>());
         }
         for (ListBean.LinesBean linesBean : listDatas) {
-            if (!TextUtils.isEmpty(linesBean.getCategory())){
-                ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
+            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(linesBean.getProductID()));
+            if (listBean != null && !TextUtils.isEmpty(listBean.getCategory())){
+                ArrayList<ListBean.LinesBean> linesBeen = map.get(listBean.getCategory());
                 if (linesBeen == null) {
                     linesBeen = new ArrayList<>();
-                    map.put(linesBean.getCategory(), linesBeen);
+                    map.put(listBean.getCategory(), linesBeen);
                 }
                 linesBeen.add(linesBean);
             }
