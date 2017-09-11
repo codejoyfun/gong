@@ -85,12 +85,9 @@
         android:textColor="#999999"
         android:maxLines="2"
         android:textSize="11sp"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@id/countLL"
-        android:layout_alignLeft="@id/name"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/name"
-        />
+        android:layout_alignBottom="@+id/countLL"
+        android:layout_alignLeft="@+id/name"
+        android:layout_alignStart="@+id/name"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"

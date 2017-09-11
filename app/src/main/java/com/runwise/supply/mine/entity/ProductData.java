@@ -45,10 +45,25 @@ public class ProductData implements Serializable{
         private String stockType;
         private String category;
         private String uom;
+
+        public String getSettleUomId() {
+            return settleUomId;
+        }
+
         private String settleUomId;
         private String price;
         private String unit;
         private String productID;
+
+        public String getProductUom() {
+            return productUom;
+        }
+
+        public void setProductUom(String productUom) {
+            this.productUom = productUom;
+        }
+
+        private String productUom;
 
         public String getCategory() {
             return category;
@@ -98,7 +113,7 @@ public class ProductData implements Serializable{
             this.defaultCode = defaultCode;
         }
 
-        public String isSettlePrice() {
+        public String getSettlePrice() {
             return settlePrice;
         }
 

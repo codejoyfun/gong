@@ -181,7 +181,14 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
             viewHolder.number.setText(bean.getDefaultCode());
             viewHolder.content.setText(bean.getUnit());
             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
-            viewHolder.value.setText("￥"+UserUtils.formatPrice(bean.getPrice()+""));
+            if (Boolean.parseBoolean(bean.isIsTwoUnit())){
+                viewHolder.value.setText("￥"+UserUtils.formatPrice(bean.getSettlePrice()+"") + "/" +bean.getSettleUomId());
+            }else{
+                viewHolder.value.setText("￥"+UserUtils.formatPrice(bean.getPrice()+"") + "/" +bean.getUom());
+            }
+
+
+
             return convertView;
         }
 
