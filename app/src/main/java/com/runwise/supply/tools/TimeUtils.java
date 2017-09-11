@@ -384,6 +384,25 @@ public class TimeUtils {
 		String str =  sdf.format(calendar.getTime());
 		return str;
 	}
+
+	public static String getThisWeekEnd(){
+		Calendar cal = Calendar.getInstance();
+        try{
+            cal.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(getThisWeekStart()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+		int d = 0;
+		if(cal.get(Calendar.DAY_OF_WEEK)==1){
+			d = -6;
+		}else{
+			d = 2-cal.get(Calendar.DAY_OF_WEEK);
+		}
+		cal.add(Calendar.DAY_OF_WEEK, 6);
+		//所在周结束日期
+		return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
+
+	}
 	//上周结束时间
 	public static String getPerWeekEnd() {
 		Date date = new Date();

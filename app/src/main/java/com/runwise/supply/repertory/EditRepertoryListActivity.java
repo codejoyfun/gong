@@ -139,6 +139,7 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 
 		FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
 		viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
+		viewpager.setOffscreenPageLimit(orderProductFragmentList.size());
 		tablayout.setupWithViewPager(viewpager);//将TabLayout和ViewPager关联起来
 		tablayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 			@Override

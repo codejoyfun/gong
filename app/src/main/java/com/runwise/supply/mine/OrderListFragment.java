@@ -109,9 +109,10 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
         switch (orderDataType) {
             case BENZHOU:
                 request.setStart(TimeUtils.getThisWeekStart());
-                request.setEnd(TimeUtils.getCurrentDate());
+//                TimeUtils.getThisWeekEnd();
+                request.setEnd(TimeUtils.getThisWeekEnd());
 //                request.setStart("2017-09-02");
-//                request.setEnd("2017-09-06");
+//                request.setEnd("2017-09-17");
                 break;
             case SHANGZHOU:
                 request.setStart(TimeUtils.getPerWeekStart());

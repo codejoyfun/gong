@@ -282,7 +282,9 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
                     List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
                     ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
-                    productsBean.setLot_name(number);
+                    if (!TextUtils.isEmpty(number)){
+                        productsBean.setLot_name(number);
+                    }
                     productsBean.setTracking("lot");
                     productsBean.setProduct_id(productBean.getProductID());
 

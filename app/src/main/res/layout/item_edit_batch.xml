@@ -37,6 +37,7 @@
             android:hint="添加批次号(选填)"
             android:singleLine="true"
             android:textColor="@color/black"
+            android:cursorVisible="true"
             android:textColorHint="@color/bottom_dialog_divider"
             android:textSize="13sp" />
 
@@ -107,6 +108,7 @@
             android:hint="请填写数量"
             android:inputType="number"
             android:singleLine="true"
+            android:cursorVisible="true"
             android:textColor="@color/black"
             android:textColorHint="@color/bottom_dialog_divider"
             android:textSize="13sp" />

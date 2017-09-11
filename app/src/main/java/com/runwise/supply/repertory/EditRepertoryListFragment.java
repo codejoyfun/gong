@@ -133,11 +133,6 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     //添加新商品
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddNewBean(NewAdd newBean) {
-        String stockType = "";
-        if (dataList!= null && dataList.size() >0){
-            stockType = dataList.get(0).getProduct().getStockType();
-        }
-        if (newBean.getBean().getProduct().getStockType().equals(stockType)) {
 //            boolean isOtherView = false;
 //            for(PandianResult.InventoryBean.LinesBean bean:adapter.getList()) {
 //                if(bean.getType() == 1) {
@@ -167,7 +162,6 @@ public class EditRepertoryListFragment extends NetWorkFragment {
             }
             adapter.notifyDataSetChanged();
             loadingLayout.onSuccess(adapter.getCount(), "暂时没有数据");
-        }
     }
 //    //返回当前标签下名称包含的
 //    private List<PandianResult.InventoryBean.LinesBean> findArrayByWord(String word) {

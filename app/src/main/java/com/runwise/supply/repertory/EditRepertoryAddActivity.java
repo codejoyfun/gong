@@ -508,6 +508,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
 
     private void initUI(List<String> titles, List<Fragment> priceFragmentList) {
         adapter = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, priceFragmentList);
+        viewPager.setOffscreenPageLimit(priceFragmentList.size());
         viewPager.setAdapter(adapter);
         smartTabLayout.setupWithViewPager(viewPager);
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
