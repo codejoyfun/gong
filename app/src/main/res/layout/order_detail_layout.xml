@@ -67,6 +67,7 @@
             android:orientation="vertical">
             <!--种类bar-->
             <include
+                android:id="@+id/ic_bar"
                 layout="@layout/tab_viewpage_wrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

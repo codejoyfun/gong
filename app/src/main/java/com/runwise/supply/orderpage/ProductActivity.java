@@ -1,6 +1,7 @@
 package com.runwise.supply.orderpage;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.design.widget.TabLayout;
@@ -40,6 +41,7 @@ import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -184,10 +186,14 @@ public class ProductActivity extends NetWorkActivity {
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
         mProductTypeAdapter = new ProductTypeAdapter(typeList);
         gridView.setAdapter(mProductTypeAdapter);
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        final int[] location = new int[2];
+        smartTabLayout.getLocationOnScreen(location);
+        int y = (int) (location[1] + smartTabLayout.getHeight());
+        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
         mProductTypeWindow.setContentView(dialog);
         mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setFocusable(false);
         mProductTypeWindow.setOutsideTouchable(false);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

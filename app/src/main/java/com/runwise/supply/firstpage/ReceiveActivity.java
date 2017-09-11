@@ -1,6 +1,7 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -52,6 +53,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
+import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoScrollViewPager;
@@ -520,12 +522,16 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
         mProductTypeAdapter = new ProductTypeAdapter(typeList);
         gridView.setAdapter(mProductTypeAdapter);
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        final int[] location = new int[2];
+        smartTabLayout.getLocationOnScreen(location);
+        int y = (int) (location[1] + smartTabLayout.getHeight());
+        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
         mProductTypeWindow.setContentView(dialog);
         mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setFocusable(false);
-        mProductTypeWindow.setOutsideTouchable(false);
+        mProductTypeWindow.setOutsideTouchable(true);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

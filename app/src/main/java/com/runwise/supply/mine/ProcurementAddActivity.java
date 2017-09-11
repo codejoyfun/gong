@@ -1,5 +1,6 @@
 package com.runwise.supply.mine;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -51,6 +52,7 @@ import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.repertory.SearchListFragment;
 import com.runwise.supply.repertory.entity.EditHotResult;
+import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -479,10 +481,14 @@ public class ProcurementAddActivity extends NetWorkActivity {
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
         mProductTypeAdapter = new ProductTypeAdapter(typeList);
         gridView.setAdapter(mProductTypeAdapter);
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        final int[] location = new int[2];
+        smartTabLayout.getLocationOnScreen(location);
+        int y = (int) (location[1] + smartTabLayout.getHeight());
+        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
         mProductTypeWindow.setContentView(dialog);
         mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setFocusable(false);
         mProductTypeWindow.setOutsideTouchable(false);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

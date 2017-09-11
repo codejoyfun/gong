@@ -1,6 +1,7 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,7 +9,6 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -39,6 +39,7 @@ import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.fragment.ReturnProductFragment;
 import com.runwise.supply.fragment.TabFragment;
+import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.view.YourScrollableViewPager;
 
@@ -311,9 +312,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
         mProductTypeAdapter = new ProductTypeAdapter(typeList);
         gridView.setAdapter(mProductTypeAdapter);
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()), true);
         mProductTypeWindow.setContentView(dialog);
         mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mProductTypeWindow.setFocusable(false);
         mProductTypeWindow.setOutsideTouchable(false);

@@ -2,6 +2,7 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -44,6 +44,7 @@ import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.YourScrollableViewPager;
@@ -354,7 +355,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     boolean canShow = false;
     private void showPopWindow(){
         int y = findViewById(R.id.title_bar).getHeight() + tablayout.getHeight();
-        mProductTypeWindow.showAtLocation(findViewById(R.id.rl_content), Gravity.NO_GRAVITY, 0, y);
+        mProductTypeWindow.showAtLocation(getRootView(OrderDetailActivity.this), Gravity.NO_GRAVITY, 0, y);
         mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
@@ -680,9 +681,10 @@ public class OrderDetailActivity extends NetWorkActivity {
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
         mProductTypeAdapter = new ProductTypeAdapter(typeList);
         gridView.setAdapter(mProductTypeAdapter);
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()), true);
         mProductTypeWindow.setContentView(dialog);
         mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mProductTypeWindow.setFocusable(false);
         mProductTypeWindow.setOutsideTouchable(false);

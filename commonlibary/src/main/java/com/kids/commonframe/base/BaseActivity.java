@@ -315,4 +315,9 @@ public abstract class BaseActivity extends FragmentActivity{
 	{
 		return ((ViewGroup)context.findViewById(android.R.id.content));
 	}
+	protected  Activity getActivityContext()
+	{
+		return BaseActivity.this;
+	}
+
 }

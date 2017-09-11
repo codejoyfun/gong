@@ -1,5 +1,6 @@
 package com.runwise.supply.mine;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
@@ -41,6 +42,7 @@ import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
+import com.runwise.supply.tools.DensityUtil;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -116,9 +118,13 @@ public class RepertoryFragment extends NetWorkFragment {
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
         mProductTypeAdapter = new ProductTypeAdapter(typeList);
         gridView.setAdapter(mProductTypeAdapter);
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        final int[] location = new int[2];
+        smartTabLayout.getLocationOnScreen(location);
+        int y = (int) (location[1] + smartTabLayout.getHeight());
+        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivity()) - y, true);
         mProductTypeWindow.setContentView(dialog);
         mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mProductTypeWindow.setFocusable(false);
         mProductTypeWindow.setOutsideTouchable(false);
@@ -452,7 +458,7 @@ public class RepertoryFragment extends NetWorkFragment {
             map.put(category,new ArrayList<RepertoryEntity.ListBean>());
         }
         for (RepertoryEntity.ListBean listBean : repertoryEntity.getList()) {
-            if(!TextUtils.isEmpty(listBean.getProduct().getCategory())){
+            if(listBean.getProduct() != null && !TextUtils.isEmpty(listBean.getProduct().getCategory())){
                 ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getCategory());
                 if (listBeen == null) {
                     listBeen = new ArrayList<>();

@@ -1,6 +1,7 @@
 package com.runwise.supply.repertory;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditRepertoryResult;
 import com.runwise.supply.repertory.entity.EditRequest;
 import com.runwise.supply.repertory.entity.PandianResult;
+import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.view.NoScrollViewPager;
 
 import java.util.ArrayList;
@@ -179,12 +181,16 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 		GridView gridView = (GridView) dialog.findViewById(R.id.gv);
 		mProductTypeAdapter = new ProductTypeAdapter(typeList);
 		gridView.setAdapter(mProductTypeAdapter);
-		mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
-		mProductTypeWindow.setContentView(dialog);
+		final int[] location = new int[2];
+		tablayout.getLocationOnScreen(location);
+		int y = (int) (location[1] + tablayout.getHeight());
+		mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
 		mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
 		mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+		mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
 		mProductTypeWindow.setFocusable(false);
 		mProductTypeWindow.setOutsideTouchable(false);
+		mProductTypeWindow.setContentView(dialog);
 		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

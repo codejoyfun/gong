@@ -33,11 +33,18 @@ public class DensityUtil {
         return (int)(var1 / var2 + 0.5F);
     }
 
-    public static  int getScreenWidth(Activity context){
+    public static  int getScreenW(Activity context){
         DisplayMetrics metrics=new DisplayMetrics();
         WindowManager manager= context.getWindowManager();
         manager.getDefaultDisplay().getMetrics(metrics);
         int w=metrics.widthPixels;
+        return w;
+    }
+    public static  int getScreenH(Activity context){
+        DisplayMetrics metrics=new DisplayMetrics();
+        WindowManager manager= context.getWindowManager();
+        manager.getDefaultDisplay().getMetrics(metrics);
+        int w=metrics.heightPixels;
         return w;
     }
 }
