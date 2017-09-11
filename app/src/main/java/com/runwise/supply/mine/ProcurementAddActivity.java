@@ -289,7 +289,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     productsBean.setProduct_id(productBean.getProductID());
 
                     if ("生产日期".equals(tv_product_date.getText().toString())) {
-                        productsBean.setProduct_datetime(tv_product_date_value.getText().toString());
+                        productsBean.setProduce_datetime(tv_product_date_value.getText().toString());
                     } else {
                         productsBean.setLife_datetime(tv_product_date_value.getText().toString());
                     }
@@ -336,7 +336,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     productsBean.setTracking("");
                     productsBean.setLot_name("none");
                     productsBean.setLife_datetime("");
-                    productsBean.setProduct_datetime("");
+                    productsBean.setProduce_datetime("");
                     productsBean.setQty(Integer.parseInt(amount));
                     products.add(productsBean);
                     procurenmentAddRequest.setProducts(products);

@@ -26,7 +26,7 @@ public class ProcurenmentAddRequest {
         private int qty;
         private int product_id;
 
-        private String product_datetime;
+        private String produce_datetime;
         private String tracking;
         private String lot_name;
         private String life_datetime;
@@ -49,12 +49,12 @@ public class ProcurenmentAddRequest {
             this.product_id = product_id;
         }
 
-        public String getProduct_datetime() {
-            return product_datetime;
+        public String getProduce_datetime() {
+            return produce_datetime;
         }
 
-        public void setProduct_datetime(String product_datetime) {
-            this.product_datetime = product_datetime;
+        public void setProduce_datetime(String produce_datetime) {
+            this.produce_datetime = produce_datetime;
         }
 
         public String getTracking() {

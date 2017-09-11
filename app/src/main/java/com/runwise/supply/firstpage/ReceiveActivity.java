@@ -415,10 +415,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 bottomData.setCount(count);
 //                bottomData.setLot_name(mEtBatchNumber.getText().toString());
                 if (wheelView == null || wheelView.getCurrentItem() == 0) {
-//                    bottomData.setProduct_datetime(mTvProductDateValue.getText().toString());
+//                    bottomData.setProduce_datetime(mTvProductDateValue.getText().toString());
 //                    bottomData.setLife_datetime("");
                 } else {
-//                    bottomData.setProduct_datetime("");
+//                    bottomData.setProduce_datetime("");
 //                    bottomData.setLife_datetime(mTvProductDateValue.getText().toString());
                 }
                 countMap.put(pId, bottomData);
