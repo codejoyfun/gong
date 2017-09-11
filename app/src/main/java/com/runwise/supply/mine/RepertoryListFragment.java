@@ -29,6 +29,7 @@ import com.runwise.supply.mine.entity.RefreshPepertoy;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.EventBus;
@@ -173,7 +174,18 @@ public class RepertoryListFragment extends NetWorkFragment {
             }
             viewHolder.value.setText(bean.getQty() + "");
             viewHolder.uom.setText(bean.getUom());
-            viewHolder.dateNumber.setText(bean.getLotNum());
+            if (TextUtils.isEmpty(bean.getUom())){
+                ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(bean.getProductID()));
+                if (listBean!=null){
+                    viewHolder.uom.setText(listBean.getUom());
+                }
+            }
+            if (TextUtils.isEmpty(bean.getLotNum())){
+                viewHolder.dateNumber.setVisibility(View.INVISIBLE);
+            }else{
+                viewHolder.dateNumber.setText(bean.getLotNum());
+                viewHolder.dateNumber.setVisibility(View.VISIBLE);
+            }
             viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLifeEndDate()));
             return convertView;
         }

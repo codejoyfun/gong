@@ -97,7 +97,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
             sb.append("  ").append(basicBean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
             if (canSeePrice){
-                sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                sb.append("\n").append(basicBean.getPrice()).append("元/").append(bean.getProductUom());
             }
             vh.unit1.setText(bean.getProductUom());
             vh.content.setText(sb.toString());
