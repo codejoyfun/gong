@@ -442,7 +442,6 @@
             android:name=".firstpage.EvaluateActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/ImageTranslucentTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".firstpage.ReturnActivity"
@@ -473,7 +472,7 @@
         <activity android:name=".mine.ProcurementLimitActivity" />
         <activity android:name=".firstpage.ReturnSuccessActivity" />
         <activity android:name=".firstpage.UploadReturnPicActivity" />
-        <activity android:name=".firstpage.EditBatchActivity" />
+        <activity android:name=".firstpage.EditBatchActivity"/>
     </application>
 
 </manifest>

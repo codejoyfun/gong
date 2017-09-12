@@ -88,7 +88,7 @@
             android:id="@+id/dealerCell"
             android:layout_width="wrap_content"
             android:text="立即租车"
-            android:textColor="@color/base_color"
+            android:textColor="@color/colorAccent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="12dp"

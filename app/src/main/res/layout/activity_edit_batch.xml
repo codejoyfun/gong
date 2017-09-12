@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@color/windowBackground"
     tools:context="com.runwise.supply.firstpage.EditBatchActivity">
 
 
@@ -82,7 +82,7 @@
         android:text="确认"
         android:textColor="@color/white"
         android:layout_alignParentBottom="true"
-        android:background="@color/base_color"/>
+        android:background="@color/colorAccent"/>
 
     <ImageView
         android:id="@+id/iv_cancle"

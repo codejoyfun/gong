@@ -102,7 +102,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
         settingBtn.setText("配送员");
         settingBtn.setTag("配送员");
         settingBtn.setBackgroundResource(R.drawable.setting_car_circle);
-        settingBtn.setTextColor(ContextCompat.getColor(mContext, R.color.base_color));
+        settingBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
         settingBtn.setLayoutParams(params);
         mid_layout.addView(settingBtn);
         carBtn.setOnClickListener(this);
@@ -182,8 +182,8 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     public void onClick(View view) {
         settingBtn.setBackgroundResource(R.drawable.setting_car_circle);
         carBtn.setBackgroundResource(R.drawable.car_setting_circle);
-        carBtn.setTextColor(ContextCompat.getColor(mContext, R.color.base_color));
-        settingBtn.setTextColor(ContextCompat.getColor(mContext, R.color.base_color));
+        carBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+        settingBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
         ((Button)view).setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
         if ("在线客服".equals(view.getTag())){
             view.setBackgroundResource(R.drawable.car_setting_circle_select);

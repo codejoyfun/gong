@@ -7,9 +7,9 @@
         android:id="@+id/simpleDraweeView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        fresco:placeholderImage="@color/bg_gray"
+        fresco:placeholderImage="@color/grayBackground"
         fresco:placeholderImageScaleType="fitXY"
-        fresco:failureImage="@color/bg_gray"
+        fresco:failureImage="@color/grayBackground"
         fresco:failureImageScaleType="fitXY"
         fresco:viewAspectRatio="2"
         />

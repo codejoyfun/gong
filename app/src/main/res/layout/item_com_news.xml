@@ -87,9 +87,9 @@
             android:id="@+id/actionNewsPic"
             android:layout_width="120dp"
             android:layout_height="90dp"
-            fresco:placeholderImage="@color/bg_gray"
+            fresco:placeholderImage="@color/grayBackground"
             fresco:placeholderImageScaleType="fitXY"
-            fresco:failureImage="@color/bg_gray"
+            fresco:failureImage="@color/grayBackground"
             fresco:failureImageScaleType="fitXY"
             />
     </LinearLayout>

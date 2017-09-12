@@ -370,7 +370,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
                             spannableString.setSpan(new ClickableSpan() {
                                 @Override
                                 public void updateDrawState(TextPaint ds) {
-                                    ds.setColor(getResources().getColor(R.color.base_color));       //设置文件颜色
+                                    ds.setColor(getResources().getColor(R.color.colorAccent));       //设置文件颜色
                                 }
                                 @Override
                                 public void onClick(View widget) {

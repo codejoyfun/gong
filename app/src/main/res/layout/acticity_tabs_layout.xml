@@ -9,7 +9,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorAccent"
+        android:background="@color/windowBackground"
         android:layout_below="@id/search_bar"
         >
         <LinearLayout
@@ -39,11 +39,11 @@
                 android:background="#ffff"
                 android:layout_toLeftOf="@id/iv_open"
                 app:stl_customTabTextLayoutId="@layout/custom_tab"
-                app:stl_defaultTabTextColor="@color/base_color"
+                app:stl_defaultTabTextColor="@color/colorAccent"
                 app:stl_defaultTabTextSize="16dp"
                 app:stl_distributeEvenly="true"
                 app:stl_dividerColor="@color/transparent"
-                app:stl_indicatorColor="@color/base_color"
+                app:stl_indicatorColor="@color/colorAccent"
                 app:stl_indicatorCornerRadius="0dp"
                 app:stl_indicatorInterpolation="smart"
                 app:stl_indicatorThickness="4dp"

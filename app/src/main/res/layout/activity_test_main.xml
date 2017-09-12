@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.runwise.supply.TestMainActivity"
     android:orientation="vertical"
-    android:background="@color/colorAccent"
+    android:background="@color/windowBackground"
     >
    <include layout="@layout/common_title_bar"
        />

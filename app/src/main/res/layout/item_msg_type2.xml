@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="efw"
-                    android:textColor="@color/base_color"
+                    android:textColor="@color/colorAccent"
                     android:textSize="15sp" />
             </LinearLayout>
 

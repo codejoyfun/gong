@@ -56,4 +56,17 @@
         <!-- 改变未选中字体的颜色-->
         <item name="tabTextColor">@color/black</item>
     </style>
+
+    <style name="divider_horizontal">
+        <!-- -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">@color/windowBackground</item>
+    </style>
+    <style name="space_horizontal">
+        <!-- -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">10dp</item>
+        <item name="android:background">@color/windowBackground</item>
+    </style>
 </resources>

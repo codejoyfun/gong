@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                android:paddingLeft="10dp">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/sdv_product"
+        android:layout_width="41dp"
+        android:layout_height="41dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        fresco:overlayImage="@drawable/head_over_bg"
+        fresco:placeholderImage="@drawable/login_ico_user"
+        fresco:placeholderImageScaleType="centerCrop"
+        fresco:roundAsCircle="true"/>
+
+    <TextView
+        android:id="@+id/tv_product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="41dp"
+        android:layout_alignTop="@id/sdv_product"
+        android:layout_marginLeft="9.5dp"
+        android:layout_toRightOf="@id/sdv_product"
+        android:text="商品评价"
+        android:gravity="center"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="@dimen/second_title"/>
+
+
+    <View
+        android:id="@+id/v_line_product"
+        style="@style/divider_horizontal"
+        android:layout_below="@id/sdv_product"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_evaluate_product"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:gravity="center_vertical"
+        android:text="一键评价"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@id/v_line_product"
+        android:textColor="#2E2E2E"
+        android:textSize="@dimen/second_title"/>
+
+    <RatingBar
+        android:id="@+id/rb_product_service"
+        style="@style/RatingBarStyle2"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toRightOf="@id/tv_evaluate_product"
+        android:layout_below="@id/v_line_product"
+        android:numStars="5"
+        android:stepSize="1"/>
+
+    <com.runwise.supply.view.AutoLinefeedLayout
+        android:id="@+id/alfl_tag_product_negative"
+        android:layout_below="@id/rb_product_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="0dp">
+        <CheckBox
+            android:id="@+id/cb10"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:gravity="center"
+            android:text="包装脏污有破损"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/cb11"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:gravity="center"
+            android:text="有异物"
+            android:layout_marginRight="10dp"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/cb12"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="临近保质期"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+        <CheckBox
+            android:id="@+id/cb13"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="缺斤少两"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+        <CheckBox
+            android:id="@+id/cb14"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="实图不符"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+        <CheckBox
+            android:id="@+id/cb15"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="商品缺货"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+
+    </com.runwise.supply.view.AutoLinefeedLayout>
+
+    <com.runwise.supply.view.AutoLinefeedLayout
+        android:id="@+id/alfl_tag_product_positive"
+        android:layout_below="@id/alfl_tag_product_negative"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="0dp">
+        <CheckBox
+            android:id="@+id/cb16"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:gravity="center"
+            android:text="用料讲究"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/cb17"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:gravity="center"
+            android:text="新鲜质量优"
+            android:layout_marginRight="10dp"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/cb18"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="包装完好"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+        <CheckBox
+            android:id="@+id/cb19"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="日期新"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+        <CheckBox
+            android:id="@+id/cb20"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="干净卫生"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+        <CheckBox
+            android:id="@+id/cb21"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/evaluate_star_selector"
+            android:button="@null"
+            android:text="分量足"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+
+    </com.runwise.supply.view.AutoLinefeedLayout>
+
+    <View
+        android:id="@+id/v_line1_product"
+        style="@style/divider_horizontal"
+        android:layout_below="@id/alfl_tag_product_positive"
+        android:visibility="gone"
+        android:layout_marginTop="15dp"/>
+
+    <EditText
+        android:id="@+id/et_product"
+        android:layout_width="match_parent"
+        android:layout_height="74dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_below="@id/v_line1_product"
+        android:background="@null"
+        android:gravity="top"
+        android:hint="写下你对商品的评价吧~"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:textColor="@color/textColorThird"
+        android:textSize="12sp" />
+
+
+
+</RelativeLayout>

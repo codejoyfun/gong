@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@color/windowBackground"
     android:orientation="vertical" >
     <include
         android:id="@+id/title_layout"
@@ -182,7 +182,7 @@
         android:layout_marginRight="12dp"
         android:gravity="center"
         android:text="预计下月15号为还款日"
-        android:textColor="@color/base_color"
+        android:textColor="@color/colorAccent"
         android:textSize="14sp"
         android:layout_marginTop="20dp"
         />

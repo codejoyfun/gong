@@ -6,7 +6,7 @@
     <com.runwise.supply.view.ObservableScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/colorAccent"
+        android:background="@color/windowBackground"
         android:id="@+id/observableScrollView"
         >
 

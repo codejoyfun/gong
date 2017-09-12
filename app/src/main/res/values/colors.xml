@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="base_color">#7bbd4f</color>
-    <color name="colorAccent">#f5f5f5</color>
-    <color name="bg_gray">#cacaca</color>
-    <color name="tab_text_on_color">@color/base_color</color>
+
+    <color name="tab_text_on_color">@color/colorAccent</color>
     <color name="tab_text_off_color">#5d5d5d</color>
     <color name="pv_wait_color">#cacaca</color>
     <color name="tag_press_grag">#d1cfd1</color>
@@ -17,5 +15,19 @@
     <color name="setting_title">#333333</color>
     <color name="settting_content">#999999</color>
 
+    <!--控制各个控件被选中时的颜色-->
+    <color name="colorAccent">#7bbd4f</color>
+    <!--窗口背景-->
+    <color name="windowBackground">#f5f5f5</color>
+    <!--灰色背景-->
+    <color name="grayBackground">#cacaca</color>
+    <!--分割线-->
     <color name="divider">#ffd2d2d2</color>
+    <!--标题-->
+    <color name="textColorPrimary">#2e2e2e</color>
+    <!--二级文字-->
+    <color name="textColorSecondary">#666666</color>
+    <!--三级文字-->
+    <color name="textColorThird">#999999</color>
+
 </resources>

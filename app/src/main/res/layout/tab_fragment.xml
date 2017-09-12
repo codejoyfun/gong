@@ -11,6 +11,6 @@
         android:layout_centerInParent="true"
         android:text="A"
         android:singleLine="true"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/windowBackground"
         android:textSize="75dp" />
 </RelativeLayout>

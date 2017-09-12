@@ -68,9 +68,9 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="android:windowAnimationStyle">@style/Animation.ComActivity</item>
-        <item name="colorPrimary">@color/base_color</item>
+        <item name="colorPrimary">@color/colorAccent</item>
         <!--<item name="colorPrimaryDark">@color/base_color</item>-->
-        <item name="colorAccent">@color/base_color</item>
+        <item name="colorAccent">@color/colorAccent</item>
 
         <!--<item name="android:windowTranslucentStatus">true</item>-->
     </style>

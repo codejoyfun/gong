@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorAccent"
+    android:background="@color/windowBackground"
     android:id="@+id/rootLayout"
     android:orientation="vertical"
     >
@@ -96,7 +96,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/colorAccent"/>
+        android:background="@color/windowBackground"/>
 
 
 </LinearLayout>

@@ -36,7 +36,7 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:text="完成"
-            android:textColor="@color/base_color"
+            android:textColor="@color/colorAccent"
             android:textSize="14sp"
             android:layout_marginRight="8dp"
             />

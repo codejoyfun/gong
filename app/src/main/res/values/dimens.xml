@@ -22,4 +22,12 @@
     <dimen name="padding_right">15dp</dimen>
     <dimen name="padding_left">15dp</dimen>
     <dimen name="padding_top">10.5dp</dimen>
+
+    <dimen name="large_title">18sp</dimen>
+    <dimen name="title">16sp</dimen>
+    <dimen name="second_title">14sp</dimen>
+    <dimen name="third_title">12sp</dimen>
+
+
+
 </resources>
