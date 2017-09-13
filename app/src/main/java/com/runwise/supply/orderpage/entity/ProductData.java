@@ -45,8 +45,61 @@ public class ProductData implements Serializable{
         private String uomID;
         private double price;
         private String uom;
+        private ImageBean image;
+        String name;
+        String defaultCode;
+        String unit;
+        String tracking;
+        String productUom;
+
+        public String getProductUom() {
+            return productUom;
+        }
+
+        public void setProductUom(String productUom) {
+            this.productUom = productUom;
+        }
+
+        public ImageBean getImage() {
+            return image;
+        }
+
+        public void setImage(ImageBean image) {
+            this.image = image;
+        }
 
 
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDefaultCode() {
+            return defaultCode;
+        }
+
+        public void setDefaultCode(String defaultCode) {
+            this.defaultCode = defaultCode;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
+
+        public String getTracking() {
+            return tracking;
+        }
+
+        public void setTracking(String tracking) {
+            this.tracking = tracking;
+        }
         public String getCategory() {
             return category;
         }

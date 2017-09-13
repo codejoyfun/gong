@@ -50,8 +50,8 @@ import com.runwise.supply.mine.entity.ProcurementAddResult;
 import com.runwise.supply.mine.entity.ProcurenmentAddRequest;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.repertory.SearchListFragment;
-import com.runwise.supply.repertory.entity.EditHotResult;
+import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.fragment.SearchListFragment;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -130,8 +130,8 @@ public class ProcurementAddActivity extends NetWorkActivity {
     private ImageView ivOpen;
     private TimePickerView pvCustomTime;
     private WheelView wheelView;
-    private EditHotResult.ListBean.ProductBean productBean;
-    private EditHotResult.ListBean returnBean;
+    private ProductData.ListBean productBean;
+    private ProductData.ListBean returnBean;
     //数量
     private String amount;
 
@@ -159,7 +159,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
             }
         });
         Object param = null;
-        sendConnection("/api/inventory/add/list", param, PRODUCT_GET, true, EditHotResult.class);
+        sendConnection("/gongfu/v2/product/list/", param, PRODUCT_GET, true, ProductData.class);
 //        bgView.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -181,9 +181,9 @@ public class ProcurementAddActivity extends NetWorkActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onShowPopEvent(final EditHotResult.ListBean returnBean) {
+    public void onShowPopEvent(final ProductData.ListBean returnBean) {
         this.returnBean = returnBean;
-        productBean = returnBean.getProduct();
+        productBean = returnBean;
         //有批次
         if ("lot".equals(productBean.getTracking())) {
             popView1.setVisibility(View.VISIBLE);
@@ -379,13 +379,13 @@ public class ProcurementAddActivity extends NetWorkActivity {
     }
     CategoryRespone categoryRespone;
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
-    List<EditHotResult.ListBean> hotList;
+    List<ProductData.ListBean> hotList;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case PRODUCT_GET:
-                EditHotResult editHotResult = (EditHotResult) result.getResult().getData();
-                hotList = editHotResult.getList();
+                ProductData ProductData = (ProductData) result.getResult().getData();
+                hotList = ProductData.getList();
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
@@ -404,33 +404,33 @@ public class ProcurementAddActivity extends NetWorkActivity {
         }
     }
 
-    private void setUpDataForViewPage(List<EditHotResult.ListBean> listBeen) {
+    private void setUpDataForViewPage(List<ProductData.ListBean> listBeen) {
         List<Fragment> productDataFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        HashMap<String, ArrayList<EditHotResult.ListBean>> map = new HashMap<>();
+        HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
         titles.add("全部");
         for(String category:categoryRespone.getCategoryList()){
             titles.add(category);
-            map.put(category,new ArrayList<EditHotResult.ListBean>());
+            map.put(category,new ArrayList<ProductData.ListBean>());
         }
-        for (EditHotResult.ListBean listBean : listBeen) {
-            if (!TextUtils.isEmpty(listBean.getProduct().getCategory())){
-                ArrayList<EditHotResult.ListBean> tempListBeen = map.get(listBean.getProduct().getCategory());
+        for (ProductData.ListBean listBean : listBeen) {
+            if (!TextUtils.isEmpty(listBean.getCategory())){
+                ArrayList<ProductData.ListBean> tempListBeen = map.get(listBean.getCategory());
                 if (tempListBeen == null) {
                     tempListBeen = new ArrayList<>();
-                    map.put(listBean.getProduct().getCategory(), tempListBeen);
+                    map.put(listBean.getCategory(), tempListBeen);
                 }
                 tempListBeen.add(listBean);
             }
         }
 
         for(String category:categoryRespone.getCategoryList()){
-            ArrayList<EditHotResult.ListBean> value = map.get(category);
+            ArrayList<ProductData.ListBean> value = map.get(category);
             productDataFragmentList.add(newSearchListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
         }
-        productDataFragmentList.add(0, newSearchListFragment((ArrayList<EditHotResult.ListBean>) listBeen));
+        productDataFragmentList.add(0, newSearchListFragment((ArrayList<ProductData.ListBean>) listBeen));
         initUI(titles, productDataFragmentList);
         initPopWindow((ArrayList<String>) titles);
     }
@@ -468,7 +468,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
         viewPager.setCurrentItem(position, false);
     }
 
-    public SearchListFragment newSearchListFragment(ArrayList<EditHotResult.ListBean> value) {
+    public SearchListFragment newSearchListFragment(ArrayList<ProductData.ListBean> value) {
         SearchListFragment searchListFragment = new SearchListFragment();
         searchListFragment.type = DataType.ALL;
         searchListFragment.setData(value);
