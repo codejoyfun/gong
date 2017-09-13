@@ -10,11 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.runwise.supply.R;
+import com.runwise.supply.firstpage.EvaluateActivity;
 import com.runwise.supply.firstpage.EvaluateAdapter;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,7 +33,6 @@ public class EvaluateProductFragment extends Fragment {
     Unbinder unbinder;
 
     List<OrderResponse.ListBean.LinesBean> productList;
-    Map<Integer,Integer> mRateMap;
     public static final String INTENT_KEY_LIST = "intent_key_list";
 
     @Override
@@ -42,15 +41,20 @@ public class EvaluateProductFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         return view;
     }
-
+    EvaluateAdapter evaluateAdapter;
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         productList = (List<OrderResponse.ListBean.LinesBean>) getArguments().getSerializable(INTENT_KEY_LIST);
-        EvaluateAdapter evaluateAdapter = new EvaluateAdapter(getActivity(),productList,mRateMap);
+        evaluateAdapter = new EvaluateAdapter(getActivity(),productList,((EvaluateActivity)getActivity()).mRateMap);
         mRecyclerView.setAdapter(evaluateAdapter);
+    }
 
+    public void refresh(){
+        if(evaluateAdapter!= null){
+            evaluateAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

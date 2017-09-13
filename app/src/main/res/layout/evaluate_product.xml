@@ -83,7 +83,7 @@
             android:button="@null"
             android:gravity="center"
             android:text="包装脏污有破损"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
 
         <CheckBox
@@ -96,7 +96,7 @@
             android:gravity="center"
             android:text="有异物"
             android:layout_marginRight="10dp"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
 
         <CheckBox
@@ -107,7 +107,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="临近保质期"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
         <CheckBox
             android:id="@+id/cb13"
@@ -117,7 +117,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="缺斤少两"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
         <CheckBox
             android:id="@+id/cb14"
@@ -127,7 +127,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="实图不符"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
         <CheckBox
             android:id="@+id/cb15"
@@ -137,7 +137,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="商品缺货"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
 
     </com.runwise.supply.view.AutoLinefeedLayout>
@@ -160,7 +160,7 @@
             android:button="@null"
             android:gravity="center"
             android:text="用料讲究"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
 
         <CheckBox
@@ -173,7 +173,7 @@
             android:gravity="center"
             android:text="新鲜质量优"
             android:layout_marginRight="10dp"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
 
         <CheckBox
@@ -184,7 +184,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="包装完好"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
         <CheckBox
             android:id="@+id/cb19"
@@ -194,7 +194,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="日期新"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
         <CheckBox
             android:id="@+id/cb20"
@@ -204,7 +204,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="干净卫生"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
         <CheckBox
             android:id="@+id/cb21"
@@ -214,7 +214,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="分量足"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp" />
 
     </com.runwise.supply.view.AutoLinefeedLayout>

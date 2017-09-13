@@ -36,7 +36,7 @@
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/headSdv"
+        android:layout_below="@id/tv_name"
         android:layout_marginLeft="9.5dp"
         android:layout_marginTop="4dp"
         android:layout_toRightOf="@id/headSdv"
@@ -47,7 +47,7 @@
     <View
         android:id="@+id/v_line"
         style="@style/divider_horizontal"
-        android:layout_below="@id/headSdv"
+        android:layout_below="@id/tv_time"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"/>
 
@@ -105,7 +105,7 @@
             android:button="@null"
             android:gravity="center"
             android:text="服务状态差"
-            android:textColor="#CCCCCC"
+             android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp"/>
 
         <CheckBox
@@ -116,7 +116,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="货物损坏"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp"/>
 
         <CheckBox
@@ -127,7 +127,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="送错货"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp"/>
     </com.runwise.supply.view.AutoLinefeedLayout>
 
@@ -161,7 +161,7 @@
             android:button="@null"
             android:gravity="center"
             android:text="服务态度好"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp"/>
 
         <CheckBox
@@ -172,7 +172,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="货物保存完好"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp"/>
 
         <CheckBox
@@ -183,7 +183,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="速度"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp"/>
 
         <CheckBox
@@ -194,7 +194,7 @@
             android:background="@drawable/evaluate_star_selector"
             android:button="@null"
             android:text="主动联系"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/selector_evaluate_text"
             android:textSize="12sp"/>
     </com.runwise.supply.view.AutoLinefeedLayout>
 

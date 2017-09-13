@@ -9,14 +9,23 @@ import java.util.List;
 public class EvaluateRequest {
     /**
      * service_evaluation : 未确认收货就离开，迟到且无提前告知
-     * tags : ["迟到且无提前告知","未确认收货就离开"]
+     * service_tags : ["迟到且无提前告知","未确认收货就离开"]
      * service_score : 3
      * quality_evaluation : 好的
      */
     private String service_evaluation;
     private int service_score;
     private String quality_evaluation;
-    private List<String> tags;
+    private List<String> service_tags;
+    private List<String> quality_tags;
+
+    public List<String> getQuality_tags() {
+        return quality_tags;
+    }
+
+    public void setQuality_tags(List<String> quality_tags) {
+        this.quality_tags = quality_tags;
+    }
 
     public String getService_evaluation() {
         return service_evaluation;
@@ -42,11 +51,11 @@ public class EvaluateRequest {
         this.quality_evaluation = quality_evaluation;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public List<String> getService_tags() {
+        return service_tags;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setService_tags(List<String> service_tags) {
+        this.service_tags = service_tags;
     }
 }
