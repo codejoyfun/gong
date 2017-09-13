@@ -52,7 +52,7 @@ public class UserInfo implements Serializable{
     private int cateringQualityScore;
     private String position;
     private String login;
-    private boolean customerServicePhone;
+//    private boolean customerServicePhone;
     private boolean clerk;
     private boolean canSeePrice;
     private String companyHotLine;
@@ -239,13 +239,13 @@ public class UserInfo implements Serializable{
         this.login = login;
     }
 
-    public boolean isCustomerServicePhone() {
-        return customerServicePhone;
-    }
-
-    public void setCustomerServicePhone(boolean customerServicePhone) {
-        this.customerServicePhone = customerServicePhone;
-    }
+//    public boolean isCustomerServicePhone() {
+//        return customerServicePhone;
+//    }
+//
+//    public void setCustomerServicePhone(boolean customerServicePhone) {
+//        this.customerServicePhone = customerServicePhone;
+//    }
 
     public boolean isClerk() {
         return clerk;
