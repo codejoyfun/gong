@@ -55,6 +55,7 @@ public class MainActivity extends NetWorkActivity {
     private TextView mMsgHite;
 //    private UserInfo userInfo;
     private boolean isLogin;
+    public static final String INTENT_KEY_SKIP_TO_LOGIN = "intent_key_skip_to_login";
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements  Runnable{
         private List<ProductBasicList.ListBean> basicList;
@@ -120,6 +121,9 @@ public class MainActivity extends NetWorkActivity {
         isLogin = SPUtils.isLogin(mContext);
         if (isLogin){
             queryProductList();
+        }
+        if(getIntent().getBooleanExtra(INTENT_KEY_SKIP_TO_LOGIN,false)){
+            startActivity(new Intent(getActivityContext(),LoginActivity.class));
         }
     }
 

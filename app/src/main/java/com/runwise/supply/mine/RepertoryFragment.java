@@ -35,7 +35,6 @@ import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.firstpage.OrderDetailActivity;
 import com.runwise.supply.fragment.OrderProductFragment;
-import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.mine.entity.RefreshPepertoy;
 import com.runwise.supply.mine.entity.RepertoryEntity;
@@ -84,14 +83,12 @@ public class RepertoryFragment extends NetWorkFragment {
             requestCategory();
         }
         else{
-            mUnLoginCategoryRespone = new CategoryRespone();
-            List<String> categoryList = new ArrayList<>();
-            categoryList.add("冷藏货");
-            categoryList.add("冻货");
-            categoryList.add("干货");
-            mUnLoginCategoryRespone.setCategoryList(categoryList);
             buildData();
         }
+    }
+
+    public void onLogout(UserLogoutEvent userLogoutEvent){
+
     }
 
     @OnClick({R.id.iv_open})
@@ -168,6 +165,7 @@ public class RepertoryFragment extends NetWorkFragment {
         adapter = new TabPageIndicatorAdapter(this.getActivity().getSupportFragmentManager(),titles,repertoryEntityFragmentList);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(repertoryEntityFragmentList.size());
+        smartTabLayout.removeAllTabs();
         smartTabLayout.setupWithViewPager(viewPager);
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -382,6 +380,12 @@ public class RepertoryFragment extends NetWorkFragment {
                 "        }\n" +
                 "    ]\n" +
                 "}";
+        mUnLoginCategoryRespone = new CategoryRespone();
+        List<String> categoryList = new ArrayList<>();
+        categoryList.add("冷藏货");
+        categoryList.add("冻货");
+        categoryList.add("干货");
+        mUnLoginCategoryRespone.setCategoryList(categoryList);
         RepertoryEntity repertoryEntity =  JSON.parseObject(xmlStr,RepertoryEntity.class);
         setUpDataForViewPage(mUnLoginCategoryRespone,repertoryEntity);
     }
@@ -449,7 +453,6 @@ public class RepertoryFragment extends NetWorkFragment {
 
     private void setUpDataForViewPage(CategoryRespone categoryRespone,RepertoryEntity repertoryEntity) {
         List<RepertoryListFragment> repertoryEntityFragmentList = new ArrayList<>();
-        List<Fragment> tabFragmentList = new ArrayList<>();
         HashMap<String, ArrayList<RepertoryEntity.ListBean>> map = new HashMap<>();
         List<String> titles = new ArrayList<>();
         titles.add("全部");
@@ -470,7 +473,6 @@ public class RepertoryFragment extends NetWorkFragment {
         for(String category:categoryRespone.getCategoryList()){
             ArrayList<RepertoryEntity.ListBean> value = map.get(category);
             repertoryEntityFragmentList.add(newRepertoryListFragment(value));
-            tabFragmentList.add(TabFragment.newInstance(category));
         }
         repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<RepertoryEntity.ListBean>) repertoryEntity.getList()));
         initUI(titles,repertoryEntityFragmentList);
@@ -525,11 +527,13 @@ public class RepertoryFragment extends NetWorkFragment {
     @Override
     public void onEventUserlogin(UserLoginEvent userLoginEvent) {
         isLogin = true;
+        requestCategory();
     }
 
     @Override
     public void onEventUserlogout(UserLogoutEvent userLogoutEvent) {
         isLogin = false;
+        buildData();
     }
 }
 

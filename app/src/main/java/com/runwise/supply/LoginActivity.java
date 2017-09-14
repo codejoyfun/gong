@@ -44,8 +44,6 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 
-import static cn.jpush.android.api.JPushInterface.getRegistrationID;
-
 
 public class  LoginActivity extends NetWorkActivity {
 	private static final int LOGIN = 1;

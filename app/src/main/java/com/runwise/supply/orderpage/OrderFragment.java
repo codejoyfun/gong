@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,7 +17,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bigkoo.pickerview.OptionsPickerView;
-import com.googlecode.mp4parser.authoring.Edit;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
@@ -26,7 +24,6 @@ import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
@@ -38,9 +35,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.jpush.android.api.JPushInterface;
-import io.vov.vitamio.utils.ContextUtils;
 
 /**
  * Created by libin on 2017/6/29.
@@ -105,8 +99,12 @@ public class OrderFragment extends NetWorkFragment {
                 startActivity(intent);
                 break;
             case R.id.selfHelpBtn:
-                Intent intent2 = new Intent(mContext,SelpHelpOrderActivity.class);
-                startActivity(intent2);
+//                if (SPUtils.isLogin(mContext)){
+                    Intent intent2 = new Intent(mContext,SelpHelpOrderActivity.class);
+                    startActivity(intent2);
+//                }else{
+//
+//                }
                 break;
             case R.id.safeValueTv:
                 if (opv == null){

@@ -35,7 +35,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.ChangePhoneActivity;
 import com.runwise.supply.FindPasswordActivity;
 import com.runwise.supply.GlobalApplication;
-import com.runwise.supply.LoginActivity;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
@@ -51,7 +51,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.runwise.supply.message.MessageFragment.isLogin;
+import static com.runwise.supply.MainActivity.INTENT_KEY_SKIP_TO_LOGIN;
 
 
 public class EditUserinfoActivity extends NetWorkActivity {
@@ -127,7 +127,8 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 GlobalApplication.getInstance().cleanUesrInfo();
                 //退出登录
                 EventBus.getDefault().post(new UserLogoutEvent());
-                Intent intent = new Intent(this, LoginActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
                 startActivity(intent);
                 finish();
                 break;

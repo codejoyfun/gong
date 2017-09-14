@@ -23,6 +23,8 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'com.android.support:design:23.2.0'
     compile 'com.github.chenupt.android:dragtoplayout:1.2.1@aar'
+
+
 }
 
 android {

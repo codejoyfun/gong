@@ -10,17 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tv_submit"
-        android:layout_below="@id/title_bar"
-        android:orientation="vertical">
 
         <github.chenupt.dragtoplayout.DragTopLayout
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/tv_submit"
+            android:layout_below="@id/title_bar"
             android:background="#F0F0F0">
 
             <LinearLayout
@@ -57,7 +53,6 @@
         </github.chenupt.dragtoplayout.DragTopLayout>
 
 
-    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_submit"

@@ -12,7 +12,7 @@ import java.util.List;
  * Created by libin on 2017/7/6.
  */
 
-public class ProductBasicList {
+public class ProductBasicList implements Serializable{
 
     private List<ListBean> list;
 

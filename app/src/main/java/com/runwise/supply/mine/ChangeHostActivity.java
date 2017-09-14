@@ -39,8 +39,8 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.tipTv)
     private TextView tipTv;
     private ArrayAdapter<String> adapter;
-    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","GoldenClient2017Test10","TestFor...Company数据库"};
-    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","GoldenClient2017Test10","Testfor...Company"};
+    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","LBZTest0914","TestFor...Company数据库"};
+    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","LBZTest0914","Testfor...Company"};
     private int which;
     private boolean isLogin;
     @Override

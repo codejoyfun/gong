@@ -41,6 +41,7 @@ import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
+import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -69,6 +70,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private static final int DETAIL = 1;          //网络请求
     private static final int CANCEL = 2;
     public static final int CATEGORY = 3333;
+    public static final int RETURN_DETAIL = 4;
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -172,6 +174,14 @@ public class OrderDetailActivity extends NetWorkActivity {
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
         dragLayout.setOverDrag(false);
+    }
+
+    private void getReturnOrder(String rid){
+        //发网络请求获取
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/return_order/");
+        sb.append(rid).append("/");
+        sendConnection(sb.toString(), request, RETURN_DETAIL, false, ReturnDetailResponse.class);
     }
 
     @OnClick({R.id.title_iv_left, R.id.title_tv_rigth, R.id.uploadBtn, R.id.gotoStateBtn, R.id.rightBtn, R.id.rightBtn2, R.id.tv_open})
@@ -382,6 +392,19 @@ public class OrderDetailActivity extends NetWorkActivity {
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 updateUI();
                 break;
+            case RETURN_DETAIL:
+                BaseEntity.ResultBean rb = result.getResult();
+                ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
+                if (rdr.getReturnOrder() != null){
+                setUpReturnOrderView(bean.getReturnOrders().get(0),rdr.getReturnOrder().getName());
+                    bean.getReturnOrders().remove(0);
+                    //可能有多个退货单。
+                    if (bean.getReturnOrders().size()>0){
+                        String returnId = bean.getReturnOrders().get(0);
+                        getReturnOrder(returnId);
+                    }
+                }
+                break;
         }
     }
 
@@ -458,38 +481,41 @@ public class OrderDetailActivity extends NetWorkActivity {
         return TimeUtils.isMoreThan7Days(bean.getDoneDatetime());
     }
 
+    private void setUpReturnOrderView(final String returnId, String returnName){
+        TextView tv = new TextView(mContext);
+        tv.setTextSize(14);
+        tv.setTextColor(Color.parseColor("#999999"));
+        tv.setGravity(Gravity.CENTER_VERTICAL);
+        tv.setTag(returnId);
+        if (!TextUtils.isEmpty(returnName)) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    CommonUtils.dip2px(mContext, 40));
+            SpannableString ss = new SpannableString("退货单号：" + returnName);
+            ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2F96D8")), 5, 5 + returnName.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            tv.setText(ss);
+            returnContainer.addView(tv, params);
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //跳转到退货单详情
+                    Intent intent = new Intent(mContext, ReturnDetailActivity.class);
+                    intent.putExtra("rid", returnId);
+                    startActivity(intent);
+                }
+            });
+        }
+    }
+
     private void updateUI() {
         if (bean != null) {
             if (bean.getHasReturn() != 0) {
                 adapter.setHasReturn(true);
                 returnLL.setVisibility(View.VISIBLE);
                 //可能有多个退货单。
-                for (final String returnId : bean.getReturnOrders()) {
-                    TextView tv = new TextView(mContext);
-                    tv.setTextSize(14);
-                    tv.setTextColor(Color.parseColor("#999999"));
-                    tv.setGravity(Gravity.CENTER_VERTICAL);
-                    tv.setTag(returnId);
-                    String returnName = ProductBasicUtils.getReturnMap().get(returnId);
-                    if (!TextUtils.isEmpty(returnName)) {
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                                CommonUtils.dip2px(mContext, 40));
-                        SpannableString ss = new SpannableString("退货单号：" + returnName);
-                        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2F96D8")), 5, 5 + returnName.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                        tv.setText(ss);
-                        returnContainer.addView(tv, params);
-                        tv.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //跳转到退货单详情
-                                Intent intent = new Intent(mContext, ReturnDetailActivity.class);
-                                intent.putExtra("rid", returnId);
-                                startActivity(intent);
-                            }
-                        });
-                    }
+                if (bean.getReturnOrders().size()>0){
+                    String returnId = bean.getReturnOrders().get(0);
+                    getReturnOrder(returnId);
                 }
-
             }
             if (bean.isIsTwoUnit()) {
                 adapter.setTwoUnit(true);

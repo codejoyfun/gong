@@ -37,6 +37,9 @@ public class MainRepertoryFragment extends NetWorkFragment {
         setTitleRightText(true,"盘点");
         FragmentManager manager = this.getActivity().getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.contextLayout,new RepertoryFragment()).commitAllowingStateLoss();
+        manager.beginTransaction().addToBackStack(null);//add the transaction to the back stack so the user can navigate back
+// Commit the transaction
+        manager.beginTransaction().commit();
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
             tipLayout.setVisibility(View.GONE);

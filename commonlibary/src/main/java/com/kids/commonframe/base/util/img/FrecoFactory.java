@@ -20,7 +20,12 @@ import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.SPUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * 所有facebook freco加载顶图片都应用该类
@@ -31,7 +36,17 @@ public class FrecoFactory {
     private FrecoFactory(Context context) {
         this.mContext = context;
         initFresco();
+        EventBus.getDefault().register(this);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventUserlogin(UserLoginEvent userLoginEvent) {
+        String sign = (String) SPUtils.get(mContext,"sign","");
+        if (TextUtils.isEmpty(sign)){
+            initFresco();
+        }
+    }
+
     private Context mContext;
     public static FrecoFactory getInstance(Context context) {
         if (instance == null) {
