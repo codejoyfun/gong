@@ -24,6 +24,8 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
+
 /**
  * Created by libin on 2017/8/11.
  */
@@ -39,8 +41,8 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.tipTv)
     private TextView tipTv;
     private ArrayAdapter<String> adapter;
-    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库","LBZTest0914","TestFor...Company数据库"};
-    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test","LBZTest0914","Testfor...Company"};
+    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库",DEFAULT_DATABASE_NAME,"TestFor...Company数据库"};
+    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test",DEFAULT_DATABASE_NAME,"Testfor...Company"};
     private int which;
     private boolean isLogin;
     @Override
@@ -55,7 +57,7 @@ public class ChangeHostActivity extends NetWorkActivity {
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,android.R.id.text1,datas);
         listview.setAdapter(adapter);
         ToastUtil.show(mContext,"请选择你要切换的数据库");
-        String dbStr = (String)SPUtils.get(mContext,"X-Odoo-Db","LBZ20170607");
+        String dbStr = (String)SPUtils.get(mContext,"X-Odoo-Db",DEFAULT_DATABASE_NAME);
         for (int i = 0; i < datas.length; i++){
             String value = values[i];
             if (value.equals(dbStr)){

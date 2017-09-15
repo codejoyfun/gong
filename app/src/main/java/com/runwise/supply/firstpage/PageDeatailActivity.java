@@ -8,7 +8,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.webview.X5WebView;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
@@ -16,6 +15,8 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
 
 /**
  * Created by libin on 2017/6/29.
@@ -34,7 +35,7 @@ public class PageDeatailActivity extends NetWorkActivity {
         setTitleText(true,"详情");
         String url = getIntent().getStringExtra("url");
         Map<String, String > map = new HashMap<String, String>() ;
-        map.put("X-Odoo-Db", (String)SPUtils.get(mContext,"X-Odoo-Db","LBZ20170607"));
+        map.put("X-Odoo-Db", (String)SPUtils.get(mContext,"X-Odoo-Db",DEFAULT_DATABASE_NAME));
         webview.loadUrl(url,map);
     }
     @OnClick(R.id.title_iv_left)

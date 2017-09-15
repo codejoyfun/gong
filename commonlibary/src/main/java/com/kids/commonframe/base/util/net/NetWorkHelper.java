@@ -308,7 +308,7 @@ public class NetWorkHelper<T extends BaseEntity> {
             paseInterface = new IXmlParseImp();
         }
     }
-    public static final String DEFAULT_DATABASE_NAME = "LBZTest0914";
+    public static final String DEFAULT_DATABASE_NAME = "GoldenClient2017Test10";
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {
         private Class<?> targerClass;
