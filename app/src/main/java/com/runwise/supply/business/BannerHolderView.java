@@ -1,7 +1,6 @@
 package com.runwise.supply.business;
 
 import android.content.Context;
-import android.provider.SyncStateContract;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -10,7 +9,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.runwise.supply.R;
-import com.runwise.supply.business.entity.CarSeriesResponse;
 import com.runwise.supply.business.entity.ImagesBean;
 
 /**
