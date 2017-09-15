@@ -272,8 +272,8 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                         }
                     }
                     viewHolder.value.setText("库存" + NumberUtil.getIOrD(bean.getTheoreticalQty()) + "");
-                    viewHolder.uom.setText(productBean.getUom());
-                    viewHolder.uom_other.setText(productBean.getUom());
+                    viewHolder.uom.setText(productBean.getProductUom());
+                    viewHolder.uom_other.setText(productBean.getProductUom());
                     if (!TextUtils.isEmpty(bean.getLotNum())) {
                         viewHolder.dateNumber.setText(bean.getLotNum());
                         viewHolder.dateNumber.setVisibility(View.VISIBLE);

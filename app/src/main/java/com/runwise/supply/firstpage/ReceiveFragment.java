@@ -12,9 +12,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -38,6 +38,7 @@ import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.view.NoWatchEditText;
 import com.runwise.supply.view.swipmenu.SwipeMenu;
 import com.runwise.supply.view.swipmenu.SwipeMenuCreator;
 import com.runwise.supply.view.swipmenu.SwipeMenuItem;
@@ -60,7 +61,6 @@ import static com.runwise.supply.firstpage.ReceiveActivity.REQUEST_CODE_ADD_BATC
 
 public class ReceiveFragment extends BaseFragment {
     private DoActionCallback callback;
-
     public static final String BUNDLE_KEY_LIST = "bundle_key_list";
 
     public void setCallback(DoActionCallback callback) {
@@ -143,6 +143,7 @@ public class ReceiveFragment extends BaseFragment {
     public class ReceiveAdapter extends IBaseAdapter implements ListAdapter {
         private boolean isSettle;       //是不是双单位
         private boolean canSeePrice;
+        private int index = -1;
 
         public ReceiveAdapter() {
             super();
@@ -165,7 +166,7 @@ public class ReceiveFragment extends BaseFragment {
 
         @Override
         protected View getExView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder = null;
+            final ViewHolder viewHolder;
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
@@ -176,6 +177,7 @@ public class ReceiveFragment extends BaseFragment {
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
+                viewHolder.receivedTv.setTag(position);
             }
             viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -211,7 +213,6 @@ public class ReceiveFragment extends BaseFragment {
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
 
 
-                viewHolder.receivedTv.setSaveEnabled(false);
                 if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                     viewHolder.receivedTv.setFocusable(false);
                     viewHolder.inputAdd.setVisibility(View.GONE);
@@ -231,8 +232,8 @@ public class ReceiveFragment extends BaseFragment {
                 } else {
                     viewHolder.receivedTv.setFocusable(true);
                     viewHolder.receivedTv.setFocusableInTouchMode(true);
-                    viewHolder.receivedTv.requestFocus();
-                    viewHolder.receivedTv.findFocus();
+//                    viewHolder.receivedTv.requestFocus();
+//                    viewHolder.receivedTv.findFocus();
                     viewHolder.countLL.setOnClickListener(null);
                     viewHolder.inputAdd.setVisibility(View.VISIBLE);
                 }
@@ -250,8 +251,10 @@ public class ReceiveFragment extends BaseFragment {
                 } else {
                     if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                         ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
+                        if (rb.getCount() == 1 && rb.getProductId() == 413){
+                            Log.i("receivedTvcontainsKey", String.valueOf(rb.getCount())+" "+rb.getProductId());
+                        }
                         viewHolder.receivedTv.setText(rb.getCount() + "");
-                        Log.i("receivedTv", String.valueOf(rb.getCount()));
 //                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());
                     } else {
                         viewHolder.receivedTv.setText("0");
@@ -270,9 +273,10 @@ public class ReceiveFragment extends BaseFragment {
                             return;
                         }
                         finalViewHolder.receivedTv.setText(String.valueOf(num + 1));
+                        finalViewHolder.receivedTv.setSelection(finalViewHolder.receivedTv.getText().toString().length());
                     }
                 });
-//                finalViewHolder.receivedTv.removeTextChangedListener();
+                finalViewHolder.receivedTv.removeTextChangedListener();
                 finalViewHolder.receivedTv.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -286,12 +290,16 @@ public class ReceiveFragment extends BaseFragment {
 
                     @Override
                     public void afterTextChanged(Editable s) {
+                        if(viewHolder.receivedTv.getTag()!= null && (int)viewHolder.receivedTv.getTag() != position){
+                            return;
+                        }
                         if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                             return;
                         }
                         Log.i("receivedTv", "afterTextChanged");
                         if (TextUtils.isEmpty(s.toString())) {
                             setReceiveCount(0, basicBean, bean);
+                            viewHolder.receivedTv.setText("0");
                             return;
                         }
 
@@ -347,6 +355,24 @@ public class ReceiveFragment extends BaseFragment {
                 params.setMargins(paddingLeft, paddingLeft, 0, 0);
 
             }
+            //使listview中的edittext获取焦点
+            viewHolder.receivedTv.setOnTouchListener(new View.OnTouchListener() {
+
+                public boolean onTouch(View view, MotionEvent event) {
+                    // 在TOUCH的UP事件中，要保存当前的行下标，因为弹出软键盘后，整个画面会被重画
+                    // 在getView方法的最后，要根据index和当前的行下标手动为EditText设置焦点
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        index = position;
+
+                    }
+                    return false;
+                }
+            });
+            if (index != -1 && index == position) {
+                // 如果当前的行下标和点击事件中保存的index一致，手动为EditText设置焦点。
+                viewHolder.receivedTv.requestFocus();
+            }
+
             return convertView;
         }
 
@@ -385,7 +411,7 @@ public class ReceiveFragment extends BaseFragment {
             @ViewInject(R.id.countTv)
             TextView countTv;
             @ViewInject(R.id.receivedTv)
-            EditText receivedTv;
+            NoWatchEditText receivedTv;
             @ViewInject(R.id.settleLL)
             LinearLayout settleLL;
             @ViewInject(R.id.countLL)

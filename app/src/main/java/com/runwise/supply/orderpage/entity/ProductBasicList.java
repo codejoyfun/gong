@@ -58,9 +58,18 @@ public class ProductBasicList implements Serializable{
         private String category;
         @Column
         private String unit;
+        @Column
+        private String productUom;
         @Id
         @NoAutoIncrement
         private int productID;
+        @Column
+        private String tracking;
+
+        public static final String TRACKING_TYPE_LOT = "lot";
+        public static final String TRACKING_TYPE_SERIAL = "serial";
+        public static final String TRACKING_TYPE_NONE = "none";
+
 
         public String getTracking() {
             return tracking;
@@ -70,12 +79,13 @@ public class ProductBasicList implements Serializable{
             this.tracking = tracking;
         }
 
-        @Column
-        private String tracking;
+        public String getProductUom() {
+            return productUom;
+        }
 
-        public static final String TRACKING_TYPE_LOT = "lot";
-        public static final String TRACKING_TYPE_SERIAL = "serial";
-        public static final String TRACKING_TYPE_NONE = "none";
+        public void setProductUom(String productUom) {
+            this.productUom = productUom;
+        }
 
         public String getCategory() {
             return category;

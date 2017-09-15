@@ -69,6 +69,7 @@ import java.util.List;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.orderpage.ProductBasicUtils.getBasicMap;
 
 
 /**
@@ -206,7 +207,8 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             popView2.setVisibility(View.GONE);
             name.setText(productBean.getName());
             number.setText(productBean.getDefaultCode() + " | ");
-            content.setText(productBean.getUnit());
+            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(productBean.getProductID()));
+            content.setText(listBean.getProductUom());
             tv_product_date_value.setText("");
             tv_product_date_value.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -364,9 +366,10 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     product.setStockType(productBean.getStockType());
                     product.setDefaultCode(productBean.getDefaultCode());
                     product.setUnit(productBean.getUnit());
-                    ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
+                    ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
                     if (listBean != null){
                         product.setUom(listBean.getUom());
+                        product.setProductUom(listBean.getProductUom());
                     }
                     ImageBean imageBean = new ImageBean();
                     imageBean.setImage(productBean.getImage().getImage());
@@ -455,9 +458,10 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 imageBean.setImageSmall(productBean.getImage().getImageSmall());
                 imageBean.setImageMedium(productBean.getImage().getImageMedium());
                 product.setImage(imageBean);
-                ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
+                ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
                 if (listBean != null){
                     product.setUom(listBean.getUom());
+                    product.setProductUom(listBean.getProductUom());
                 }
                 bean.setProduct(product);
 

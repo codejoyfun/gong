@@ -146,7 +146,7 @@ public class SearchListFragment extends NetWorkFragment {
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
                 ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(productBean.getProductID()));
                 if (listBean != null){
-                    viewHolder.uom.setText(listBean.getUom());
+                    viewHolder.uom.setText(listBean.getProductUom());
                 }else{
                     viewHolder.uom.setText("");
                 }
