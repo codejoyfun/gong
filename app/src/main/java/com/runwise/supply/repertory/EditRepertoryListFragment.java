@@ -40,6 +40,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * Created by libin on 2017/7/3.
  * 根据传入的数据集合，显示全部、冷藏、冻货、干货集合
@@ -228,7 +230,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                         @Override
                         public void afterTextChanged(Editable editable) {
                             if (!TextUtils.isEmpty(editable.toString())) {
-                                bean.setEditNum(Integer.parseInt(editable.toString()));
+                                bean.setEditNum(Double.parseDouble(editable.toString()));
                                 if (bean.getEditNum() == bean.getTheoreticalQty()) {
                                     viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
                                 } else {
@@ -250,7 +252,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                     } else {
                         viewHolder.editText.setTextColor(Color.parseColor("#444444"));
                     }
-                    viewHolder.editText.setText(bean.getEditNum() + "");
+                    viewHolder.editText.setText(NumberUtil.getIOrD(String.valueOf(bean.getEditNum())));
                     ProductBasicList.ListBean productBean = bean.getProduct();
                     if (productBean != null) {
                         if (!TextUtils.isEmpty(keyWork)) {
@@ -269,7 +271,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
                         }
                     }
-                    viewHolder.value.setText("库存" + bean.getTheoreticalQty() + "");
+                    viewHolder.value.setText("库存" + NumberUtil.getIOrD(bean.getTheoreticalQty()) + "");
                     viewHolder.uom.setText(productBean.getUom());
                     viewHolder.uom_other.setText(productBean.getUom());
                     if (!TextUtils.isEmpty(bean.getLotNum())) {

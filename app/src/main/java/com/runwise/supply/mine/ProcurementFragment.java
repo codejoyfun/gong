@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * Created by mike on 2017/8/25.
  */
@@ -158,7 +160,7 @@ public class ProcurementFragment extends NetWorkFragment {
 //                    }
                 }
                 viewHolder.content.setText(sb.toString());
-                viewHolder.tvCount.setText(String.valueOf((int)bean.getQty()) + basicBean.getUom());
+                viewHolder.tvCount.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())) + basicBean.getUom());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 if (isHead(position)){
                     viewHolder.rl_head.setVisibility(View.VISIBLE);

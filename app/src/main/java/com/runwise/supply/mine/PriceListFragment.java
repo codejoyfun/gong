@@ -25,10 +25,11 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.ProductData;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.fragment.OrderProductFragment.BUNDLE_KEY_LIST;
 
@@ -182,9 +183,9 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
             viewHolder.content.setText(bean.getUnit());
             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
             if (Boolean.parseBoolean(bean.isIsTwoUnit())){
-                viewHolder.value.setText("￥"+UserUtils.formatPrice(bean.getSettlePrice()+"") + "/" +bean.getSettleUomId());
+                viewHolder.value.setText("￥"+ NumberUtil.getIOrD(bean.getSettlePrice()+"") + "/" +bean.getSettleUomId());
             }else{
-                viewHolder.value.setText("￥"+UserUtils.formatPrice(bean.getPrice()+"") + "/" +bean.getUom());
+                viewHolder.value.setText("￥"+NumberUtil.getIOrD(bean.getPrice()+"") + "/" +bean.getUom());
             }
 
 

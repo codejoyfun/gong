@@ -33,6 +33,8 @@ import com.runwise.supply.repertory.entity.PandianResult;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * 盘点记录详情
  */
@@ -216,7 +218,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
                 viewHolder.value.setTextColor(Color.parseColor("#e75967"));
             }
             viewHolder.dateLate.setText(bean.getActualQty()+"");
-            viewHolder.dateLate1.setText("/"+bean.getTheoreticalQty());
+            viewHolder.dateLate1.setText("/"+ NumberUtil.getIOrD(bean.getTheoreticalQty()));
             return convertView;
         }
 

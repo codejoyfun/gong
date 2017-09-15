@@ -39,6 +39,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 import static com.runwise.supply.fragment.OrderProductFragment.BUNDLE_KEY_LIST;
 
 /**
@@ -172,7 +174,7 @@ public class RepertoryListFragment extends NetWorkFragment {
                 viewHolder.content.setText(productBean.getUnit());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
             }
-            viewHolder.value.setText(bean.getQty() + "");
+            viewHolder.value.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())));
             viewHolder.uom.setText(bean.getUom());
             if (TextUtils.isEmpty(bean.getUom())){
                 ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(bean.getProductID()));

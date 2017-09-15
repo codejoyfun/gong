@@ -23,7 +23,7 @@ public class ProcurenmentAddRequest {
          * height : 3
          */
 
-        private int qty;
+        private double qty;
         private int product_id;
 
         private String produce_datetime;
@@ -33,11 +33,11 @@ public class ProcurenmentAddRequest {
 
 
 
-        public int getQty() {
+        public double getQty() {
             return qty;
         }
 
-        public void setQty(int qty) {
+        public void setQty(double qty) {
             this.qty = qty;
         }
 

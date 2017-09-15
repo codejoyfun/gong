@@ -356,7 +356,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     bean.setCode(productBean.getDefaultCode());
                     bean.setInventoryLineID(returnBean.getInventoryAddLineID());
                     bean.setProductID(productBean.getProductID());
-                    bean.setEditNum(Integer.parseInt(amount));
+                    bean.setEditNum(Double.parseDouble(amount));
 
                     ProductBasicList.ListBean product = new ProductBasicList.ListBean();
                     product.setName(productBean.getName());
@@ -442,7 +442,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 bean.setProductID(lotBean.getProductID());
 //                        bean.setUnit_price();
 //                        bean.setActual_qty();
-                bean.setEditNum(Integer.parseInt(amount));
+                bean.setEditNum(Double.parseDouble(amount));
 
                 ProductBasicList.ListBean product = new ProductBasicList.ListBean();
                 product.setName(productBean.getName());

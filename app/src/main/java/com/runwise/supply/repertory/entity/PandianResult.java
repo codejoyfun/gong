@@ -124,7 +124,7 @@ public class PandianResult implements Serializable{
              * productID : 42
              */
 
-            private int theoreticalQty;
+            private double theoreticalQty;
             private String lifeEndDate;
             private int actualQty;
             private int inventoryLineID;
@@ -136,7 +136,7 @@ public class PandianResult implements Serializable{
             private int productID;
             private boolean checked;
             private int type;
-            private int editNum;
+            private double editNum;
             private ProductBasicList.ListBean product;
 
             public ProductBasicList.ListBean getProduct() {
@@ -147,11 +147,11 @@ public class PandianResult implements Serializable{
                 this.product = product;
             }
 
-            public int getEditNum() {
+            public double getEditNum() {
                 return editNum;
             }
 
-            public void setEditNum(int editNum) {
+            public void setEditNum(double editNum) {
                 this.editNum = editNum;
             }
 
@@ -171,11 +171,11 @@ public class PandianResult implements Serializable{
                 this.type = type;
             }
 
-            public int getTheoreticalQty() {
+            public double getTheoreticalQty() {
                 return theoreticalQty;
             }
 
-            public void setTheoreticalQty(int theoreticalQty) {
+            public void setTheoreticalQty(double theoreticalQty) {
                 this.theoreticalQty = theoreticalQty;
             }
 

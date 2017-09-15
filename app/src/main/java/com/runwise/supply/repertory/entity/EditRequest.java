@@ -38,7 +38,7 @@ public class EditRequest {
     public static class ProductBean{
         private int product_id;
         private int id;
-        private int actual_qty;
+        private double actual_qty;
         private int lot_id;
         private String lot_num;
 
@@ -58,11 +58,11 @@ public class EditRequest {
             this.id = id;
         }
 
-        public int getActual_qty() {
+        public double getActual_qty() {
             return actual_qty;
         }
 
-        public void setActual_qty(int actual_qty) {
+        public void setActual_qty(double actual_qty) {
             this.actual_qty = actual_qty;
         }
 

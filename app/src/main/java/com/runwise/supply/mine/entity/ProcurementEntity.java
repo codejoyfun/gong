@@ -58,14 +58,14 @@ public class ProcurementEntity {
              * productID : 26
              */
 
-            private double qty;
+            private String qty;
             private int productID;
 
-            public double getQty() {
+            public String getQty() {
                 return qty;
             }
 
-            public void setQty(double qty) {
+            public void setQty(String qty) {
                 this.qty = qty;
             }
 

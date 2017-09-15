@@ -293,7 +293,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     } else {
                         productsBean.setLife_datetime(tv_product_date_value.getText().toString());
                     }
-                    productsBean.setQty(Integer.parseInt(amount));
+                    productsBean.setQty(Double.parseDouble(amount));
                     products.add(productsBean);
                     procurenmentAddRequest.setProducts(products);
                     sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
@@ -337,7 +337,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     productsBean.setLot_name("none");
                     productsBean.setLife_datetime("");
                     productsBean.setProduce_datetime("");
-                    productsBean.setQty(Integer.parseInt(amount));
+                    productsBean.setQty(Double.parseDouble(amount));
                     products.add(productsBean);
                     procurenmentAddRequest.setProducts(products);
                     sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
