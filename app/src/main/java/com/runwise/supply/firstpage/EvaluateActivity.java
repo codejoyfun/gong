@@ -44,6 +44,7 @@ import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.AutoLinefeedLayout;
 import com.runwise.supply.view.YourScrollableViewPager;
 
@@ -235,7 +236,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
 
             if (bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)|| bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
                     || bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
-                findViewById(R.id.ic_evaluate_deliveryman).setVisibility(View.GONE);
+//                findViewById(R.id.ic_evaluate_deliveryman).setVisibility(View.GONE);
+
             }
 
             if (bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null) {
@@ -243,17 +245,19 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 mTvName.setText(deliverName);
                 String imgUrl = bean.getWaybill().getDeliverUser().getAvatarUrl();
                 FrecoFactory.getInstance(mContext).disPlay(mHeadSdv, Constant.BASE_URL + imgUrl);
+                mHeadSdv.setImageResource(R.drawable.deliveryman_header);
             } else {
-                mTvName.setText("未知");
+                mTvName.setText("配送服务评价");
+                mHeadSdv.setImageResource(R.drawable.delivery_evaluate_ico);
             }
             String estimatTime = bean.getEstimatedTime();
             String endUploadTime = bean.getStartUnloadDatetime();
-            StringBuffer sb = new StringBuffer("预计送达时间 ");
-            sb.append(estimatTime);
+            StringBuffer sb = new StringBuffer("预计送达: ");
+            sb.append(TimeUtils.getHM(estimatTime));
 
             if (!TextUtils.isEmpty(endUploadTime)) {
-                sb.append("\n开始卸货时间 ")
-                        .append(endUploadTime);
+                sb.append("\n开始卸货: ")
+                        .append(TimeUtils.getHM(endUploadTime));
             }
             mTvTime.setText(sb.toString());
 
@@ -430,7 +434,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             request.setService_tags(serviceTags);
         }
         List<String> productTags = getProductTags();
-        if (serviceTags.size() > 0) {
+        if (productTags.size() > 0) {
             request.setQuality_tags(productTags);
         }
 

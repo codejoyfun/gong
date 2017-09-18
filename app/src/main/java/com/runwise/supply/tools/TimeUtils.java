@@ -223,6 +223,19 @@ public class TimeUtils {
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return ft.format(date);
 	}
+	public static String getHM(String date){
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat ft1 = new SimpleDateFormat("HH:mm");
+		Date date1 = null;
+		try {
+			date1 = ft.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return "";
+		}
+
+		return ft1.format(date1);
+	}
 	/**
 	 * 计算宝宝年龄
 	 *

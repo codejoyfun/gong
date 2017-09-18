@@ -43,13 +43,13 @@ public class UserInfo implements Serializable{
     private String region;
     private String mendian;
     private boolean isDianzhang;
-    private int cateringServiceScore;
+    private double cateringServiceScore;
     private int cateringQualityTrend;
     private String street;
     private int partnerId;
     private int cateringServiceTrend;
     private String loginStatus;
-    private int cateringQualityScore;
+    private double cateringQualityScore;
     private String position;
     private String login;
 //    private boolean customerServicePhone;
@@ -167,11 +167,11 @@ public class UserInfo implements Serializable{
         this.isDianzhang = isDianzhang;
     }
 
-    public int getCateringServiceScore() {
+    public double getCateringServiceScore() {
         return cateringServiceScore;
     }
 
-    public void setCateringServiceScore(int cateringServiceScore) {
+    public void setCateringServiceScore(double cateringServiceScore) {
         this.cateringServiceScore = cateringServiceScore;
     }
 
@@ -215,11 +215,11 @@ public class UserInfo implements Serializable{
         this.loginStatus = loginStatus;
     }
 
-    public int getCateringQualityScore() {
+    public double getCateringQualityScore() {
         return cateringQualityScore;
     }
 
-    public void setCateringQualityScore(int cateringQualityScore) {
+    public void setCateringQualityScore(double cateringQualityScore) {
         this.cateringQualityScore = cateringQualityScore;
     }
 

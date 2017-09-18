@@ -43,12 +43,6 @@ public class ReturnActivity extends NetWorkActivity {
 
         this.setTitleText(true,"退货记录");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
-        adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(4);
-        smartTabLayout.setViewPager(viewPager);
-        int position = this.getIntent().getIntExtra("position",0);
-        viewPager.setCurrentItem(position,false);
         Object param = null;
         sendConnection("/API/v2/return_order/list",param,PRODUCT_GET,true, ReturnData.class);
     }
@@ -63,12 +57,18 @@ public class ReturnActivity extends NetWorkActivity {
     public void doBack(View view) {
         finish();
     }
-
+    ReturnData repertoryEntity;
     @Override
     public void onSuccess(BaseEntity result, int where) {
       switch (where) {
           case PRODUCT_GET:
-              ReturnData repertoryEntity = (ReturnData)result.getResult().getData();
+              repertoryEntity = (ReturnData)result.getResult().getData();
+              adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager());
+              viewPager.setAdapter(adapter);
+              viewPager.setOffscreenPageLimit(4);
+              smartTabLayout.setViewPager(viewPager);
+              int position = this.getIntent().getIntExtra("position",0);
+              viewPager.setCurrentItem(position,false);
               EventBus.getDefault().post(repertoryEntity);
               break;
       }
@@ -84,10 +84,10 @@ public class ReturnActivity extends NetWorkActivity {
         private List<Fragment> fragmentList = new ArrayList<>();
         public TabPageIndicatorAdapter(FragmentManager fm) {
             super(fm);
-            titleList.add("全部");
-            titleList.add("本周");
-            titleList.add("上周");
-            titleList.add("更早");
+            titleList.add("全部("+repertoryEntity.getAllList().size()+")");
+            titleList.add("本周("+repertoryEntity.getThisWeekList().size()+")");
+            titleList.add("上周("+repertoryEntity.getLastWeekList().size()+")");
+            titleList.add("更早("+repertoryEntity.getEarlierList().size()+")");
             Bundle bundle = new Bundle();
             ReturnListFragment allFragment = new ReturnListFragment();
             allFragment.orderDataType = OrderDataType.ALL;

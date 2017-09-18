@@ -39,6 +39,7 @@ public class OrderProductFragment extends Fragment {
     public static final String BUNDLE_KEY_STATE = "bundle_key_state";
     public static final String BUNDLE_KEY_RETURN = "bundle_key_return";
     public static final String BUNDLE_KEY_TWO_UNIT = "bundle_key_two_unit";
+    public static final String BUNDLE_KEY_ORDER_DATA = "bundle_key_order_data";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,9 +59,10 @@ public class OrderProductFragment extends Fragment {
         listDatas = (List<OrderResponse.ListBean.LinesBean>) getArguments().getSerializable(BUNDLE_KEY_LIST);
         String name = getArguments().getString(BUNDLE_KEY_NAME);
         String state = getArguments().getString(BUNDLE_KEY_STATE);
+        OrderResponse.ListBean listBean = (OrderResponse.ListBean) getArguments().getParcelable(BUNDLE_KEY_ORDER_DATA);
 
         mOrderDtailAdapter.setProductList(listDatas);
-        mOrderDtailAdapter.setStatus(name,state);
+        mOrderDtailAdapter.setStatus(name,state,listBean);
         mOrderDtailAdapter.setHasReturn(getArguments().getBoolean(BUNDLE_KEY_RETURN));
         mOrderDtailAdapter.setTwoUnit(getArguments().getBoolean(BUNDLE_KEY_TWO_UNIT));
     }

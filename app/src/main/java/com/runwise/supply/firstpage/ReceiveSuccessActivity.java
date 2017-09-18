@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.kids.commonframe.base.BaseActivity;
-import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -30,6 +29,9 @@ public class ReceiveSuccessActivity extends BaseActivity {
         setTitleLeftIcon(true,R.drawable.nav_closed);
         bundle = getIntent().getExtras();
         bean = bundle.getParcelable("order");
+        if (bean.getOrderSettleName().contains("单次结算")){
+            findViewById(R.id.uploadBtn).setVisibility(View.VISIBLE);
+        }
     }
     @OnClick({R.id.title_iv_left,R.id.orderBtn,R.id.uploadBtn})
     public void btnClick(View view){

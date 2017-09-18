@@ -38,6 +38,7 @@ import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoWatchEditText;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -70,7 +71,7 @@ public class EditBatchActivity extends NetWorkActivity {
     public static final String INTENT_KEY_BATCH_ENTITIES = "intent_key_batch_entities";
     private OrderResponse.ListBean.LinesBean mBean;
 
-    interface CallBack{
+    interface CallBack {
         void onCall(int position);
     }
 
@@ -80,32 +81,17 @@ public class EditBatchActivity extends NetWorkActivity {
         setContentView(R.layout.activity_edit_batch);
         ButterKnife.bind(this);
         mBatchEntities = new ArrayList<>();
-        Object o = getIntent().getSerializableExtra(INTENT_KEY_BATCH_ENTITIES);
-        if (o != null){
-            ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) o;
-            for (ReceiveRequest.ProductsBean.LotBean lotBean :lotBeens){
-                BatchEntity batchEntity =  new BatchEntity();
-                batchEntity.setBatchNum(lotBean.getLot_name());
-                if (!TextUtils.isEmpty(lotBean.getLife_datetime())){
-                    batchEntity.setProductDate(lotBean.getLife_datetime());
-                    batchEntity.setProductDate(false);
-                }else {
-                    batchEntity.setProductDate(lotBean.getProduce_datetime());
-                    batchEntity.setProductDate(true);
-                }
-                batchEntity.setProductCount(String.valueOf(lotBean.getHeight()));
-                mBatchEntities.add(batchEntity);
-            }
-        }else{
-            mBatchEntities.add(new BatchEntity());
-        }
 
         final BatchListAdapter batchListAdapter = new BatchListAdapter();
         View addBatchView = LayoutInflater.from(EditBatchActivity.this).inflate(R.layout.edit_batch_foot_view, null);
         addBatchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mBatchEntities.add(new BatchEntity());
+                BatchEntity batchEntity = new BatchEntity();
+                batchEntity.setProductDate(TimeUtils.getYMD(Calendar.getInstance().getTime()));
+                batchEntity.setProductDate(true);
+                batchEntity.setProductCount(String.valueOf((int)mBean.getProductUomQty()));
+                mBatchEntities.add(batchEntity);
                 batchListAdapter.notifyDataSetChanged();
             }
         });
@@ -127,7 +113,7 @@ public class EditBatchActivity extends NetWorkActivity {
         CallBack callBack = new CallBack() {
             @Override
             public void onCall(final int position) {
-                 pvCustomTime = new TimePickerView.Builder(mContext, new TimePickerView.OnTimeSelectListener() {
+                pvCustomTime = new TimePickerView.Builder(mContext, new TimePickerView.OnTimeSelectListener() {
                     @Override
                     public void onTimeSelect(Date date, View v) {//选中事件回调
                         mBatchEntities.get(position).setProductDate(TimeUtils.getYMD(date));
@@ -154,6 +140,7 @@ public class EditBatchActivity extends NetWorkActivity {
                             public void onClick(View v) {
                                 pvCustomTime.returnData();
                                 pvCustomTime.dismiss();
+
                             }
                         });
                         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -167,14 +154,35 @@ public class EditBatchActivity extends NetWorkActivity {
                         .setType(new boolean[]{true, true, true, false, false, false})
                         .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
                         .build();
+                wheelView.setCurrentItem(0);
                 pvCustomTime.show();
-
-
-
 
             }
         };
         batchListAdapter.setCallback(callBack);
+        Object o = getIntent().getSerializableExtra(INTENT_KEY_BATCH_ENTITIES);
+        if (o != null) {
+            ArrayList<ReceiveRequest.ProductsBean.LotBean> lotBeens = (ArrayList<ReceiveRequest.ProductsBean.LotBean>) o;
+            for (ReceiveRequest.ProductsBean.LotBean lotBean : lotBeens) {
+                BatchEntity batchEntity = new BatchEntity();
+                batchEntity.setBatchNum(lotBean.getLot_name());
+                if (!TextUtils.isEmpty(lotBean.getLife_datetime())) {
+                    batchEntity.setProductDate(lotBean.getLife_datetime());
+                    batchEntity.setProductDate(false);
+                } else {
+                    batchEntity.setProductDate(lotBean.getProduce_datetime());
+                    batchEntity.setProductDate(true);
+                }
+                batchEntity.setProductCount(String.valueOf(lotBean.getHeight()));
+                mBatchEntities.add(batchEntity);
+            }
+        } else {
+            BatchEntity batchEntity = new BatchEntity();
+            batchEntity.setProductDate(TimeUtils.getYMD(Calendar.getInstance().getTime()));
+            batchEntity.setProductDate(true);
+            batchEntity.setProductCount(String.valueOf((int)mBean.getProductUomQty()));
+            mBatchEntities.add(batchEntity);
+        }
     }
 
     @Override
@@ -228,9 +236,11 @@ public class EditBatchActivity extends NetWorkActivity {
 
     public class BatchListAdapter extends BaseAdapter {
         CallBack mCallBack;
-        public void setCallback(CallBack callBack){
+
+        public void setCallback(CallBack callBack) {
             mCallBack = callBack;
         }
+
         @Override
         public int getCount() {
             return mBatchEntities.size();
@@ -268,12 +278,12 @@ public class EditBatchActivity extends NetWorkActivity {
             viewHolder.tvProductDateValue.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        if (mCallBack != null){
-                            mCallBack.onCall(position);
-                        }
+                    if (mCallBack != null) {
+                        mCallBack.onCall(position);
+                    }
                 }
             });
-
+            viewHolder.tvProductDate.setText(mBatchEntities.get(position).isProductDate()?"生产日期":"到期日期");
             viewHolder.etBatch.removeTextChangedListener();
             viewHolder.etBatch.setText(mBatchEntities.get(position).getBatchNum());
             viewHolder.etBatch.addTextChangedListener(new TextWatcher() {

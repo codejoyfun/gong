@@ -26,6 +26,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
 /**
@@ -99,10 +100,11 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) bundle.getSerializable("order");
             orderBean.setId(bean.getReturnOrderID());
             orderBean.setAmount((int)bean.getAmount());
-            orderBean.setAmount_total((int)bean.getAmountTotal());
             orderBean.setState(bean.getState());
             orderBean.setName(bean.getName());
             orderBean.setDeliveryType(bean.getDeliveryType());
+            orderBean.setCreate_date(bean.getCreateDate());
+            orderBean.setAmount_total(bean.getAmountTotal());
 //            List<String> trackers = bean.getStateTracker();
             List<String> trackers = this.getIntent().getStringArrayListExtra("tracker");
             for (String str : trackers) {
@@ -126,19 +128,19 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                     if ((bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_STANDARD) || bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_FRESH)) && !TextUtils.isEmpty(bean.getDriver()) && !TextUtils.isEmpty(bean.getDriveMobile())) {
                         //订单审核通过
                         content.append("请等待取货员上门取货").append("\n")
-                                .append("车牌号：").append(bean.getDriveMobile()).append("\n")
+                                .append("车牌号：").append(bean.getVehicle()).append("\n")
                                 .append("取货员：").append(bean.getDriver()).append("\n");
                     } else {
                         //订单已提交
                         content.append("退货单号：").append(bean.getName()).append("\n")
-                                .append("退货商品：").append(bean.getAmount()).append("件");
+                                .append("退货商品：").append(NumberUtil.getIOrD(bean.getAmount())).append("件");
                         if (GlobalApplication.getInstance().getCanSeePrice()){
                             content.append("，共").append(bean.getAmountTotal()).append("元").append("\n");
                         }
                     }
                 } else {
                     //退货成功
-                    content.append("退货商品：").append(bean.getAmount()).append("件");
+                    content.append("退货商品：").append(NumberUtil.getIOrD(bean.getAmount())).append("件");
                     if (GlobalApplication.getInstance().getCanSeePrice()){
                         content.append("，").append(bean.getAmountTotal()).append("元");
                     }
@@ -186,8 +188,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 osl.setState(state);
                 osl.setTime(timeSb.toString());
                 if (str.contains("已评价")){
-                    content.append("评价员：").append(bean.getAppraisalUserName())
-                            .append(",如有问题请联系客服");
+                    content.append("评价员：").append(bean.getAppraisalUserName());
                 }else if(str.contains("已收货")){
                     content.append("收货员：").append(bean.getReceiveUserName());
                 }else if(str.contains("已点货")){
@@ -199,7 +200,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                             deliverPhone = bean.getWaybill().getDeliverUser().getMobile();
                         }
                         content.append(bean.getWaybill().getDeliverVehicle().getLicensePlate())
-                                .append("\n").append("配送员：").append(bean.getWaybill().getDeliverUser().getName())
+                                .append("\n").append("配送员：").append(bean.getWaybill().getDeliverUser().getName()).append(" ")
                                 .append(bean.getWaybill().getDeliverUser().getMobile()).append("\n")
                                 .append("预计到达时间：").append(bean.getEstimatedTime());
                     }else{

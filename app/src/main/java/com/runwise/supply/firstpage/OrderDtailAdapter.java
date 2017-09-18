@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.runwise.supply.GlobalApplication;
@@ -35,6 +36,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
     //当前状态
     private String status;
     private String orderName;
+    private OrderResponse.ListBean mListBean;
     public void setHasReturn(boolean hasReturn) {
         this.hasReturn = hasReturn;
     }
@@ -57,9 +59,10 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         notifyDataSetChanged();
     }
 
-    public void setStatus(String orderName,String status) {
+    public void setStatus(String orderName,String status,OrderResponse.ListBean listBean) {
         this.status = status;
         this.orderName = orderName;
+        mListBean = listBean;
     }
 
 
@@ -120,6 +123,19 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         vh.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               String deliveryType = mListBean.getDeliveryType();
+                if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)||deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+                        ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH)||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
+                    if(!status.equals("peisong")&&!status.equals("done")&&!status.equals("rated")){
+                        return;
+                    }
+                }
+                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)){
+                    if(!status.equals("peisong")&&!status.equals("done")&&!status.equals("rated")) {
+                        ToastUtil.show(v.getContext(), "该产品无批次追踪");
+                        return;
+                    }
+                }
                 Intent intent = new Intent(context, LotListActivity.class);
                 intent.putExtra("title",basicBean.getName());
                 intent.putExtra("bean", (Parcelable) bean);

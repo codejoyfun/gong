@@ -18,8 +18,6 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.ViewUtils;
-import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
@@ -186,14 +184,14 @@ public class OneKeyAdapter extends IBaseAdapter {
                     ischange = false;
                     countMap.put(pId,count);
                 }else{
-                    countMap.remove(pId);
-                    mList.remove(bean);
-                    notifyDataSetChanged();
-                    //不管这些包含在selcetArr中，都要刷新全选
-                    if (selectArr.contains(bean)){
-                        selectArr.remove(bean);
-                    }
-                    checkSelectState();
+//                    countMap.remove(pId);
+//                    mList.remove(bean);
+//                    notifyDataSetChanged();
+//                    //不管这些包含在selcetArr中，都要刷新全选
+//                    if (selectArr.contains(bean)){
+//                        selectArr.remove(bean);
+//                    }
+//                    checkSelectState();
                 }
                 //发送事件
                 callback.countChanged();

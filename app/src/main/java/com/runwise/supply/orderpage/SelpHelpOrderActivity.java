@@ -153,16 +153,16 @@ public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     intent.putExtra("apbundle",bundle);
                     startActivityForResult(intent,ADD_PRODUCT);
                 }else{
-                    dialog.setTitle("提示");
-                    dialog.setMessageGravity();
-                    dialog.setMessage("确认取消下单？");
-                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-                        @Override
-                        public void doClickButton(Button btn, CustomDialog dialog) {
+//                    dialog.setTitle("提示");
+//                    dialog.setMessageGravity();
+//                    dialog.setMessage("确认取消下单？");
+//                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+//                        @Override
+//                        public void doClickButton(Button btn, CustomDialog dialog) {
                             finish();
-                        }
-                    });
-                    dialog.show();
+//                        }
+//                    });
+//                    dialog.show();
                 }
                 break;
             case R.id.title_tv_rigth:

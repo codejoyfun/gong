@@ -45,4 +45,11 @@ public class NumberUtil {
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
         return decimalFormat.format(Double.parseDouble(price));
     }
+    public static String formatOneBit(String price) {
+        if(TextUtils.isEmpty(price)) {
+            return "";
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#.0");
+        return decimalFormat.format(Double.parseDouble(price));
+    }
 }

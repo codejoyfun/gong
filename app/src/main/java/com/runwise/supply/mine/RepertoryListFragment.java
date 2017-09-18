@@ -179,7 +179,7 @@ public class RepertoryListFragment extends NetWorkFragment {
             if (TextUtils.isEmpty(bean.getUom())){
                 ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(bean.getProductID()));
                 if (listBean!=null){
-                    viewHolder.uom.setText(listBean.getUom());
+                    viewHolder.uom.setText(listBean.getProductUom());
                 }
             }
             if (TextUtils.isEmpty(bean.getLotNum())){

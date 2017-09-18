@@ -230,21 +230,26 @@ public class ProductListFragment extends NetWorkFragment {
                 viewHolder.name.setText(basicBean.getName());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
                 sb.append("  ").append(basicBean.getUnit());
+                viewHolder.content.setText(sb.toString());
                 DecimalFormat df = new DecimalFormat("#.##");
                 if (canSeePrice){
+                    StringBuffer sb1 = new StringBuffer(basicBean.getDefaultCode());
                     if (bean.isIsTwoUnit()){
-                        sb.append("  ¥")
+                        sb1.append("¥")
                                 .append(df.format(Double.valueOf(bean.getSettlePrice())))
                                 .append("元/")
                                 .append(bean.getSettleUomId());
                     }else{
-                        sb.append("  ¥")
+                        sb1.append("¥")
                                 .append(df.format(Double.valueOf(bean.getPrice())))
                                 .append("元/")
                                 .append(bean.getUom());
                     }
+                    viewHolder.tv_price.setText(sb1.toString());
+                }else{
+                    viewHolder.tv_price.setText("");
                 }
-                viewHolder.content.setText(sb.toString());
+
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
             }
             viewHolder.unit1.setText(bean.getUom());
@@ -270,6 +275,8 @@ public class ProductListFragment extends NetWorkFragment {
             EditText            editText; //输入框
             @ViewInject(R.id.unit1)
             TextView            unit1;  //单位
+          @ViewInject(R.id.tv_price)
+            TextView            tv_price;  //单位
 
         }
     }

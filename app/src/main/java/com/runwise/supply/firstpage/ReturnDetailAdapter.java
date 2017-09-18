@@ -63,12 +63,13 @@ public class ReturnDetailAdapter extends RecyclerView.Adapter {
             FrecoFactory.getInstance(context).disPlay(viewHolder.sdv, Constant.BASE_URL+imgUrl);
             viewHolder.nameTv.setText(basiclb.getName());
             StringBuffer sb = new StringBuffer(basiclb.getDefaultCode());
+            sb.append("  ").append(basiclb.getUnit());
             if (canSeePrice){
                 DecimalFormat df = new DecimalFormat("#.##");
                 if (basiclb.isTwoUnit()){
-                    sb.append(" ¥").append(df.format(basiclb.getSettlePrice())).append("元/").append(basiclb.getSettleUomId());
+                    sb.append("\n").append("¥").append(df.format(basiclb.getSettlePrice())).append("元/").append(basiclb.getSettleUomId());
                 }else{
-                    sb.append("  ¥")
+                    sb.append("\n").append("¥")
                             .append(df.format(basiclb.getPrice()))
                             .append("元/")
                             .append(basiclb.getUom());

@@ -35,6 +35,8 @@ import com.runwise.supply.view.ObservableScrollView;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 
 /**
@@ -118,8 +120,8 @@ public class MineFragment extends NetWorkFragment {
             FrecoFactory.getInstance(mContext).disPlay(mineHead, Constant.BASE_URL + userInfo.getAvatarUrl());
             minePhone.setText(userInfo.getUsername());
 
-            ratingbarPeisong.setRating(userInfo.getCateringServiceScore());
-            peisongStr.setText(userInfo.getCateringServiceScore()+"");
+            ratingbarPeisong.setRating((float) userInfo.getCateringServiceScore());
+            peisongStr.setText(NumberUtil.formatOneBit(String.valueOf(userInfo.getCateringServiceScore())));
             if ("-1".equals(userInfo.getCateringServiceTrend())) {
                 peisongImg.setImageResource(R.drawable.tag_down);
             }
@@ -127,8 +129,8 @@ public class MineFragment extends NetWorkFragment {
                 peisongImg.setImageResource(R.drawable.tag_up);
             }
 
-            ratingbarZhiliang.setRating(userInfo.getCateringQualityScore());
-            zhiliangStr.setText(userInfo.getCateringQualityScore()+"");
+            ratingbarZhiliang.setRating((float) userInfo.getCateringQualityScore());
+            zhiliangStr.setText(NumberUtil.formatOneBit(String.valueOf(userInfo.getCateringQualityScore())));
             if ("-1".equals(userInfo.getCateringQualityTrend())) {
                 zhiliangImg.setImageResource(R.drawable.tag_down);
             }

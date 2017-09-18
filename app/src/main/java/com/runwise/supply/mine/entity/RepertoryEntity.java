@@ -38,7 +38,7 @@ public class RepertoryEntity implements Serializable{
         private String lifeEndDate;
         private int lotID;
         private String lotNum;
-        private int qty;
+        private double qty;
         private String uom;
         private int productID;
         private ProductBasicList.ListBean product;
@@ -91,11 +91,11 @@ public class RepertoryEntity implements Serializable{
             this.lotNum = lotNum;
         }
 
-        public int getQty() {
+        public double getQty() {
             return qty;
         }
 
-        public void setQty(int qty) {
+        public void setQty(double qty) {
             this.qty = qty;
         }
 

@@ -378,7 +378,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean = result.getResult();
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
-                adapter.setStatus(bean.getName(), bean.getState());
+                adapter.setStatus(bean.getName(), bean.getState(),bean);
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
@@ -551,6 +551,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             } else if (bean.getState().equals("rated")) {
                 state = "订单已评价";
                 bottom_bar.setVisibility(View.GONE);
+                tip = "感谢您的评价，供鲜生祝您生活愉快！";
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);
@@ -676,6 +677,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         bundle.putString(OrderProductFragment.BUNDLE_KEY_STATE, bean.getState());
         bundle.putBoolean(OrderProductFragment.BUNDLE_KEY_RETURN, bean.getHasReturn() != 0);
         bundle.putBoolean(OrderProductFragment.BUNDLE_KEY_TWO_UNIT, bean.isIsTwoUnit());
+        bundle.putParcelable(OrderProductFragment.BUNDLE_KEY_ORDER_DATA, bean);
         orderProductFragment.setArguments(bundle);
         return orderProductFragment;
     }
