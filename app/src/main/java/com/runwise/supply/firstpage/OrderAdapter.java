@@ -27,6 +27,8 @@ import com.runwise.supply.tools.TimeUtils;
 import java.util.HashMap;
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 
@@ -174,7 +176,7 @@ public class OrderAdapter extends IBaseAdapter {
                 sb.append((int)bean.getAmount()).append("件商品");
             }
             viewHolder.countTv.setText(sb.toString());
-            viewHolder.moneyTv.setText(bean.getAmountTotal()+"");
+            viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
             StringBuffer drawableSb = new StringBuffer("state_restaurant_");
             drawableSb.append(bean.getState());
             if (getResIdByDrawableName(drawableSb.toString()) == 0){
@@ -218,7 +220,7 @@ public class OrderAdapter extends IBaseAdapter {
             StringBuffer sb = new StringBuffer("共");
             sb.append((int)bean.getAmount()).append("件商品");
             viewHolder.countTv.setText(sb.toString());
-            viewHolder.moneyTv.setText(bean.getAmountTotal()+"");
+            viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
             if (!TextUtils.isEmpty(bean.getDriveMobile())){
                 viewHolder.carNumTv.setText(bean.getVehicle());

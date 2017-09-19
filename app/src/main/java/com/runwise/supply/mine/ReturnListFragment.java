@@ -1,14 +1,12 @@
 package com.runwise.supply.mine;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,36 +15,28 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
-import com.runwise.supply.firstpage.OrderDetailActivity;
 import com.runwise.supply.firstpage.ReturnDetailActivity;
-import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
-import com.runwise.supply.mine.entity.MsgEntity;
 import com.runwise.supply.mine.entity.MsgList;
 import com.runwise.supply.mine.entity.MsgResult;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.ReturnData;
-import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 /**
  * 退货记录
@@ -225,7 +215,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
 
             holder.payTitle.setText(bean.getName());
             holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
-            holder.patSum.setText("共"+bean.getAmount()+"件商品");
+            holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getAmount())+"件商品");
             if(GlobalApplication.getInstance().getCanSeePrice()) {
                 holder.payMoney.setVisibility(View.VISIBLE);
                 holder.payMoney.setText("共"+bean.getAmountTotal());

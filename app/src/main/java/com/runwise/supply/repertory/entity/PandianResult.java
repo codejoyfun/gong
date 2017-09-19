@@ -126,7 +126,7 @@ public class PandianResult implements Serializable{
 
             private double theoreticalQty;
             private String lifeEndDate;
-            private int actualQty;
+            private double actualQty;
             private int inventoryLineID;
             private String code;
             private int lotID;
@@ -187,11 +187,11 @@ public class PandianResult implements Serializable{
                 this.lifeEndDate = lifeEndDate;
             }
 
-            public int getActualQty() {
+            public double getActualQty() {
                 return actualQty;
             }
 
-            public void setActualQty(int actualQty) {
+            public void setActualQty(double actualQty) {
                 this.actualQty = actualQty;
             }
 

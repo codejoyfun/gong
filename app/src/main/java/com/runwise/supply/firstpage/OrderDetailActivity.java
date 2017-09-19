@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
@@ -29,6 +30,7 @@ import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -391,18 +393,31 @@ public class OrderDetailActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 updateUI();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dragLayout.openTopView(false);
+                    }
+                },200);
                 break;
             case RETURN_DETAIL:
                 BaseEntity.ResultBean rb = result.getResult();
                 ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
                 if (rdr.getReturnOrder() != null){
                 setUpReturnOrderView(bean.getReturnOrders().get(0),rdr.getReturnOrder().getName());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dragLayout.openTopView(false);
+                        }
+                    },500);
                     bean.getReturnOrders().remove(0);
                     //可能有多个退货单。
                     if (bean.getReturnOrders().size()>0){
                         String returnId = bean.getReturnOrders().get(0);
                         getReturnOrder(returnId);
                     }
+
                 }
                 break;
         }
@@ -591,7 +606,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 returnTv.setVisibility(View.VISIBLE);
             }
             //实收判断
-            if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.getDeliveredQty() != bean.getAmount()) {
                 receivtTv.setVisibility(View.VISIBLE);
                 countTv.setText((int) bean.getDeliveredQty() + "件");
             } else {

@@ -31,6 +31,8 @@ public class ReceiveSuccessActivity extends BaseActivity {
         bean = bundle.getParcelable("order");
         if (bean.getOrderSettleName().contains("单次结算")){
             findViewById(R.id.uploadBtn).setVisibility(View.VISIBLE);
+        }else{
+            findViewById(R.id.uploadBtn).setVisibility(View.GONE);
         }
     }
     @OnClick({R.id.title_iv_left,R.id.orderBtn,R.id.uploadBtn})

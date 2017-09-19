@@ -210,14 +210,14 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
                 viewHolder.value.setTextColor(Color.parseColor("#9b9b9b"));
             }
             else if(bean.getDiff() > 0) {
-                viewHolder.value.setText(((int)bean.getDiff())+"");
+                viewHolder.value.setText(NumberUtil.getIOrD(bean.getDiff()));
                 viewHolder.value.setTextColor(Color.parseColor("#9cb62e"));
             }
             else{
-                viewHolder.value.setText(((int)bean.getDiff())+"");
+                viewHolder.value.setText(NumberUtil.getIOrD(bean.getDiff()));
                 viewHolder.value.setTextColor(Color.parseColor("#e75967"));
             }
-            viewHolder.dateLate.setText(bean.getActualQty()+"");
+            viewHolder.dateLate.setText(NumberUtil.getIOrD(bean.getActualQty()));
             viewHolder.dateLate1.setText("/"+ NumberUtil.getIOrD(bean.getTheoreticalQty()));
             return convertView;
         }

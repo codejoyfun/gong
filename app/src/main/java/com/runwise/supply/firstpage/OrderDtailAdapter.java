@@ -25,6 +25,9 @@ import com.runwise.supply.tools.UserUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kids.commonframe.config.Constant.ORDER_STATE_DRAFT;
+import static com.kids.commonframe.config.Constant.ORDER_STATE_SALE;
+
 /**
  * Created by libin on 2017/7/15.
  */
@@ -85,7 +88,7 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
         }
         int puq = (int)bean.getProductUomQty();
         int dq = (int)bean.getDeliveredQty();
-        if( "done".equals(status) && bean.getDeliveredQty() != bean.getProductUomQty()) {
+        if((Constant.ORDER_STATE_DONE.equals(status)||Constant.ORDER_STATE_RATED.equals(status)) && bean.getDeliveredQty() != bean.getProductUomQty()) {
             vh.oldPriceTv.setText("x"+puq);
             vh.nowPriceTv.setText("x"+dq);
             vh.oldPriceTv.setVisibility(View.VISIBLE);
@@ -131,8 +134,11 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
                     }
                 }
                 if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)){
-                    if(!status.equals("peisong")&&!status.equals("done")&&!status.equals("rated")) {
+                    if((status.equals("peisong")||status.equals("done")||status.equals("rated"))&&(bean.getLotList()!=null&&bean.getLotList().size() == 0)) {
                         ToastUtil.show(v.getContext(), "该产品无批次追踪");
+                        return;
+                    }
+                    if (status.equals(ORDER_STATE_DRAFT)||status.equals(ORDER_STATE_SALE)){
                         return;
                     }
                 }

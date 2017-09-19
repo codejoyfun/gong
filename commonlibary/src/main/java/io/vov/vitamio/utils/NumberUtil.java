@@ -42,14 +42,14 @@ public class NumberUtil {
         if(TextUtils.isEmpty(price)) {
             return "";
         }
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        DecimalFormat decimalFormat = new DecimalFormat("#0.00");
         return decimalFormat.format(Double.parseDouble(price));
     }
     public static String formatOneBit(String price) {
         if(TextUtils.isEmpty(price)) {
             return "";
         }
-        DecimalFormat decimalFormat = new DecimalFormat("#.0");
+        DecimalFormat decimalFormat = new DecimalFormat("#0.0");
         return decimalFormat.format(Double.parseDouble(price));
     }
 }

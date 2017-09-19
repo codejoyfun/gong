@@ -29,4 +29,13 @@ public class Constant {
    public final static int PIC_SELECT_TYPE_ALBUM = 1;
    public final static int PIC_SELECT_TYPE_CAMERA = 2;
 
+   /**
+    * 订单状态
+    */
+   public static final String ORDER_STATE_DRAFT = "draft";
+   public static final String ORDER_STATE_SALE = "sale";
+   public static final String ORDER_STATE_PEISONG = "peisong";
+   public static final String ORDER_STATE_DONE = "done";
+   public static final String ORDER_STATE_RATED = "rated";
+
 }

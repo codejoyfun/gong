@@ -233,7 +233,7 @@ public class ProductListFragment extends NetWorkFragment {
                 viewHolder.content.setText(sb.toString());
                 DecimalFormat df = new DecimalFormat("#.##");
                 if (canSeePrice){
-                    StringBuffer sb1 = new StringBuffer(basicBean.getDefaultCode());
+                    StringBuffer sb1 = new StringBuffer();
                     if (bean.isIsTwoUnit()){
                         sb1.append("¥")
                                 .append(df.format(Double.valueOf(bean.getSettlePrice())))

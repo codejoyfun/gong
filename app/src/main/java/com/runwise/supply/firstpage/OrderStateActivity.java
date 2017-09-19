@@ -11,7 +11,10 @@ import android.widget.Button;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -40,6 +43,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
     private List<OrderStateLine> datas = new ArrayList<>();
     private String deliverPhone;        //默认没有
     private boolean isReturnMode;       //退货单模式,默认是处于订单模式下
+    UserInfo userInfo;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener(){
                 @Override
@@ -67,6 +71,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
         setTitleRigthIcon(true,R.drawable.nav_service_message);
         //从上个页面获取数据
         setOrderTracker();
+        userInfo = GlobalApplication.getInstance().loadUserInfo();
     }
     @OnClick({R.id.title_iv_rigth,R.id.title_iv_left})
     private void btnClick(View view){
@@ -209,7 +214,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 }else if(str.contains("已确认")){
                     content.append("正在为您挑拣商品");
                 }else if(str.contains("已修改")){
-                    content.append("共").append(bean.getDeliveredQty()).append("件商品");
+                    content.append("共").append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
                     if (GlobalApplication.getInstance().getCanSeePrice()){
                         content.append("，¥").append(bean.getAmountTotal());
                     }
@@ -237,21 +242,41 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
-
+    CustomDialog dialog;
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.serviceBtn:
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                Uri data = Uri.parse("tel:" + "02037574563");
-                intent.setData(data);
-                startActivity(intent);
+                if (dialog == null){
+                    dialog = new CustomDialog(getActivityContext());
+                }
+                String number = "";
+                if (userInfo != null && !TextUtils.isEmpty(userInfo.getCompanyHotLine())) {
+                    number = userInfo.getCompanyHotLine();
+                    dialog.setTitle("致电 " + userInfo.getCompany() + " 客服");
+                } else {
+                    dialog.setTitle("致电 供鲜生 客服");
+                }
+                dialog.setModel(CustomDialog.BOTH);
+                dialog.setMessageGravity();
+                dialog.setMessage(number);
+                dialog.setLeftBtnListener("取消", null);
+                final String finalNumber = number;
+                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        CommonUtils.callNumber(mContext, finalNumber);
+                    }
+                });
+                dialog.show();
+                bDialog.dismiss();
                 break;
             case R.id.deliverBtn:
                 Intent intent2 = new Intent(Intent.ACTION_DIAL);
                 Uri data2 = Uri.parse("tel:" + deliverPhone);
                 intent2.setData(data2);
                 startActivity(intent2);
+                bDialog.dismiss();
                 break;
             case R.id.cancleBtn:
                 bDialog.dismiss();

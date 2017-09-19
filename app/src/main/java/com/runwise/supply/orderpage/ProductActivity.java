@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -29,7 +28,6 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.ProductCountChangeEvent;
 import com.kids.commonframe.base.bean.ProductGetEvent;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
-import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -124,8 +122,8 @@ public class ProductActivity extends NetWorkActivity {
 //                    EventBus.getDefault().post(event);
 //                }
                 //搜索基本商品信息过滤
-                    ProductQueryEvent event = new ProductQueryEvent(s.toString());
-                    EventBus.getDefault().post(event);
+                ProductQueryEvent event = new ProductQueryEvent(s.toString());
+                EventBus.getDefault().post(event);
             }
 
             @Override
@@ -136,15 +134,16 @@ public class ProductActivity extends NetWorkActivity {
         sendRequest();
 
     }
+
     private void setUpDataForViewPage() {
         List<Fragment> repertoryEntityFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
         List<String> titles = new ArrayList<>();
         titles.add("全部");
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
-            map.put(category,new ArrayList<ProductData.ListBean>());
+            map.put(category, new ArrayList<ProductData.ListBean>());
         }
         for (ProductData.ListBean listBean : dataList) {
             if (!TextUtils.isEmpty(listBean.getCategory())) {
@@ -156,22 +155,22 @@ public class ProductActivity extends NetWorkActivity {
                 listBeen.add(listBean);
             }
         }
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             ArrayList<ProductData.ListBean> value = map.get(category);
             repertoryEntityFragmentList.add(newRepertoryListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
         }
 
         repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<ProductData.ListBean>) dataList));
-        initUI(titles,repertoryEntityFragmentList);
+        initUI(titles, repertoryEntityFragmentList);
         initPopWindow((ArrayList<String>) titles);
     }
 
     public ProductListFragment newRepertoryListFragment(ArrayList<ProductData.ListBean> value) {
         ProductListFragment repertoryListFragment = new ProductListFragment();
         Bundle bundle = new Bundle();
-        if (addedPros != null && addedPros.size() > 0){
-            bundle.putParcelableArrayList("ap",addedPros);
+        if (addedPros != null && addedPros.size() > 0) {
+            bundle.putParcelableArrayList("ap", addedPros);
         }
         bundle.putSerializable(OrderProductFragment.BUNDLE_KEY_LIST, value);
         repertoryListFragment.setArguments(bundle);
@@ -181,6 +180,7 @@ public class ProductActivity extends NetWorkActivity {
 
     private PopupWindow mProductTypeWindow;
     ProductTypeAdapter mProductTypeAdapter;
+
     private void initPopWindow(ArrayList<String> typeList) {
         View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
@@ -202,10 +202,10 @@ public class ProductActivity extends NetWorkActivity {
                 mProductTypeWindow.dismiss();
                 viewPager.setCurrentItem(position);
                 smartTabLayout.getTabAt(position).select();
-                for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
-                    mProductTypeAdapter.selectList.set(i,new Boolean(false));
+                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
+                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
                 }
-                mProductTypeAdapter.selectList.set(position,new Boolean(true));
+                mProductTypeAdapter.selectList.set(position, new Boolean(true));
                 mProductTypeAdapter.notifyDataSetChanged();
             }
         });
@@ -223,7 +223,7 @@ public class ProductActivity extends NetWorkActivity {
         });
     }
 
-    private void showPopWindow(){
+    private void showPopWindow() {
         final int[] location = new int[2];
         smartTabLayout.getLocationOnScreen(location);
         int y = (int) (location[1] + smartTabLayout.getHeight());
@@ -232,8 +232,8 @@ public class ProductActivity extends NetWorkActivity {
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
-    private void initUI(List<String> titles,List<Fragment> repertoryEntityFragmentList){
-        adapter = new TabPageIndicatorAdapter(getSupportFragmentManager(),titles,repertoryEntityFragmentList);
+    private void initUI(List<String> titles, List<Fragment> repertoryEntityFragmentList) {
+        adapter = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, repertoryEntityFragmentList);
         viewPager.setAdapter(adapter);
         smartTabLayout.setupWithViewPager(viewPager);
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -254,62 +254,53 @@ public class ProductActivity extends NetWorkActivity {
 
             }
         });
-        if(titles.size()<=TAB_EXPAND_COUNT){
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        }else{
+        } else {
             ivOpen.setVisibility(View.VISIBLE);
             smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
     }
 
-    @OnClick({R.id.title_iv_left,R.id.addBtn,R.id.iv_open})
-    public void btnClick(View view){
-        switch(view.getId()){
+    @OnClick({R.id.title_iv_left, R.id.addBtn, R.id.iv_open})
+    public void btnClick(View view) {
+        switch (view.getId()) {
             case R.id.title_iv_left:
-                dialog.setTitle("提示");
-                dialog.setMessageGravity();
-                dialog.setMessage("商品还没添加哦\n确认返回吗？");
-                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        finish();
-                    }
-                });
-                dialog.show();
+                finish();
                 break;
             case R.id.addBtn:
                 //回值给调用的页面
-                Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
+                Intent intent = new Intent(mContext, OneKeyOrderActivity.class);
                 Bundle bundle = new Bundle();
                 //当前选中的商品信息
                 ArrayList<AddedProduct> addedList = new ArrayList<>();
-                HashMap<String,Integer> countMap = ProductListFragment.getCountMap();
+                HashMap<String, Integer> countMap = ProductListFragment.getCountMap();
                 Iterator iter = countMap.entrySet().iterator();
-                while (iter.hasNext()){
-                    Map.Entry<String,Integer> entry = (Map.Entry) iter.next();
+                while (iter.hasNext()) {
+                    Map.Entry<String, Integer> entry = (Map.Entry) iter.next();
                     String key = entry.getKey();
                     Integer count = entry.getValue();
                     Parcel parcel = Parcel.obtain();
                     AddedProduct pro = AddedProduct.CREATOR.createFromParcel(parcel);
-                    if (count != 0){
+                    if (count != 0) {
                         pro.setCount(count);
                         pro.setProductId(key);
                         addedList.add(pro);
                     }
                 }
-                bundle.putParcelableArrayList("backap",addedList);
+                bundle.putParcelableArrayList("backap", addedList);
                 intent.putExtras(bundle);
-                setResult(2000,intent);
+                setResult(2000, intent);
                 finish();
                 break;
             case R.id.iv_open:
-                if (mProductTypeWindow == null){
+                if (mProductTypeWindow == null) {
                     return;
                 }
-                if (!mProductTypeWindow.isShowing()){
+                if (!mProductTypeWindow.isShowing()) {
                     showPopWindow();
-                }else{
+                } else {
                     mProductTypeWindow.dismiss();
                 }
                 break;
@@ -317,19 +308,22 @@ public class ProductActivity extends NetWorkActivity {
                 break;
         }
     }
+
     private void sendRequest() {
         ///gongfu/v3/shop/product/list
         Object request = null;
-        sendConnection("/gongfu/v2/product/list",request,PRODUCT_GET,true, ProductData.class);
+        sendConnection("/gongfu/v2/product/list", request, PRODUCT_GET, true, ProductData.class);
     }
+
     CategoryRespone categoryRespone;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where){
+        switch (where) {
             case PRODUCT_GET:
-                BaseEntity.ResultBean resultBean= result.getResult();
-                ProductData products= (ProductData) resultBean.getData();
-                if (products != null && products.getList() != null){
+                BaseEntity.ResultBean resultBean = result.getResult();
+                ProductData products = (ProductData) resultBean.getData();
+                if (products != null && products.getList() != null) {
                     dataList.clear();
                     dataList.addAll(products.getList());
                     GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
@@ -359,11 +353,13 @@ public class ProductActivity extends NetWorkActivity {
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
         private List<String> titleList = new ArrayList<>();
         private List<Fragment> fragmentList = new ArrayList<>();
-        public TabPageIndicatorAdapter(FragmentManager fm,List<String> titles,List<Fragment> repertoryEntityFragmentList) {
+
+        public TabPageIndicatorAdapter(FragmentManager fm, List<String> titles, List<Fragment> repertoryEntityFragmentList) {
             super(fm);
             fragmentList.addAll(repertoryEntityFragmentList);
             titleList = titles;
         }
+
         @Override
         public Fragment getItem(int position) {
             return fragmentList.get(position);

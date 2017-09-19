@@ -21,6 +21,7 @@ import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -406,7 +407,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getAmount())+"件商品");
             if(GlobalApplication.getInstance().getCanSeePrice()) {
                 holder.payMoney.setVisibility(View.VISIBLE);
-                holder.payMoney.setText("共"+bean.getAmountTotal());
+                holder.payMoney.setText("共"+NumberUtil.getIOrD(bean.getAmountTotal()));
             }
             else {
                 holder.payMoney.setVisibility(View.GONE);
@@ -417,7 +418,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             else {
                 holder.returnTv.setVisibility(View.GONE);
             }
-            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+            if((Constant.ORDER_STATE_DONE.equals(bean.getState())|| Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.getDeliveredQty() != bean.getAmount()) {
                holder.realTv.setVisibility(View.VISIBLE);
             }
             else{
