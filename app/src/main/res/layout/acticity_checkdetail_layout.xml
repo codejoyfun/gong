@@ -1,116 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/windowBackground"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/windowBackground"
+              android:orientation="vertical"
 
     >
+
     <include
         android:id="@+id/titleLayout"
-        layout="@layout/common_title_bar" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="18dp"
-        android:background="#ffff"
-        >
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-            <TextView
-                android:id="@+id/text1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#bababa"
-                android:textSize="14sp"
-                android:text="12321"
-                />
-            <TextView
-                android:id="@+id/text2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#bababa"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:text="12321"
+        layout="@layout/common_title_bar"/>
 
-                />
-            <TextView
-                android:id="@+id/text3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#bababa"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:text="12321"
-                />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-            <TextView
-                android:id="@+id/text4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#bababa"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:text="盘点结果(元)"
-                />
-            <TextView
-                android:id="@+id/text5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#fe3d2b"
-                android:textSize="22sp"
-                android:layout_marginTop="6dp"
-                android:text="1230"
-                />
-
-        </LinearLayout>
-
-    </LinearLayout>
-    <FrameLayout
+    <github.chenupt.dragtoplayout.DragTopLayout
+        android:id="@+id/drag_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_bar"
-        android:layout_marginTop="12dp"
-        >
+        android:layout_below="@+id/title_bar"
+        android:background="#F0F0F0">
+
         <LinearLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="#ffff"
+            android:orientation="horizontal"
+            android:padding="18dp"
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/text1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12321"
+                    android:textColor="#bababa"
+                    android:textSize="14sp"
+                    />
+
+                <TextView
+                    android:id="@+id/text2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="12321"
+                    android:textColor="#bababa"
+                    android:textSize="14sp"
+
+                    />
+
+                <TextView
+                    android:id="@+id/text3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="12321"
+                    android:textColor="#bababa"
+                    android:textSize="14sp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/text4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="盘点结果(元)"
+                    android:textColor="#bababa"
+                    android:textSize="14sp"
+                    />
+
+                <TextView
+                    android:id="@+id/text5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="1230"
+                    android:textColor="#fe3d2b"
+                    android:textSize="22sp"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/drag_content_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:layout_marginTop="12dp"
+            android:orientation="vertical">
 
-            <com.ogaclejapan.smarttablayout.SmartTabLayout
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/indicator"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:background="#ffff"
-                app:stl_customTabTextLayoutId="@layout/custom_tab"
-                app:stl_defaultTabTextColor="@color/colorAccent"
-                app:stl_defaultTabTextSize="16dp"
-                app:stl_distributeEvenly="true"
-                app:stl_dividerColor="@color/transparent"
-                app:stl_indicatorColor="@color/colorAccent"
-                app:stl_indicatorCornerRadius="0dp"
-                app:stl_indicatorInterpolation="smart"
-                app:stl_indicatorThickness="4dp"
-                app:stl_overlineColor="@color/transparent"
-                app:stl_underlineThickness="0.5dp" />
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/viewPager"
+                android:layout_height="40dp"
+                android:background="@color/white"
+                android:paddingLeft="0dp">
+
+                <ImageView
+                    android:id="@+id/tv_open"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:background="@color/white"
+                    android:padding="15dp"
+                    android:src="@drawable/arrow"/>
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tablayout"
+                    style="@style/MyCustomTabLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    />
+                    android:layout_height="40dp"
+                    android:layout_toLeftOf="@id/tv_open"
+                    android:background="@color/white"
+                    app:tabMode="scrollable"/>
+
+            </RelativeLayout>
+
+
+            <com.runwise.supply.view.YourScrollableViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/black"/>
         </LinearLayout>
-    </FrameLayout>
+    </github.chenupt.dragtoplayout.DragTopLayout>
 </LinearLayout>

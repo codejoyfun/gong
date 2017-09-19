@@ -30,7 +30,6 @@ import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.PandianResult;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.vov.vitamio.utils.NumberUtil;
@@ -96,16 +95,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
         loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
     }
 
-    public void setData(CheckResult.ListBean dataBean) {
-        List<PandianResult.InventoryBean.LinesBean> typeList = new ArrayList<>();
-        if(type == DataType.ALL) {
-            typeList = dataBean.getLines();
-        }
-        for (PandianResult.InventoryBean.LinesBean bean : dataBean.getLines()){
-            if (bean.getProduct().getStockType().equals(type.getType())){
-                typeList.add(bean);
-            }
-        }
+    public void setData( List<PandianResult.InventoryBean.LinesBean> typeList) {
         this.typeList = typeList;
     }
 
@@ -116,18 +106,6 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
         sendConnection("/gongfu/shop/inventory/"+mContext.getIntent().getStringExtra("id")+"/list",request,where,showDialog,PandianDetail.class);
     }
 
-    public List<PandianDetail.InventoryBean.ListBean> handlerDataList(List<PandianDetail.InventoryBean.ListBean> prodectList) {
-        if(type == DataType.ALL) {
-            return prodectList;
-        }
-        List<PandianDetail.InventoryBean.ListBean> typeList = new ArrayList<>();
-        for (PandianDetail.InventoryBean.ListBean bean : prodectList){
-            if (bean.getProduct().getStockType().equals(type.getType())){
-                typeList.add(bean);
-            }
-        }
-        return typeList;
-    }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {

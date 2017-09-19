@@ -316,6 +316,7 @@ public class MineFragment extends NetWorkFragment {
                         startActivity(intent);
                     }
                     else{
+                        dialog.setTitle("");
                         dialog.setModel(CustomDialog.RIGHT);
                         dialog.setMessageGravity();
                         dialog.setMessage("您没有查看的权限");
@@ -332,6 +333,7 @@ public class MineFragment extends NetWorkFragment {
                         startActivity(intent);
                     }
                     else{
+                        dialog.setTitle("");
                         dialog.setModel(CustomDialog.RIGHT);
                         dialog.setMessageGravity();
                         dialog.setMessage("您没有查看的权限");
