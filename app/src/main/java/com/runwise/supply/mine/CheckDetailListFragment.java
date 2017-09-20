@@ -29,6 +29,7 @@ import com.runwise.supply.mine.entity.PandianDetail;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.PandianResult;
+import com.runwise.supply.tools.DensityUtil;
 
 import java.util.List;
 
@@ -93,6 +94,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
         loadingLayout.setOnRetryClickListener(this);
         adapter.setData(typeList);
         loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
+        pullListView.setMinimumHeight(DensityUtil.getScreenH(getActivity()));
     }
 
     public void setData( List<PandianResult.InventoryBean.LinesBean> typeList) {
