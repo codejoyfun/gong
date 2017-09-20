@@ -54,7 +54,7 @@ import me.shaohui.bottomdialog.BottomDialog;
  * 跟智能下单页面大体一致，可继承，暂复制。
  */
 
-public class SelpHelpOrderActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface{
+public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface{
     private static final int DEFAULT_TYPE = 0;
     private static final int COMMIT_TYPE = 1;
     private static final int ADD_PRODUCT = 1000;

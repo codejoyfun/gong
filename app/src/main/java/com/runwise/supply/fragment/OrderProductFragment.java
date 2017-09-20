@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.OrderDtailAdapter;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.tools.DensityUtil;
 
 import java.util.List;
 
@@ -29,6 +31,8 @@ public class OrderProductFragment extends Fragment {
 
     @BindView(recyclerView)
     RecyclerView mRecyclerView;
+    @BindView(R.id.loadingLayout)
+     LoadingLayout loadingLayout;
     Unbinder unbinder;
 
     OrderDtailAdapter mOrderDtailAdapter;
@@ -65,6 +69,8 @@ public class OrderProductFragment extends Fragment {
         mOrderDtailAdapter.setStatus(name,state,listBean);
         mOrderDtailAdapter.setHasReturn(getArguments().getBoolean(BUNDLE_KEY_RETURN));
         mOrderDtailAdapter.setTwoUnit(getArguments().getBoolean(BUNDLE_KEY_TWO_UNIT));
+        mRecyclerView.setMinimumHeight(DensityUtil.getScreenH(getActivity()));
+        loadingLayout.onSuccess(listDatas.size(),"哎呀！这里是空哒~~",R.drawable.default_icon_ordernone);
     }
 
     @Override

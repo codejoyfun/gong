@@ -100,7 +100,7 @@ public class OrderFragment extends NetWorkFragment {
                 break;
             case R.id.selfHelpBtn:
 //                if (SPUtils.isLogin(mContext)){
-                    Intent intent2 = new Intent(mContext,SelpHelpOrderActivity.class);
+                    Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
                     startActivity(intent2);
 //                }else{
 //

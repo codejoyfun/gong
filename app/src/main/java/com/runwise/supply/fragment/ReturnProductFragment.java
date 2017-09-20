@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.ReturnDetailAdapter;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
@@ -29,6 +30,8 @@ public class ReturnProductFragment extends Fragment {
 
     @BindView(recyclerView)
     RecyclerView mRecyclerView;
+    @BindView(R.id.loadingLayout)
+     LoadingLayout loadingLayout;
     Unbinder unbinder;
 
     ReturnDetailAdapter mReturnDetailAdapter;
@@ -53,6 +56,7 @@ public class ReturnProductFragment extends Fragment {
         mRecyclerView.setAdapter(mReturnDetailAdapter);
         listDatas = (List<ReturnOrderBean.ListBean.LinesBean>) getArguments().getSerializable(BUNDLE_KEY_LIST);
         mReturnDetailAdapter.setReturnList(listDatas);
+        loadingLayout.onSuccess(listDatas.size(),"哎呀！这里是空哒~~",R.drawable.default_icon_ordernone);
     }
 
     @Override

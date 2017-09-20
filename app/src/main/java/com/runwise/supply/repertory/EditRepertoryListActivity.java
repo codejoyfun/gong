@@ -47,6 +47,7 @@ import java.util.List;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.orderpage.ProductBasicUtils.getBasicMap;
+import static com.runwise.supply.repertory.EditRepertoryListFragment.ILLEGAL_VALUE;
 
 /**
  * 库存盘点
@@ -266,7 +267,11 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 									EditRequest.ProductBean productBean = new EditRequest.ProductBean();
 									productBean.setProduct_id(bean.getProductID());
 									productBean.setId(bean.getInventoryLineID());
-									productBean.setActual_qty(bean.getEditNum());
+									if (bean.getEditNum() == ILLEGAL_VALUE){
+										productBean.setActual_qty(bean.getTheoreticalQty());
+									}else{
+										productBean.setActual_qty(bean.getEditNum());
+									}
 									productBean.setLot_id(bean.getLotID());
 									productBean.setLot_num(bean.getLotNum());
 									editListBean.add(productBean);

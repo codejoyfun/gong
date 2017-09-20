@@ -229,7 +229,7 @@ public class ProductListFragment extends NetWorkFragment {
             if (basicBean != null){
                 viewHolder.name.setText(basicBean.getName());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append("  ").append(basicBean.getUnit());
+                sb.append(" | ").append(basicBean.getUnit());
                 viewHolder.content.setText(sb.toString());
                 DecimalFormat df = new DecimalFormat("#.##");
                 if (canSeePrice){

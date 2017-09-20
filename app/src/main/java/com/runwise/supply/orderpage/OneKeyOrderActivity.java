@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -17,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -24,6 +24,7 @@ import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.animation.AnimatorSet;
@@ -37,7 +38,6 @@ import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -45,10 +45,11 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import me.shaohui.bottomdialog.BottomDialog;
+
+import static com.runwise.supply.R.id.loadingLayout;
 
 
 /**
@@ -89,6 +90,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private View bgView;
     @ViewInject(R.id.nopurchaseRL)
     private RelativeLayout nopurchaseRL;
+    @ViewInject(loadingLayout)
+    private LoadingLayout mLoadingLayout;
 
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
@@ -493,6 +496,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             double price = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID())).getPrice();
             totalMoney += count * price;
         }
+        mLoadingLayout.onSuccess(list.size(),"哎呀！这里是空哒~~",R.drawable.default_icon_ordernone);
         totalMoneyTv.setText(df.format(totalMoney)+"元");
         totalNumTv.setText(totalNum+"件");
     }

@@ -70,9 +70,6 @@ public class OrderAdapter extends IBaseAdapter {
     @Override
     protected View getExView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
-        if (!expandMap.containsKey(Integer.valueOf(position))){
-            expandMap.put(Integer.valueOf(position),Boolean.valueOf(false));
-        }
         if (convertView == null){
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
@@ -92,10 +89,15 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Boolean isExpand;
                     //更改boolean状态
-                    Boolean isExpand = expandMap.get(Integer.valueOf(position)).booleanValue();
-                    isExpand = !isExpand;
-                    expandMap.put(Integer.valueOf(position),isExpand);
+                    if (expandMap.get(Integer.valueOf(bean.getOrderID()))!=null){
+                        isExpand = expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue();
+                        isExpand = !isExpand;
+                    }else{
+                        isExpand = true;
+                    }
+                    expandMap.put(Integer.valueOf(bean.getOrderID()),isExpand);
                     if (isExpand){
                         //只有点击时，才去放timeline的内容
                         setTimeLineContent(bean.getStateTracker(),recyclerView);
@@ -120,7 +122,7 @@ public class OrderAdapter extends IBaseAdapter {
 
                 }
             });
-            if (expandMap.get(Integer.valueOf(position)) != null && expandMap.get(Integer.valueOf(position)).booleanValue()){
+            if (expandMap.get(Integer.valueOf(bean.getOrderID())) != null && expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue()){
                 viewHolder.timelineLL.setVisibility(View.VISIBLE);
                 //重刷一次，免得重复
                 downArrow.setImageResource(R.drawable.login_btn_dropup);
@@ -252,9 +254,13 @@ public class OrderAdapter extends IBaseAdapter {
                 @Override
                 public void onClick(View v) {
                     //更改boolean状态
-                    Boolean isExpand = expandMap.get(Integer.valueOf(position)).booleanValue();
-                    isExpand = !isExpand;
-                    expandMap.put(Integer.valueOf(position),isExpand);
+                    Boolean isExpand = expandMap.get(Integer.valueOf(bean.getOrderID()));
+                    if (isExpand != null){
+                        isExpand = !isExpand;
+                    }else{
+                        isExpand = true;
+                    }
+                    expandMap.put(Integer.valueOf(bean.getOrderID()),isExpand);
                     if (isExpand){
                         //只有点击时，才去放timeline的内容
                         setTimeLineContent(bean.getStateTracker(),recyclerView);
@@ -267,7 +273,7 @@ public class OrderAdapter extends IBaseAdapter {
 
                 }
             });
-            if (expandMap.get(Integer.valueOf(position)) != null && expandMap.get(Integer.valueOf(position)).booleanValue()){
+            if (expandMap.get(Integer.valueOf(bean.getOrderID())) != null && expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue()){
                 viewHolder.timelineLL.setVisibility(View.VISIBLE);
                 //重刷一次，免得重复
                 downArrow.setImageResource(R.drawable.login_btn_dropup);

@@ -286,6 +286,7 @@ public class EditBatchActivity extends NetWorkActivity {
             viewHolder.tvProductDate.setText(mBatchEntities.get(position).isProductDate()?"生产日期":"到期日期");
             viewHolder.etBatch.removeTextChangedListener();
             viewHolder.etBatch.setText(mBatchEntities.get(position).getBatchNum());
+            viewHolder.etBatch.setSelection(mBatchEntities.get(position).getBatchNum().length());
             viewHolder.etBatch.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {

@@ -87,7 +87,6 @@
                     android:gravity="right"
                     android:inputType="numberDecimal"
                     android:minWidth="40dp"
-                    android:text="0"
                     android:textColor="#444444"
                     android:textColorHint="#dddddd"
                     android:textSize="17sp"/>

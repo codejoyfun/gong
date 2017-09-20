@@ -214,6 +214,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         mDragLayout.setOverDrag(false);
         mDragLayout.setTouchMode(false);
         setDefaultDatas();
+        mTvSubmit.setBackgroundResource(R.color.windowBackground);
     }
 
     CategoryRespone categoryRespone;
@@ -262,10 +263,23 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             mTvTime.setText(sb.toString());
 
         }
+        mVLine1.setVisibility(View.GONE);
+        mEtDelivery.setVisibility(View.GONE);
+        mAlflTagNegative.setVisibility(View.GONE);
+        mAlflTagPositive.setVisibility(View.GONE);
         mRbDeliveryService.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 mDeliveryRating = rating;
+                if (rating >0){
+                    mTvSubmit.setBackgroundResource(R.color.colorAccent);
+                }else{
+                    mVLine1.setVisibility(View.GONE);
+                    mEtDelivery.setVisibility(View.GONE);
+                    mAlflTagNegative.setVisibility(View.GONE);
+                    mAlflTagPositive.setVisibility(View.GONE);
+                    return;
+                }
                 if (rating <= 2) {
                     mVLine1.setVisibility(View.VISIBLE);
                     mEtDelivery.setVisibility(View.VISIBLE);
@@ -279,18 +293,35 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 }
             }
         });
+        mVLine1Product.setVisibility(View.GONE);
+        mEtProduct.setVisibility(View.GONE);
+        findViewById(R.id.ic_bar).setVisibility(View.GONE);
+        mAlflTagProductNegative.setVisibility(View.GONE);
+        mAlflTagProductPositive.setVisibility(View.GONE);
         mRbProductService.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 mProductRating = rating;
+                if (rating >0){
+                    mTvSubmit.setBackgroundResource(R.color.colorAccent);
+                }else{
+                    mVLine1Product.setVisibility(View.GONE);
+                    mEtProduct.setVisibility(View.GONE);
+                    findViewById(R.id.ic_bar).setVisibility(View.GONE);
+                    mAlflTagProductNegative.setVisibility(View.GONE);
+                    mAlflTagProductPositive.setVisibility(View.GONE);
+                    return;
+                }
                 if (rating <= 2) {
                     mVLine1Product.setVisibility(View.VISIBLE);
                     mEtProduct.setVisibility(View.VISIBLE);
+                    findViewById(R.id.ic_bar).setVisibility(View.VISIBLE);
                     mAlflTagProductNegative.setVisibility(View.VISIBLE);
                     mAlflTagProductPositive.setVisibility(View.GONE);
                 } else {
                     mVLine1Product.setVisibility(View.VISIBLE);
                     mEtProduct.setVisibility(View.VISIBLE);
+                    findViewById(R.id.ic_bar).setVisibility(View.VISIBLE);
                     mAlflTagProductNegative.setVisibility(View.GONE);
                     mAlflTagProductPositive.setVisibility(View.VISIBLE);
                 }

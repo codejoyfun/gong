@@ -56,6 +56,8 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     private List<PandianResult.InventoryBean.LinesBean> dataList;
     private String keyWork;
 
+    public static final double ILLEGAL_VALUE = -1;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +110,7 @@ public class EditRepertoryListFragment extends NetWorkFragment {
     public void setData(List<PandianResult.InventoryBean.LinesBean> mDataList) {
         this.dataList = mDataList;
         for (PandianResult.InventoryBean.LinesBean bean : dataList) {
-            bean.setEditNum(bean.getTheoreticalQty());
+            bean.setEditNum(ILLEGAL_VALUE);
         }
     }
 
@@ -231,11 +233,6 @@ public class EditRepertoryListFragment extends NetWorkFragment {
                         public void afterTextChanged(Editable editable) {
                             if (!TextUtils.isEmpty(editable.toString())) {
                                 bean.setEditNum(Double.parseDouble(editable.toString()));
-                                if (bean.getEditNum() == bean.getTheoreticalQty()) {
-                                    viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
-                                } else {
-                                    viewHolder.editText.setTextColor(Color.parseColor("#444444"));
-                                }
 //                                viewHolder.editText.setFocusable(true);
 //                                viewHolder.editText.setFocusableInTouchMode(true);
 //                                viewHolder.editText.requestFocus();
@@ -243,16 +240,16 @@ public class EditRepertoryListFragment extends NetWorkFragment {
 //                                updateData.setType(type);
 //                                EventBus.getDefault().post(updateData);
                             } else {
-                                bean.setEditNum(0);
+                                bean.setEditNum(ILLEGAL_VALUE);
                             }
                         }
                     });
-                    if (bean.getEditNum() == bean.getTheoreticalQty()) {
-                        viewHolder.editText.setTextColor(Color.parseColor("#dddddd"));
-                    } else {
-                        viewHolder.editText.setTextColor(Color.parseColor("#444444"));
+                    if (bean.getEditNum() != ILLEGAL_VALUE){
+                        viewHolder.editText.setText(NumberUtil.getIOrD(String.valueOf(bean.getEditNum())));
+                    }else{
+                        viewHolder.editText.setText("");
                     }
-                    viewHolder.editText.setText(NumberUtil.getIOrD(String.valueOf(bean.getEditNum())));
+                    viewHolder.editText.setHint(NumberUtil.getIOrD(bean.getTheoreticalQty()));
                     ProductBasicList.ListBean productBean = bean.getProduct();
                     if (productBean != null) {
                         if (!TextUtils.isEmpty(keyWork)) {

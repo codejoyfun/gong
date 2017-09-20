@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.kids.commonframe.config.Constant.ORDER_STATE_DRAFT;
+import static com.kids.commonframe.config.Constant.ORDER_STATE_PEISONG;
 import static com.kids.commonframe.config.Constant.ORDER_STATE_SALE;
 
 /**
@@ -134,11 +135,11 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
                     }
                 }
                 if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)){
-                    if((status.equals("peisong")||status.equals("done")||status.equals("rated"))&&(bean.getLotList()!=null&&bean.getLotList().size() == 0)) {
+                    if((status.equals("done")||status.equals("rated"))&&(bean.getLotList()!=null&&bean.getLotList().size() == 0)) {
                         ToastUtil.show(v.getContext(), "该产品无批次追踪");
                         return;
                     }
-                    if (status.equals(ORDER_STATE_DRAFT)||status.equals(ORDER_STATE_SALE)){
+                    if (status.equals(ORDER_STATE_PEISONG)||status.equals(ORDER_STATE_DRAFT)||status.equals(ORDER_STATE_SALE)){
                         return;
                     }
                 }

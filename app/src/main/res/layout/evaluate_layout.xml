@@ -14,7 +14,7 @@
         <github.chenupt.dragtoplayout.DragTopLayout
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/tv_submit"
             android:layout_below="@id/title_bar"
             android:background="#F0F0F0">
@@ -47,7 +47,8 @@
                     android:id="@+id/ic_bar"
                     layout="@layout/tab_viewpage_wrap"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
 
             </LinearLayout>
         </github.chenupt.dragtoplayout.DragTopLayout>

@@ -1,10 +1,7 @@
 package com.runwise.supply.orderpage.entity;
 
 import com.lidroid.xutils.db.annotation.Column;
-import com.lidroid.xutils.db.annotation.Finder;
-import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
-import com.lidroid.xutils.db.sqlite.FinderLazyLoader;
 
 import java.io.Serializable;
 
@@ -29,8 +26,8 @@ public class ImageBean implements Serializable{
     private String imageSmall;
     @Column
     private int imageID;
-    @Finder(valueColumn = "id",targetColumn = "imageID")
-    public FinderLazyLoader<ProductBasicList.ListBean> product;
+//    @Finder(valueColumn = "id",targetColumn = "imageID")
+//    public FinderLazyLoader<ProductBasicList.ListBean> product;
 
     public int getId() {
         return id;
