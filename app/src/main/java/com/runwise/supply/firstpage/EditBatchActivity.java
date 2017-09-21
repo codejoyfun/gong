@@ -90,7 +90,6 @@ public class EditBatchActivity extends NetWorkActivity {
                 BatchEntity batchEntity = new BatchEntity();
                 batchEntity.setProductDate(TimeUtils.getYMD(Calendar.getInstance().getTime()));
                 batchEntity.setProductDate(true);
-                batchEntity.setProductCount(String.valueOf((int)mBean.getProductUomQty()));
                 mBatchEntities.add(batchEntity);
                 batchListAdapter.notifyDataSetChanged();
             }
@@ -180,7 +179,7 @@ public class EditBatchActivity extends NetWorkActivity {
             BatchEntity batchEntity = new BatchEntity();
             batchEntity.setProductDate(TimeUtils.getYMD(Calendar.getInstance().getTime()));
             batchEntity.setProductDate(true);
-            batchEntity.setProductCount(String.valueOf((int)mBean.getProductUomQty()));
+            batchEntity.setProductCount(String.valueOf((int) mBean.getProductUomQty()));
             mBatchEntities.add(batchEntity);
         }
     }
@@ -283,10 +282,9 @@ public class EditBatchActivity extends NetWorkActivity {
                     }
                 }
             });
-            viewHolder.tvProductDate.setText(mBatchEntities.get(position).isProductDate()?"生产日期":"到期日期");
+            viewHolder.tvProductDate.setText(mBatchEntities.get(position).isProductDate() ? "生产日期" : "到期日期");
             viewHolder.etBatch.removeTextChangedListener();
             viewHolder.etBatch.setText(mBatchEntities.get(position).getBatchNum());
-            viewHolder.etBatch.setSelection(mBatchEntities.get(position).getBatchNum().length());
             viewHolder.etBatch.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -322,6 +320,12 @@ public class EditBatchActivity extends NetWorkActivity {
                     mBatchEntities.get(position).setProductCount(s.toString().trim());
                 }
             });
+            if (!TextUtils.isEmpty(mBatchEntities.get(position).getBatchNum())&& mBatchEntities.get(position).getBatchNum().length()>0) {
+                viewHolder.etBatch.setSelection(mBatchEntities.get(position).getBatchNum().length());
+            }
+            if (!TextUtils.isEmpty(mBatchEntities.get(position).getProductCount())&&mBatchEntities.get(position).getProductCount().length()>0) {
+                viewHolder.etProductCount.setSelection(mBatchEntities.get(position).getProductCount().length());
+            }
             return convertView;
         }
 

@@ -214,7 +214,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         mDragLayout.setOverDrag(false);
         mDragLayout.setTouchMode(false);
         setDefaultDatas();
-        mTvSubmit.setBackgroundResource(R.color.windowBackground);
+        mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
     }
 
     CategoryRespone categoryRespone;
@@ -278,6 +278,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                     mEtDelivery.setVisibility(View.GONE);
                     mAlflTagNegative.setVisibility(View.GONE);
                     mAlflTagPositive.setVisibility(View.GONE);
+                    if (mProductRating < 1){
+                        mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
+                    }
                     return;
                 }
                 if (rating <= 2) {
@@ -310,6 +313,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                     findViewById(R.id.ic_bar).setVisibility(View.GONE);
                     mAlflTagProductNegative.setVisibility(View.GONE);
                     mAlflTagProductPositive.setVisibility(View.GONE);
+                    if (mDeliveryRating < 1){
+                        mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
+                    }
                     return;
                 }
                 if (rating <= 2) {
@@ -359,6 +365,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 dialog.show();
                 break;
             case R.id.tv_submit:
+                if (mDeliveryRating<1&&mProductRating<1){
+                    return;
+                }
                 dialog.setTitle("提示");
                 dialog.setMessage("确认提交您的评价吗？");
                 dialog.setRightBtnListener("提交", new CustomDialog.DialogListener() {

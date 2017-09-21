@@ -2,18 +2,21 @@ package com.runwise.supply.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
-import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.base.BaseFragment;
 import com.runwise.supply.R;
+import com.runwise.supply.event.IntEvent;
 import com.runwise.supply.firstpage.OrderDtailAdapter;
 import com.runwise.supply.firstpage.entity.OrderResponse;
-import com.runwise.supply.tools.DensityUtil;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -27,12 +30,12 @@ import static com.runwise.supply.R.id.recyclerView;
  * Created by mike on 2017/9/5.
  */
 
-public class OrderProductFragment extends Fragment {
+public class OrderProductFragment extends BaseFragment {
 
     @BindView(recyclerView)
     RecyclerView mRecyclerView;
     @BindView(R.id.loadingLayout)
-     LoadingLayout loadingLayout;
+    LinearLayout loadingLayout;
     Unbinder unbinder;
 
     OrderDtailAdapter mOrderDtailAdapter;
@@ -44,12 +47,17 @@ public class OrderProductFragment extends Fragment {
     public static final String BUNDLE_KEY_RETURN = "bundle_key_return";
     public static final String BUNDLE_KEY_TWO_UNIT = "bundle_key_two_unit";
     public static final String BUNDLE_KEY_ORDER_DATA = "bundle_key_order_data";
+    int mHeight;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_order_product, null);
-        unbinder = ButterKnife.bind(this, view);
-        return view;
+        unbinder = ButterKnife.bind(this, mainView);
+        return mainView;
+    }
+
+    @Override
+    protected int createViewByLayoutId() {
+        return R.layout.fragment_order_product;
     }
 
     @Override
@@ -69,9 +77,22 @@ public class OrderProductFragment extends Fragment {
         mOrderDtailAdapter.setStatus(name,state,listBean);
         mOrderDtailAdapter.setHasReturn(getArguments().getBoolean(BUNDLE_KEY_RETURN));
         mOrderDtailAdapter.setTwoUnit(getArguments().getBoolean(BUNDLE_KEY_TWO_UNIT));
-        mRecyclerView.setMinimumHeight(DensityUtil.getScreenH(getActivity()));
-        loadingLayout.onSuccess(listDatas.size(),"哎呀！这里是空哒~~",R.drawable.default_icon_ordernone);
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetHeight(IntEvent intEvent) {
+        mHeight = intEvent.getHeight();
+        if (loadingLayout != null){
+            ViewGroup.LayoutParams layoutParams = loadingLayout.getLayoutParams();
+            layoutParams.height = mHeight;
+            loadingLayout.setLayoutParams(layoutParams);
+            loadingLayout.invalidate();
+            loadingLayout.requestLayout();
+            if (listDatas.size() == 0){
+                loadingLayout.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
 
     @Override
     public void onDestroyView() {

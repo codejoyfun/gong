@@ -236,6 +236,7 @@ public class ProductActivity extends NetWorkActivity {
         adapter = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, repertoryEntityFragmentList);
         viewPager.setAdapter(adapter);
         smartTabLayout.setupWithViewPager(viewPager);
+        viewPager.setOffscreenPageLimit(titles.size());
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

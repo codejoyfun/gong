@@ -28,7 +28,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/arrow"
                     android:padding="15dp"
-                    android:background="@color/white"
+                    android:background="@drawable/tab_shadow"
                     android:layout_alignParentRight="true"/>
 
                 <android.support.design.widget.TabLayout

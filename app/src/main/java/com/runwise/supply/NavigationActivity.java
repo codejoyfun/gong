@@ -12,14 +12,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.util.ArrayList;
@@ -33,6 +36,8 @@ public class NavigationActivity extends BaseActivity {
 	private ImageView bgIv;
 	@ViewInject(R.id.navigation_vp)
 	private ViewPager viewPager;
+	@ViewInject(R.id.loPageTurningPoint)
+	private LinearLayout loPageTurningPoint;
 	private LayoutInflater inflater;
 	private NavAdapter adapter;
 	
@@ -41,13 +46,15 @@ public class NavigationActivity extends BaseActivity {
 	private int currentPosition;
 	private int currentPageScrollStatus;
 	private boolean isFromLeft = true;			//默认朝右滑
+	List<Integer> viewList;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navigation_main);
 		StatusBarUtil.StatusBarLightMode(this);
 		inflater = LayoutInflater.from(this);
-		final List<Integer> viewList = new ArrayList<Integer>();
+		viewList = new ArrayList<Integer>();
 		viewList.add(R.drawable.guidepage_1);
 		viewList.add(R.drawable.guidepage_2);
 		viewList.add(R.drawable.guidepage_3);
@@ -69,6 +76,11 @@ public class NavigationActivity extends BaseActivity {
 					bgIv.setImageResource(viewList.get(position));
 				}
 				currentPosition = position;
+				for (int i = 0;i<loPageTurningPoint.getChildCount();i++){
+					ImageView imageView = (ImageView)loPageTurningPoint.getChildAt(i);
+					imageView.setImageResource(page_indicatorId[0]);
+				}
+				((ImageView)loPageTurningPoint.getChildAt(currentPosition)).setImageResource(page_indicatorId[1]);
 			}
 
 			@Override
@@ -105,6 +117,19 @@ public class NavigationActivity extends BaseActivity {
 				}
 			}
 		});
+		setPageIndicator();
+		((ImageView)loPageTurningPoint.getChildAt(0)).setImageResource(page_indicatorId[1]);
+	}
+	int[] page_indicatorId = new int[]{R.drawable.guidepage_circle_normal, R.drawable.guidepage_circle_highlight};
+	public void setPageIndicator() {
+		loPageTurningPoint.removeAllViews();
+		for (int count = 0; count < viewList.size(); count++) {
+			// 翻页指示的点
+			ImageView pointView = new ImageView(getActivityContext());
+			pointView.setPadding(DensityUtil.dip2px(getActivityContext(),5), 0,DensityUtil.dip2px(getActivityContext(),5), 0);
+				pointView.setImageResource(page_indicatorId[0]);
+			loPageTurningPoint.addView(pointView);
+		}
 	}
 	
 	@Override
@@ -151,6 +176,7 @@ public class NavigationActivity extends BaseActivity {
 				go.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						SPUtils.setFirstLaunch(getActivityContext(),true);
 						gotoMain();
 					}
 				});

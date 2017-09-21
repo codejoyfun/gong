@@ -22,7 +22,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;

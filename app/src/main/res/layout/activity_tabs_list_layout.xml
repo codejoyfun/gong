@@ -175,7 +175,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_alignParentRight="true"
-                android:background="@color/white"
+                android:background="@drawable/tab_shadow"
                 android:padding="15dp"
                 android:src="@drawable/arrow"/>
 

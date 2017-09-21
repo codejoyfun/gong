@@ -5,6 +5,8 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.runwise.supply.tools.DensityUtil;
+
 /**
  * Created by mike on 2017/9/5.
  */
@@ -28,6 +30,7 @@ public class YourScrollableViewPager extends ViewPager {
 
     private void prepareUI() {
         setOffscreenPageLimit(pageCount);
+        maxHeight = DensityUtil.dip2px(getContext(),120);
     }
 
     int maxHeight = 0;

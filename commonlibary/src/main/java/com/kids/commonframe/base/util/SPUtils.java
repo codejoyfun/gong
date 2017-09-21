@@ -28,7 +28,7 @@ public class SPUtils {
      * @param object
      */
     public static void put(Context context, String key, Object object) {
-        if (object == null ) {
+        if (object == null) {
             return;
         }
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
@@ -187,7 +187,7 @@ public class SPUtils {
             ObjectOutputStream os = new ObjectOutputStream(bos);
             os.writeObject(obj);
             String bytesToHexString = bytesToHexString(bos.toByteArray());
-            put(context,key,bytesToHexString);
+            put(context, key, bytesToHexString);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -224,9 +224,9 @@ public class SPUtils {
      * @param key
      * @return modified:
      */
-    public static Object readObject(Context context,String key) {
+    public static Object readObject(Context context, String key) {
         try {
-            if (contains(context,key)) {
+            if (contains(context, key)) {
                 String string = (String) get(context, key, "");
                 if (TextUtils.isEmpty(string)) {
                     return null;
@@ -255,6 +255,7 @@ public class SPUtils {
 
     /**
      * desc:将16进制的数据转为数组
+     *
      * @param data
      * @return modified:
      */
@@ -290,38 +291,47 @@ public class SPUtils {
     }
 
     public static boolean isLogin(Context context) {
-        return (boolean)SPUtils.get(context,"mLogin",false);
+        return (boolean) SPUtils.get(context, "mLogin", false);
     }
 
-    public static void setLogin(Context context,boolean isLogin){
-        SPUtils.put(context,"mLogin",isLogin);
+    public static void setLogin(Context context, boolean isLogin) {
+        SPUtils.put(context, "mLogin", isLogin);
     }
 
-    public static void loginOut (Context context) {
-        SPUtils.put(context,"sign","");
-        SPUtils.put(context,"mLogin",false);
-        SPUtils.put(context,"userInfo","");
+    public static void loginOut(Context context) {
+        SPUtils.put(context, "sign", "");
+        SPUtils.put(context, "mLogin", false);
+        SPUtils.put(context, "userInfo", "");
     }
+
     /**
      * 是否是第一次运行
+     *
      * @param context
      * @return
      */
     public static boolean firstLaunch(Context context) {
-        if(TextUtils.isEmpty((String)SPUtils.get(context,"firstlaunch",""))) {
-            SPUtils.put(context,"firstlaunch","first");
+        if (TextUtils.isEmpty((String) SPUtils.get(context, "firstlaunch", ""))) {
             return true;
         }
         return false;
     }
+
+    public static void setFirstLaunch(Context context, boolean first) {
+        if (first) {
+            SPUtils.put(context, "firstlaunch", "first");
+        }
+    }
+
     /**
      * 是否是第一次运行
+     *
      * @param context
      * @return
      */
     public static boolean firstLaunchInfo(Context context) {
-        if(TextUtils.isEmpty((String)SPUtils.get(context,"firstlaunch1",""))) {
-            SPUtils.put(context,"firstlaunch1","first");
+        if (TextUtils.isEmpty((String) SPUtils.get(context, "firstlaunch1", ""))) {
+            SPUtils.put(context, "firstlaunch1", "first");
             return true;
         }
         return false;

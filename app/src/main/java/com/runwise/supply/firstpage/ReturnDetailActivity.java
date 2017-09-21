@@ -2,13 +2,16 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -33,6 +36,7 @@ import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.ReturnActivityRefreshEvent;
+import com.runwise.supply.event.IntEvent;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
@@ -272,7 +276,18 @@ public class ReturnDetailActivity extends NetWorkActivity {
 
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
         viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
+        viewpager.setOffscreenPageLimit(titles.size());
         tablayout.setupWithViewPager(viewpager);//将TabLayout和ViewPager关联起来
+        viewpager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onGlobalLayout() {
+                IntEvent intEvent = new IntEvent();
+                intEvent.setHeight(viewpager.getHeight());
+                EventBus.getDefault().post(intEvent);
+                viewpager.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         tablayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

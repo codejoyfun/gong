@@ -11,9 +11,31 @@
         android:layout_height="match_parent"
         android:background="#FFFFFF"/>
 
-    <com.kids.commonframe.base.view.LoadingLayout
+    <LinearLayout
         android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/deafault_icon_goodsnone_tab"/>
+
+        <TextView
+            android:id="@+id/noDataText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:textColor="#909398"
+            android:textSize="16sp"
+            android:text="该分类下没有商品"
+            />
+
+
+    </LinearLayout>
+
 </RelativeLayout>

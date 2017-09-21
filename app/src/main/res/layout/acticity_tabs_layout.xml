@@ -26,7 +26,7 @@
                 android:layout_height="42dp"
                 android:src="@drawable/arrow"
                 android:padding="15dp"
-                android:background="@color/white"
+                android:background="@drawable/tab_shadow"
                 android:visibility="gone"
                 android:layout_alignParentRight="true"/>
 
