@@ -1,15 +1,17 @@
 package com.runwise.supply.firstpage;
+
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -24,7 +26,6 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
-import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
@@ -41,12 +42,7 @@ import com.runwise.supply.firstpage.entity.NewsRequest;
 import com.runwise.supply.firstpage.entity.NewsResponse;
 import com.runwise.supply.mine.ChangeHostActivity;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.List;
-
-import static com.runwise.supply.R.id.number;
 
 /**
  * Created by libin on 2017/6/26.
@@ -62,8 +58,6 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-    @ViewInject(R.id.header)
-    private View headView;
 
 
     private LayoutInflater layoutInflater;
@@ -97,6 +91,8 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
                 requestData(false);
             }
         });
+
+        View headView = LayoutInflater.from(getContext()).inflate(R.layout.unlogin_head_layout,null);
         //表头：放轮播+统计表
 //        View headView = layoutInflater.inflate(R.layout.unlogin_head_layout,null);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
@@ -114,7 +110,18 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
         recyclerView.setAdapter(sAdapter);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
-//        pullListView.getRefreshableView().addHeaderView(headView);
+        pullListView.getRefreshableView().addHeaderView(headView);
+        pullListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                Log.i("onScroll",""+view.getChildAt(0).getTop());
+            }
+        });
         nAdapter = new NewsAdapter(mContext);
         pullListView.setAdapter(nAdapter);
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

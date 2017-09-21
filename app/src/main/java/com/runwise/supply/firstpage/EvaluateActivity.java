@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -44,7 +45,6 @@ import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.AutoLinefeedLayout;
 import com.runwise.supply.view.YourScrollableViewPager;
 
@@ -248,19 +248,19 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 FrecoFactory.getInstance(mContext).disPlay(mHeadSdv, Constant.BASE_URL + imgUrl);
                 mHeadSdv.setImageResource(R.drawable.deliveryman_header);
             } else {
-                mTvName.setText("配送服务评价");
+                mTvName.setText("配送服务");
                 mHeadSdv.setImageResource(R.drawable.delivery_evaluate_ico);
             }
             String estimatTime = bean.getEstimatedTime();
             String endUploadTime = bean.getStartUnloadDatetime();
-            StringBuffer sb = new StringBuffer("预计送达: ");
-            sb.append(TimeUtils.getHM(estimatTime));
+//            StringBuffer sb = new StringBuffer("预计送达: ");
+//            sb.append(TimeUtils.getHM(estimatTime));
 
-            if (!TextUtils.isEmpty(endUploadTime)) {
-                sb.append("\n开始卸货: ")
-                        .append(TimeUtils.getHM(endUploadTime));
-            }
-            mTvTime.setText(sb.toString());
+//            if (!TextUtils.isEmpty(endUploadTime)) {
+//                sb.append("\n开始卸货: ")
+//                        .append(TimeUtils.getHM(endUploadTime));
+//            }
+//            mTvTime.setText(sb.toString());
 
         }
         mVLine1.setVisibility(View.GONE);
@@ -509,6 +509,9 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 EventBus.getDefault().post(new OrderUpdateEvent());
                 ToastUtil.show(mContext, "提交成功");
                 finish();
+                Intent intent = new Intent(getActivityContext(),EvaluateSuccessActivity.class);
+                intent.putExtra("orderid",orderId);
+                startActivity(intent);
                 break;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();

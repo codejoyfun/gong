@@ -385,6 +385,9 @@ public class RepertoryFragment extends NetWorkFragment {
         categoryList.add("冷藏货");
         categoryList.add("冻货");
         categoryList.add("干货");
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
+        layoutParams.setMargins(0,0,0,0);
+        smartTabLayout.setLayoutParams(layoutParams);
         mUnLoginCategoryRespone.setCategoryList(categoryList);
         RepertoryEntity repertoryEntity =  JSON.parseObject(xmlStr,RepertoryEntity.class);
         setUpDataForViewPage(mUnLoginCategoryRespone,repertoryEntity);

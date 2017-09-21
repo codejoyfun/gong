@@ -8,9 +8,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
@@ -62,10 +64,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
+    @ViewInject(R.id.rl_title)
+    private RelativeLayout rl_title;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-    @ViewInject(R.id.header)
-    private View headView;
 
     private LayoutInflater layoutInflater;
     private ConvenientBanner banner;
@@ -93,6 +95,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        View headView = LayoutInflater.from(getContext()).inflate(R.layout.logined_head_layout,null);
         //表头：放轮播+统计表
 //        View headView = layoutInflater.inflate(R.layout.logined_head_layout,null);
         lastWeekKey = (TextView) headView.findViewById(R.id.lastWeekKey);
@@ -108,9 +111,34 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         int height = 175 * CommonUtils.getScreenWidth(mContext) / 375;
         banner.getLayoutParams().height = height;
 
-//        pullListView.getRefreshableView().addHeaderView(headView);
+        pullListView.getRefreshableView().addHeaderView(headView);
         adapter = new OrderAdapter(mContext, this);
         pullListView.setAdapter(adapter);
+        pullListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//                final int[] location = new int[2];
+//                view.getChildAt(1).getLocationOnScreen(location);
+//                Log.i("onScroll",""+location[1]);
+//                float top = location[1];
+//                if (top < 0){
+//                    top = -top;
+//                    if (top >= view.getChildAt(1).getHeight()){
+//                        rl_title.setBackgroundResource(R.color.white);
+//                        rl_title.setAlpha(1);
+//                        return;
+//                    }
+//                    float ratio = top/(float)view.getChildAt(1).getHeight();
+//                    rl_title.setBackgroundResource(R.color.white);
+//                    rl_title.setAlpha(ratio);
+//                }
+            }
+        });
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

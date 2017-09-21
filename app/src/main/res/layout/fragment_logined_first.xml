@@ -1,23 +1,52 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-    <include layout="@layout/logined_head_layout"
-        android:id="@+id/header"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/pullListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:divider="@null"
         android:listSelector="#0000"
         ptr:ptrAnimationStyle="flip"
-        android:background="#ffffff"
-        android:layout_below="@id/header"
-        android:divider="@null"
         />
+
     <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/loadingLayout"
         />
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/callIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:padding="10dp"
+            android:src="@drawable/nav_service_home"
+            />
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="#2E2E2E"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:paddingTop="8dp"
+            android:layout_centerInParent="true"
+            android:paddingBottom="8dp"
+            android:text="@string/app_name"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+
 </RelativeLayout>

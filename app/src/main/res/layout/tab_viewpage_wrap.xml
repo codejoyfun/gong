@@ -11,14 +11,7 @@
         android:background="@color/white"
         android:paddingLeft="0dp">
 
-        <ImageView
-            android:id="@+id/tv_open"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/arrow"
-            android:padding="15dp"
-            android:background="@drawable/tab_shadow"
-            android:layout_alignParentRight="true"/>
+
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tablayout"
@@ -27,7 +20,16 @@
             android:background="@color/white"
             android:layout_height="40dp"
             app:tabMode="scrollable"
-            android:layout_toLeftOf="@id/tv_open"/>
+            android:layout_marginRight="30dp"/>
+
+        <ImageView
+            android:id="@+id/tv_open"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/arrow"
+            android:padding="15dp"
+            android:background="@drawable/tab_shadow"
+            android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
 

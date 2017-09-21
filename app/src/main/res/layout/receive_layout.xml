@@ -63,15 +63,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp">
 
-                <ImageView
-                    android:id="@+id/iv_open"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:src="@drawable/arrow"
-                    android:padding="15dp"
-                    android:background="@drawable/tab_shadow"
-                    android:layout_alignParentRight="true"/>
-
                     <android.support.design.widget.TabLayout
                         android:id="@+id/indicator"
                         style="@style/MyCustomTabLayout"
@@ -79,7 +70,16 @@
                         android:background="@color/white"
                         android:layout_height="40dp"
                         app:tabMode="scrollable"
-                        android:layout_toLeftOf="@id/iv_open"/>
+                        android:layout_marginRight="30dp"/>
+
+                    <ImageView
+                        android:id="@+id/iv_open"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:src="@drawable/arrow"
+                        android:padding="15dp"
+                        android:background="@drawable/tab_shadow"
+                        android:layout_alignParentRight="true"/>
 
                 </RelativeLayout>
                 <View

@@ -3,8 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-    <include layout="@layout/unlogin_head_layout"
-        android:id="@+id/header"/>
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/pullListView"
@@ -13,7 +11,6 @@
         android:listSelector="#0000"
         ptr:ptrAnimationStyle="flip"
         android:background="#ffffff"
-        android:layout_below="@id/header"
         android:divider="@null"
         />
 </RelativeLayout>

@@ -110,6 +110,14 @@
                 android:background="@color/white"
                 android:paddingLeft="0dp">
 
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tablayout"
+                    style="@style/MyCustomTabLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@color/white"
+                    app:tabMode="scrollable"/>
                 <ImageView
                     android:id="@+id/tv_open"
                     android:layout_width="40dp"
@@ -118,15 +126,6 @@
                     android:background="@drawable/tab_shadow"
                     android:padding="15dp"
                     android:src="@drawable/arrow"/>
-
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tablayout"
-                    style="@style/MyCustomTabLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_toLeftOf="@id/tv_open"
-                    android:background="@color/white"
-                    app:tabMode="scrollable"/>
 
             </RelativeLayout>
 

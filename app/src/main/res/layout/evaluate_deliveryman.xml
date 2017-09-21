@@ -26,9 +26,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/headSdv"
+        android:layout_alignBottom="@id/headSdv"
         android:layout_marginLeft="9.5dp"
         android:layout_toRightOf="@id/headSdv"
         android:text="配送员名称"
+        android:gravity="center"
         android:textColor="@color/textColorPrimary"
         android:textSize="@dimen/second_title"/>
 
@@ -40,7 +42,7 @@
         android:layout_marginLeft="9.5dp"
         android:layout_marginTop="4dp"
         android:layout_toRightOf="@id/headSdv"
-        android:text="卸货时间: 今天 12:05"
+        android:text=""
         android:textColor="@color/textColorSecondary"
         android:textSize="@dimen/second_title"/>
 
