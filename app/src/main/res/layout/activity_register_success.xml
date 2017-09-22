@@ -25,7 +25,8 @@
         android:gravity="center"
         android:text="恭喜您,注册成功!"
         android:textColor="@color/colorAccent"
-        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textSize="22sp"
         />
 
     <TextView
