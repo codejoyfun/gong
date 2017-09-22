@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -48,7 +49,7 @@ public class TimeLineAdapter extends RecyclerView.Adapter {
             itemHolder.tvAcceptStation.setTextColor(0xff666666);
             itemHolder.tvAcceptStation.setTextSize(14);
             itemHolder.tvAcceptTime.setTextSize(14);
-            itemHolder.tvDot.setBackgroundResource(R.drawable.timeline_dot_first);
+            itemHolder.tvDot.setImageResource(R.drawable.home_idot_hightlight);
             itemHolder.itemLL.getLayoutParams().height = CommonUtils.dip2px(context,28);
         } else if (getItemViewType(position) == TYPE_NORMAL) {
             itemHolder.tvTopLine.setVisibility(View.VISIBLE);
@@ -57,7 +58,7 @@ public class TimeLineAdapter extends RecyclerView.Adapter {
             itemHolder.tvAcceptStation.setTextSize(12);
             itemHolder.tvAcceptTime.setTextSize(12);
             itemHolder.itemLL.getLayoutParams().height = CommonUtils.dip2px(context,21);
-            itemHolder.tvDot.setBackgroundResource(R.drawable.timeline_dot_normal);
+            itemHolder.tvDot.setImageResource(R.drawable.timeline_dot_normal);
         }
         if (position == traceList.size() - 1){
             itemHolder.tvDownLine.setVisibility(View.INVISIBLE);
@@ -88,7 +89,8 @@ public class TimeLineAdapter extends RecyclerView.Adapter {
     public  class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvAcceptTime, tvAcceptStation;
         public LinearLayout itemLL;
-        public TextView tvTopLine, tvDot;
+        public TextView tvTopLine;
+        public ImageView tvDot;
         public TextView tvDownLine;
         public ViewHolder(View itemView) {
             super(itemView);
@@ -96,7 +98,7 @@ public class TimeLineAdapter extends RecyclerView.Adapter {
             tvAcceptTime = (TextView) itemView.findViewById(R.id.tvAcceptTime);
             tvAcceptStation = (TextView) itemView.findViewById(R.id.tvAcceptStation);
             tvTopLine = (TextView) itemView.findViewById(R.id.tvTopLine);
-            tvDot = (TextView) itemView.findViewById(R.id.tvDot);
+            tvDot = (ImageView) itemView.findViewById(R.id.tvDot);
             tvDownLine = (TextView)itemView.findViewById(R.id.tvDownLine);
         }
     }

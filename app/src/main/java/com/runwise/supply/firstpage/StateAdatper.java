@@ -42,7 +42,7 @@ public class StateAdatper extends RecyclerView.Adapter {
             itemHolder.tvTopLine.setVisibility(View.INVISIBLE);
             // 字体颜色加深
             itemHolder.orderStateTv.setTextColor(0xff6BB400);
-            itemHolder.tvDot.setBackgroundResource(R.drawable.timeline_dot_first);
+            itemHolder.tvDot.setBackgroundResource(R.drawable.restaurant_orderstatus_point_highlight);
         } else if (getItemViewType(position) == TYPE_NORMAL) {
             itemHolder.tvTopLine.setVisibility(View.VISIBLE);
             itemHolder.orderStateTv.setTextColor(0xff2E2E2E);

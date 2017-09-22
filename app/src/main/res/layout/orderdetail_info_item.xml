@@ -30,6 +30,7 @@
                    android:text="SO345345345"
                    android:textColor="#2E2E2E"
                    android:textSize="16sp"
+                   android:textStyle="bold"
                    />
                <TextView
                    android:id="@+id/receivtTv"

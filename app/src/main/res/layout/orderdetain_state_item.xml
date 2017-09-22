@@ -13,6 +13,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="15dp"
         android:text="订单已确认"
+        android:textStyle="bold"
         android:textColor="#2E2E2E"
         android:textSize="16sp"
         />
@@ -49,5 +50,6 @@
         android:background="@null"
         android:drawableRight="@drawable/orderdetail_greenarrow"
         android:text="更多状态"
+        android:textSize="@dimen/second_title"
         android:textColor="#6BB400"/>
 </RelativeLayout>

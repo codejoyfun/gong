@@ -5,8 +5,8 @@ package com.kids.commonframe.config;
  */
 public class Constant {
    //正式环境地址
-//   public final static String RELEASE_URL = "http://develop.runwise.cn:8069";
-   public final static String RELEASE_URL = "http://test.runwise.cn";
+   public final static String RELEASE_URL = "http://develop.runwise.cn:8069";
+//   public final static String RELEASE_URL = "http://test.runwise.cn";
    //测试环境地址
    public final static String TEST_URL = "http://114.215.40.244:8083/";
    //七牛Url
