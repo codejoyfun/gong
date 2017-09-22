@@ -27,10 +27,11 @@ public class YourScrollableViewPager extends ViewPager {
         super(context, attrs);
         prepareUI();
     }
-
+    int mDefaultPageHeight;
     private void prepareUI() {
         setOffscreenPageLimit(pageCount);
-        maxHeight = DensityUtil.dip2px(getContext(),120);
+        mDefaultPageHeight = DensityUtil.dip2px(getContext(),200);
+        maxHeight = mDefaultPageHeight;
     }
 
     int maxHeight = 0;

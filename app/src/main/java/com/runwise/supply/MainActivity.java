@@ -106,7 +106,6 @@ public class MainActivity extends NetWorkActivity {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         setContentView(R.layout.activity_main);
-        setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         requestPermissions();
         initTabView();

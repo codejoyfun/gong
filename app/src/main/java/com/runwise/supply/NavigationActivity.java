@@ -52,6 +52,7 @@ public class NavigationActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navigation_main);
+		setStatusBarEnabled();
 		StatusBarUtil.StatusBarLightMode(this);
 		inflater = LayoutInflater.from(this);
 		viewList = new ArrayList<Integer>();

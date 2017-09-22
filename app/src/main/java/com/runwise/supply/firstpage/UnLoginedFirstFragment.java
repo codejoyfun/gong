@@ -8,13 +8,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
@@ -58,6 +58,10 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
+    @ViewInject(R.id.rl_title)
+    private RelativeLayout rl_title;
+//    @ViewInject(R.id.rl_title)
+//    private RelativeLayout rl_title;
 
 
     private LayoutInflater layoutInflater;
@@ -92,7 +96,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             }
         });
 
-        View headView = LayoutInflater.from(getContext()).inflate(R.layout.unlogin_head_layout,null);
+        final View headView = LayoutInflater.from(getContext()).inflate(R.layout.unlogin_head_layout,null);
         //表头：放轮播+统计表
 //        View headView = layoutInflater.inflate(R.layout.unlogin_head_layout,null);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
@@ -119,9 +123,30 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                Log.i("onScroll",""+view.getChildAt(0).getTop());
+                final int[] location = new int[2];
+                headView.getLocationOnScreen(location);
+                float top = location[1];
+                if (firstVisibleItem > 1){
+                    rl_title.setBackgroundResource(R.color.white);
+                    rl_title.setAlpha(1);
+                    return;
+                }
+                if (top < 0){
+                    top = -top;
+                    if (top >= headView.getHeight()/3){
+                        rl_title.setBackgroundResource(R.color.white);
+                        rl_title.setAlpha(1);
+                        return;
+                    }
+                    float ratio = top/(float)headView.getHeight()*3;
+                    rl_title.setBackgroundResource(R.color.white);
+                    rl_title.setAlpha(ratio);
+                }else{
+                    rl_title.setAlpha(0);
+                }
             }
         });
+        pullListView.scrollTo(0,0);
         nAdapter = new NewsAdapter(mContext);
         pullListView.setAdapter(nAdapter);
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

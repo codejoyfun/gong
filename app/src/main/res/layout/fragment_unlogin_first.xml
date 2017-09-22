@@ -1,16 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true">
+
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/pullListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:listSelector="#0000"
-        ptr:ptrAnimationStyle="flip"
         android:background="#ffffff"
         android:divider="@null"
+        android:listSelector="#0000"
+        ptr:ptrAnimationStyle="flip"
         />
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/transparent">
+
+        <ImageView
+            android:id="@+id/callIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="12dp"
+            android:src="@drawable/nav_service_home"
+            />
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/app_name"
+            android:textColor="#2E2E2E"
+            android:textSize="18sp"
+            android:visibility="visible"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:background="#bebebe"
+            />
+    </RelativeLayout>
 </RelativeLayout>

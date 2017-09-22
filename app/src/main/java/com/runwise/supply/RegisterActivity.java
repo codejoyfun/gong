@@ -7,7 +7,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -21,6 +20,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.RegisterData;
 import com.runwise.supply.entity.RegisterRequest;
+import com.runwise.supply.firstpage.RegisterSuccessActivity;
 import com.runwise.supply.tools.StatusBarUtil;
 
 /**
@@ -64,17 +64,20 @@ public class RegisterActivity extends NetWorkActivity {
 	public void onSuccess(BaseEntity result, int where) {
 		switch (where) {
 			case REGISTER:
-				dialog.setCancelable(false);
-				dialog.setModel(CustomDialog.RIGHT);
-				dialog.setMessageGravity();
-				dialog.setMessage("非常感谢，您的注册申请已收到，供鲜生客服代表会尽快与您联系");
-				dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
-					@Override
-					public void doClickButton(Button btn, CustomDialog dialog) {
-						finish();
-					}
-				});
-				dialog.show();
+				finish();
+				Intent intent = new Intent(getActivityContext(),RegisterSuccessActivity.class);
+				startActivity(intent);
+//				dialog.setCancelable(false);
+//				dialog.setModel(CustomDialog.RIGHT);
+//				dialog.setMessageGravity();
+//				dialog.setMessage("非常感谢，您的注册申请已收到，供鲜生客服代表会尽快与您联系");
+//				dialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+//					@Override
+//					public void doClickButton(Button btn, CustomDialog dialog) {
+//						finish();
+//					}
+//				});
+//				dialog.show();
 				break;
 		}
 	}

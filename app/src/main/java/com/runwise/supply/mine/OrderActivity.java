@@ -41,6 +41,9 @@ public class OrderActivity extends BaseActivity {
         titleList.put(1,"本周");
         titleList.put(2,"上周");
         titleList.put(3,"更早");
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
+        layoutParams.setMargins(0,0,0,0);
+        smartTabLayout.setLayoutParams(layoutParams);
         adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 //        viewPager.setOffscreenPageLimit(4);

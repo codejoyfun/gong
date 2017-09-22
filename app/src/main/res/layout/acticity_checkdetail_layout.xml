@@ -133,8 +133,7 @@
             <com.runwise.supply.view.YourScrollableViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/black"/>
+                android:layout_height="40dp"/>
         </LinearLayout>
     </github.chenupt.dragtoplayout.DragTopLayout>
 </LinearLayout>

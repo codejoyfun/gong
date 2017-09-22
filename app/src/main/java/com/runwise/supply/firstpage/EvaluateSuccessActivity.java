@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.kids.commonframe.base.BaseActivity;
+import com.kids.commonframe.base.BaseManager;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 
 import butterknife.ButterKnife;
@@ -37,7 +39,8 @@ public class EvaluateSuccessActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.uploadBtn:
-                finish();
+                BaseManager.getInstance().finishAll();
+                startActivity(new Intent(getActivityContext(), MainActivity.class));
                 break;
         }
     }

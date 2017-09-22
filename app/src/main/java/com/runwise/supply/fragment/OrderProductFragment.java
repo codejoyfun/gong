@@ -14,6 +14,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.event.IntEvent;
 import com.runwise.supply.firstpage.OrderDtailAdapter;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.tools.DensityUtil;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -82,8 +83,9 @@ public class OrderProductFragment extends BaseFragment {
     public void onGetHeight(IntEvent intEvent) {
         mHeight = intEvent.getHeight();
         if (loadingLayout != null){
+            int defaultPageHeight = DensityUtil.dip2px(getContext(),200);
             ViewGroup.LayoutParams layoutParams = loadingLayout.getLayoutParams();
-            layoutParams.height = mHeight;
+            layoutParams.height = defaultPageHeight;
             loadingLayout.setLayoutParams(layoutParams);
             loadingLayout.invalidate();
             loadingLayout.requestLayout();

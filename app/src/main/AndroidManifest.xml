@@ -406,7 +406,8 @@
         <activity
             android:name=".InfoActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".repertory.EditRepertoryFinishActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -466,6 +467,8 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
         <activity android:name=".firstpage.EvaluateSuccessActivity">
+        </activity>
+        <activity android:name=".firstpage.RegisterSuccessActivity">
         </activity>
     </application>
 

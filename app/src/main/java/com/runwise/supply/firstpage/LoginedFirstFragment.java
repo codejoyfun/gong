@@ -48,6 +48,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.runwise.supply.R.id.lqLL;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 
 /**
@@ -66,8 +67,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.rl_title)
     private RelativeLayout rl_title;
-    @ViewInject(R.id.loadingLayout)
-    private LoadingLayout loadingLayout;
 
     private LayoutInflater layoutInflater;
     private ConvenientBanner banner;
@@ -95,7 +94,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-        View headView = LayoutInflater.from(getContext()).inflate(R.layout.logined_head_layout,null);
+        final View headView = LayoutInflater.from(getContext()).inflate(R.layout.logined_head_layout, null);
         //表头：放轮播+统计表
 //        View headView = layoutInflater.inflate(R.layout.logined_head_layout,null);
         lastWeekKey = (TextView) headView.findViewById(R.id.lastWeekKey);
@@ -106,6 +105,21 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         lqCountTv = (TextView) headView.findViewById(R.id.lqCountTv);
         dqCountTv = (TextView) headView.findViewById(R.id.dqCountTv);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
+        headView.findViewById(R.id.lqLL).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity ma = (MainActivity) getActivity();
+                ma.gotoTabByIndex(2);
+            }
+        });
+        headView.findViewById(R.id.dqLL).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity ma = (MainActivity) getActivity();
+                ma.gotoTabByIndex(2);
+            }
+        });
+
 
         //通过图片比例，计算banner大小 375:175 = w:x
         int height = 175 * CommonUtils.getScreenWidth(mContext) / 375;
@@ -122,23 +136,30 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//                final int[] location = new int[2];
-//                view.getChildAt(1).getLocationOnScreen(location);
-//                Log.i("onScroll",""+location[1]);
-//                float top = location[1];
-//                if (top < 0){
-//                    top = -top;
-//                    if (top >= view.getChildAt(1).getHeight()){
-//                        rl_title.setBackgroundResource(R.color.white);
-//                        rl_title.setAlpha(1);
-//                        return;
-//                    }
-//                    float ratio = top/(float)view.getChildAt(1).getHeight();
-//                    rl_title.setBackgroundResource(R.color.white);
-//                    rl_title.setAlpha(ratio);
-//                }
+                final int[] location = new int[2];
+                headView.getLocationOnScreen(location);
+                float top = location[1];
+                if (firstVisibleItem > 1) {
+                    rl_title.setBackgroundResource(R.color.white);
+                    rl_title.setAlpha(1);
+                    return;
+                }
+                if (top < 0) {
+                    top = -top;
+                    if (top >= headView.getHeight() / 3) {
+                        rl_title.setBackgroundResource(R.color.white);
+                        rl_title.setAlpha(1);
+                        return;
+                    }
+                    float ratio = top / (float) headView.getHeight() * 3;
+                    rl_title.setBackgroundResource(R.color.white);
+                    rl_title.setAlpha(ratio);
+                } else {
+                    rl_title.setAlpha(0);
+                }
             }
         });
+        pullListView.scrollTo(0, 0);
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -154,7 +175,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 } else if (adapter.getItemViewType(realPosition) == adapter.TYPE_RETURN) {
                     Intent intent = new Intent(mContext, ReturnDetailActivity.class);
                     ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) adapter.getList().get(realPosition);
-                    intent.putExtra("rid",bean.getReturnOrderID()+"");
+                    intent.putExtra("rid", bean.getReturnOrderID() + "");
                     startActivity(intent);
                 }
             }
@@ -174,6 +195,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         requestLB();
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
+        loadingLayout = new LoadingLayout(getActivity());
     }
 
     @Override
@@ -182,8 +204,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         if (this.isVisible()) {
             if (adapter.getCount() == 0) {
                 pullListView.setRefreshing(true);
-            }
-            else {
+            } else {
                 requestReturnList();
             }
         }
@@ -193,7 +214,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     protected int createViewByLayoutId() {
         return R.layout.fragment_logined_first;
     }
-
+    LoadingLayout loadingLayout;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -210,6 +231,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //                    ToastUtil.show(mContext,"订单已刷新");
 //                }
                 isFirst = false;
+                if (adapter.getCount() == 0&&pullListView.getRefreshableView().getHeaderViewsCount() == 1){
+                    loadingLayout.onSuccess(0,"暂无在途订单",R.drawable.default_icon_ordernone);
+                    pullListView.getRefreshableView().addHeaderView(loadingLayout);
+                }else{
+                    loadingLayout.onSuccess(adapter.getCount(),"暂无在途订单",R.drawable.default_icon_ordernone);
+                }
                 break;
             case FROMLB:
                 LunboResponse lRes = (LunboResponse) result.getResult();
@@ -242,8 +269,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FINISHRETURN:
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
                 ToastUtil.show(mContext, "退货成功");
-                Intent intent = new Intent(getActivity(),ReturnSuccessActivity.class);
-                intent.putExtra(INTENT_KEY_RESULTBEAN,finishReturnResponse);
+                Intent intent = new Intent(getActivity(), ReturnSuccessActivity.class);
+                intent.putExtra(INTENT_KEY_RESULTBEAN, finishReturnResponse);
                 startActivity(intent);
 //                requestReturnList();
                 break;
@@ -252,9 +279,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     private void cachReturnList(List<ReturnOrderBean.ListBean> list) {
         ProductBasicUtils.getReturnMap().clear();
-        if (list != null){
-            for (ReturnOrderBean.ListBean rlb : list){
-                ProductBasicUtils.getReturnMap().put(String.valueOf(rlb.getReturnOrderID()),rlb.getName());
+        if (list != null) {
+            for (ReturnOrderBean.ListBean rlb : list) {
+                ProductBasicUtils.getReturnMap().put(String.valueOf(rlb.getReturnOrderID()), rlb.getName());
             }
         }
     }
@@ -368,6 +395,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case FINISH_RETURN:
                 mSelectBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
+                dialog.setTitle("");
                 dialog.setMessageGravity();
                 dialog.setMessage("确认数量一致?");
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
@@ -409,7 +437,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         dialog.show();
     }
 
-    @OnClick({R.id.callIcon,R.id.lqLL,R.id.dqLL})
+    @OnClick({R.id.callIcon, lqLL, R.id.dqLL})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.callIcon:
@@ -431,7 +459,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 });
                 dialog.show();
                 break;
-            case R.id.lqLL:
+            case lqLL:
             case R.id.dqLL:
                 MainActivity ma = (MainActivity) getActivity();
                 ma.gotoTabByIndex(2);

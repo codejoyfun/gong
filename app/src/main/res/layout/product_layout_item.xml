@@ -70,9 +70,10 @@
         android:text="黑鱼(大型)"
         android:textColor="#444444"
         android:textSize="16sp"
+        android:singleLine="false"
         android:layout_marginLeft="10dp"
         android:layout_toLeftOf="@id/editLL"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="5dp"
         android:layout_alignTop="@id/productImage"
         android:layout_toRightOf="@id/productImage"/>
     <TextView
