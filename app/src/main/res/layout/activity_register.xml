@@ -13,9 +13,9 @@
 
         <ImageView
             android:id="@+id/closeBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/marking"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/login_ico_closed"
             android:layout_marginTop="52dp"
             android:layout_marginLeft="22dp"
             />

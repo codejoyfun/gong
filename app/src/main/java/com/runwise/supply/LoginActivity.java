@@ -71,6 +71,8 @@ public class  LoginActivity extends NetWorkActivity {
 
 	@ViewInject(R.id.remPassword)
 	private CheckBox remPassword;
+	@ViewInject(R.id.login_pop_btn)
+	private View loginPopBtn;
 
 	private RemListAdapter remListAdapter;
 	private LoginRequest loginRequest;
@@ -124,6 +126,12 @@ public class  LoginActivity extends NetWorkActivity {
 				mPhone.setText(rem.getUserName());
 				mPassword.setText(rem.getPassword());
 			}
+
+			if (userList == null || userList.size() <= 1){
+				loginPopBtn.setVisibility(View.GONE);
+			}else{
+				loginPopBtn.setVisibility(View.VISIBLE);
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -135,8 +143,9 @@ public class  LoginActivity extends NetWorkActivity {
 	public void doLoginPopBtn(View view) {
 		DbUtils mDb = DbUtils.create(this);
 		try {
+			//没多个历史帐号时，不需要有下拉箭头
 			List<RemUser> userList = mDb.findAll(Selector.from(RemUser.class).orderBy("id",true));
-			if(userList != null && !userList.isEmpty()) {
+			if(userList != null && !userList.isEmpty()&&userList.size() > 1) {
 				remListAdapter.setData(userList);
 				loginPopUtil.showPop(topLayout,loginPopIcon);
 			}

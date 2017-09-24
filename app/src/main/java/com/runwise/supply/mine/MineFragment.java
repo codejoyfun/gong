@@ -346,9 +346,11 @@ public class MineFragment extends NetWorkFragment {
                 refreshUserInfo();
                 break;
             case R.id.ll_cai_gou_e:
-                intent = new Intent(mContext,ProcurementLimitActivity.class);
-                intent.putExtra(KEY_SUM_MONEY_DATA,sumMoneyData);
-                startActivity(intent);
+                if (SPUtils.isLogin(getActivity())) {
+                    intent = new Intent(mContext,ProcurementLimitActivity.class);
+                    intent.putExtra(KEY_SUM_MONEY_DATA,sumMoneyData);
+                    startActivity(intent);
+                }
                 break;
         }
 

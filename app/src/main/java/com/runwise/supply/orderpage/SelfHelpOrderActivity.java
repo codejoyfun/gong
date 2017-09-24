@@ -96,7 +96,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
     private int selectedDate = 1;
     //缓存外部显示用的日期周几
-    private String cachedDWStr = TimeUtils.getABFormatDate(1).substring(5) + " " + TimeUtils.getWeekStr(1);
+    private String cachedDWStr = TimeUtils.getABFormatDate(2).substring(5) + " " + TimeUtils.getWeekStr(2);
     //标记当前是否在编辑模式
     private boolean editMode;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
@@ -171,7 +171,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             case R.id.onekeyBtn:
                 //下单按钮
                 CommitOrderRequest request = new CommitOrderRequest();
-                request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
+                request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate+1));
                 request.setOrder_type_id("121");
                 List<DefaultPBean> list = adapter.getList();
                 List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
@@ -282,18 +282,18 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         wArr[selectedDate].setTextColor(Color.parseColor("#6BB400"));
         dArr[selectedDate].setTextColor(Color.parseColor("#6BB400"));
         //计算当前日期起，明后天的星期几+号数
-        wTv1.setText(TimeUtils.getWeekStr(0));
-        String[] t = TimeUtils.getABFormatDate(0).split("-");
+        wTv1.setText(TimeUtils.getWeekStr(1));
+        String[] t = TimeUtils.getABFormatDate(1).split("-");
         if (t.length > 2){
             dTv1.setText(t[1]+"-"+t[2]);
         }
-        wTv2.setText(TimeUtils.getWeekStr(1));
-        t = TimeUtils.getABFormatDate(1).split("-");
+        wTv2.setText(TimeUtils.getWeekStr(2));
+        t = TimeUtils.getABFormatDate(2).split("-");
         if (t.length > 2){
             dTv2.setText(t[1]+"-"+t[2]);
         }
-        wTv3.setText(TimeUtils.getWeekStr(2));
-        t = TimeUtils.getABFormatDate(2).split("-");
+        wTv3.setText(TimeUtils.getWeekStr(3));
+        t = TimeUtils.getABFormatDate(3).split("-");
         if (t.length > 2){
             dTv3.setText(t[1]+"-"+t[2]);
         }
@@ -308,7 +308,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     public void run() {
                         selectedDate = 0;
                         bDialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(0).substring(5)+" "+TimeUtils.getWeekStr(0));
+                        dateTv.setText(TimeUtils.getABFormatDate(1).substring(5)+" "+TimeUtils.getWeekStr(1));
                     }
                 },500);
             }
@@ -323,7 +323,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     public void run() {
                         selectedDate = 1;
                         bDialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(1).substring(5)+" "+TimeUtils.getWeekStr(1));
+                        dateTv.setText(TimeUtils.getABFormatDate(2).substring(5)+" "+TimeUtils.getWeekStr(2));
                     }
                 },500);
             }
@@ -338,7 +338,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     public void run() {
                         selectedDate = 2;
                         bDialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(2).substring(5)+" "+TimeUtils.getWeekStr(2));
+                        dateTv.setText(TimeUtils.getABFormatDate(3).substring(5)+" "+TimeUtils.getWeekStr(3));
                     }
                 },500);
             }

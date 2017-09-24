@@ -9,16 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kids.commonframe.base.BaseActivity;
-import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.tools.StatusBarUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -37,6 +34,11 @@ public class CheckActivity extends BaseActivity {
 
         this.setTitleText(true,"盘点记录");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
+        layoutParams.setMargins(0,0,0,0);
+        smartTabLayout.setLayoutParams(layoutParams);
+
+
         adapter = new TabPageIndicatorAdapter(this.getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 //        viewPager.setOffscreenPageLimit(4);

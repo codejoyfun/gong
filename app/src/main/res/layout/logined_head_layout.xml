@@ -20,14 +20,17 @@
         android:paddingTop="10dp"
         android:orientation="horizontal">
         <LinearLayout
+            android:id="@+id/ll_procurement"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:layout_weight="1">
             <TextView
                 android:id="@+id/lastWeekKey"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="12sp"
@@ -36,7 +39,7 @@
             <TextView
                 android:id="@+id/lastWeekBuy"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
@@ -44,7 +47,7 @@
                 android:text="3.8"/>
         </LinearLayout>
         <View
-            android:layout_width="1dp"
+            android:layout_width="0.5dp"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
@@ -55,11 +58,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:layout_weight="1">
             <TextView
                 android:id="@+id/lqCountTv"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="12sp"
@@ -68,7 +73,7 @@
             <TextView
                 android:id="@+id/lastMonthBuy"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"
@@ -76,7 +81,7 @@
                 android:text="¥2.45"/>
         </LinearLayout>
         <View
-            android:layout_width="1dp"
+            android:layout_width="0.5dp"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
@@ -87,11 +92,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:layout_weight="1">
             <TextView
                 android:id="@+id/dqCountTv"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="12sp"
@@ -100,7 +107,7 @@
             <TextView
                 android:id="@+id/unPayAccount"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="20sp"

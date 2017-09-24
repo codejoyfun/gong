@@ -43,6 +43,10 @@ public class ReturnActivity extends NetWorkActivity {
 
         this.setTitleText(true,"退货记录");
         this.setTitleLeftIcon(true,R.drawable.back_btn);
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
+        layoutParams.setMargins(0,0,0,0);
+        smartTabLayout.setLayoutParams(layoutParams);
+
         Object param = null;
         sendConnection("/API/v2/return_order/list",param,PRODUCT_GET,true, ReturnData.class);
     }

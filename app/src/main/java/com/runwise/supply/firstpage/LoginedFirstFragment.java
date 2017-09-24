@@ -24,6 +24,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
@@ -42,6 +43,8 @@ import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.mine.ProcurementLimitActivity;
+import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 
 import java.text.DecimalFormat;
@@ -50,6 +53,7 @@ import java.util.List;
 
 import static com.runwise.supply.R.id.lqLL;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
+import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 
 /**
  * Created by libin on 2017/7/13.
@@ -62,6 +66,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int CANCEL = 3;        //取消订单
     private static final int FROMRETURN = 4;
     private static final int FINISHRETURN = 5;
+    private static final int REQUEST_SUM = 6;
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -117,6 +122,20 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             public void onClick(View v) {
                 MainActivity ma = (MainActivity) getActivity();
                 ma.gotoTabByIndex(2);
+            }
+        });
+
+        headView.findViewById(R.id.ll_procurement).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSumMoneyData == null){
+                    return;
+                }
+                if (SPUtils.isLogin(getActivity())) {
+                    Intent intent = new Intent(mContext,ProcurementLimitActivity.class);
+                    intent.putExtra(KEY_SUM_MONEY_DATA,mSumMoneyData);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -193,9 +212,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         });
         requestDashBoard();
         requestLB();
+        getProcurement();
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         loadingLayout = new LoadingLayout(getActivity());
+    }
+
+    public void getProcurement() {
+        Object request = null;
+        sendConnection("/api/sale/shop/info", request, REQUEST_SUM, false, SumMoneyData.class);
     }
 
     @Override
@@ -215,6 +240,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         return R.layout.fragment_logined_first;
     }
     LoadingLayout loadingLayout;
+    SumMoneyData mSumMoneyData;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -273,6 +299,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 intent.putExtra(INTENT_KEY_RESULTBEAN, finishReturnResponse);
                 startActivity(intent);
 //                requestReturnList();
+                break;
+            case REQUEST_SUM:
+                mSumMoneyData = (SumMoneyData)result.getResult().getData();
                 break;
         }
     }
