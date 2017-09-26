@@ -1,15 +1,25 @@
 package com.runwise.supply;
 
+import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.bean.LogoutFromJpushEvent;
+import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.ImagePipelineConfigFactory;
 import com.liulishuo.filedownloader.FileDownloader;
+import com.runwise.supply.message.MessageFragment;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cn.jpush.android.api.JPushInterface;
+
+import static com.runwise.supply.MainActivity.INTENT_KEY_SKIP_TO_LOGIN;
 
 /**
  * Created by myChaoFile on 16/10/13.
@@ -35,9 +45,25 @@ public class GlobalApplication extends MultiDexApplication {
         FileDownloader.init(this);
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+        if (!EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().register(this);
+        }
     }
+
     public static GlobalApplication getInstance() {
         return instance;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+   public void onLogout(LogoutFromJpushEvent logoutFromJpushEvent){
+        SPUtils.loginOut(this);
+        MessageFragment.isLogin = false;
+        GlobalApplication.getInstance().cleanUesrInfo();
+        //退出登录
+        EventBus.getDefault().post(new UserLogoutEvent());
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
+        startActivity(intent);
     }
     /**
      * 获取用户信息

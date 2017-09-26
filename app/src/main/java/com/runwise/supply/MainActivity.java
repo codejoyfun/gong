@@ -35,6 +35,9 @@ import com.runwise.supply.tools.StatusBarUtil;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+import io.vov.vitamio.utils.Log;
+
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;
@@ -109,6 +112,8 @@ public class MainActivity extends NetWorkActivity {
         StatusBarUtil.StatusBarLightMode(this);
         requestPermissions();
         initTabView();
+        String registrationID = JPushInterface.getRegistrationID(this);
+        Log.i("JPushInterface","dfd "+registrationID);
         //检查版本
         CheckVersionManager checkVersionManager = new CheckVersionManager(this);
 //        checkVersionManager.checkVersion(false);

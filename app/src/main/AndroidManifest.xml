@@ -470,6 +470,19 @@
         </activity>
         <activity android:name=".firstpage.RegisterSuccessActivity">
         </activity>
+        <receiver
+            android:name="com.runwise.supply.receiver.JPushCustomReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION" />
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+                <category android:name="com.runwise.supply" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

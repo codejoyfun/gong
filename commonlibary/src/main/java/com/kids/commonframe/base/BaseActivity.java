@@ -14,13 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.R;
+import com.kids.commonframe.base.bean.LogoutFromJpushEvent;
+import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
+import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.config.Constant;
@@ -56,6 +60,8 @@ public abstract class BaseActivity extends FragmentActivity{
 	private boolean login,logout;
 	private UserLoginEvent userLoginEvent;
 	private boolean isResume;
+
+	private static final int REQUEST_LOGINOUT = 1 << 0;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -75,6 +81,7 @@ public abstract class BaseActivity extends FragmentActivity{
 //		}
 	}
 
+
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
@@ -93,7 +100,7 @@ public abstract class BaseActivity extends FragmentActivity{
 		super.onRestoreInstanceState(savedInstanceState);
 		GlobalConstant.screenW = savedInstanceState.getInt("screenW");
 		GlobalConstant.screenH = savedInstanceState.getInt("screenH");
-		Constant.BASE_URL = savedInstanceState.getString("baseUrl");
+//		Constant.BASE_URL = savedInstanceState.getString("baseUrl");
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
@@ -108,6 +115,48 @@ public abstract class BaseActivity extends FragmentActivity{
 			login = false;
 			logout = true;
 	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void onEventUserlogout(ReceiverLogoutEvent receiverLogoutEvent) {
+		//弹出被迫下线的对话框
+		CustomDialog dialog = new CustomDialog(getActivityContext());
+			dialog.setMessage("你的账号在其他设备登录成功");
+		dialog.setTitle("提示");
+		dialog.setModel(CustomDialog.RIGHT);
+		dialog.setMessageGravity();
+		dialog.setRightBtnListener("确定", new CustomDialog.DialogListener() {
+			@Override
+			public void doClickButton(Button btn, CustomDialog dialog) {
+				//执行登出接口
+				Object param = null;
+				NetWorkHelper<BaseEntity> netWorkHelper = new NetWorkHelper<BaseEntity>(BaseActivity.this, new NetWorkHelper.NetWorkCallBack<BaseEntity>() {
+					@Override
+					public BaseEntity onParse(int where, Class<?> targerClass, String result) {
+						return null;
+					}
+
+					@Override
+					public void onSuccess(BaseEntity result, int where) {
+						switch(where){
+							case REQUEST_LOGINOUT:
+								EventBus.getDefault().post(new LogoutFromJpushEvent());
+								break;
+						}
+					}
+
+					@Override
+					public void onFailure(String errMsg, BaseEntity result, int where) {
+
+					}
+				});
+				netWorkHelper.sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+			}
+		});
+		dialog.setCanceledOnTouchOutside(false);
+		dialog.setCancelable(false);
+		dialog.show();
+	}
+
 
 	//用户登入，登出调用*该方法只有在界面可见时调用
 	public void onUserLogin(UserLoginEvent userLoginEvent) {
