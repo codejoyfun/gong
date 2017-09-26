@@ -1,13 +1,9 @@
 package com.runwise.supply.firstpage;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -48,7 +44,7 @@ public class ReturnFragment extends BaseFragment {
     private boolean canSeePrice;
     //跟自己类型配对的数据即可。
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
-    private Map<String,ReturnBean> countMap = new HashMap<>();
+    private Map<String, ReturnBean> countMap = new HashMap<>();
 
     public void setCallback(ReturnCallback callback) {
         this.callback = callback;
@@ -60,32 +56,26 @@ public class ReturnFragment extends BaseFragment {
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         adapter = new ReturnAdapter();
         ArrayList<OrderResponse.ListBean.LinesBean> linesList = getArguments().getParcelableArrayList("datas");
-        if (type == DataType.ALL){
-            datas.addAll(linesList);
-        }else {
-            for (OrderResponse.ListBean.LinesBean bean : linesList){
-                if (bean.getStockType().equals(type.getType())){
-                    datas.add(bean);
-                }
-            }
-        }
+        datas.addAll(linesList);
         adapter.setData(datas);
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
 
     }
+
     @Override
     protected int createViewByLayoutId() {
         return R.layout.return_fragment;
     }
-    public class ReturnAdapter extends IBaseAdapter{
+
+    public class ReturnAdapter extends IBaseAdapter {
 
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
-            final ProductBasicList.ListBean basicBean= ProductBasicUtils.getBasicMap(mContext).get(pId);
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.return_list_item, null);
@@ -94,13 +84,13 @@ public class ReturnFragment extends BaseFragment {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            if (basicBean != null){
+            if (basicBean != null) {
                 viewHolder.name.setText(basicBean.getName());
                 if (basicBean.getImage() != null)
-                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
                 sb.append("  ").append(basicBean.getUnit());
-                if (canSeePrice){
+                if (canSeePrice) {
                     sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }
                 viewHolder.content.setText(sb.toString());
@@ -108,43 +98,46 @@ public class ReturnFragment extends BaseFragment {
             viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (callback != null){
+                    if (callback != null) {
                         ReturnBean rb = new ReturnBean();
                         rb.setName(basicBean.getName());
                         rb.setpId(bean.getProductID());
-                        int max = (int)bean.getDeliveredQty() - (int)bean.getReturnAmount();
+                        int max = (int) bean.getDeliveredQty() - (int) bean.getReturnAmount();
                         rb.setMaxReturnCount(max);
                         callback.returnBtnClick(rb);
                     }
                 }
             });
-            if (countMap != null && countMap.containsKey(String.valueOf(pId))){
-                viewHolder.doBtn.setText("退货("+countMap.get(String.valueOf(pId)).getReturnCount()+")");
-            }else{
+            if (countMap != null && countMap.containsKey(String.valueOf(pId))) {
+                viewHolder.doBtn.setText("退货(" + countMap.get(String.valueOf(pId)).getReturnCount() + ")");
+            } else {
                 viewHolder.doBtn.setText("退货");
             }
             return convertView;
         }
+
         class ViewHolder {
             @ViewInject(R.id.name)
             TextView name;   //名称
             @ViewInject(R.id.productImage)
             SimpleDraweeView sDv;    //头像
             @ViewInject(R.id.content)
-            TextView            content;//内容
+            TextView content;//内容
             @ViewInject(R.id.doBtn)
             Button doBtn;
 
         }
     }
-    public interface  ReturnCallback{
+
+    public interface ReturnCallback {
         void returnBtnClick(ReturnBean rb);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCountSynEvent(ReturnEvent event){
+    public void onCountSynEvent(ReturnEvent event) {
         ReturnActivity activity = (ReturnActivity) getActivity();
-        Map<String,ReturnBean> map = activity.getCountMap();
-        if (map != null){
+        Map<String, ReturnBean> map = activity.getCountMap();
+        if (map != null) {
             countMap.clear();
             countMap.putAll(map);
         }

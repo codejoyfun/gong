@@ -10,7 +10,7 @@ public class OptionPayList {
     private String car_id;//": "1",
     private String dealer_id;//": "1",
     private String next_date;//": "16",    //下月还款日
-    private OptionPayCar car;
+    private OptionPayCar placeholder;
     private List<OptionPayEntity> periods;
 
 
@@ -23,11 +23,11 @@ public class OptionPayList {
     }
 
     public OptionPayCar getCar() {
-        return car;
+        return placeholder;
     }
 
-    public void setCar(OptionPayCar car) {
-        this.car = car;
+    public void setCar(OptionPayCar placeholder) {
+        this.placeholder = placeholder;
     }
 
     public String getCar_id() {

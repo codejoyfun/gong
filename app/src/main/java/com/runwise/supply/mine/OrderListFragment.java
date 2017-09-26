@@ -404,7 +404,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             }
             holder.payTitle.setText(bean.getName());
             holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
-            holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getAmount())+"件商品");
+            holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getDeliveredQty())+"件商品");
             if(GlobalApplication.getInstance().getCanSeePrice()) {
                 holder.payMoney.setVisibility(View.VISIBLE);
                 holder.payMoney.setText("共"+NumberUtil.getIOrD(bean.getAmountTotal()));

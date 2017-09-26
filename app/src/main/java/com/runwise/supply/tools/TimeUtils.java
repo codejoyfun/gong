@@ -423,7 +423,7 @@ public class TimeUtils {
 		calendar.setTime(date);
 		int dayInWeek = calendar.get(Calendar.DAY_OF_WEEK);
 		//本周第一天
-		calendar.add(Calendar.DATE, -dayInWeek);//把日期往后增加一天.整数往后推,负数往前移动
+		calendar.add(Calendar.DATE, -dayInWeek + 1);//把日期往后增加一天.整数往后推,负数往前移动
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String str =  sdf.format(calendar.getTime());
 		return str;

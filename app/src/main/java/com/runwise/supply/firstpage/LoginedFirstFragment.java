@@ -424,7 +424,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case FINISH_RETURN:
                 mSelectBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
-                dialog.setTitle("");
+                dialog.setTitle("提示");
                 dialog.setMessageGravity();
                 dialog.setMessage("确认数量一致?");
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {

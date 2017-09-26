@@ -7,14 +7,14 @@ package com.runwise.supply.mine.entity;
 public class CollectCarInfo {
     private String member_id;//": 1,    //用户id
     private String car_id;//": 1,    //车id
-    private CollectCar car;
+    private CollectCar placeholder;
 
     public CollectCar getCar() {
-        return car;
+        return placeholder;
     }
 
-    public void setCar(CollectCar car) {
-        this.car = car;
+    public void setCar(CollectCar placeholder) {
+        this.placeholder = placeholder;
     }
 
     public String getMember_id() {

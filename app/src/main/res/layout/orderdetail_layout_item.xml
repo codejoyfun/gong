@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             fresco:placeholderImageScaleType="focusCrop"
-            fresco:placeholderImage="@drawable/car"
+            fresco:placeholderImage="@drawable/placeholder"
             android:layout_alignParentLeft="true"
             fresco:viewAspectRatio="1"
             />
