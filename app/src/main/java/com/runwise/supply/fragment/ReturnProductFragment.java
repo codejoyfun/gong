@@ -52,7 +52,7 @@ public class ReturnProductFragment extends BaseFragment {
 
     @Override
     protected int createViewByLayoutId() {
-        return R.layout.fragment_order_product;
+        return R.layout.fragment_return_product;
     }
 
     @Override

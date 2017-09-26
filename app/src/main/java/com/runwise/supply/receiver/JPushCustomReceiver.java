@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
 
@@ -39,7 +38,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                     e.printStackTrace();
                 }
             }
-            Log.i(TAG,message);
+//            Log.i(TAG,message);
         }
     }
 }

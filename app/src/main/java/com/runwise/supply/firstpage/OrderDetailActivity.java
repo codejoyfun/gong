@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -55,7 +57,6 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.view.YourScrollableViewPager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -130,11 +131,13 @@ public class OrderDetailActivity extends NetWorkActivity {
     @ViewInject(R.id.tablayout)
     private TabLayout tablayout;
     @ViewInject(R.id.viewpager)
-    private YourScrollableViewPager viewpager;
+    private ViewPager viewpager;
     @ViewInject(R.id.drag_layout)
     private DragTopLayout dragLayout;
     @ViewInject(R.id.tv_open)
     private ImageView ivOpen;
+    @ViewInject(R.id.v_space)
+    private View v_space;
     private boolean isModifyOrder;          //可修改订单
     private int orderId;                    //如果有orderId, 需要重新刷新
 
@@ -184,7 +187,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         dragLayout.setOverDrag(false);
     }
 
-    private void getReturnOrder(String rid){
+    private void getReturnOrder(String rid) {
         //发网络请求获取
         Object request = null;
         StringBuffer sb = new StringBuffer("/gongfu/v2/return_order/");
@@ -337,10 +340,10 @@ public class OrderDetailActivity extends NetWorkActivity {
                 if (dragLayout.getState() == DragTopLayout.PanelState.EXPANDED) {
                     dragLayout.toggleTopView();
                     canShow = true;
-                }else{
-                    if (mProductTypeWindow.isShowing()){
+                } else {
+                    if (mProductTypeWindow.isShowing()) {
                         mProductTypeWindow.dismiss();
-                    }else{
+                    } else {
                         showPopWindow();
                     }
                 }
@@ -348,7 +351,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                     @Override
                     public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
                         if (panelState == DragTopLayout.PanelState.COLLAPSED) {
-                            if (canShow){
+                            if (canShow) {
                                 showPopWindow();
                                 canShow = false;
                             }
@@ -371,14 +374,18 @@ public class OrderDetailActivity extends NetWorkActivity {
                 break;
         }
     }
+
     boolean canShow = false;
-    private void showPopWindow(){
+
+    private void showPopWindow() {
         int y = findViewById(R.id.title_bar).getHeight() + tablayout.getHeight();
         mProductTypeWindow.showAtLocation(getRootView(OrderDetailActivity.this), Gravity.NO_GRAVITY, 0, y);
         mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
+
     CategoryRespone categoryRespone;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -386,7 +393,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean = result.getResult();
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
-                adapter.setStatus(bean.getName(), bean.getState(),bean);
+                adapter.setStatus(bean.getName(), bean.getState(), bean);
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
@@ -404,22 +411,22 @@ public class OrderDetailActivity extends NetWorkActivity {
                     public void run() {
                         dragLayout.openTopView(false);
                     }
-                },200);
+                }, 200);
                 break;
             case RETURN_DETAIL:
                 BaseEntity.ResultBean rb = result.getResult();
                 ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
-                if (rdr.getReturnOrder() != null){
-                setUpReturnOrderView(bean.getReturnOrders().get(0),rdr.getReturnOrder().getName());
+                if (rdr.getReturnOrder() != null) {
+                    setUpReturnOrderView(bean.getReturnOrders().get(0), rdr.getReturnOrder().getName());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             dragLayout.openTopView(false);
                         }
-                    },500);
+                    }, 500);
                     bean.getReturnOrders().remove(0);
                     //可能有多个退货单。
-                    if (bean.getReturnOrders().size()>0){
+                    if (bean.getReturnOrders().size() > 0) {
                         String returnId = bean.getReturnOrders().get(0);
                         getReturnOrder(returnId);
                     }
@@ -502,7 +509,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         return TimeUtils.isMoreThan7Days(bean.getDoneDatetime());
     }
 
-    private void setUpReturnOrderView(final String returnId, String returnName){
+    private void setUpReturnOrderView(final String returnId, String returnName) {
         TextView tv = new TextView(mContext);
         tv.setTextSize(14);
         tv.setTextColor(Color.parseColor("#999999"));
@@ -533,7 +540,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 adapter.setHasReturn(true);
                 returnLL.setVisibility(View.VISIBLE);
                 //可能有多个退货单。
-                if (bean.getReturnOrders().size()>0){
+                if (bean.getReturnOrders().size() > 0) {
                     String returnId = bean.getReturnOrders().get(0);
                     getReturnOrder(returnId);
                 }
@@ -549,7 +556,11 @@ public class OrderDetailActivity extends NetWorkActivity {
             } else if (bean.getState().equals("sale")) {
                 state = "订单已确认";
                 tip = "正在为您挑拣商品";
-                bottom_bar.setVisibility(View.GONE);
+                ViewGroup.LayoutParams lp = bottom_bar.getLayoutParams();
+                lp.height = 0;
+                bottom_bar.setLayoutParams(lp);
+//                bottom_bar.setVisibility(View.GONE);
+//                setBottom(v_space);
             } else if (bean.getState().equals("peisong")) {
                 state = "订单已发货";
                 tip = "预计发达时间：" + bean.getEstimatedTime();
@@ -565,13 +576,19 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
                 if (!TextUtils.isEmpty(bean.getAppraisalUserName())) {
                     //已评价
-                    bottom_bar.setVisibility(View.GONE);
+//                    bottom_bar.setVisibility(View.GONE);
+                    ViewGroup.LayoutParams lp = bottom_bar.getLayoutParams();
+                    lp.height = 0;
+                    bottom_bar.setLayoutParams(lp);
                 }
                 //预计价钱改为，商品金额
                 ygMoney.setText("商品金额");
             } else if (bean.getState().equals("rated")) {
                 state = "订单已评价";
-                bottom_bar.setVisibility(View.GONE);
+//                bottom_bar.setVisibility(View.GONE);
+                ViewGroup.LayoutParams lp = bottom_bar.getLayoutParams();
+                lp.height = 0;
+                bottom_bar.setLayoutParams(lp);
                 tip = "感谢您的评价，供鲜生祝您生活愉快！";
             }
             orderStateTv.setText(state);
@@ -598,7 +615,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 setTitleRightText(true, "修改");
                 isModifyOrder = true;
             }
-            if(bean.getState().equals("rated") || bean.getState().equals("done")){
+            if (bean.getState().equals("rated") || bean.getState().equals("done")) {
                 //同时，显示右上角，申请售后
                 setTitleRightText(true, "申请售后");
             }
@@ -630,19 +647,27 @@ public class OrderDetailActivity extends NetWorkActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void setBottom(View v){
+        RelativeLayout.LayoutParams params =
+                (RelativeLayout.LayoutParams ) v.getLayoutParams();
+        params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        v.setLayoutParams(params);
+    }
+
     private void setUpDataForViewPage() {
         List<Fragment> orderProductFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         HashMap<String, ArrayList<ListBean.LinesBean>> map = new HashMap<>();
         titles.add("全部");
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
-            map.put(category,new ArrayList<ListBean.LinesBean>());
+            map.put(category, new ArrayList<ListBean.LinesBean>());
         }
         for (ListBean.LinesBean linesBean : listDatas) {
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(linesBean.getProductID()));
-            if (listBean != null && !TextUtils.isEmpty(listBean.getCategory())){
+            if (listBean != null && !TextUtils.isEmpty(listBean.getCategory())) {
                 ArrayList<ListBean.LinesBean> linesBeen = map.get(listBean.getCategory());
                 if (linesBeen == null) {
                     linesBeen = new ArrayList<>();
@@ -652,7 +677,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             }
         }
 
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             ArrayList<ListBean.LinesBean> value = map.get(category);
             orderProductFragmentList.add(newProductFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
@@ -691,14 +716,26 @@ public class OrderDetailActivity extends NetWorkActivity {
 
             }
         });
-        if(titles.size()<=TAB_EXPAND_COUNT){
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             tablayout.setTabMode(TabLayout.MODE_FIXED);
-        }else{
+        } else {
             ivOpen.setVisibility(View.VISIBLE);
             tablayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
         initPopWindow((ArrayList<String>) titles);
+//        int viewPageHeight = listDatas.size() * DensityUtil.dip2px(getActivityContext(), 84);
+//
+//        ViewGroup.LayoutParams layoutParams = mDragContentView.getLayoutParams();
+//        layoutParams.height =  viewPageHeight + DensityUtil.dip2px(getActivityContext(), 130);
+//        mDragContentView.setLayoutParams(layoutParams);
+//        Log.i("mDragContentView","before " + mDragContentView.getHeight());
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.i("mDragContentView","after' " + mDragContentView.getHeight());
+//            }
+//        },5000);
     }
 
     public OrderProductFragment newProductFragment(ArrayList<ListBean.LinesBean> value) {
@@ -736,8 +773,10 @@ public class OrderDetailActivity extends NetWorkActivity {
         sendConnection(urlSb.toString(), request, CANCEL, true, BaseEntity.ResultBean.class);
 
     }
+
     private PopupWindow mProductTypeWindow;
     ProductTypeAdapter mProductTypeAdapter;
+
     private void initPopWindow(ArrayList<String> typeList) {
         View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
@@ -756,10 +795,10 @@ public class OrderDetailActivity extends NetWorkActivity {
                 mProductTypeWindow.dismiss();
                 viewpager.setCurrentItem(position);
                 tablayout.getTabAt(position).select();
-                for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
-                    mProductTypeAdapter.selectList.set(i,new Boolean(false));
+                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
+                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
                 }
-                mProductTypeAdapter.selectList.set(position,new Boolean(true));
+                mProductTypeAdapter.selectList.set(position, new Boolean(true));
                 mProductTypeAdapter.notifyDataSetChanged();
             }
         });

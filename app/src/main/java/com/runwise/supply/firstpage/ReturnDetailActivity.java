@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -47,7 +48,6 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.runwise.supply.view.YourScrollableViewPager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -103,7 +103,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
     @ViewInject(R.id.tablayout)
     private TabLayout tablayout;
     @ViewInject(R.id.viewpager)
-    private YourScrollableViewPager viewpager;
+    private ViewPager viewpager;
     @ViewInject(R.id.drag_layout)
     private DragTopLayout dragLayout;
     @ViewInject(R.id.tv_open)

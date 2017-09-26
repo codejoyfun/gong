@@ -50,6 +50,8 @@ public class YourScrollableViewPager extends ViewPager {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+
+
     public void onPrevPage() {
         measure(MATCH_PARENT, 0);
     }

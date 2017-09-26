@@ -2,30 +2,27 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/orderdetail_bottom_item"
         android:background="#FFFFFF"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/orderdetail_bottom_item"
+        android:gravity="center"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/deafault_icon_goodsnone_tab"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"/>
+            android:src="@drawable/deafault_icon_goodsnone_tab"/>
 
         <TextView
             android:id="@+id/noDataText"
@@ -35,18 +32,10 @@
             android:layout_marginRight="12dp"
             android:textColor="#909398"
             android:textSize="16sp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/iv"
             android:text="该分类下没有商品"
             />
-    </RelativeLayout>
 
-    <include
-        android:id="@+id/orderdetail_bottom_item"
-        layout="@layout/orderdetail_bottom_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
 
+    </LinearLayout>
 
 </RelativeLayout>

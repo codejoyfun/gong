@@ -84,5 +84,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:background="#F0F0F0"/>
+        android:background="#F0F0F0"
+        android:visibility="gone"/>
 </LinearLayout>

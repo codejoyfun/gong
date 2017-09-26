@@ -404,7 +404,11 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             }
             holder.payTitle.setText(bean.getName());
             holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
-            holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getDeliveredQty())+"件商品");
+            if (bean.getState().equals(Constant.ORDER_STATE_DONE)||bean.getState().equals(Constant.ORDER_STATE_RATED)){
+                holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getDeliveredQty())+"件商品");
+            }else{
+                holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getAmount())+"件商品");
+            }
             if(GlobalApplication.getInstance().getCanSeePrice()) {
                 holder.payMoney.setVisibility(View.VISIBLE);
                 holder.payMoney.setText("共"+NumberUtil.getIOrD(bean.getAmountTotal()));
