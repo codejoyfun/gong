@@ -24,7 +24,6 @@ import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
-import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.config.Constant;
@@ -128,28 +127,29 @@ public abstract class BaseActivity extends FragmentActivity{
 			@Override
 			public void doClickButton(Button btn, CustomDialog dialog) {
 				//执行登出接口
-				Object param = null;
-				NetWorkHelper<BaseEntity> netWorkHelper = new NetWorkHelper<BaseEntity>(BaseActivity.this, new NetWorkHelper.NetWorkCallBack<BaseEntity>() {
-					@Override
-					public BaseEntity onParse(int where, Class<?> targerClass, String result) {
-						return null;
-					}
-
-					@Override
-					public void onSuccess(BaseEntity result, int where) {
-						switch(where){
-							case REQUEST_LOGINOUT:
-								EventBus.getDefault().post(new LogoutFromJpushEvent());
-								break;
-						}
-					}
-
-					@Override
-					public void onFailure(String errMsg, BaseEntity result, int where) {
-
-					}
-				});
-				netWorkHelper.sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+				EventBus.getDefault().post(new LogoutFromJpushEvent());
+//				Object param = null;
+//				NetWorkHelper<BaseEntity> netWorkHelper = new NetWorkHelper<BaseEntity>(BaseActivity.this, new NetWorkHelper.NetWorkCallBack<BaseEntity>() {
+//					@Override
+//					public BaseEntity onParse(int where, Class<?> targerClass, String result) {
+//						return null;
+//					}
+//
+//					@Override
+//					public void onSuccess(BaseEntity result, int where) {
+//						switch(where){
+//							case REQUEST_LOGINOUT:
+//								EventBus.getDefault().post(new LogoutFromJpushEvent());
+//								break;
+//						}
+//					}
+//
+//					@Override
+//					public void onFailure(String errMsg, BaseEntity result, int where) {
+//
+//					}
+//				});
+//				netWorkHelper.sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
 			}
 		});
 		dialog.setCanceledOnTouchOutside(false);
