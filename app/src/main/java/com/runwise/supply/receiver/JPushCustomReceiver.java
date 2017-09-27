@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
+import com.kids.commonframe.base.util.net.NetWorkHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -21,6 +23,9 @@ import cn.jpush.android.api.JPushInterface;
 public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TAG = "JPushCustomReceiver";
     public static final String TYPE_LOGOUT = "logout";
+    public static final String TYPE_LOGIN_CONFICT = "login_confict";
+
+    private static final int REQUEST_LOGINOUT = 1 << 0;
     @Override
     public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
@@ -34,11 +39,42 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                         //发送被迫下线通知
                         EventBus.getDefault().post(new ReceiverLogoutEvent());
                     }
+
+                    if (type.equals(TYPE_LOGIN_CONFICT)){
+                        resetLoginStatus(context);
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-//            Log.i(TAG,message);
         }
+
+
     }
+    private void resetLoginStatus(Context context){
+        //执行登出接口
+        Object param = null;
+        NetWorkHelper<BaseEntity> netWorkHelper = new NetWorkHelper<BaseEntity>(context, new NetWorkHelper.NetWorkCallBack<BaseEntity>() {
+            @Override
+            public BaseEntity onParse(int where, Class<?> targerClass, String result) {
+                return null;
+            }
+
+            @Override
+            public void onSuccess(BaseEntity result, int where) {
+                switch(where){
+                    case REQUEST_LOGINOUT:
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(String errMsg, BaseEntity result, int where) {
+
+            }
+        });
+        netWorkHelper.sendConnection("/gongfu/v2/reset_login_status",param,REQUEST_LOGINOUT,true,null);
+    }
+
 }

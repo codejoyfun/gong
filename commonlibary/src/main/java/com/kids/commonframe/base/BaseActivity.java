@@ -24,7 +24,6 @@ import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
-import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.config.Constant;
@@ -60,8 +59,9 @@ public abstract class BaseActivity extends FragmentActivity{
 	private boolean login,logout;
 	private UserLoginEvent userLoginEvent;
 	private boolean isResume;
+	public static boolean isClickLogout = true;
 
-	private static final int REQUEST_LOGINOUT = 1 << 0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,6 +79,23 @@ public abstract class BaseActivity extends FragmentActivity{
 //		if (AndroidWorkaround.checkDeviceHasNavigationBar(this)){
 //			AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
 //		}
+		if (!isClickLogout){
+			CustomDialog dialog = new CustomDialog(getActivityContext());
+			dialog.setMessage("你的账号在其他设备登录成功");
+			dialog.setTitle("提示");
+			dialog.setModel(CustomDialog.RIGHT);
+			dialog.setMessageGravity();
+			dialog.setRightBtnListener("确定", new CustomDialog.DialogListener() {
+				@Override
+				public void doClickButton(Button btn, CustomDialog dialog) {
+					isClickLogout = true;
+					EventBus.getDefault().post(new LogoutFromJpushEvent());
+				}
+			});
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.setCancelable(false);
+			dialog.show();
+		}
 	}
 
 
@@ -118,6 +135,7 @@ public abstract class BaseActivity extends FragmentActivity{
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onEventUserlogout(ReceiverLogoutEvent receiverLogoutEvent) {
+		isClickLogout = false;
 		//弹出被迫下线的对话框
 		CustomDialog dialog = new CustomDialog(getActivityContext());
 			dialog.setMessage("你的账号在其他设备登录成功");
@@ -127,29 +145,8 @@ public abstract class BaseActivity extends FragmentActivity{
 		dialog.setRightBtnListener("确定", new CustomDialog.DialogListener() {
 			@Override
 			public void doClickButton(Button btn, CustomDialog dialog) {
-				//执行登出接口
-				Object param = null;
-				NetWorkHelper<BaseEntity> netWorkHelper = new NetWorkHelper<BaseEntity>(BaseActivity.this, new NetWorkHelper.NetWorkCallBack<BaseEntity>() {
-					@Override
-					public BaseEntity onParse(int where, Class<?> targerClass, String result) {
-						return null;
-					}
-
-					@Override
-					public void onSuccess(BaseEntity result, int where) {
-						switch(where){
-							case REQUEST_LOGINOUT:
-								EventBus.getDefault().post(new LogoutFromJpushEvent());
-								break;
-						}
-					}
-
-					@Override
-					public void onFailure(String errMsg, BaseEntity result, int where) {
-
-					}
-				});
-				netWorkHelper.sendConnection("/gongfu/v2/reset_login_status",param,REQUEST_LOGINOUT,true,null);
+				isClickLogout = true;
+				EventBus.getDefault().post(new LogoutFromJpushEvent());
 			}
 		});
 		dialog.setCanceledOnTouchOutside(false);

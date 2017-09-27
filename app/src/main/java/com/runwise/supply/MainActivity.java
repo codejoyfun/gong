@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.SPUtils;
@@ -115,7 +114,7 @@ public class MainActivity extends NetWorkActivity {
         String registrationID = JPushInterface.getRegistrationID(this);
         Log.i("JPushInterface","dfd "+registrationID);
         //检查版本
-        CheckVersionManager checkVersionManager = new CheckVersionManager(this);
+//        CheckVersionManager checkVersionManager = new CheckVersionManager(this);
 //        checkVersionManager.checkVersion(false);
 //        Capture.init(getApplicationContext());
 //        CaptureClient mClient = new CaptureClient();
@@ -128,6 +127,8 @@ public class MainActivity extends NetWorkActivity {
         }
         if(getIntent().getBooleanExtra(INTENT_KEY_SKIP_TO_LOGIN,false)){
             startActivity(new Intent(getActivityContext(),LoginActivity.class));
+        }else{
+
         }
     }
 

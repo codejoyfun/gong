@@ -64,6 +64,9 @@ public class GlobalApplication extends MultiDexApplication {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
         startActivity(intent);
+
+        intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
     /**
      * 获取用户信息
