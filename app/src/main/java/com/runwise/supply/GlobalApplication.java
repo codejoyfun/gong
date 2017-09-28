@@ -62,10 +62,8 @@ public class GlobalApplication extends MultiDexApplication {
         //退出登录
         EventBus.getDefault().post(new UserLogoutEvent());
         Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
-        startActivity(intent);
-
-        intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
     /**
