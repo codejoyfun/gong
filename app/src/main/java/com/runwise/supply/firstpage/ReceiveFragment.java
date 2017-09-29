@@ -173,6 +173,9 @@ public class ReceiveFragment extends BaseFragment {
             if (((ReceiveActivity) getActivity()).ShuangRensShouHuoQueRen) {
                 return false;
             }
+            if (position < 0){
+                return false;
+            }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
@@ -286,12 +289,12 @@ public class ReceiveFragment extends BaseFragment {
                 } else {
                     if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                         ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
-                        if (rb.getCount() != 0){
+//                        if (rb.getCount() != 0){
                             viewHolder.receivedTv.setText(rb.getCount() + "");
-                        }
+//                        }
 //                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());
                     } else {
-//                        viewHolder.receivedTv.setText("0");
+                        viewHolder.receivedTv.setText("0");
 //                        Log.i("receivedTv", "011");
 //                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
                     }
