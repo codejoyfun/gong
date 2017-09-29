@@ -28,6 +28,7 @@ import android.widget.ImageView;
 
 import com.android.internal.http.multipart.FilePart;
 import com.android.internal.http.multipart.Part;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -178,7 +179,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
 //                upLoadBtn.setVisibility(View.VISIBLE);
 //                upLoadBtn.setText("确认修改");
                 adapter.setModifyMode(true);
-                if (picList.size() < 3){
+                if (picList.size() < 3 && !picList.contains(ADDBUTTON)){
                     picList.add(ADDBUTTON);
                 }
                 adapter.notifyDataSetChanged();
@@ -503,6 +504,8 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                         InputStream in = new FileInputStream(path1Scaled);
                         ImageUtils.writeToFile(localFile,in);
                         path1Scaled = localFile.getAbsolutePath();
+                        //因为重复用了文件名，所以要清fresco缓存
+                        Fresco.getImagePipeline().evictFromCache(Uri.fromFile(new File(path1Scaled)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

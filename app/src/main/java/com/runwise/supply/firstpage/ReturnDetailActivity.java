@@ -450,7 +450,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK || resultCode == 200){
             if (requestCode == REQUEST_CODE_UPLOAD){
                 //刷新界面
                 hasAttatchment = data.getBooleanExtra("has",false);
