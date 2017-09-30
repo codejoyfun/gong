@@ -111,7 +111,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
         List<OrderMsgDetail.OrderBean.LinesBean> typeList = new ArrayList<>();
         for (OrderMsgDetail.OrderBean.LinesBean bean : prodectList){
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(bean.getProductID()));
-            if (listBean.getCategory().equals(type)){
+            if (listBean != null && listBean.getCategory().equals(type)){
                 typeList.add(bean);
             }
         }
