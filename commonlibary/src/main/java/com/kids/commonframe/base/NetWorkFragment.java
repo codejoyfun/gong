@@ -1,8 +1,6 @@
 package com.kids.commonframe.base;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
 
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.util.net.NetWorkHelper.NetWorkCallBack;
@@ -11,7 +9,7 @@ import com.kids.commonframe.base.util.net.NetWorkHelper.NetWorkCallBack;
  * 基类Fragment 要联网操作的Fragment继承该类
  */
 public abstract class NetWorkFragment extends BaseFragment implements NetWorkCallBack<BaseEntity>{
-	private NetWorkHelper<BaseEntity> netWorkHelper;
+	protected NetWorkHelper<BaseEntity> netWorkHelper;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
