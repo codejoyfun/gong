@@ -31,6 +31,7 @@ public class UserInfo implements Serializable{
      * customerServicePhone : false
      * clerk : true
      * isZicai
+     * reserveGoodsAdvanceDate
      */
 
     private String username;
@@ -59,6 +60,15 @@ public class UserInfo implements Serializable{
     private String isAgreeItem;
     private boolean hasNewInvoice;
     private String company;
+    private int reserveGoodsAdvanceDate;
+
+    public int getReserveGoodsAdvanceDate() {
+        return reserveGoodsAdvanceDate;
+    }
+
+    public void setReserveGoodsAdvanceDate(int reserveGoodsAdvanceDate) {
+        this.reserveGoodsAdvanceDate = reserveGoodsAdvanceDate;
+    }
 
     public String getIsZicai() {
         return isZicai;

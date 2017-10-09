@@ -99,9 +99,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private TextView[] wArr = new TextView[3];
     private TextView[] dArr = new TextView[3];
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
-    private int selectedDate = 1;
+    private int selectedDate;
     //缓存外部显示用的日期周几
-    private String cachedDWStr = TimeUtils.getABFormatDate(2).substring(5) + " " + TimeUtils.getWeekStr(2);
+    private String cachedDWStr;
     //标记当前是否在编辑模式
     private boolean editMode;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
@@ -128,12 +128,16 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private OneKeyAdapter adapter;
     private double predict_sale_amount;
     private double yongliang_factor;
+    int mReserveGoodsAdvanceDate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.onekey_order_layout);
+        mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+        cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+        selectedDate = mReserveGoodsAdvanceDate;
         setTitleText(true,"智能下单");
         setTitleLeftIcon(true,R.drawable.nav_back);
         setTitleRightText(true,"编辑");
@@ -241,7 +245,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             case R.id.onekeyBtn:
                 //下单按钮
                 CommitOrderRequest request = new CommitOrderRequest();
-                request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate + 1));
+                request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
                 request.setOrder_type_id("121");
                 List<DefaultPBean> list = adapter.getList();
                 List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
@@ -328,21 +332,21 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         dArr[1] = dTv2;
         dArr[2] = dTv3;
         //选中哪个，通过selectedDate来判断
-        wArr[selectedDate].setTextColor(Color.parseColor("#6BB400"));
-        dArr[selectedDate].setTextColor(Color.parseColor("#6BB400"));
+        wArr[selectedDate-1].setTextColor(Color.parseColor("#6BB400"));
+        dArr[selectedDate-1].setTextColor(Color.parseColor("#6BB400"));
         //计算当前日期起，明后天的星期几+号数
-        wTv1.setText(TimeUtils.getWeekStr(1));
-        String[] t = TimeUtils.getABFormatDate(1).split("-");
+        wTv1.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1));
+        String[] t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate - 1).split("-");
         if (t.length > 2){
             dTv1.setText(t[1]+"-"+t[2]);
         }
-        wTv2.setText(TimeUtils.getWeekStr(2));
-        t = TimeUtils.getABFormatDate(2).split("-");
+        wTv2.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
+        t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).split("-");
         if (t.length > 2){
             dTv2.setText(t[1]+"-"+t[2]);
         }
-        wTv3.setText(TimeUtils.getWeekStr(3));
-        t = TimeUtils.getABFormatDate(3).split("-");
+        wTv3.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate+1));
+        t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate+1).split("-");
         if (t.length > 2){
             dTv3.setText(t[1]+"-"+t[2]);
         }
@@ -355,9 +359,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        selectedDate = 0;
+                        selectedDate = mReserveGoodsAdvanceDate-1;
                         bDialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(1).substring(5)+" "+TimeUtils.getWeekStr(1));
+                        dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate-1).substring(5)+" "+TimeUtils.getWeekStr(mReserveGoodsAdvanceDate-1));
                     }
                 },500);
             }
@@ -370,9 +374,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        selectedDate = 1;
+                        selectedDate = mReserveGoodsAdvanceDate;
                         bDialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(2).substring(5)+" "+TimeUtils.getWeekStr(2));
+                        dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5)+" "+TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
                     }
                 },500);
             }
@@ -385,9 +389,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        selectedDate = 2;
+                        selectedDate = mReserveGoodsAdvanceDate+1;
                         bDialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(3).substring(5)+" "+TimeUtils.getWeekStr(3));
+                        dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate+1).substring(5)+" "+TimeUtils.getWeekStr(mReserveGoodsAdvanceDate+1));
                     }
                 },500);
             }
