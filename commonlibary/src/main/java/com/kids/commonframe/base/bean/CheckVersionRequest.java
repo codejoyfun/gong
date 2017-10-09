@@ -7,6 +7,7 @@ package com.kids.commonframe.base.bean;
 public class CheckVersionRequest {
     private String version_name;
     private String version_code;
+    private String tag;
 
     public String getVersion_name() {
         return version_name;
@@ -22,5 +23,13 @@ public class CheckVersionRequest {
 
     public void setVersion_code(String version_code) {
         this.version_code = version_code;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }
