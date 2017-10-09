@@ -71,6 +71,7 @@ public class MainActivity extends NetWorkActivity {
             DbUtils dbUtils = DbUtils.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
             HashMap<String,ProductBasicList.ListBean> map = new HashMap<>();
+            dbUtils.configAllowTransaction(true);
             for (ProductBasicList.ListBean bean : basicList){
                 map.put(String.valueOf(bean.getProductID()),bean);
                 //同时存到dB里面

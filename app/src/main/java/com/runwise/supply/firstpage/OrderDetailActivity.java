@@ -14,6 +14,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,8 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -52,6 +55,7 @@ import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
+import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
@@ -80,6 +84,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private static final int CANCEL = 2;
     public static final int CATEGORY = 3333;
     public static final int RETURN_DETAIL = 4;
+    public static final int PRODUCT_DETAIL = 5;
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -433,6 +438,20 @@ public class OrderDetailActivity extends NetWorkActivity {
 
                 }
                 break;
+            case PRODUCT_DETAIL:
+                ProductOne productOne = (ProductOne) result.getResult().getData();
+                ProductBasicList.ListBean listBean = productOne.getProduct();
+                //保存进缓存
+                missingLinesBean.remove(listBean.getProductID());
+                if(cacheProductInfo==null)cacheProductInfo = new ArrayList<>();
+                ProductBasicUtils.getBasicMap(this).put(listBean.getProductID()+"",listBean);//更新内存缓存
+                cacheProductInfo.add(listBean);
+                if(missingLinesBean.size()==0){//所有都返回了
+                    ProductBasicUtils.saveProductInfoAsync(this,cacheProductInfo);
+                    //刷新页面
+                    setUpDataForViewPage();
+                }
+                break;
         }
     }
 
@@ -655,6 +674,9 @@ public class OrderDetailActivity extends NetWorkActivity {
         v.setLayoutParams(params);
     }
 
+    SparseArray<ListBean.LinesBean> missingLinesBean = new SparseArray<>();//本地数据库没有这个商品的数据，需要查询接口
+    List<ProductBasicList.ListBean> cacheProductInfo;
+
     private void setUpDataForViewPage() {
         List<Fragment> orderProductFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
@@ -674,7 +696,14 @@ public class OrderDetailActivity extends NetWorkActivity {
                     map.put(listBean.getCategory(), linesBeen);
                 }
                 linesBeen.add(linesBean);
+            } else if(listBean == null){//本地没有该商品数据
+                missingLinesBean.put(linesBean.getProductID(),linesBean);
             }
+        }
+        if(missingLinesBean!=null && missingLinesBean.size()>0){
+            //request server
+            requestMissingInfo();
+            return;
         }
 
         for (String category : categoryRespone.getCategoryList()) {
@@ -816,4 +845,14 @@ public class OrderDetailActivity extends NetWorkActivity {
         });
     }
 
+    private void requestMissingInfo(){
+        cacheProductInfo = new ArrayList<>();
+        for(int i=0;i<missingLinesBean.size();i++){
+            Object request = null;
+            StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
+            int key = missingLinesBean.keyAt(i);
+            sb.append(missingLinesBean.get(key).getProductID()).append("/");
+            sendConnection(sb.toString(), request, PRODUCT_DETAIL, false, ProductOne.class);
+        }
+    }
 }
