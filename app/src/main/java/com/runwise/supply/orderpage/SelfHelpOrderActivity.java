@@ -24,6 +24,7 @@ import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.animation.AnimatorSet;
@@ -121,6 +122,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
     };
     private OneKeyAdapter adapter;
+    CustomProgressDialog mCustomProgressDialog;
     @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth,R.id.onekeyBtn,R.id.deleteBtn,R.id.self_add_btn})
     public void btnClick(View view){
         switch (view.getId()){
@@ -183,7 +185,11 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     cList.add(pBean);
                 }
                 request.setProducts(cList);
-                sendConnection("/gongfu/v2/order/create/",request,COMMIT_TYPE,true, CommitResponse.class);
+                sendConnection("/gongfu/v2/order/create/",request,COMMIT_TYPE,false, CommitResponse.class);
+                mCustomProgressDialog =  new CustomProgressDialog(this);
+                mCustomProgressDialog.setMsg("下单中...");
+                mCustomProgressDialog.show();
+                findViewById(R.id.onekeyBtn).setEnabled(false);
                 break;
             case R.id.deleteBtn:
                 dialog.setTitle("提示");
@@ -472,6 +478,9 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
                 break;
             case COMMIT_TYPE:
+                if (mCustomProgressDialog != null){
+                    mCustomProgressDialog.dismiss();
+                }
                 bgView.setVisibility(View.VISIBLE);
                 orderSuccessIv.setVisibility(View.VISIBLE);
                 AnimatorSet set = new AnimatorSet();
@@ -486,8 +495,10 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     public void run() {
                         finish();
                         EventBus.getDefault().post(new OrderSuccessEvent());
+                        findViewById(R.id.onekeyBtn).setEnabled(true);
                     }
                 },1500);
+
                 break;
             default:
                 break;
@@ -496,7 +507,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     }
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        findViewById(R.id.onekeyBtn).setEnabled(true);
 
     }
     private int getResIdByDrawableName(String name){

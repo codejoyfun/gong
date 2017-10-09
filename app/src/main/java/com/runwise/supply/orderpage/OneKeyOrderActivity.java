@@ -254,6 +254,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 }
                 request.setProducts(cList);
                 sendConnection("/gongfu/v2/order/create/",request,COMMIT_TYPE,true, CommitResponse.class);
+
                 break;
             case R.id.deleteBtn:
                 dialog.setTitle("提示");
