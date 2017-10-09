@@ -13,6 +13,7 @@ import com.kids.commonframe.R;
 import com.kids.commonframe.base.BaseManager;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.VersionUpdateResponse;
+import com.kids.commonframe.config.Constant;
 
 
 /**
@@ -40,26 +41,24 @@ public class CustomUpdateDialog extends Dialog {
 		updateContext = (TextView) this.findViewById(R.id.update_context);
 		cancle = (Button) this.findViewById(R.id.update_cancle);
 		okBtn = (Button) this.findViewById(R.id.update_ok);
-		String type = bean.getUpdatetype();
 
-		if (!TextUtils.isEmpty(type)) {
-			if ("1".equals(type)) {
-				title.setText("发现新版本，更新内容为：");
-				okBtn.setText("立即更新");
-				cancle.setText("取消");
-			}
-			else if ("2".equals(type)) {
-				title.setText("发现新版本，需要更新才能继续使用：");
-				okBtn.setText("立即更新");
-				cancle.setText("退出");
-				this.setOnDismissListener(new OnDismissListener() {
-					@Override
-					public void onDismiss(DialogInterface dialog) {
-						BaseManager.getInstance().finishAll();
-					}
-				});
-			}
+		if (!bean.isMandatory()) {
+			title.setText("发现新版本，更新内容为：");
+			okBtn.setText("立即更新");
+			cancle.setText("取消");
 		}
+		else{
+			title.setText("发现新版本，需要更新才能继续使用：");
+			okBtn.setText("立即更新");
+			cancle.setText("退出");
+			this.setOnDismissListener(new OnDismissListener() {
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					BaseManager.getInstance().finishAll();
+				}
+			});
+		}
+
 		updateContext.setText(bean.getDescription());
 		cancle.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -76,7 +75,7 @@ public class CustomUpdateDialog extends Dialog {
 			@Override
 			public void onClick(View arg0) {
 				dismiss();
-				checkVersionManager.startDownloadFile(bean.getUrl());
+				checkVersionManager.startDownloadFile(Constant.BASE_URL+bean.getUrl());
 //				Uri updateUrl = Uri.parse(bean.getUrl());
 //				Intent intent = new Intent(Intent.ACTION_VIEW, updateUrl);
 //				if (bean.getUrl().startsWith("www.")) {
