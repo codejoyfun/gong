@@ -93,7 +93,7 @@ public class ProductBasicUtils {
             @Override
             public void run() {
                 DbUtils dbUtils = DbUtils.create(context);
-                Log.d("haha","start save!");
+                //Log.d("haha","start save!");
                 for(ProductBasicList.ListBean listBean:listBeanList){
                     try {
                         dbUtils.saveOrUpdate(listBean);
@@ -101,7 +101,7 @@ public class ProductBasicUtils {
                         e.printStackTrace();
                     }
                 }
-                Log.d("haha","save!");
+                //Log.d("haha","save!");
             }
         };
         new Thread(runnable).start();
