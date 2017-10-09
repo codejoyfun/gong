@@ -46,6 +46,7 @@ import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.mine.ProcurementLimitActivity;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.tools.PollingUtil;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -128,12 +129,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         headView.findViewById(R.id.ll_procurement).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mSumMoneyData == null){
+                if (mSumMoneyData == null) {
                     return;
                 }
                 if (SPUtils.isLogin(getActivity())) {
-                    Intent intent = new Intent(mContext,ProcurementLimitActivity.class);
-                    intent.putExtra(KEY_SUM_MONEY_DATA,mSumMoneyData);
+                    Intent intent = new Intent(mContext, ProcurementLimitActivity.class);
+                    intent.putExtra(KEY_SUM_MONEY_DATA, mSumMoneyData);
                     startActivity(intent);
                 }
             }
@@ -227,20 +228,26 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void onResume() {
         super.onResume();
         if (this.isVisible()) {
-            if (adapter.getCount() == 0) {
-                pullListView.setRefreshing(true);
-            } else {
-                requestReturnList();
-            }
+            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
+        } else {
+            PollingUtil.getInstance().stopRequestOrder();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PollingUtil.getInstance().stopRequestOrder();
     }
 
     @Override
     protected int createViewByLayoutId() {
         return R.layout.fragment_logined_first;
     }
+
     LoadingLayout loadingLayout;
     SumMoneyData mSumMoneyData;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -257,11 +264,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //                    ToastUtil.show(mContext,"订单已刷新");
 //                }
                 isFirst = false;
-                if (adapter.getCount() == 0&&pullListView.getRefreshableView().getHeaderViewsCount() == 1){
-                    loadingLayout.onSuccess(0,"暂无在途订单",R.drawable.default_icon_ordernone);
+                if (adapter.getCount() == 0 && pullListView.getRefreshableView().getHeaderViewsCount() == 1) {
+                    loadingLayout.onSuccess(0, "暂无在途订单", R.drawable.default_icon_ordernone);
                     pullListView.getRefreshableView().addHeaderView(loadingLayout);
-                }else{
-                    loadingLayout.onSuccess(adapter.getCount(),"暂无在途订单",R.drawable.default_icon_ordernone);
+                } else {
+                    loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
                 }
                 break;
             case FROMLB:
@@ -301,7 +308,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //                requestReturnList();
                 break;
             case REQUEST_SUM:
-                mSumMoneyData = (SumMoneyData)result.getResult().getData();
+                mSumMoneyData = (SumMoneyData) result.getResult().getData();
                 break;
         }
     }
@@ -500,7 +507,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private void requestReturnList() {
         Object request = null;
         sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, false, ReturnOrderBean.class);
-
     }
 
     private void requestLB() {

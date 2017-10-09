@@ -3,6 +3,7 @@ package com.kids.commonframe.base.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.Gravity;
+import android.widget.TextView;
 
 import com.kids.commonframe.R;
 
@@ -14,7 +15,7 @@ import com.kids.commonframe.R;
 public class CustomProgressDialog extends Dialog {
 	
 //	private AnimationDrawable anim; 
-//	private TextView tvMsg;
+	private TextView tvMsg;
 //	private HoldTimer holderTimer;
 	public CustomProgressDialog(Context context) {
 		super(context, R.style.DialogNoBg);
@@ -23,7 +24,7 @@ public class CustomProgressDialog extends Dialog {
 		this.setCanceledOnTouchOutside(false);
 //		ImageView image = (ImageView) this.findViewById(R.id.loadingImageView);
 //		anim = (AnimationDrawable) image.getBackground();
-//		tvMsg = (TextView) this.findViewById(R.id.id_tv_loadingmsg);
+		tvMsg = (TextView) this.findViewById(R.id.id_tv_loadingmsg);
 	}
 	
 	@Override
@@ -50,9 +51,9 @@ public class CustomProgressDialog extends Dialog {
 	 * @return
 	 * 
 	 */
-//	public void setMsg(String strMessage) {
-//		tvMsg.setText(strMessage);
-//	}
+	public void setMsg(String strMessage) {
+		tvMsg.setText(strMessage);
+	}
 //	private class HoldTimer extends CountDownTimer implements Serializable {
 //		private static final long serialVersionUID = 1L;
 //		public HoldTimer(int second) {
