@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -56,9 +57,10 @@ import me.shaohui.bottomdialog.BottomDialog;
  */
 
 public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface {
-    private static final int DEFAULT_TYPE = 0;
-    private static final int COMMIT_TYPE = 1;
-    private static final int ADD_PRODUCT = 1000;
+    private static final int DEFAULT_TYPE = 1 << 0;
+    private static final int COMMIT_TYPE = 1 << 1;
+    private static final int ADD_PRODUCT = 1 << 2;
+    public static final int REQUEST_USER_INFO = 1 << 3;
     int[] loadingImgs = new int[31];
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -96,6 +98,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     private TextView[] dArr = new TextView[3];
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
     private int selectedDate;
+    private int selectedDateIndex;
     //缓存外部显示用的日期周几
     private String cachedDWStr;
     //标记当前是否在编辑模式
@@ -287,8 +290,8 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         dArr[1] = dTv2;
         dArr[2] = dTv3;
         //选中哪个，通过selectedDate来判断
-        wArr[selectedDate-1].setTextColor(Color.parseColor("#6BB400"));
-        dArr[selectedDate-1].setTextColor(Color.parseColor("#6BB400"));
+        wArr[selectedDateIndex].setTextColor(Color.parseColor("#6BB400"));
+        dArr[selectedDateIndex].setTextColor(Color.parseColor("#6BB400"));
         //计算当前日期起，明后天的星期几+号数
         wTv1.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1));
         String[] t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate - 1).split("-");
@@ -315,6 +318,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     @Override
                     public void run() {
                         selectedDate = mReserveGoodsAdvanceDate - 1;
+                        selectedDateIndex = 0;
                         bDialog.dismiss();
                         dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate - 1).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1));
                     }
@@ -330,6 +334,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     @Override
                     public void run() {
                         selectedDate = mReserveGoodsAdvanceDate;
+                        selectedDateIndex = 1;
                         bDialog.dismiss();
                         dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
                     }
@@ -345,6 +350,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     @Override
                     public void run() {
                         selectedDate = mReserveGoodsAdvanceDate + 1;
+                        selectedDateIndex = 2;
                         bDialog.dismiss();
                         dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate + 1).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1));
                     }
@@ -376,6 +382,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
+        selectedDateIndex = 1;
         self_help_rl.setVisibility(View.VISIBLE);
         loadingImg.setVisibility(View.INVISIBLE);
         loadingTv.setVisibility(View.INVISIBLE);
@@ -435,6 +442,13 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Object paramBean = null;
+        sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
+    }
+
     private void setTitleEditShow() {
         if (adapter.getCount() == 0) {
             setTitleRightText(false, "编辑");
@@ -466,8 +480,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
     }
 
-    @Override
-    public void onSuccess(BaseEntity result, int where) {
+    private void onSuccessCallBack(){
         //停止动画
         handler.removeCallbacks(runnable);
         loadingImg.setVisibility(View.INVISIBLE);
@@ -475,9 +488,14 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         bottom_bar.setVisibility(View.VISIBLE);
         ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
         pullListView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onSuccess(BaseEntity result, int where) {
         BaseEntity.ResultBean resultBean = result.getResult();
         switch (where) {
             case DEFAULT_TYPE:
+                onSuccessCallBack();
                 DefaultProductData data = (DefaultProductData) resultBean.getData();
                 adapter.setData(data.getList());
                 if (adapter.getCount() == 0) {
@@ -487,6 +505,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
                 break;
             case COMMIT_TYPE:
+                onSuccessCallBack();
                 if (mCustomProgressDialog != null) {
                     mCustomProgressDialog.dismiss();
                 }
@@ -509,7 +528,13 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }, 1500);
 
                 break;
-            default:
+            case REQUEST_USER_INFO:
+                UserInfo userInfo = (UserInfo) result.getResult().getData();
+                GlobalApplication.getInstance().saveUserInfo(userInfo);
+                mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+                cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+                selectedDate = mReserveGoodsAdvanceDate;
+                selectedDateIndex = 1;
                 break;
         }
 
