@@ -26,6 +26,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.OrderMsgDetail;
+import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.UserUtils;
@@ -40,6 +41,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
+    private static final int PRODUCT_DETAIL = 4;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -111,7 +113,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
         List<OrderMsgDetail.OrderBean.LinesBean> typeList = new ArrayList<>();
         for (OrderMsgDetail.OrderBean.LinesBean bean : prodectList){
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(bean.getProductID()));
-            if (listBean.getCategory().equals(type)){
+            if (listBean != null && listBean.getCategory().equals(type)){
                 typeList.add(bean);
             }
         }
@@ -146,6 +148,13 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
                 else {
                     pullListView.onRefreshComplete(adapter.getCount());
                 }
+                break;
+            case PRODUCT_DETAIL:
+                ProductOne productOne = (ProductOne) result.getResult().getData();
+                ProductBasicList.ListBean listBean = productOne.getProduct();
+                //保存进缓存
+                ProductBasicUtils.getBasicMap(getActivity()).put(listBean.getProductID()+"",listBean);//更新内存缓存
+                adapter.notifyDataSetChanged();
                 break;
         }
     }
@@ -203,6 +212,8 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
                 else{
                     viewHolder.dateNumber.setVisibility(View.GONE);
                 }
+            } else{//本地数据没有，查接口
+                requestMissingInfo(bean.getProductID());
             }
             viewHolder.uom.setText(bean.getProductUomQty()+"" + bean.getProductUom());
             return convertView;
@@ -224,5 +235,12 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
             @ViewInject(R.id.dateLate)
             TextView            dateLate;
         }
+    }
+
+    private void requestMissingInfo(int productId){
+            Object request = null;
+            StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
+            sb.append(productId).append("/");
+            sendConnection(sb.toString(), request, PRODUCT_DETAIL, false, ProductOne.class);
     }
 }

@@ -173,10 +173,13 @@ public class ReceiveFragment extends BaseFragment {
             if (((ReceiveActivity) getActivity()).ShuangRensShouHuoQueRen) {
                 return false;
             }
+            if (position < 0){
+                return false;
+            }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-            if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+            if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean != null && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                 return false;
             }
             return super.isEnabled(position);
@@ -188,6 +191,9 @@ public class ReceiveFragment extends BaseFragment {
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
+            if (pId.equals("711")){
+                Log.e("getExView",""+position + " " + basicBean.getName());
+            }
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
@@ -286,12 +292,12 @@ public class ReceiveFragment extends BaseFragment {
                 } else {
                     if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
                         ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
-                        if (rb.getCount() != 0){
+//                        if (rb.getCount() != 0){
                             viewHolder.receivedTv.setText(rb.getCount() + "");
-                        }
+//                        }
 //                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());
                     } else {
-//                        viewHolder.receivedTv.setText("0");
+                        viewHolder.receivedTv.setText("0");
 //                        Log.i("receivedTv", "011");
 //                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
                     }
