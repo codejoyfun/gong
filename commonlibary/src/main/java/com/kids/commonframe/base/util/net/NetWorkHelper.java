@@ -311,6 +311,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0922";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0914";
     public static final String DEFAULT_DATABASE_NAME = "LBZTest0927";
+//    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "";
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {
