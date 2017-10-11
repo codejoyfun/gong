@@ -9,6 +9,7 @@ import com.kids.commonframe.R;
 import com.kids.commonframe.base.bean.CheckVersionRequest;
 import com.kids.commonframe.base.bean.CheckVersionResult;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomUpdateDialog;
@@ -19,6 +20,7 @@ import com.liulishuo.filedownloader.FileDownloader;
 import java.io.File;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
 
 /**
  * 版本管理器
@@ -63,6 +65,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         localFile = new File(CommonUtils.getCachePath(baseActivity),remoteFile.getName());
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
         downloadTask.setPath(localFile.getAbsolutePath())
+                .addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME))
                 .setCallbackProgressMinInterval(1000)
                 .setListener(new FileDownloadListener() {
                     @Override
