@@ -37,8 +37,6 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.DbUtils;
-import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -648,7 +646,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 returnTv.setVisibility(View.VISIBLE);
             }
             //实收判断
-            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.getDeliveredQty() != bean.getAmount()) {
+            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && isShiShou()) {
                 receivtTv.setVisibility(View.VISIBLE);
                 countTv.setText((int) bean.getDeliveredQty() + "件");
             } else {
@@ -664,6 +662,19 @@ public class OrderDetailActivity extends NetWorkActivity {
             setUpDataForViewPage();
 
         }
+    }
+
+    /**
+     * 是否实收
+     * @return
+     */
+    private boolean isShiShou(){
+        for (OrderResponse.ListBean.LinesBean linesBean:bean.getLines()){
+            if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()){
+                return true;
+            }
+        }
+        return false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
