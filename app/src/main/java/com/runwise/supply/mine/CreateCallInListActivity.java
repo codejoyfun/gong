@@ -110,10 +110,10 @@ public class CreateCallInListActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.tv_call_in_store, R.id.tv_edit_or_finish, R.id.tv_submit})
+    @OnClick({R.id.rl_call_out, R.id.tv_edit_or_finish, R.id.tv_submit})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.tv_call_in_store:
+            case R.id.rl_call_out:
                 //选择门店
                 showStoreSelectDialog();
                 break;

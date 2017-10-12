@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -14,7 +13,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
-import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
@@ -248,25 +246,26 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.cellIcon:
-                String name = "供鲜生";
-                if(isLogin) {
-                    if(userInfo != null) {
-                        number = userInfo.getCompanyHotLine();
-                        name = userInfo.getCompany();
-                    }
-                }
-                dialog.setModel(CustomDialog.BOTH);
-                dialog.setTitle("致电"+" "+ name +" 客服热线");
-                dialog.setMessageGravity();
-                dialog.setMessage(number);
-                dialog.setLeftBtnListener("取消",null);
-                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        CommonUtils.callNumber(mContext,number);
-                    }
-                });
-                dialog.show();
+                startActivity(new Intent(getActivity(),CreateCallInListActivity.class));
+//                String name = "供鲜生";
+//                if(isLogin) {
+//                    if(userInfo != null) {
+//                        number = userInfo.getCompanyHotLine();
+//                        name = userInfo.getCompany();
+//                    }
+//                }
+//                dialog.setModel(CustomDialog.BOTH);
+//                dialog.setTitle("致电"+" "+ name +" 客服热线");
+//                dialog.setMessageGravity();
+//                dialog.setMessage(number);
+//                dialog.setLeftBtnListener("取消",null);
+//                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+//                    @Override
+//                    public void doClickButton(Button btn, CustomDialog dialog) {
+//                        CommonUtils.callNumber(mContext,number);
+//                    }
+//                });
+//                dialog.show();
                 break;
             case R.id.settingIcon:
                 intent = new Intent(mContext, SettingActivity.class);

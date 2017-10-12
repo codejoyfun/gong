@@ -18,6 +18,7 @@
         android:layout_height="60dp"
         android:layout_below="@id/titleLayout"
         android:background="@color/white"
+        android:clickable="true"
         android:padding="10dp">
 
         <TextView
@@ -118,6 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/v_line1"
+        android:layout_above="@+id/rl_bottom_bar"
         android:divider="#ededed"
         android:dividerHeight="0.5dp"
         android:fadingEdge="none"
@@ -125,11 +127,6 @@
         android:listSelector="#0000"/>
 
 
-    <include
-        layout="@layout/allocation_add_product"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lv_product"/>
 
     <RelativeLayout
         android:id="@+id/rl_bottom_bar"
