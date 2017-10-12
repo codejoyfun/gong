@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="75dp">
+                android:layout_height="90dp"
+                android:minHeight="90dp">
 
     <ImageView
         android:id="@+id/iv_delete"
@@ -28,12 +29,13 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/productImage"
+        android:layout_marginTop="18dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/editLL"
         android:layout_toRightOf="@id/productImage"
         android:singleLine="false"
+        android:gravity="top"
         android:text="黑鱼(大型)"
         android:textColor="#444444"
         android:textSize="16sp"/>
@@ -71,6 +73,37 @@
         android:textSize="11sp"
         />
 
+    <TextView
+        android:id="@+id/unit1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/padding_right"
+        android:text="单位"
+        android:textColor="#2E2E2E"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/unit1"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="@dimen/second_title"/>
+
+    <TextView
+        android:id="@+id/unit_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/tv_count"
+        android:text="x"
+        android:textColor="#2E2E2E"
+        android:textSize="12sp"/>
+
     <LinearLayout
         android:id="@+id/editLL"
         android:layout_width="wrap_content"
@@ -78,6 +111,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
+        android:background="@color/white"
         android:orientation="horizontal"
         android:visibility="visible">
 
@@ -88,7 +122,7 @@
             android:background="@null"
             android:src="@drawable/input_minus"/>
 
-        <EditText
+        <com.runwise.supply.view.NoWatchEditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,6 +139,5 @@
             android:src="@drawable/input_add"
             />
     </LinearLayout>
-
 
 </RelativeLayout>

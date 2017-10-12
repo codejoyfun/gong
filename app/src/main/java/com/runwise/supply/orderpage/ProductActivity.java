@@ -88,7 +88,9 @@ public class ProductActivity extends NetWorkActivity {
         //获取上一个页面传来的Parcelable
         Intent fromIntent = getIntent();
         Bundle bundle = fromIntent.getBundleExtra("apbundle");
-        addedPros = bundle.getParcelableArrayList("ap");
+        if (bundle != null){
+            addedPros = bundle.getParcelableArrayList("ap");
+        }
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

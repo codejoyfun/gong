@@ -122,6 +122,7 @@
         android:layout_above="@+id/rl_bottom_bar"
         android:divider="#ededed"
         android:dividerHeight="0.5dp"
+        android:background="@color/white"
         android:fadingEdge="none"
         android:fadingEdgeLength="0dp"
         android:listSelector="#0000"/>

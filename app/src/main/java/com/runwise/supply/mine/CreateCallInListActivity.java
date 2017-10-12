@@ -2,14 +2,15 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,10 +34,12 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.view.NoWatchEditText;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,7 +81,7 @@ public class CreateCallInListActivity extends BaseActivity {
     public static final int REQUEST_CODE_GET_PRODUCT = 1 << 0;
     private boolean canSeePrice = true;             //默认价格中可见
     //选中数量map
-    private static HashMap<String, Integer> countMap = new HashMap<>();
+    private  HashMap<String, Integer> countMap = new HashMap<>();
     ProductAdapter mProductAdapter;
     boolean mEditMode = false;
     ArrayList<String> mStoreNameList = new ArrayList<>();
@@ -105,11 +108,12 @@ public class CreateCallInListActivity extends BaseActivity {
         mStoreNameList.add("中大店");
         mStoreNameList.add("体育西路店");
         UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
-        if (userInfo != null){
+        if (userInfo != null) {
             mTvCallInStore.setText(userInfo.getMendian());
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick({R.id.rl_call_out, R.id.tv_edit_or_finish, R.id.tv_submit})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -127,34 +131,37 @@ public class CreateCallInListActivity extends BaseActivity {
                 break;
         }
     }
+
     OptionsPickerView mPvOptions;
-    private void showStoreSelectDialog(){
-        if (mPvOptions == null){
-            mPvOptions = new  OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void showStoreSelectDialog() {
+        if (mPvOptions == null) {
+            mPvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
                 @Override
-                public void onOptionsSelect(int options1, int options2, int options3,View v) {
+                public void onOptionsSelect(int options1, int options2, int options3, View v) {
                     //返回的分别是三个级别的选中位置
                     String tx = mStoreNameList.get(options1);
                     mTvCallOutStore.setText(tx);
                 }
             })
-                    .setSubmitText("确定")//确定按钮文字
+                    .setSubmitText("确认")//确定按钮文字
                     .setCancelText("取消")//取消按钮文字
                     .setTitleText("")//标题
-                    .setSubCalSize(18)//确定和取消文字大小
+                    .setSubCalSize(15)//确定和取消文字大小
                     .setTitleSize(20)//标题文字大小
                     .setTitleColor(Color.BLACK)//标题文字颜色
-                    .setSubmitColor(Color.BLUE)//确定按钮文字颜色
-                    .setCancelColor(Color.BLUE)//取消按钮文字颜色
-                    .setTitleBgColor(0xFF333333)//标题背景颜色 Night mode
-                    .setBgColor(0xFF000000)//滚轮背景颜色 Night mode
+                    .setSubmitColor(Color.BLACK)//确定按钮文字颜色
+                    .setCancelColor(Color.BLACK)//取消按钮文字颜色
+                    .setTitleBgColor(getColor(R.color.bg_titlebar_select))//标题背景颜色 Night mode
+                    .setBgColor(0xFFFFFFFF)//滚轮背景颜色 Night mode
                     .setContentTextSize(18)//滚轮文字大小
                     .setLinkage(false)//设置是否联动，默认true
                     .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
-                    .setCyclic(true,true,true)//循环与否
+                    .setCyclic(false, false, false)//循环与否
                     .setSelectOptions(1)  //设置默认选中项
                     .setOutSideCancelable(false)//点击外部dismiss default true
-                    .isDialog(true)//是否显示为对话框样式
+                    .isDialog(false)//是否显示为对话框样式
                     .build();
             mPvOptions.setPicker(mStoreNameList);//添加数据源
         }
@@ -169,12 +176,12 @@ public class CreateCallInListActivity extends BaseActivity {
             switch (requestCode) {
                 case REQUEST_CODE_GET_PRODUCT:
                     ArrayList<AddedProduct> addedList = data.getParcelableArrayListExtra(INTENT_KEY_BACKAP);
-                    ArrayList<ProductData.ListBean> list = (ArrayList<ProductData.ListBean>) mProductAdapter.getList();
                     for (AddedProduct addedProduct : addedList) {
                         boolean findIt = false;
-                        for (ProductData.ListBean listBean : list) {
+                        for (Object object : mProductAdapter.getList()) {
+                            ProductData.ListBean listBean = (ProductData.ListBean) object;
                             if (addedProduct.getProductId().equals(String.valueOf(listBean.getProductID()))) {
-                                int count = countMap.get(listBean.getProductID());
+                                int count = countMap.get(String.valueOf(listBean.getProductID()));
                                 count += addedProduct.getCount();
                                 countMap.put(String.valueOf(listBean.getProductID()), count);
                                 findIt = true;
@@ -184,12 +191,36 @@ public class CreateCallInListActivity extends BaseActivity {
                         //新增产品种类
                         if (!findIt) {
                             countMap.put(addedProduct.getProductId(), addedProduct.getCount());
+                            ProductBasicList.ListBean bean = ProductBasicUtils.getBasicMap(getActivityContext()).get(addedProduct.getProductId());
+                            ProductData.ListBean listBean = new ProductData.ListBean();
+                            listBean.setName(bean.getName());
+                            listBean.setSettlePrice(String.valueOf(bean.getSettlePrice()));
+                            listBean.setUom(bean.getUom());
+                            listBean.setSettleUomId(bean.getSettleUomId());
+                            listBean.setPrice(bean.getPrice());
+                            listBean.setDefaultCode(bean.getDefaultCode());
+                            listBean.setStockType(bean.getStockType());
+                            listBean.setCategory(bean.getCategory());
+                            listBean.setUnit(bean.getUnit());
+                            listBean.setProductUom(bean.getProductUom());
+                            listBean.setProductID(bean.getProductID());
+                            listBean.setTracking(bean.getTracking());
+                            mProductAdapter.append(listBean);
                         }
                     }
                     mProductAdapter.notifyDataSetChanged();
+                    refreshTotalCount();
                     break;
             }
         }
+    }
+
+    private void refreshTotalCount() {
+        int totalCount = 0;
+        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+            totalCount += entry.getValue();
+        }
+        mTvCount.setText(totalCount+" 件");
     }
 
     public class ProductAdapter extends IBaseAdapter {
@@ -204,8 +235,8 @@ public class CreateCallInListActivity extends BaseActivity {
                 convertView = View.inflate(mContext, R.layout.item_product_call_in, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-                EditText et = viewHolder.editText;
-                et.addTextChangedListener(new TextWatcher() {
+                viewHolder.editText.removeTextChangedListener();
+                viewHolder.editText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -213,22 +244,21 @@ public class CreateCallInListActivity extends BaseActivity {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (!ischange) {
-                            int changedNum = 0;
-                            if (!TextUtils.isEmpty(s)) {
-                                changedNum = Integer.valueOf(s.toString());
-                            }
-                            countMap.put(String.valueOf(bean.getProductID()), changedNum);
-                            if (changedNum == 0){
-                                mList.remove(bean);
-                                notifyDataSetChanged();
-                            }
-                        }
+
                     }
 
                     @Override
                     public void afterTextChanged(Editable s) {
-
+                        int changedNum = 0;
+                        if (!TextUtils.isEmpty(s)) {
+                            changedNum = Integer.valueOf(s.toString());
+                        }
+                        countMap.put(String.valueOf(bean.getProductID()), changedNum);
+                        if (changedNum == 0) {
+                            mList.remove(bean);
+                            notifyDataSetChanged();
+                        }
+                        refreshTotalCount();
                     }
                 });
             } else {
@@ -237,45 +267,27 @@ public class CreateCallInListActivity extends BaseActivity {
             //先根据集合里面对应个数初始化一次
             if (countMap.get(String.valueOf(bean.getProductID())) > 0) {
                 viewHolder.editLL.setVisibility(View.VISIBLE);
-                viewHolder.addBtn.setVisibility(View.INVISIBLE);
                 viewHolder.unit1.setVisibility(View.INVISIBLE);
             } else {
                 viewHolder.editLL.setVisibility(View.INVISIBLE);
-                viewHolder.addBtn.setVisibility(View.VISIBLE);
                 viewHolder.unit1.setVisibility(View.VISIBLE);
             }
-            final EditText editText = viewHolder.editText;
             ischange = true;
-            editText.setText(countMap.get(String.valueOf(bean.getProductID())) + "");
+            viewHolder.editText.setText(countMap.get(String.valueOf(bean.getProductID())) + "");
             ischange = false;
             final LinearLayout ll = viewHolder.editLL;
-            final ImageButton addBtn = viewHolder.addBtn;
             final TextView unit1 = viewHolder.unit1;
-            addBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    view.setVisibility(View.INVISIBLE);
-                    unit1.setVisibility(View.INVISIBLE);
-                    ll.setVisibility(View.VISIBLE);
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
-                    ischange = true;
-                    editText.setText(++currentNum + "");
-                    ischange = false;
-                    countMap.put(String.valueOf(bean.getProductID()), currentNum);
-                }
-            });
+            final ViewHolder finalViewHolder = viewHolder;
             viewHolder.inputMBtn.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     if (currentNum > 0) {
-                        ischange = true;
-                        editText.setText(--currentNum + "");
-                        ischange = false;
+                        --currentNum;
                         countMap.put(String.valueOf(bean.getProductID()), currentNum);
+                        finalViewHolder.editText.setText(currentNum + "");
                         if (currentNum == 0) {
-                            addBtn.setVisibility(View.VISIBLE);
                             unit1.setVisibility(View.VISIBLE);
                             ll.setVisibility(View.INVISIBLE);
                         }
@@ -283,15 +295,15 @@ public class CreateCallInListActivity extends BaseActivity {
 
                 }
             });
+            final ViewHolder finalViewHolder1 = viewHolder;
             viewHolder.inputPBtn.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
-                    ischange = true;
-                    editText.setText(++currentNum + "");
-                    ischange = false;
+                    currentNum++;
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
+                    finalViewHolder1.editText.setText(currentNum + "");
                 }
             });
 
@@ -323,7 +335,20 @@ public class CreateCallInListActivity extends BaseActivity {
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
             }
             viewHolder.unit1.setText(bean.getUom());
+            viewHolder.tv_count.setText(String.valueOf(countMap.get(String.valueOf(bean.getProductID()))));
+
             viewHolder.iv_delete.setVisibility(mEditMode ? View.VISIBLE : View.GONE);
+            if (mEditMode) {
+                viewHolder.editLL.setVisibility(View.VISIBLE);
+                viewHolder.unit1.setVisibility(View.INVISIBLE);
+                viewHolder.unit_tag.setVisibility(View.INVISIBLE);
+                viewHolder.tv_count.setVisibility(View.INVISIBLE);
+            } else {
+                viewHolder.editLL.setVisibility(View.INVISIBLE);
+                viewHolder.unit1.setVisibility(View.VISIBLE);
+                viewHolder.unit_tag.setVisibility(View.VISIBLE);
+                viewHolder.tv_count.setVisibility(View.VISIBLE);
+            }
             viewHolder.iv_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -343,20 +368,22 @@ public class CreateCallInListActivity extends BaseActivity {
             TextView content;//内容
             @ViewInject(R.id.editLL)
             LinearLayout editLL;        //整体编辑框
-            @ViewInject(R.id.addBtn)
-            ImageButton addBtn; //添加按钮
             @ViewInject(R.id.input_minus)
             ImageButton inputMBtn;//减
             @ViewInject(R.id.input_add)
             ImageButton inputPBtn;//加
             @ViewInject(R.id.editText)
-            EditText editText; //输入框
+            NoWatchEditText editText; //输入框
             @ViewInject(R.id.unit1)
             TextView unit1;  //单位
             @ViewInject(R.id.tv_price)
             TextView tv_price;  //单位
             @ViewInject(R.id.iv_delete)
             ImageView iv_delete;  //删除
+            @ViewInject(R.id.unit_tag)
+            TextView unit_tag;
+            @ViewInject(R.id.tv_count)
+            TextView tv_count;
 
         }
     }
