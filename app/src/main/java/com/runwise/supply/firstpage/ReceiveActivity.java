@@ -219,6 +219,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+//        getReceiveInfoFromDB();
+    }
+
+    private void getReceiveInfoFromDB(){
         for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
             List<ReceiveInfo> receiveInfoList = ProductBasicUtils.getReceiveInfo(getActivityContext(), lbean.getOrderID(), linesBean.getProductID());
             if (receiveInfoList != null && receiveInfoList.size() > 0) {
@@ -256,7 +260,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 }
                 countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
             }
-
         }
     }
 
@@ -724,7 +727,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        saveReceiveInfo();
+//        saveReceiveInfo();
     }
 
     public void saveReceiveInfo() {
