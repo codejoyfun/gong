@@ -3,11 +3,13 @@ package com.kids.commonframe.base;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.kids.commonframe.R;
 import com.kids.commonframe.base.bean.CheckVersionRequest;
 import com.kids.commonframe.base.bean.CheckVersionResult;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomUpdateDialog;
@@ -18,6 +20,7 @@ import com.liulishuo.filedownloader.FileDownloader;
 import java.io.File;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
 
 /**
  * 版本管理器
@@ -50,9 +53,9 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
     public void checkVersion(boolean showToast) {
         this.showToast = showToast;
         CheckVersionRequest checkVersionRequest = new CheckVersionRequest();
-        checkVersionRequest.setVersion_code(CommonUtils.getVersionCode(baseActivity));
-        checkVersionRequest.setVersion_name("Android");
-        netWorkHelper.sendConnection("/Appapi/user/app_versions",checkVersionRequest,REQUEST_CHECK_VERSION,false,CheckVersionResult.class);
+        //checkVersionRequest.setVersion_code(CommonUtils.getVersionCode(baseActivity));
+        checkVersionRequest.setTag("Android");
+        netWorkHelper.sendConnection("/api/app/release/latest/version",checkVersionRequest,REQUEST_CHECK_VERSION,false,VersionUpdateResponse.class);
         if (showToast) {
             ToastUtil.show(baseActivity,"检查更新中...");
         }
@@ -62,6 +65,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         localFile = new File(CommonUtils.getCachePath(baseActivity),remoteFile.getName());
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
         downloadTask.setPath(localFile.getAbsolutePath())
+                .addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME))
                 .setCallbackProgressMinInterval(1000)
                 .setListener(new FileDownloadListener() {
                     @Override
@@ -152,9 +156,11 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_CHECK_VERSION:
-                CheckVersionResult checkVersionResult = (CheckVersionResult)result;
-                VersionUpdateResponse updateResponse = checkVersionResult.getData();
-                if("1".equals(updateResponse.getUpdatetype())) {
+                VersionUpdateResponse updateResponse = (VersionUpdateResponse) result.getResult().getData();
+                String latestVersion = updateResponse.getVersionName();
+                if(TextUtils.isEmpty(latestVersion) || TextUtils.isEmpty(updateResponse.getUrl()))return;
+
+                if(!latestVersion.equals(CommonUtils.getVersionCode(baseActivity))) {
                     CustomUpdateDialog customUpdateDialog = new CustomUpdateDialog(baseActivity,updateResponse,CheckVersionManager.this);
                     if(!baseActivity.isFinishing()) {
                         customUpdateDialog.show();
