@@ -41,9 +41,9 @@ public class ProductBasicList implements Serializable{
         @Column
         private float settlePrice;
         @Column
-        private String uom = "";
+        private String uom;
         @Column
-        private String settleUomId = "";
+        private String settleUomId;
         @Column
         private double price;
         @Foreign(column = "imageID", foreign = "id")
@@ -59,7 +59,7 @@ public class ProductBasicList implements Serializable{
         @Column
         private String unit;
         @Column
-        private String productUom = "";
+        private String productUom;
         @Id
         @NoAutoIncrement
         private int productID;
