@@ -29,7 +29,6 @@ import com.runwise.supply.orderpage.ProductActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
-import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -48,8 +47,7 @@ import me.shaohui.bottomdialog.BottomDialog;
  * Created by libin on 2017/8/13.
  */
 
-public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface
-{
+public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface {
     private static final int COMMIT_TYPE = 1;
     private static final int ADD_PRODUCT = 1000;
 
@@ -84,7 +82,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
     private boolean editMode;
     private int orderId;
     private BottomDialog dialog = BottomDialog.create(getSupportFragmentManager())
-            .setViewListener(new BottomDialog.ViewListener(){
+            .setViewListener(new BottomDialog.ViewListener() {
                 @Override
                 public void bindView(View v) {
                     initDefaultDate(v);
@@ -95,6 +93,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
     private Handler handler = new Handler();
     private OneKeyAdapter adapter;
     private boolean canSeePrice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,36 +101,36 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_modify_layout);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-        setTitleRightText(true,"编辑");
-        setTitleLeftIcon(true,R.drawable.nav_back);
+        setTitleRightText(true, "编辑");
+        setTitleLeftIcon(true, R.drawable.nav_back);
         dateTv.setText(cachedDWStr);
         adapter = new OneKeyAdapter(mContext);
         adapter.setCallback(this);
         pullListView.setAdapter(adapter);
         bottom_bar.setVisibility(View.VISIBLE);
-        ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext,55));
+        ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
         //订单得到数据
         OrderResponse.ListBean bean = getIntent().getExtras().getParcelable("order");
-        setTitleText(true,bean.getName());
+        setTitleText(true, bean.getName());
         orderId = bean.getOrderID();
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
         List<DefaultPBean> newList = new ArrayList<>();
-        for (OrderResponse.ListBean.LinesBean lb : list){
+        for (OrderResponse.ListBean.LinesBean lb : list) {
             DefaultPBean db = new DefaultPBean();
             db.setProductID(lb.getProductID());
             int count = (int) lb.getProductUomQty();
-            adapter.getCountMap().put(lb.getProductID(),count);
+            adapter.getCountMap().put(lb.getProductID(), count);
             newList.add(db);
         }
         adapter.setData(newList);
         allLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (allCb.isChecked()){
+                if (allCb.isChecked()) {
                     allCb.setChecked(false);
                     setDeleteBtnOk(false);
                     adapter.setAllSelect(false);
-                }else{
+                } else {
                     allCb.setChecked(true);
                     setDeleteBtnOk(true);
                     adapter.setAllSelect(true);
@@ -142,9 +141,9 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where){
+        switch (where) {
             case COMMIT_TYPE:
-                ToastUtil.show(mContext,"订单修改成功");
+                ToastUtil.show(mContext, "订单修改成功");
                 EventBus.getDefault().post(new OrderChangedEvent());
                 finish();
                 break;
@@ -156,7 +155,8 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
-    @OnClick({R.id.dateTv,R.id.title_iv_left,R.id.title_tv_rigth,R.id.onekeyBtn,R.id.deleteBtn})
+
+    @OnClick({R.id.dateTv, R.id.title_iv_left, R.id.title_tv_rigth, R.id.onekeyBtn, R.id.deleteBtn})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.dateTv:
@@ -168,13 +168,13 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 }
                 break;
             case R.id.title_iv_left:
-                if (editMode){
+                if (editMode) {
                     //到添加页面
-                    Intent intent = new Intent(mContext,ProductActivity.class);
+                    Intent intent = new Intent(mContext, ProductActivity.class);
                     Bundle bundle = new Bundle();
                     int size = adapter.getList().size();
                     ArrayList<AddedProduct> addedList = new ArrayList<>();
-                    for (int i = 0; i < size;i++){
+                    for (int i = 0; i < size; i++) {
                         DefaultPBean bean = (DefaultPBean) adapter.getList().get(i);
                         Parcel parcel = Parcel.obtain();
                         AddedProduct ap = AddedProduct.CREATOR.createFromParcel(parcel);
@@ -184,26 +184,26 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                         parcel.recycle();
                         addedList.add(ap);
                     }
-                    bundle.putParcelableArrayList("ap",addedList);
-                    intent.putExtra("apbundle",bundle);
-                    startActivityForResult(intent,ADD_PRODUCT);
-                }else
+                    bundle.putParcelableArrayList("ap", addedList);
+                    intent.putExtra("apbundle", bundle);
+                    startActivityForResult(intent, ADD_PRODUCT);
+                } else
                     finish();
                 break;
             case R.id.title_tv_rigth:
-                if (!editMode){
-                    this.setTitleRightText(true,"完成");
-                    this.setTitleLeftIcon(true,R.drawable.nav_add);
+                if (!editMode) {
+                    this.setTitleRightText(true, "完成");
+                    this.setTitleLeftIcon(true, R.drawable.nav_add);
                     select_bar.setVisibility(View.VISIBLE);
-                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
-                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
+                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext, 55));
+                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext, 55));
                     editMode = true;
-                }else{
+                } else {
                     adapter.clearSelect();
-                    this.setTitleRightText(true,"编辑");
-                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext,55));
-                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext,55));
-                    this.setTitleLeftIcon(true,R.drawable.nav_back);
+                    this.setTitleRightText(true, "编辑");
+                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext, 55));
+                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext, 55));
+                    this.setTitleLeftIcon(true, R.drawable.nav_back);
                     editMode = false;
                 }
                 adapter.setEditMode(editMode);
@@ -215,7 +215,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
                 List<DefaultPBean> list = adapter.getList();
                 List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
-                for (DefaultPBean bean : list){
+                for (DefaultPBean bean : list) {
                     CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
                     pBean.setProduct_id(bean.getProductID());
                     int qty = adapter.getCountMap().get(Integer.valueOf(bean.getProductID()));
@@ -225,7 +225,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 request.setProducts(cList);
                 StringBuffer sb = new StringBuffer("/gongfu/order/");
                 sb.append(orderId).append("/modify/");
-                sendConnection(sb.toString(),request,COMMIT_TYPE,true, BaseEntity.ResultBean.class);
+                sendConnection(sb.toString(), request, COMMIT_TYPE, true, BaseEntity.ResultBean.class);
                 break;
             case R.id.deleteBtn:
                 adapter.deleteSelectItems();
@@ -259,18 +259,18 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         //计算当前日期起，明后天的星期几+号数
         wTv1.setText(TimeUtils.getWeekStr(0));
         String[] t = TimeUtils.getABFormatDate(0).split("-");
-        if (t.length > 2){
-            dTv1.setText(t[1]+"-"+t[2]);
+        if (t.length > 2) {
+            dTv1.setText(t[1] + "-" + t[2]);
         }
         wTv2.setText(TimeUtils.getWeekStr(1));
         t = TimeUtils.getABFormatDate(1).split("-");
-        if (t.length > 2){
-            dTv2.setText(t[1]+"-"+t[2]);
+        if (t.length > 2) {
+            dTv2.setText(t[1] + "-" + t[2]);
         }
         wTv3.setText(TimeUtils.getWeekStr(2));
         t = TimeUtils.getABFormatDate(2).split("-");
-        if (t.length > 2){
-            dTv3.setText(t[1]+"-"+t[2]);
+        if (t.length > 2) {
+            dTv3.setText(t[1] + "-" + t[2]);
         }
         //初始化点击事件
         rll1.setOnClickListener(new View.OnClickListener() {
@@ -283,9 +283,9 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                     public void run() {
                         selectedDate = 0;
                         dialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(0).substring(5)+" "+TimeUtils.getWeekStr(0));
+                        dateTv.setText(TimeUtils.getABFormatDate(0).substring(5) + " " + TimeUtils.getWeekStr(0));
                     }
-                },500);
+                }, 500);
             }
         });
         rll2.setOnClickListener(new View.OnClickListener() {
@@ -298,9 +298,9 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                     public void run() {
                         selectedDate = 1;
                         dialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(1).substring(5)+" "+TimeUtils.getWeekStr(1));
+                        dateTv.setText(TimeUtils.getABFormatDate(1).substring(5) + " " + TimeUtils.getWeekStr(1));
                     }
-                },500);
+                }, 500);
             }
         });
         rll3.setOnClickListener(new View.OnClickListener() {
@@ -313,18 +313,19 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                     public void run() {
                         selectedDate = 2;
                         dialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(2).substring(5)+" "+TimeUtils.getWeekStr(2));
+                        dateTv.setText(TimeUtils.getABFormatDate(2).substring(5) + " " + TimeUtils.getWeekStr(2));
                     }
-                },500);
+                }, 500);
             }
         });
     }
+
     //参数从0开始
     private void setSelectedColor(int i) {
-        for (TextView tv : wArr){
+        for (TextView tv : wArr) {
             tv.setTextColor(Color.parseColor("#2E2E2E"));
         }
-        for (TextView tv : dArr){
+        for (TextView tv : dArr) {
             tv.setTextColor(Color.parseColor("#2E2E2E"));
         }
         wArr[i].setTextColor(Color.parseColor("#6BB400"));
@@ -337,20 +338,20 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         double totalMoney = 0;
         List<DefaultPBean> list = adapter.getList();
         HashMap pbMap = ProductBasicUtils.getBasicMap(mContext);
-        if (pbMap != null && pbMap.size() > 0){
-            for (DefaultPBean bean : list){
+        if (pbMap != null && pbMap.size() > 0) {
+            for (DefaultPBean bean : list) {
                 ProductBasicList.ListBean lb = (ProductBasicList.ListBean) pbMap.get(String.valueOf(bean.getProductID()));
                 double price = lb.getPrice();
                 int count = adapter.getCountMap().get(bean.getProductID());
                 totalNum += count;
-                totalMoney += count*price;
+                totalMoney += count * price;
             }
         }
         DecimalFormat df = new DecimalFormat("#.00");
         String formatMoney = df.format(totalMoney);
-        totalMoneyTv.setText(formatMoney+"元");
-        totalNumTv.setText(totalNum+"件");
-        if (canSeePrice){
+        totalMoneyTv.setText(formatMoney + "元");
+        totalNumTv.setText(totalNum + "件");
+        if (canSeePrice) {
             totalMoneyTv.setVisibility(View.VISIBLE);
         }
         setTitleEditShow();
@@ -358,7 +359,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
 
     @Override
     public void selectClicked(OneKeyAdapter.SELECTTYPE type) {
-        switch(type){
+        switch (type) {
             case ALL_SELECT:
                 allCb.setChecked(true);
                 setDeleteBtnOk(true);
@@ -373,54 +374,55 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 break;
         }
     }
+
     private void setTitleEditShow() {
-        if (adapter.getCount() == 0){
-            setTitleRightText(false,"编辑");
-        }else{
-            if (editMode){
-                setTitleRightText(true,"完成");
-            }else{
-                setTitleRightText(true,"编辑");
+        if (adapter.getCount() == 0) {
+            setTitleRightText(false, "编辑");
+        } else {
+            if (editMode) {
+                setTitleRightText(true, "完成");
+            } else {
+                setTitleRightText(true, "编辑");
             }
         }
     }
+
     private void setDeleteBtnOk(boolean isOk) {
-        if (isOk){
+        if (isOk) {
             deleteBtn.setEnabled(true);
             deleteBtn.setBackgroundResource(R.drawable.product_delete_ok);
             deleteBtn.setTextColor(Color.parseColor("#FF3B30"));
-        }else{
+        } else {
             deleteBtn.setEnabled(false);
             deleteBtn.setBackgroundResource(R.drawable.product_delete_circle);
             deleteBtn.setTextColor(Color.parseColor("#E3E3E3"));
         }
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(resultCode){
-            case 2000:
-                Bundle bundle = data.getExtras();
-                ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
-                List<DefaultPBean> newList = new ArrayList<>();
-                if (backList != null){
-                    for (AddedProduct pro : backList){
-                        Integer proId = Integer.valueOf(pro.getProductId());
-                        Integer count = pro.getCount();
-                        DefaultPBean bean = new DefaultPBean();
-                        bean.setProductID(proId);
-                        newList.add(bean);
-                        adapter.getCountMap().put(proId,count);
-                    }
-                    adapter.setData(newList);
+        if (resultCode == RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
+            List<DefaultPBean> newList = new ArrayList<>();
+            if (backList != null) {
+                for (AddedProduct pro : backList) {
+                    Integer proId = Integer.valueOf(pro.getProductId());
+                    Integer count = pro.getCount();
+                    DefaultPBean bean = new DefaultPBean();
+                    bean.setProductID(proId);
+                    newList.add(bean);
+                    adapter.getCountMap().put(proId, count);
                 }
-                if (backList != null && backList.size() > 0){
-                    bottom_bar.setVisibility(View.VISIBLE);
-                    ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext,55));
-                }else{
-                }
-                setTitleEditShow();
-                break;
+                adapter.setData(newList);
+            }
+            if (backList != null && backList.size() > 0) {
+                bottom_bar.setVisibility(View.VISIBLE);
+                ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
+            } else {
+            }
+            setTitleEditShow();
         }
     }
 }

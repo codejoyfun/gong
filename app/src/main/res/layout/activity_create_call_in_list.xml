@@ -91,18 +91,18 @@
             android:gravity="center|left"
             android:paddingLeft="10dp"
             android:text="调拨明细"
-            android:textColor="@color/textColorSecondary"
+            android:textColor="@color/textColorThird"
             android:textSize="@dimen/third_title"/>
 
         <TextView
             android:id="@+id/tv_edit_or_finish"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center|left"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:text="编辑"
             android:layout_alignParentRight="true"
+            android:gravity="center|left"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="编辑"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/third_title"/>
 
@@ -113,20 +113,66 @@
         style="@style/divider_horizontal"
         android:layout_below="@id/rl_allocation"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_product"
+    <ListView
+        android:id="@+id/lv_product"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/v_line1"/>
+        android:layout_below="@id/v_line1"
+        android:divider="#ededed"
+        android:dividerHeight="0.5dp"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:listSelector="#0000"/>
+
+
+    <include
+        layout="@layout/allocation_add_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lv_product"/>
 
     <RelativeLayout
         android:id="@+id/rl_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/white"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
 
+        <TextView
+            android:id="@+id/tv_submit"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="10dp"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="提 交"
+            android:textColor="@color/white"
+            android:textSize="@dimen/third_title"/>
 
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_submit"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@id/tv_submit"
+            android:text="6 件"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="@dimen/third_title"/>
+
+        <TextView
+            android:id="@+id/tv_total_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tv_submit"
+            android:layout_marginBottom="8dp"
+            android:layout_toLeftOf="@id/tv_submit"
+            android:text="¥240.00"
+            android:textColor="@color/textColorRed"
+            android:textSize="@dimen/third_title"/>
 
 
     </RelativeLayout>

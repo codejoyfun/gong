@@ -72,6 +72,8 @@ public class ProductActivity extends NetWorkActivity {
     private ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
     private ArrayList<ProductData.ListBean> dataList = new ArrayList<>();//全部的商品信息
 
+    public static final String INTENT_KEY_BACKAP = "backap";
+
     public ArrayList<ProductData.ListBean> getDataList() {
         return dataList;
     }
@@ -272,7 +274,7 @@ public class ProductActivity extends NetWorkActivity {
                 break;
             case R.id.addBtn:
                 //回值给调用的页面
-                Intent intent = new Intent(mContext, OneKeyOrderActivity.class);
+                Intent intent = new Intent();
                 Bundle bundle = new Bundle();
                 //当前选中的商品信息
                 ArrayList<AddedProduct> addedList = new ArrayList<>();
@@ -290,9 +292,9 @@ public class ProductActivity extends NetWorkActivity {
                         addedList.add(pro);
                     }
                 }
-                bundle.putParcelableArrayList("backap", addedList);
+                bundle.putParcelableArrayList(INTENT_KEY_BACKAP, addedList);
                 intent.putExtras(bundle);
-                setResult(2000, intent);
+                setResult(RESULT_OK, intent);
                 finish();
                 break;
             case R.id.iv_open:

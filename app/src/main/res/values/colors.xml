@@ -29,5 +29,7 @@
     <color name="textColorSecondary">#666666</color>
     <!--三级文字-->
     <color name="textColorThird">#999999</color>
+    <!--三级文字-->
+    <color name="textColorRed">#FF3B30</color>
 
 </resources>
