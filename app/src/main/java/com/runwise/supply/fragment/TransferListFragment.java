@@ -18,6 +18,10 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.TransferEntity;
+import com.runwise.supply.entity.TransferListResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
 import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
@@ -34,10 +38,11 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     private static final int REQUEST_MORE = 1;
 
     @ViewInject(R.id.loadingLayout)
-    private LoadingLayout loadingLayout;
+    private LoadingLayout mLoadingLayout;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView mPullListView;
     private TransferListAdapter mTransferListAdapter;
+    private List<TransferEntity> mTransferList = new ArrayList<>();
     private int page = 1;
 
     @Override
@@ -55,17 +60,28 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         mTransferListAdapter = new TransferListAdapter();
         mPullListView.setAdapter(mTransferListAdapter);
         mPullListView.setOnRefreshListener(new PullToRefreshListener());
+        mTransferListAdapter = new TransferListAdapter();
         requestData(true,REQUEST_REFRESH,page,10);
     }
 
     protected void requestData(boolean showDialog, int where, int page, int limit){
-        //TODO
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/input_list",request,where,showDialog, TransferListResponse.class);
     }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case REQUEST_REFRESH:
+                TransferListResponse response = (TransferListResponse) result.getResult().getData();
+                mTransferList.addAll(response.getList());
+                mTransferListAdapter.setData(mTransferList);
+                if (mTransferListAdapter.getCount() == 0 && mPullListView.getRefreshableView().getHeaderViewsCount() == 1) {
+                    mLoadingLayout.onSuccess(0, "暂无在途订单", R.drawable.default_icon_ordernone);
+                    mPullListView.getRefreshableView().addHeaderView(mLoadingLayout);
+                } else {
+                    mLoadingLayout.onSuccess(mTransferListAdapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
+                }
                 break;
             case REQUEST_MORE:
                 break;
@@ -81,8 +97,9 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
      * 调度单列表项点击
      */
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    public void onItemClick(AdapterView<?> adapterView, View view, int pos, long position) {
         //去详情页
+        TransferEntity transferEntity = mTransferList.get(pos);
 
     }
 

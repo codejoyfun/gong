@@ -47,6 +47,8 @@ import static com.kids.commonframe.config.Constant.ORDER_STATE_SALE;
 
 public class TransferDetailActivity extends NetWorkActivity {
 
+    public static final String EXTRA_TRANSFER_ENTITY = "extra_transfer";
+
     @ViewInject(R.id.tv_transfer_detail_state)
     private TextView mTvTransferState;
     @ViewInject(R.id.tv_transfer_detail_state_tip)
@@ -74,7 +76,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         setContentView(R.layout.activity_transfer_detail);
         setTitleText(true,"调拨单详情");
         setTitleLeftIcon(true, R.drawable.nav_back);
-
+        mTransferEntity = getIntent().getParcelableExtra(EXTRA_TRANSFER_ENTITY);
         mDtlDragLayout.setOverDrag(false);
     }
 
@@ -86,6 +88,13 @@ public class TransferDetailActivity extends NetWorkActivity {
             case R.id.btn_transfer_detail_action:
                 break;
         }
+    }
+
+    /**
+     * 请求订单详情
+     */
+    private void requestData(){
+
     }
 
 

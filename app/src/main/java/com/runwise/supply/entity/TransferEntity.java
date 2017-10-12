@@ -1,16 +1,19 @@
 package com.runwise.supply.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.runwise.supply.firstpage.entity.OrderResponse;
 
 import java.util.List;
 
 /**
- * Fake scheme
+ * 调度单
  *
  * Created by Dong on 2017/10/10.
  */
 
-public class TransferEntity {
+public class TransferEntity implements Parcelable{
 
     //调拨单状态
     public static final String STATE_SUBMITTED = "";//已提交
@@ -99,4 +102,49 @@ public class TransferEntity {
     public void setTotalNum(int totalNum) {
         this.totalNum = totalNum;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.pickingID);
+        dest.writeString(this.pickingName);
+        dest.writeString(this.date);
+        dest.writeString(this.pickingState);
+        dest.writeString(this.locationName);
+        dest.writeString(this.locationDestName);
+        dest.writeTypedList(this.lines);
+        dest.writeFloat(this.totalPrice);
+        dest.writeInt(this.totalNum);
+    }
+
+    public TransferEntity() {
+    }
+
+    protected TransferEntity(Parcel in) {
+        this.pickingID = in.readString();
+        this.pickingName = in.readString();
+        this.date = in.readString();
+        this.pickingState = in.readString();
+        this.locationName = in.readString();
+        this.locationDestName = in.readString();
+        this.lines = in.createTypedArrayList(OrderResponse.ListBean.LinesBean.CREATOR);
+        this.totalPrice = in.readFloat();
+        this.totalNum = in.readInt();
+    }
+
+    public static final Creator<TransferEntity> CREATOR = new Creator<TransferEntity>() {
+        @Override
+        public TransferEntity createFromParcel(Parcel source) {
+            return new TransferEntity(source);
+        }
+
+        @Override
+        public TransferEntity[] newArray(int size) {
+            return new TransferEntity[size];
+        }
+    };
 }
