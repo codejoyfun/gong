@@ -103,13 +103,13 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 viewHolder = (ViewHolder)convertView.getTag();
             }
             final TransferEntity transferEntity = mList.get(position);
-            viewHolder.mmTvTitle.setText(transferEntity.getTransferId());
-            viewHolder.mmTvCreateTime.setText(transferEntity.getTransferId());
+            viewHolder.mmTvTitle.setText(transferEntity.getPickingID());
+            viewHolder.mmTvCreateTime.setText(transferEntity.getPickingID());
 
-            if(STATE_SUBMITTED.equals(transferEntity.getState())){//已提交
+            if(STATE_SUBMITTED.equals(transferEntity.getPickingState())){//已提交
                 viewHolder.mmTvStatus.setText("已提交");
                 viewHolder.mmTvAction.setText("取消");
-            }else if(STATE_DELIVER.equals(transferEntity.getState())){//已发出
+            }else if(STATE_DELIVER.equals(transferEntity.getPickingState())){//已发出
                 viewHolder.mmTvStatus.setText("已发出");
                 viewHolder.mmTvAction.setText("入库");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {

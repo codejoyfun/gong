@@ -18,58 +18,85 @@ public class TransferEntity {
     public static final String STATE_DELIVER = "";//已发出
     public static final String STATE_COMPLETE = "";//完成
 
-    private String transferId;
-    private String createTime;
-    private String state;
-    private String from;
-    private String to;
+    private String pickingID;
+    private String pickingName;
+    private String date;
+    private String pickingState;
+    private String locationName;
+    private String locationDestName;
     private List<OrderResponse.ListBean.LinesBean> lines;
+    private float totalPrice;
+    private int totalNum;
 
-    public String getTransferId() {
-        return transferId;
+    public String getPickingID() {
+        return pickingID;
     }
 
-    public String getState() {
-        return state;
+    public String getPickingState() {
+        return pickingState;
     }
 
-    public String getFrom() {
-        return from;
+    public String getPickingName() {
+        return pickingName;
     }
 
-    public String getTo() {
-        return to;
+    public String getDate() {
+        return date;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public String getLocationDestName() {
+        return locationDestName;
+    }
+
+    public float getTotalPrice() {
+        return totalPrice;
+    }
+
+    public int getTotalNum() {
+        return totalNum;
     }
 
     public List<OrderResponse.ListBean.LinesBean> getLines() {
         return lines;
     }
 
-    public void setTransferId(String transferId) {
-        this.transferId = transferId;
+    public void setPickingID(String pickingID) {
+        this.pickingID = pickingID;
     }
 
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
+    public void setPickingState(String pickingState) {
+        this.pickingState = pickingState;
     }
 
     public void setLines(List<OrderResponse.ListBean.LinesBean> lines) {
         this.lines = lines;
     }
 
-    public String getCreateTime() {
-        return createTime;
+    public void setPickingName(String pickingName) {
+        this.pickingName = pickingName;
     }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public void setLocationDestName(String locationDestName) {
+        this.locationDestName = locationDestName;
+    }
+
+    public void setTotalPrice(float totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setTotalNum(int totalNum) {
+        this.totalNum = totalNum;
     }
 }
