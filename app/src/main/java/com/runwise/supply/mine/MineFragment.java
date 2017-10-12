@@ -27,6 +27,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.TransferListActivity;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
@@ -236,7 +237,7 @@ public class MineFragment extends NetWorkFragment {
 
     }
     @OnClick({R.id.settingIcon,R.id.cellIcon,R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
-            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement,R.id.ll_cai_gou_e})
+            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement,R.id.ll_cai_gou_e,R.id.rl_transfer})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -352,6 +353,11 @@ public class MineFragment extends NetWorkFragment {
                     startActivity(intent);
                 }
                 break;
+            case R.id.rl_transfer://门店调度
+                if (SPUtils.isLogin(getActivity())) {
+                    intent = new Intent(mContext,TransferListActivity.class);
+                    startActivity(intent);
+                }
         }
 
     }

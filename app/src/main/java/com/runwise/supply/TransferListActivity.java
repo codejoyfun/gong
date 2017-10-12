@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.fragment.TransferListFragment;
 
 /**
@@ -23,13 +24,13 @@ import com.runwise.supply.fragment.TransferListFragment;
 
 public class TransferListActivity extends NetWorkActivity implements View.OnClickListener{
 
-    private Button transferInBtn;
-    private Button transferOutBtn;
+    private Button mTransferInBtn;
+    private Button mTransferOutBtn;
     @ViewInject(R.id.mid_layout)
     private ViewGroup midLayout;
-    private Fragment currentFragment;
-    private TransferListFragment transferInFragment;
-    private TransferListFragment transferOutFragment;
+    private Fragment mCurrentFragment;
+    private TransferListFragment mTransferInFragment;
+    private TransferListFragment mTransferOutFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,39 +42,40 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
 
     private void initViews(){
         setTitleLeftIcon(true,R.drawable.returned);
+        setTitleRightText(true,"添加");
         addTitleBarBtn();
     }
 
     private void addTitleBarBtn(){
         midLayout.removeAllViews();
-        transferInBtn = new Button(mContext);
-        transferInBtn.setText("调入");
-        transferInBtn.setTag("调入");
-        transferInBtn.setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
-        transferInBtn.setBackgroundResource(R.drawable.car_setting_circle_select);
+        mTransferInBtn = new Button(mContext);
+        mTransferInBtn.setText("调入");
+        mTransferInBtn.setTag("调入");
+        mTransferInBtn.setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
+        mTransferInBtn.setBackgroundResource(R.drawable.car_setting_circle_select);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(200,80);
         params.alignWithParent = true;
-        transferInBtn.setLayoutParams(params);
-        midLayout.addView(transferInBtn);
-        transferOutBtn = new Button(mContext);
-        transferOutBtn.setText("调出");
-        transferOutBtn.setTag("调出");
-        transferOutBtn.setBackgroundResource(R.drawable.setting_car_circle);
-        transferOutBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
-        transferOutBtn.setLayoutParams(params);
-        midLayout.addView(transferOutBtn);
-        transferInBtn.setOnClickListener(this);
-        transferOutBtn.setOnClickListener(this);
+        mTransferInBtn.setLayoutParams(params);
+        midLayout.addView(mTransferInBtn);
+        mTransferOutBtn = new Button(mContext);
+        mTransferOutBtn.setText("调出");
+        mTransferOutBtn.setTag("调出");
+        mTransferOutBtn.setBackgroundResource(R.drawable.setting_car_circle);
+        mTransferOutBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+        mTransferOutBtn.setLayoutParams(params);
+        midLayout.addView(mTransferOutBtn);
+        mTransferInBtn.setOnClickListener(this);
+        mTransferOutBtn.setOnClickListener(this);
     }
 
     private void initFragments(){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        transferInFragment = new TransferListFragment();
-        fragmentTransaction.add(R.id.fragmentContainer, transferInFragment);
-        currentFragment = transferInFragment;
+        mTransferInFragment = new TransferListFragment();
+        fragmentTransaction.add(R.id.fragmentContainer, mTransferInFragment);
+        mCurrentFragment = mTransferInFragment;
         fragmentTransaction.commit();
-        transferOutFragment = new TransferListFragment();
+        mTransferOutFragment = new TransferListFragment();
     }
 
     /**
@@ -82,8 +84,8 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
      * @param to
      */
     private void switchContent(Fragment from, Fragment to){
-        if (currentFragment != to) {
-            currentFragment = to;
+        if (mCurrentFragment != to) {
+            mCurrentFragment = to;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             if (!to.isAdded()) {    // 先判断是否被add过
                 transaction.hide(from).add(R.id.fragmentContainer, to).commit(); // 隐藏当前的fragment，add下一个到Activity中
@@ -105,19 +107,27 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        transferOutBtn.setBackgroundResource(R.drawable.setting_car_circle);
-        transferInBtn.setBackgroundResource(R.drawable.car_setting_circle);
-        transferInBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
-        transferOutBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+        mTransferOutBtn.setBackgroundResource(R.drawable.setting_car_circle);
+        mTransferInBtn.setBackgroundResource(R.drawable.car_setting_circle);
+        mTransferInBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+        mTransferOutBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
         ((Button)view).setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
         if ("调入".equals(view.getTag())){
             view.setBackgroundResource(R.drawable.car_setting_circle_select);
             //切换fragment
-            switchContent(currentFragment, transferInFragment);
+            switchContent(mCurrentFragment, mTransferInFragment);
         }else if("调出".equals(view.getTag())){
             view.setBackgroundResource(R.drawable.setting_car_circle_select);
             //切换fragment
-            switchContent(currentFragment, transferOutFragment);
+            switchContent(mCurrentFragment, mTransferOutFragment);
+        }
+    }
+
+    @OnClick({R.id.title_tv_rigth})
+    public void btnClick(View v){
+        switch (v.getId()){
+            case R.id.title_tv_rigth:
+                break;
         }
     }
 }
