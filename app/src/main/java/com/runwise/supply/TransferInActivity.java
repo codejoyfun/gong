@@ -1,8 +1,10 @@
 package com.runwise.supply;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,6 +43,7 @@ import java.util.Map;
 public class TransferInActivity extends NetWorkActivity {
     private static final int REQUEST_DETAIL = 0;
     private static final int REQUEST_TRANSFER_BATCH = 1;
+    private static final int ACT_REQ_TRANSFER_IN_BATCH = 0x123;
 
     public static final String INTENT_KEY_TRANSFER_ENTITY = "transfer_entity";
     @ViewInject(R.id.tv_transfer_to)
@@ -123,15 +126,19 @@ public class TransferInActivity extends NetWorkActivity {
                 mBatchDataMap = new HashMap<>();
                 for(TransferBatchResponse.TransferBatchLine line:lines){
                     mBatchDataMap.put(line.getProductID(),line);
+
+                    //初始化接收信息，默认全部收到
+                    int total = 0;
+                    for(TransferBatchResponse.TransferBatchLot transferBatchLot:line.getProductInfo()){
+                        transferBatchLot.setActualQty(transferBatchLot.getQuantQty());
+                        total = total + transferBatchLot.getQuantQty();
+                    }
+                    mTransferInMap.put(line.getProductID(),total);
                 }
                 requestProductList();
                 break;
-            case REQUEST_DETAIL://商品列表
+            case REQUEST_DETAIL://调拨单详情 从中获取商品列表
                 TransferDetailResponse transferDetailResponse = (TransferDetailResponse) result.getResult().getData();
-                //初始化入库数据，默认为全部收到
-                for(OrderResponse.ListBean.LinesBean linesBean:transferDetailResponse.getLines()){
-                    mTransferInMap.put(linesBean.getProductID()+"",(int)linesBean.getProductUomQty());
-                }
                 mProductAdapter.setProductList(transferDetailResponse.getLines());
                 break;
         }
@@ -140,6 +147,25 @@ public class TransferInActivity extends NetWorkActivity {
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //设置批次返回
+        if(resultCode==RESULT_OK && requestCode==ACT_REQ_TRANSFER_IN_BATCH){
+            TransferBatchResponse.TransferBatchLine batchLine = data.getParcelableExtra(TransferInBatchActivity.INTENT_KEY_TRANSFER_BATCH);
+            mBatchDataMap.put(batchLine.getProductID(),batchLine);
+            //cal total transfer in
+            int total = 0;
+            for(TransferBatchResponse.TransferBatchLot lot:batchLine.getProductInfo()){
+                total = total + lot.getActualQty();
+            }
+            mTransferInMap.put(batchLine.getProductID(),total);
+
+            setupSummaryUI();
+            mProductAdapter.notifyDataSetChanged();
+        }
     }
 
     private class TransferInProductAdapter extends RecyclerView.Adapter<TransferInProductAdapter.ViewHolder>{
@@ -196,6 +222,10 @@ public class TransferInActivity extends NetWorkActivity {
                         //跳去批次
                         if(mBatchDataMap==null)return;
                         TransferBatchResponse.TransferBatchLine transferBatchLine = mBatchDataMap.get(pId+"");
+                        Intent intent = new Intent(TransferInActivity.this, TransferInBatchActivity.class);
+                        intent.putExtra(TransferInBatchActivity.INTENT_KEY_PRODUCT,(Parcelable)bean);
+                        intent.putExtra(TransferInBatchActivity.INTENT_KEY_TRANSFER_BATCH,transferBatchLine);
+                        startActivityForResult(intent,ACT_REQ_TRANSFER_IN_BATCH);
                     }
                 });
             }else{

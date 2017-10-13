@@ -463,6 +463,9 @@
         <activity android:name=".firstpage.ReturnSuccessActivity"/>
         <activity android:name=".firstpage.UploadReturnPicActivity"/>
         <activity android:name=".TransferListActivity"
+        android:configChanges="keyboardHidden|orientation|screenSize"
+        android:screenOrientation="portrait"/>
+        <activity android:name=".TransferDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
         <activity

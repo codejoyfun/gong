@@ -1,5 +1,6 @@
 package com.runwise.supply.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -17,13 +18,16 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferListResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
+import static com.runwise.supply.entity.TransferEntity.STATE_PENDING_DELIVER;
 import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
 
 /**
@@ -34,6 +38,9 @@ import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
 
 public class TransferListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener {
 
+    public static final String ARG_KEY_TYPE = "type";
+    public static final int TYPE_IN = 0;
+    public static final int TYPE_OUT = 1;
     private static final int REQUEST_REFRESH = 0;
     private static final int REQUEST_MORE = 1;
 
@@ -68,8 +75,16 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     }
 
     protected void requestData(boolean showDialog, int where, int page, int limit){
+        int type = getArguments().getInt(ARG_KEY_TYPE);
         Object request = null;
-        sendConnection("/gongfu/shop/transfer/input_list",request,where,showDialog, TransferListResponse.class);
+        switch(type){
+            case TYPE_IN:
+                sendConnection("/gongfu/shop/transfer/input_list",request,where,showDialog, TransferListResponse.class);
+                break;
+            case TYPE_OUT:
+                sendConnection("/gongfu/shop/transfer/output_list",request,where,showDialog, TransferListResponse.class);
+                break;
+        }
     }
 
     @Override
@@ -102,8 +117,10 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int pos, long position) {
         //去详情页
-        TransferEntity transferEntity = mTransferList.get(pos);
-
+        TransferEntity transferEntity = (TransferEntity) mTransferListAdapter.getItem(pos);
+        Intent intent = new Intent(getActivity(), TransferDetailActivity.class);
+        intent.putExtra(EXTRA_TRANSFER_ENTITY, transferEntity);
+        startActivity(intent);
     }
 
     /**
@@ -123,8 +140,9 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 viewHolder = (ViewHolder)convertView.getTag();
             }
             final TransferEntity transferEntity = mList.get(position);
-            viewHolder.mmTvTitle.setText(transferEntity.getPickingID());
-            viewHolder.mmTvCreateTime.setText(transferEntity.getPickingID());
+            viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
+            viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
+            viewHolder.mmTvLocations.setText(transferEntity.getLocationName()+"\u2192"+transferEntity.getLocationDestName());
 
             if(STATE_SUBMITTED.equals(transferEntity.getPickingState())){//已提交
                 viewHolder.mmTvStatus.setText("已提交");
@@ -136,6 +154,14 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     @Override
                     public void onClick(View view) {
                         //TODO
+                    }
+                });
+            }else if(STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())){//待出库
+                viewHolder.mmTvStatus.setText("待出库");
+                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
                     }
                 });
             }
