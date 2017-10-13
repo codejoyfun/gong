@@ -143,7 +143,16 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
             switch (requestCode){
                 case REQUEST_CODE_CREATE_CALL_IN_LIST:
                     //刷新列表
-
+                    if (mTransferInFragment != null){
+                        mTransferInFragment.refresh();
+                        switchContent(mCurrentFragment, mTransferInFragment);
+                        mTransferOutBtn.setBackgroundResource(R.drawable.setting_car_circle);
+                        mTransferInBtn.setBackgroundResource(R.drawable.car_setting_circle);
+                        mTransferInBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+                        mTransferOutBtn.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+                        mTransferInBtn.setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
+                        mTransferInBtn.setBackgroundResource(R.drawable.car_setting_circle_select);
+                    }
                     break;
             }
         }

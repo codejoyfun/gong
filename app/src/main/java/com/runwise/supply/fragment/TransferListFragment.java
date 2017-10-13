@@ -60,8 +60,11 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         mTransferListAdapter = new TransferListAdapter();
         mPullListView.setAdapter(mTransferListAdapter);
         mPullListView.setOnRefreshListener(new PullToRefreshListener());
-        mTransferListAdapter = new TransferListAdapter();
         requestData(true,REQUEST_REFRESH,page,10);
+    }
+
+    public void refresh(){
+        requestData(true,REQUEST_REFRESH,1,10);
     }
 
     protected void requestData(boolean showDialog, int where, int page, int limit){
@@ -74,14 +77,14 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         switch (where){
             case REQUEST_REFRESH:
                 TransferListResponse response = (TransferListResponse) result.getResult().getData();
-                mTransferList.addAll(response.getList());
-                mTransferListAdapter.setData(mTransferList);
+                mTransferListAdapter.setData(response.getList());
                 if (mTransferListAdapter.getCount() == 0 && mPullListView.getRefreshableView().getHeaderViewsCount() == 1) {
                     mLoadingLayout.onSuccess(0, "暂无在途订单", R.drawable.default_icon_ordernone);
                     mPullListView.getRefreshableView().addHeaderView(mLoadingLayout);
                 } else {
                     mLoadingLayout.onSuccess(mTransferListAdapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
                 }
+                mPullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_MORE:
                 break;
