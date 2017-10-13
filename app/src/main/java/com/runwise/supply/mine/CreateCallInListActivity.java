@@ -255,7 +255,7 @@ public class CreateCallInListActivity extends BaseActivity {
                         }
                         countMap.put(String.valueOf(bean.getProductID()), changedNum);
                         if (changedNum == 0) {
-                            mList.remove(bean);
+                            mList.remove(position);
                             notifyDataSetChanged();
                         }
                         refreshTotalCount();
