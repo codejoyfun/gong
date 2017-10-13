@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,10 +21,12 @@ import android.widget.TextView;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.kids.commonframe.base.BaseActivity;
+import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.img.FrecoFactory;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -32,22 +35,27 @@ import com.runwise.supply.R;
 import com.runwise.supply.orderpage.ProductActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
+import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.StoreResponse;
 import com.runwise.supply.view.NoWatchEditText;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.vov.vitamio.utils.NumberUtil;
 
+import static com.runwise.supply.R.id.tv_edit_or_finish;
 import static com.runwise.supply.orderpage.ProductActivity.INTENT_KEY_BACKAP;
 
-public class CreateCallInListActivity extends BaseActivity {
+public class CreateCallInListActivity extends NetWorkActivity {
 
     @BindView(R.id.tv_call_out_store)
     TextView mTvCallOutStore;
@@ -61,7 +69,7 @@ public class CreateCallInListActivity extends BaseActivity {
     RelativeLayout mRlCallIn;
     @BindView(R.id.tv_allocation)
     TextView mTvAllocation;
-    @BindView(R.id.tv_edit_or_finish)
+    @BindView(tv_edit_or_finish)
     TextView mTvEditOrFinish;
     @BindView(R.id.rl_allocation)
     RelativeLayout mRlAllocation;
@@ -81,18 +89,22 @@ public class CreateCallInListActivity extends BaseActivity {
     public static final int REQUEST_CODE_GET_PRODUCT = 1 << 0;
     private boolean canSeePrice = true;             //默认价格中可见
     //选中数量map
-    private  HashMap<String, Integer> countMap = new HashMap<>();
+    private HashMap<String, Integer> countMap = new HashMap<>();
     ProductAdapter mProductAdapter;
     boolean mEditMode = false;
     ArrayList<String> mStoreNameList = new ArrayList<>();
+    public static final int REQUEST_CODE_GET_STORE_LIST = 1 << 0;
+    public static final int REQUEST_CODE_CREATE_CALL_IN_LIST = 1 << 1;
+    StoreResponse mStoreResponse;
+    UserInfo mUserInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_call_in_list);
-        ButterKnife.bind(this);
         setTitleText(true, "创建调入单");
         showBackBtn();
+        ButterKnife.bind(this);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         mProductAdapter = new ProductAdapter();
         mLvProduct.setAdapter(mProductAdapter);
@@ -104,35 +116,87 @@ public class CreateCallInListActivity extends BaseActivity {
                 startActivityForResult(new Intent(getActivityContext(), ProductActivity.class), REQUEST_CODE_GET_PRODUCT);
             }
         });
-        mStoreNameList.add("东山口店");
-        mStoreNameList.add("中大店");
-        mStoreNameList.add("体育西路店");
-        UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
-        if (userInfo != null) {
-            mTvCallInStore.setText(userInfo.getMendian());
+        mUserInfo = GlobalApplication.getInstance().loadUserInfo();
+        if (mUserInfo != null) {
+            mTvCallInStore.setText(mUserInfo.getMendian());
         }
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick({R.id.rl_call_out, R.id.tv_edit_or_finish, R.id.tv_submit})
+    @OnClick({R.id.title_iv_left, R.id.rl_call_out, tv_edit_or_finish, R.id.tv_submit})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_call_out:
                 //选择门店
-                showStoreSelectDialog();
+                if (mStoreResponse == null) {
+                    Object param = null;
+                    sendConnection("/gongfu/shop/list", param, REQUEST_CODE_GET_STORE_LIST, true, StoreResponse.class);
+                } else {
+                    showStoreSelectDialog();
+                }
                 break;
-            case R.id.tv_edit_or_finish:
+            case tv_edit_or_finish:
                 //编辑或完成商品
                 mEditMode = !mEditMode;
+                if (mEditMode) {
+                    mTvEditOrFinish.setText("完成");
+                } else {
+                    mTvEditOrFinish.setText("编辑");
+                }
                 mProductAdapter.notifyDataSetChanged();
                 break;
             case R.id.tv_submit:
                 //提交调度单
+                if (!checkInput()){
+                    return;
+                }
+                CreateCallInListRequest createCallInListRequest = new CreateCallInListRequest();
+                createCallInListRequest.setMendian_id(String.valueOf(mStoreResponse.getList().get(selectShopIndex).getShopID()));
+                List<CreateCallInListRequest.Product> products = new ArrayList<>();
+                for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+                    CreateCallInListRequest.Product product = new CreateCallInListRequest.Product();
+                    product.setProduct_id(Integer.parseInt(entry.getKey()));
+                    product.setQty(entry.getValue());
+                    products.add(product);
+                }
+                createCallInListRequest.setProducts(products);
+                sendConnection("/gongfu/shop/transfer/create", createCallInListRequest, REQUEST_CODE_CREATE_CALL_IN_LIST, true, null);
+                break;
+            case R.id.title_iv_left:
+                if (mProductAdapter.getList().isEmpty()) {
+                    dialog.setMessage("单据还没保存,确定退出?");
+                    dialog.setModel(CustomDialog.BOTH);
+                    dialog.setMessageGravity();
+                    dialog.setLeftBtnListener("取消", null);
+                    dialog.setRightBtnListener("确定", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            finish();
+                        }
+                    });
+                    dialog.show();
+                } else {
+                    finish();
+                }
                 break;
         }
     }
 
+    private boolean checkInput() {
+        if (selectShopIndex == -1) {
+            toast("还没选择门店");
+            return false;
+        }
+        if (mProductAdapter.getList().size() == 0) {
+            toast("还没选择任何商品!");
+            return false;
+        }
+        return true;
+    }
+
     OptionsPickerView mPvOptions;
+    int selectShopIndex = -1;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void showStoreSelectDialog() {
@@ -141,8 +205,9 @@ public class CreateCallInListActivity extends BaseActivity {
                 @Override
                 public void onOptionsSelect(int options1, int options2, int options3, View v) {
                     //返回的分别是三个级别的选中位置
-                    String tx = mStoreNameList.get(options1);
+                    String tx = mStoreResponse.getList().get(options1).getShopName();
                     mTvCallOutStore.setText(tx);
+                    selectShopIndex = options1;
                 }
             })
                     .setSubmitText("确认")//确定按钮文字
@@ -209,18 +274,88 @@ public class CreateCallInListActivity extends BaseActivity {
                         }
                     }
                     mProductAdapter.notifyDataSetChanged();
-                    refreshTotalCount();
+                    refreshTotalCountAndMoney();
                     break;
             }
         }
     }
 
-    private void refreshTotalCount() {
+    private void refreshTotalCountAndMoney() {
         int totalCount = 0;
+        double totalMoney = 0;
+        String removeId = "";
         for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
             totalCount += entry.getValue();
+            if (entry.getValue() == 0) {
+                removeId = entry.getKey();
+            }
         }
-        mTvCount.setText(totalCount+" 件");
+        mTvCount.setText(totalCount + " 件");
+        if (!TextUtils.isEmpty(removeId)) {
+            countMap.remove(removeId);
+            ProductData.ListBean listBean = null;
+            for (Object object : mProductAdapter.getList()) {
+                ProductData.ListBean bean = (ProductData.ListBean) object;
+                if (bean.getProductID() == Integer.parseInt(removeId)) {
+                    listBean = bean;
+                    break;
+                }
+            }
+            if (listBean != null) {
+                mProductAdapter.getList().remove(listBean);
+                mProductAdapter.notifyDataSetChanged();
+            }
+        }
+        for (Object object : mProductAdapter.getList()) {
+            ProductData.ListBean bean = (ProductData.ListBean) object;
+            int count = countMap.get(String.valueOf(bean.getProductID()));
+            totalMoney += bean.getPrice() * count;
+        }
+        mTvTotalMoney.setText("¥" + NumberUtil.getIOrD(totalMoney));
+        if (mProductAdapter.getList().size() == 0) {
+            mTvEditOrFinish.setVisibility(View.INVISIBLE);
+        } else {
+            mTvEditOrFinish.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onSuccess(BaseEntity result, int where) {
+        switch (where) {
+            case REQUEST_CODE_GET_STORE_LIST:
+                BaseEntity.ResultBean resultBean = result.getResult();
+                mStoreResponse = new StoreResponse();
+                com.alibaba.fastjson.JSONObject jsonObject = resultBean.getDataJson();
+                com.alibaba.fastjson.JSONArray shopList = jsonObject.getJSONArray("shopList");
+                List<StoreResponse.Store> shopArrayList = new ArrayList<>();
+                for (int i = 0; i < shopList.size(); i++) {
+                    com.alibaba.fastjson.JSONObject json = shopList.getJSONObject(i);
+                    int shopID = (int) json.get("shopID");
+                    String shopName = (String) json.get("shopName");
+                    if (shopName.equals(mUserInfo.getMendian())){
+                        continue;
+                    }
+                    StoreResponse.Store store = new StoreResponse.Store();
+                    store.setShopID(shopID);
+                    store.setShopName(shopName);
+                    shopArrayList.add(store);
+                    mStoreNameList.add(shopName);
+                }
+                mStoreResponse.setList(shopArrayList);
+                showStoreSelectDialog();
+                break;
+            case REQUEST_CODE_CREATE_CALL_IN_LIST:
+                toast("提交成功");
+                setResult(RESULT_OK);
+                finish();
+                break;
+        }
+    }
+
+    @Override
+    public void onFailure(String errMsg, BaseEntity result, int where) {
+
     }
 
     public class ProductAdapter extends IBaseAdapter {
@@ -249,16 +384,7 @@ public class CreateCallInListActivity extends BaseActivity {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        int changedNum = 0;
-                        if (!TextUtils.isEmpty(s)) {
-                            changedNum = Integer.valueOf(s.toString());
-                        }
-                        countMap.put(String.valueOf(bean.getProductID()), changedNum);
-                        if (changedNum == 0) {
-                            mList.remove(position);
-                            notifyDataSetChanged();
-                        }
-                        refreshTotalCount();
+                        refreshTotalCountAndMoney();
                     }
                 });
             } else {
@@ -353,6 +479,7 @@ public class CreateCallInListActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     mList.remove(position);
+                    countMap.put(String.valueOf(bean.getProductID()), 0);
                     notifyDataSetChanged();
                 }
             });

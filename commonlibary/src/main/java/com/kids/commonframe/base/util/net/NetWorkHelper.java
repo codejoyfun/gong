@@ -311,7 +311,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0922";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0914";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0927";
-    public static final String DEFAULT_DATABASE_NAME = "LBZTest1012";
+    public static final String DEFAULT_DATABASE_NAME = "lbz80";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "";
     // -------------------------------------------------
@@ -363,6 +363,7 @@ public class NetWorkHelper<T extends BaseEntity> {
                 BaseEntity.ResultBean resultBean = resultObj.getResult();
                 if (resultBean != null && resultBean.getData() != null) {
                     JSONObject jsonObject = (JSONObject) resultBean.getData();
+                    resultBean.setDataJson(jsonObject);
                     Object object = JSON.parseObject(jsonObject.toJSONString(), targerClass);
                     resultBean.setData(object);
                 } else {

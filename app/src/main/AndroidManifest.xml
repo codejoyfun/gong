@@ -489,7 +489,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".mine.CreateCallInListActivity">
+        <activity android:name=".mine.CreateCallInListActivity"
+                  android:windowSoftInputMode="adjustPan">
         </activity>
     </application>
 

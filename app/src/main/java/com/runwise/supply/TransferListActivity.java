@@ -1,5 +1,6 @@
 package com.runwise.supply;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.fragment.TransferListFragment;
+import com.runwise.supply.mine.CreateCallInListActivity;
 
 /**
  * 调度列表页
@@ -31,6 +33,8 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
     private Fragment mCurrentFragment;
     private TransferListFragment mTransferInFragment;
     private TransferListFragment mTransferOutFragment;
+
+    private static final int REQUEST_CODE_CREATE_CALL_IN_LIST = 1<<0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +131,21 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
     public void btnClick(View v){
         switch (v.getId()){
             case R.id.title_tv_rigth:
+                startActivityForResult(new Intent(getActivityContext(), CreateCallInListActivity.class),REQUEST_CODE_CREATE_CALL_IN_LIST);
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case REQUEST_CODE_CREATE_CALL_IN_LIST:
+                    //刷新列表
+
+                    break;
+            }
         }
     }
 }
