@@ -596,8 +596,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) {
-            case 2000:
+        if (resultCode==RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
                 List<DefaultPBean> newList = new ArrayList<>();
@@ -623,7 +622,6 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     bottom_bar.setVisibility(View.INVISIBLE);
                 }
                 setTitleEditShow();
-                break;
         }
     }
 

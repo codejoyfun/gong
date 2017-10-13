@@ -555,8 +555,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) {
-            case 2000:
+        if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
                 List<DefaultPBean> newList = new ArrayList<>();
@@ -575,7 +574,6 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                         nopurchaseRL.setVisibility(View.GONE);
                     }
                 }
-                break;
         }
     }
 

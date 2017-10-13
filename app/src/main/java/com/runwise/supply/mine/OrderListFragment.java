@@ -475,13 +475,26 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             } else {
                 holder.returnTv.setVisibility(View.GONE);
             }
-            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.getDeliveredQty() != bean.getAmount()) {
+            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && isShiShou(bean)) {
                 holder.realTv.setVisibility(View.VISIBLE);
             } else {
                 holder.realTv.setVisibility(View.GONE);
             }
 //            holder.payMoney.setText(bean.getAmountTotal()+"");
             return convertView;
+        }
+
+        /**
+         * 是否实收
+         * @return
+         */
+        private boolean isShiShou(OrderResponse.ListBean bean){
+            for (OrderResponse.ListBean.LinesBean linesBean:bean.getLines()){
+                if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()){
+                    return true;
+                }
+            }
+            return false;
         }
 
         class ViewHolder {

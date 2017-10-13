@@ -29,5 +29,9 @@
     <color name="textColorSecondary">#666666</color>
     <!--三级文字-->
     <color name="textColorThird">#999999</color>
+    <!--三级文字-->
+    <color name="textColorRed">#FF3B30</color>
+    <!--选择框标题栏背景-->
+    <color name="bg_titlebar_select">#FAFDF8</color>
 
 </resources>
