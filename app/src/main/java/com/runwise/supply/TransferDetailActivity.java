@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,29 +15,23 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.base.view.residemenu.DragLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.entity.TransferEntity;
-import com.runwise.supply.firstpage.OrderDtailAdapter;
 import com.runwise.supply.firstpage.entity.OrderResponse;
-import com.runwise.supply.orderpage.LotListActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
-
-import static com.kids.commonframe.config.Constant.ORDER_STATE_DRAFT;
-import static com.kids.commonframe.config.Constant.ORDER_STATE_PEISONG;
-import static com.kids.commonframe.config.Constant.ORDER_STATE_SALE;
 
 /**
  * 调拨单详情页
@@ -47,6 +41,9 @@ import static com.kids.commonframe.config.Constant.ORDER_STATE_SALE;
 
 public class TransferDetailActivity extends NetWorkActivity {
 
+    public static final String EXTRA_TRANSFER_ENTITY = "extra_transfer";
+    private static final int REQUEST_DETAIL = 0;
+
     @ViewInject(R.id.tv_transfer_detail_state)
     private TextView mTvTransferState;
     @ViewInject(R.id.tv_transfer_detail_state_tip)
@@ -54,7 +51,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     @ViewInject(R.id.tv_transfer_detail_locations_value)
     private TextView mTvTransferLocations;
     @ViewInject(R.id.tv_transfer_detail_time_value)
-    private TextView mTvTransferTime;
+    private TextView mTvCreateTime;
     @ViewInject(R.id.rv_transfer_products_detail)
     private RecyclerView mRvProducts;
     @ViewInject(R.id.tv_estimate_money)
@@ -63,8 +60,14 @@ public class TransferDetailActivity extends NetWorkActivity {
     private TextView mTvCount;
     @ViewInject(R.id.drag_layout)
     private DragTopLayout mDtlDragLayout;
+    @ViewInject(R.id.btn_transfer_detail_action)
+    private Button mBtnDoAction;
+    @ViewInject(R.id.btn_transfer_detail_action2)
+    private Button mBtnDoAction2;
 
     private TransferEntity mTransferEntity;
+    private TransferProductAdapter mTransferProductAdapter;
+    private boolean isDestLocation;//是否是收货门店
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,35 +77,92 @@ public class TransferDetailActivity extends NetWorkActivity {
         setContentView(R.layout.activity_transfer_detail);
         setTitleText(true,"调拨单详情");
         setTitleLeftIcon(true, R.drawable.nav_back);
-
+        mTransferEntity = getIntent().getParcelableExtra(EXTRA_TRANSFER_ENTITY);
         mDtlDragLayout.setOverDrag(false);
+        mRvProducts.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        mTransferProductAdapter = new TransferProductAdapter(this);
+        mRvProducts.setAdapter(mTransferProductAdapter);
+        //是否是接收门店
+        isDestLocation = mTransferEntity.getLocationDestName().equals(GlobalApplication.getInstance().loadUserInfo().getMendian());
+        initViews();
+        requestData();
     }
 
-    @OnClick({R.id.btn_transfer_detail_state_more,R.id.btn_transfer_detail_action})
-    public void btnClick(View view){
-        switch (view.getId()){
-            case R.id.btn_transfer_detail_state_more:
+    protected void initViews(){
+        mTvTransferState.setText("调拨单"+mTransferEntity.getPickingState());
+        //TODO:操作人。。。
+        mTvTransferLocations.setText(mTransferEntity.getLocationName()+"\u2192"+mTransferEntity.getLocationDestName());
+        mTvCreateTime.setText(mTransferEntity.getDate());
+        mTvCount.setText(mTransferEntity.getTotalNum()+"件");
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        mTvEstimateMoney.setText("¥"+decimalFormat.format(mTransferEntity.getTotalPrice()));
+        initBottomBar();
+    }
+
+    //根据单据状态设置底部按钮
+    protected void initBottomBar(){
+        switch(mTransferEntity.getPickingState()){
+            case TransferEntity.STATE_SUBMITTED://已提交，可以取消
+                mBtnDoAction.setVisibility(View.GONE);
                 break;
-            case R.id.btn_transfer_detail_action:
+            case TransferEntity.STATE_DELIVER://已发出
+                if(isDestLocation){//接收门店，可以取消和入库
+                    mBtnDoAction.setText("入库");
+                }else{
+                    mBtnDoAction.setVisibility(View.GONE);
+                }
+                //TODO
                 break;
         }
     }
 
+    @OnClick({R.id.btn_transfer_detail_state_more,R.id.btn_transfer_detail_action,R.id.btn_transfer_detail_action2})
+    public void btnClick(View view){
+        switch (view.getId()){
+            case R.id.btn_transfer_detail_state_more://更多状态
+                //TODO
+                break;
+            case R.id.btn_transfer_detail_action://右下角按钮，根据状态
+                switch(mTransferEntity.getPickingState()){
+                    case TransferEntity.STATE_DELIVER://状态已发出，则入库
+                        if(isDestLocation){
+
+                        }
+                        break;
+                }
+                break;
+            case R.id.btn_transfer_detail_action2:
+                //取消
+                requestCancel();
+                break;
+        }
+    }
+
+    /**
+     * 请求订单详情，拿商品列表
+     */
+    private void requestData(){
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/"+mTransferEntity.getPickingID(),request,REQUEST_DETAIL,true, TransferDetailResponse.class);
+    }
+
+    private void requestCancel(){
+        //TODO:展示Dialog，取消调拨单
+    }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-
+        switch (where){
+            case REQUEST_DETAIL:
+                TransferDetailResponse transferDetailResponse = (TransferDetailResponse) result.getResult().getData();
+                mTransferProductAdapter.setProductList(transferDetailResponse.getLines());
+                break;
+        }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
-    }
-
-    protected void updateUI(){
-        if(mTransferEntity!=null){
-
-        }
     }
 
     public class TransferProductAdapter extends RecyclerView.Adapter<TransferProductAdapter.ViewHolder>{
@@ -112,7 +172,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         //当前状态
         private String status;
         private String orderName;
-        private OrderResponse.ListBean mListBean;
+        //private OrderResponse.ListBean mListBean;
         public void setHasReturn(boolean hasReturn) {
             this.hasReturn = hasReturn;
         }
@@ -138,7 +198,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         public void setStatus(String orderName,String status,OrderResponse.ListBean listBean) {
             this.status = status;
             this.orderName = orderName;
-            mListBean = listBean;
+            //mListBean = listBean;
         }
 
         @Override
@@ -195,31 +255,31 @@ public class TransferDetailActivity extends NetWorkActivity {
             }
             //发货状态订单
 //        if("peisong".equals(status)) {
-            vh.rootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String deliveryType = mListBean.getDeliveryType();
-                    if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)||deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
-                            ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH)||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
-                        if(!status.equals("peisong")&&!status.equals("done")&&!status.equals("rated")){
-                            return;
-                        }
-                    }
-                    if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)){
-                        if((status.equals("done")||status.equals("rated"))&&(bean.getLotList()!=null&&bean.getLotList().size() == 0)) {
-                            ToastUtil.show(v.getContext(), "该产品无批次追踪");
-                            return;
-                        }
-                        if (status.equals(ORDER_STATE_PEISONG)||status.equals(ORDER_STATE_DRAFT)||status.equals(ORDER_STATE_SALE)){
-                            return;
-                        }
-                    }
-                    Intent intent = new Intent(context, LotListActivity.class);
-                    intent.putExtra("title",basicBean.getName());
-                    intent.putExtra("bean", (Parcelable) bean);
-                    context.startActivity(intent);
-                }
-            });
+//            vh.rootView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    String deliveryType = mListBean.getDeliveryType();
+//                    if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)||deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+//                            ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH)||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
+//                        if(!status.equals("peisong")&&!status.equals("done")&&!status.equals("rated")){
+//                            return;
+//                        }
+//                    }
+//                    if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)){
+//                        if((status.equals("done")||status.equals("rated"))&&(bean.getLotList()!=null&&bean.getLotList().size() == 0)) {
+//                            ToastUtil.show(v.getContext(), "该产品无批次追踪");
+//                            return;
+//                        }
+//                        if (status.equals(ORDER_STATE_PEISONG)||status.equals(ORDER_STATE_DRAFT)||status.equals(ORDER_STATE_SALE)){
+//                            return;
+//                        }
+//                    }
+//                    Intent intent = new Intent(context, LotListActivity.class);
+//                    intent.putExtra("title",basicBean.getName());
+//                    intent.putExtra("bean", (Parcelable) bean);
+//                    context.startActivity(intent);
+//                }
+//            });
 //        }
 
         }
