@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/tv_batch_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Z2017092400002"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="@dimen/second_title"/>
+
+        <TextView
+            android:id="@+id/tv_batch_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="1袋"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/textColorPrimary"
+            android:drawableRight="@drawable/home_more"
+            android:layout_marginRight="@dimen/padding_right"
+            android:drawablePadding="10dp"
+            android:textSize="@dimen/second_title"/>
+
+    </RelativeLayout>
