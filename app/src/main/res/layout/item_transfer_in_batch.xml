@@ -24,8 +24,8 @@
             android:textColor="@color/bottom_dialog_textcolor"
             android:textSize="13sp" />
 
-        <com.runwise.supply.view.NoWatchEditText
-            android:id="@+id/et_batch"
+        <TextView
+            android:id="@+id/tv_batch_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/tv_batch"
@@ -34,7 +34,6 @@
             android:layout_toRightOf="@id/tv_batch"
             android:background="@null"
             android:gravity="center|right"
-            android:hint="添加批次号(选填)"
             android:singleLine="true"
             android:textColor="@color/black"
             android:cursorVisible="true"
@@ -45,7 +44,7 @@
             android:id="@+id/v_line"
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:layout_below="@id/et_batch"
+            android:layout_below="@id/tv_batch_value"
             android:layout_marginTop="5dp"
             android:background="@color/divider" />
 
@@ -132,23 +131,45 @@
             android:textColor="@color/bottom_dialog_textcolor"
             android:textSize="13sp" />
 
-        <com.runwise.supply.view.NoWatchEditText
-            android:id="@+id/et_product_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
             android:layout_alignBottom="@id/tv_product_count"
             android:layout_alignTop="@id/tv_product_count"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/tv_product_count"
-            android:background="@null"
-            android:gravity="center|right"
-            android:hint="请填写数量"
-            android:inputType="number"
-            android:singleLine="true"
-            android:cursorVisible="true"
-            android:textColor="@color/black"
-            android:textColorHint="@color/bottom_dialog_divider"
-            android:textSize="13sp" />
+            android:gravity="center"
+            android:layout_alignParentRight="true">
+
+            <Button
+                android:id="@+id/btn_transfer_in_subtract"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="-"/>
+
+            <com.runwise.supply.view.NoWatchEditText
+                android:id="@+id/et_product_count"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/tv_product_count"
+                android:layout_alignTop="@id/tv_product_count"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/tv_product_count"
+                android:background="@null"
+                android:gravity="center"
+                android:inputType="number"
+                android:singleLine="true"
+                android:cursorVisible="true"
+                android:textColor="@color/black"
+                android:text="0"
+                android:textColorHint="@color/bottom_dialog_divider"
+                android:textSize="13sp" />
+            <Button
+                android:id="@+id/btn_transfer_in_add"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="+"/>
+        </LinearLayout>
+
+
 
 
     </RelativeLayout>

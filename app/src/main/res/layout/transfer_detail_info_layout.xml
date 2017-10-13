@@ -67,7 +67,7 @@
                 android:id="@+id/tv_transfer_detail_locations_value"
                 android:layout_width="wrap_content"
                 android:layout_height="26dp"
-                android:text="张云飞"
+                android:text="发出门店\u2192到达门店"
                 android:gravity="center_vertical"
                 android:layout_alignTop="@id/tv_transfer_detail_locations"
                 android:layout_toRightOf="@id/tv_transfer_detail_locations"

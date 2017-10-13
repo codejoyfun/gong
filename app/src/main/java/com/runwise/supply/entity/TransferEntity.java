@@ -16,10 +16,11 @@ import java.util.List;
 public class TransferEntity implements Parcelable{
 
     //调拨单状态
-    public static final String STATE_SUBMITTED = "";//已提交
+    public static final String STATE_SUBMITTED = "已提交";//已提交
     public static final String STATE_PENDING_DELIVER = "";//待出库
-    public static final String STATE_DELIVER = "";//已发出
-    public static final String STATE_COMPLETE = "";//完成
+    public static final String STATE_DELIVER = "已发出";//已发出
+    public static final String STATE_COMPLETE = "已完成";//完成
+    public static final String STATE_CANCEL = "已取消";
 
     private String pickingID;
     private String pickingName;
