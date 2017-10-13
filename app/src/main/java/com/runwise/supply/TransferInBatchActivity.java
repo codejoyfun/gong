@@ -45,8 +45,8 @@ public class TransferInBatchActivity extends NetWorkActivity {
     @ViewInject(R.id.tv_content)
     private TextView mTvProductContent;
 
-    private OrderResponse.ListBean.LinesBean mLinesBean;
-    private TransferBatchResponse.TransferBatchLine mTransferBatchLine;
+    private OrderResponse.ListBean.LinesBean mLinesBean;//商品基本信息
+    private TransferBatchResponse.TransferBatchLine mTransferBatchLine;//批次信息
     private BatchListAdapter mBatchListAdapter;
 
     @Override

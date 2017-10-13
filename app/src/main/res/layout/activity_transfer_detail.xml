@@ -48,7 +48,7 @@
     <!--汇总信息-->
     <include
         android:id="@+id/include_orderdetail_bottom_item"
-        layout="@layout/orderdetail_bottom_item"
+        layout="@layout/transfer_detail_bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/v_space"

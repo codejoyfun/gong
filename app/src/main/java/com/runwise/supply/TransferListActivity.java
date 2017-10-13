@@ -18,6 +18,10 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.fragment.TransferListFragment;
 import com.runwise.supply.mine.CreateCallInListActivity;
 
+import static com.runwise.supply.fragment.TransferListFragment.ARG_KEY_TYPE;
+import static com.runwise.supply.fragment.TransferListFragment.TYPE_IN;
+import static com.runwise.supply.fragment.TransferListFragment.TYPE_OUT;
+
 /**
  * 调度列表页
  *
@@ -76,10 +80,16 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         mTransferInFragment = new TransferListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(ARG_KEY_TYPE,TYPE_IN);
+        mTransferInFragment.setArguments(bundle);
         fragmentTransaction.add(R.id.fragmentContainer, mTransferInFragment);
         mCurrentFragment = mTransferInFragment;
         fragmentTransaction.commit();
         mTransferOutFragment = new TransferListFragment();
+        Bundle bundle2 = new Bundle();
+        bundle2.putInt(ARG_KEY_TYPE,TYPE_OUT);
+        mTransferOutFragment.setArguments(bundle2);
     }
 
     /**
