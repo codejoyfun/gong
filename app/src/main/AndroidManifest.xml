@@ -498,8 +498,11 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".mine.CreateCallInListActivity"
-                  android:windowSoftInputMode="adjustPan">
+        <activity
+            android:name=".mine.CreateCallInListActivity"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
+        <activity android:name=".orderpage.TransferOutActivity">
         </activity>
     </application>
 
