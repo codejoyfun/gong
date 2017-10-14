@@ -103,16 +103,17 @@
         android:layout_marginLeft="10dp"
         android:paddingBottom="10dp"
         android:layout_toRightOf="@id/productImage"
+        android:visibility="gone"
         android:orientation="vertical">
 
-        <include
+       <!-- <include
             layout="@layout/item_batch"/>
 
         <include
             layout="@layout/item_batch"/>
 
         <include
-            layout="@layout/item_batch"/>
+            layout="@layout/item_batch"/>-->
 
 
     </LinearLayout>

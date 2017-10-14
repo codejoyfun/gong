@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
@@ -133,9 +133,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
-                        intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
-                        startActivity(intent);
+                        startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mTransferEntity));
                     }
                 });
                 break;

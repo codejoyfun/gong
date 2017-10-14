@@ -137,10 +137,10 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
         }
     }
 
-    @OnClick({R.id.title_tv_rigth})
+    @OnClick({R.id.title_iv_rigth})
     public void btnClick(View v){
         switch (v.getId()){
-            case R.id.title_tv_rigth:
+            case R.id.title_iv_rigth:
                 startActivityForResult(new Intent(getActivityContext(), CreateCallInListActivity.class),REQUEST_CODE_CREATE_CALL_IN_LIST);
                 break;
         }
