@@ -1,18 +1,23 @@
 package com.runwise.supply;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.TransferBatchResponse;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -52,8 +57,6 @@ public class TransferInBatchActivity extends NetWorkActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarEnabled();
-        StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_transfer_in_batch);
         mTransferBatchLine = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER_BATCH);
         mLinesBean = getIntent().getParcelableExtra(INTENT_KEY_PRODUCT);
@@ -63,8 +66,8 @@ public class TransferInBatchActivity extends NetWorkActivity {
     }
 
     private void initViews(){
-        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(this).get(mLinesBean.getProductID());
-        //TODO:fresco
+        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(this).get(mLinesBean.getProductID()+"");
+        FrecoFactory.getInstance(this).disPlay(mSdvProductImg, Constant.BASE_URL+listBean.getImage().getImageSmall());
         mTvProductName.setText(listBean.getName());
         mTvProductContent.setText(listBean.getDefaultCode()+" "+listBean.getUnit());
     }
@@ -77,6 +80,14 @@ public class TransferInBatchActivity extends NetWorkActivity {
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
+    }
+
+    @OnClick({R.id.btn_confirm})
+    public void onBtnClick(View v){
+        Intent data = new Intent();
+        data.putExtra(INTENT_KEY_TRANSFER_BATCH, mTransferBatchLine);
+        setResult(RESULT_OK,data);
+        finish();
     }
 
     private class BatchListAdapter extends BaseAdapter {
@@ -106,13 +117,54 @@ public class TransferInBatchActivity extends NetWorkActivity {
                 convertView.setTag(viewHolder);
             }
             viewHolder = (ViewHolder) convertView.getTag();
-            TransferBatchResponse.TransferBatchLot lot = getItem(position);
+            final TransferBatchResponse.TransferBatchLot lot = getItem(position);
             viewHolder.tvBatch.setText(lot.getLotID());
             viewHolder.tvDeliverCount.setText(lot.getQuantQty()+"");
+            viewHolder.etProductCount.setText(lot.getActualQty()+"");
+            //增加
+            viewHolder.btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int current = lot.getActualQty();
+                    lot.setActualQty(current+1);
+                    if(checkTotal()){
+                        Toast.makeText(TransferInBatchActivity.this,"总数量不能超过订单量",Toast.LENGTH_LONG).show();
+                        lot.setActualQty(current);
+                        return;
+                    }
+                    notifyDataSetChanged();
+                }
+            });
+            //减少
+            viewHolder.btnSubtract.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int current = lot.getActualQty();
+                    if(current-1>=0)lot.setActualQty(current-1);
+                    if(checkTotal()){
+                        Toast.makeText(TransferInBatchActivity.this,"总数量不能超过订单量",Toast.LENGTH_LONG).show();
+                        lot.setActualQty(current);
+                        return;
+                    }
+                    notifyDataSetChanged();
+                }
+            });
             return convertView;
         }
+    }
 
-
+    /**
+     * 总数量是否超过订单量
+     * @return
+     */
+    private boolean checkTotal(){
+        int totalActual = 0;//实际数量
+        int totalExpected = 0;//订单量
+        for(TransferBatchResponse.TransferBatchLot lot:mTransferBatchLine.getProductInfo()){
+            totalActual = totalActual + lot.getActualQty();
+            totalExpected = totalExpected + lot.getQuantQty();
+        }
+        return totalActual <= totalExpected;
     }
 
     static class ViewHolder {
@@ -120,10 +172,14 @@ public class TransferInBatchActivity extends NetWorkActivity {
         TextView tvBatch;
         @BindView(R.id.tv_product_date_value)
         TextView tvProductDateValue;
-        @BindView(R.id.tv_deliver_count)
+        @BindView(R.id.et_deliver_count)
         TextView tvDeliverCount;
         @BindView(R.id.et_product_count)
         NoWatchEditText etProductCount;
+        @BindView(R.id.btn_transfer_in_add)
+        Button btnAdd;
+        @BindView(R.id.btn_transfer_in_subtract)
+        Button btnSubtract;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

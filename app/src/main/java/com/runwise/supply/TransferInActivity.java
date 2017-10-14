@@ -2,7 +2,6 @@ package com.runwise.supply;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -19,14 +17,15 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.TransferBatchResponse;
 import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.entity.TransferEntity;
+import com.runwise.supply.entity.TransferInRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.runwise.supply.tools.UserUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ import java.util.Map;
 public class TransferInActivity extends NetWorkActivity {
     private static final int REQUEST_DETAIL = 0;
     private static final int REQUEST_TRANSFER_BATCH = 1;
+    private static final int REQUEST_TRANSFER_IN_ACTION = 2;
     private static final int ACT_REQ_TRANSFER_IN_BATCH = 0x123;
 
     public static final String INTENT_KEY_TRANSFER_ENTITY = "transfer_entity";
@@ -60,7 +60,7 @@ public class TransferInActivity extends NetWorkActivity {
 
     private TransferEntity mTransferEntity;
 
-    private Map<String,TransferBatchResponse.TransferBatchLine> mBatchDataMap;//商品ID对应批次
+    private Map<String,TransferBatchResponse.TransferBatchLine> mBatchDataMap;//商品ID对应批次对象
     private Map<String,Integer> mTransferInMap = new HashMap<>();//商品ID对应入库数量
 
     @Override
@@ -84,6 +84,15 @@ public class TransferInActivity extends NetWorkActivity {
         mRvProducts.setAdapter(mProductAdapter);
     }
 
+    @OnClick({R.id.tv_do_transfer_in})
+    public void btnClick(View v){
+        switch (v.getId()){
+            case R.id.tv_do_transfer_in:
+                requestDoTransferIn();
+                break;
+        }
+    }
+
     /**
      * 获取出货列表,批次信息
      */
@@ -93,12 +102,30 @@ public class TransferInActivity extends NetWorkActivity {
     }
 
     /**
-     * 商品列表
+     * 从调拨单详情 获取商品列表
      */
     private void requestProductList(){
         Object request = null;
         sendConnection("/gongfu/shop/transfer/"+mTransferEntity.getPickingID(),request,REQUEST_DETAIL,true, TransferDetailResponse.class);
+    }
 
+    /**
+     * 入库
+     */
+    private void requestDoTransferIn(){
+        TransferInRequest request = new TransferInRequest();
+        request.setPicking_id(mTransferEntity.getPickingID());
+        //商品数量
+        List<TransferInRequest.ProductData> productDataList = new ArrayList<>();
+        for(String productId:mTransferInMap.keySet()){
+            int count = mTransferInMap.get(productId);
+            TransferInRequest.ProductData productData = new TransferInRequest.ProductData();
+            productData.setProduct_id(Integer.valueOf(productId));
+            productData.setQty(count);
+            productDataList.add(productData);
+        }
+        request.setProducts(productDataList);
+        sendConnection("/gongfu/shop/transfer/receive",request, REQUEST_TRANSFER_IN_ACTION,true,null);
     }
 
     /**
@@ -106,7 +133,11 @@ public class TransferInActivity extends NetWorkActivity {
      */
     private void setupSummaryUI(){
         if(mTransferInMap==null)return;
-        mTvTransferInCount.setText(mTransferInMap.size()+"");
+        int total = 0;
+        for(String id:mTransferInMap.keySet()){
+            total = total + mTransferInMap.get(id);
+        }
+        mTvTransferInCount.setText(""+total);
         double totalMoney = 0;
         for(String productId:mTransferInMap.keySet()){
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(productId);
@@ -135,18 +166,65 @@ public class TransferInActivity extends NetWorkActivity {
                     }
                     mTransferInMap.put(line.getProductID(),total);
                 }
+                setupSummaryUI();
                 requestProductList();
                 break;
             case REQUEST_DETAIL://调拨单详情 从中获取商品列表
                 TransferDetailResponse transferDetailResponse = (TransferDetailResponse) result.getResult().getData();
                 mProductAdapter.setProductList(transferDetailResponse.getLines());
                 break;
+            case REQUEST_TRANSFER_IN_ACTION:
+                break;
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        switch (where){
+            case REQUEST_TRANSFER_BATCH://出货批次信息
+                TransferBatchResponse.TransferBatchLine line2 = new TransferBatchResponse.TransferBatchLine();
+                TransferBatchResponse.TransferBatchLot lot = new TransferBatchResponse.TransferBatchLot();
+                lot.setLotID("Z90909090");
+                lot.setQuantQty(2);
+                line2.setProductID("656");
+                List<TransferBatchResponse.TransferBatchLot> lotList = new ArrayList<>();
+                lotList.add(lot);
+                line2.setProductInfo(lotList);
 
+                TransferBatchResponse.TransferBatchLot lot2 = new TransferBatchResponse.TransferBatchLot();
+                lot2.setLotID("Z90909090");
+                lot2.setQuantQty(4);
+                lotList.add(lot2);
+
+                List<TransferBatchResponse.TransferBatchLine> lines = new ArrayList<>();
+                lines.add(line2);
+
+                //批次信息
+                mBatchDataMap = new HashMap<>();
+                for(TransferBatchResponse.TransferBatchLine line:lines){
+                    mBatchDataMap.put(line.getProductID(),line);
+
+                    //初始化接收信息，默认全部收到
+                    int total = 0;
+                    for(TransferBatchResponse.TransferBatchLot transferBatchLot:line.getProductInfo()){
+                        transferBatchLot.setActualQty(transferBatchLot.getQuantQty());
+                        total = total + transferBatchLot.getQuantQty();
+                    }
+                    mTransferInMap.put(line.getProductID(),total);
+                }
+                requestProductList();
+                break;
+            case REQUEST_DETAIL://调拨单详情 从中获取商品列表
+                OrderResponse.ListBean.LinesBean linesBean = new OrderResponse.ListBean.LinesBean();
+                linesBean.setProductID(656);
+                linesBean.setProductUom("袋");
+                linesBean.setProductUomQty(2.3);
+                List<OrderResponse.ListBean.LinesBean> list = new ArrayList<>();
+                list.add(linesBean);
+
+                mProductAdapter.setProductList(list);
+                break;
+        }
     }
 
     @Override
@@ -214,7 +292,7 @@ public class TransferInActivity extends NetWorkActivity {
                         .append("¥").append(basicBean.getPrice()).append("/").append(basicBean.getUom());
                 vh.content.setText(sb.toString());
 
-                vh.actualTransferIn.setText(mTransferInMap.get(bean.getProductID()+""));
+                vh.actualTransferIn.setText(""+mTransferInMap.get(bean.getProductID()+""));
                 vh.heightTransferIn.setText("/"+bean.getProductUomQty()+bean.getProductUom());
                 vh.rootView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -223,8 +301,8 @@ public class TransferInActivity extends NetWorkActivity {
                         if(mBatchDataMap==null)return;
                         TransferBatchResponse.TransferBatchLine transferBatchLine = mBatchDataMap.get(pId+"");
                         Intent intent = new Intent(TransferInActivity.this, TransferInBatchActivity.class);
-                        intent.putExtra(TransferInBatchActivity.INTENT_KEY_PRODUCT,(Parcelable)bean);
-                        intent.putExtra(TransferInBatchActivity.INTENT_KEY_TRANSFER_BATCH,transferBatchLine);
+                        intent.putExtra(TransferInBatchActivity.INTENT_KEY_PRODUCT,(Parcelable)bean);//传商品信息
+                        intent.putExtra(TransferInBatchActivity.INTENT_KEY_TRANSFER_BATCH,transferBatchLine);//传批次信息
                         startActivityForResult(intent,ACT_REQ_TRANSFER_IN_BATCH);
                     }
                 });

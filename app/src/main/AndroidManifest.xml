@@ -468,6 +468,12 @@
         <activity android:name=".TransferDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
+        <activity android:name=".TransferInActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".TransferInBatchActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".firstpage.EditBatchActivity"
             android:windowSoftInputMode="adjustPan">

@@ -12,11 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -34,6 +36,8 @@ import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
 
+import static com.runwise.supply.TransferInActivity.INTENT_KEY_TRANSFER_ENTITY;
+
 /**
  * 调拨单详情页
  *
@@ -44,6 +48,7 @@ public class TransferDetailActivity extends NetWorkActivity {
 
     public static final String EXTRA_TRANSFER_ENTITY = "extra_transfer";
     private static final int REQUEST_DETAIL = 0;
+    private static final int REQUEST_CANCEL_TRANSFER = 1;
 
     @ViewInject(R.id.tv_transfer_detail_state)
     private TextView mTvTransferState;
@@ -84,7 +89,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         mTransferProductAdapter = new TransferProductAdapter(this);
         mRvProducts.setAdapter(mTransferProductAdapter);
         //是否是接收门店
-        isDestLocation = mTransferEntity.getLocationDestName().equals(GlobalApplication.getInstance().loadUserInfo().getMendian());
+        isDestLocation = GlobalApplication.getInstance().loadUserInfo().getMendian().equals(mTransferEntity.getLocationDestName());
         initViews();
         requestData();
     }
@@ -92,6 +97,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     protected void initViews(){
         mTvTransferState.setText("调拨单"+mTransferEntity.getPickingState());
         //TODO:操作人。。。
+        mTvTransferStateTip.setText("操作人");
         mTvTransferLocations.setText(mTransferEntity.getLocationName()+"\u2192"+mTransferEntity.getLocationDestName());
         mTvCreateTime.setText(mTransferEntity.getDate());
         mTvCount.setText(mTransferEntity.getTotalNum()+"件");
@@ -109,10 +115,29 @@ public class TransferDetailActivity extends NetWorkActivity {
             case TransferEntity.STATE_DELIVER://已发出
                 if(isDestLocation){//接收门店，可以取消和入库
                     mBtnDoAction.setText("入库");
+                    mBtnDoAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
+                            intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
+                            startActivity(intent);
+                        }
+                    });
                 }else{
                     mBtnDoAction.setVisibility(View.GONE);
                 }
-                //TODO
+                break;
+            case TransferEntity.STATE_PENDING_DELIVER://待出库
+                mBtnDoAction2.setVisibility(View.GONE);
+                mBtnDoAction.setText("出库");
+                mBtnDoAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
+                        intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
+                        startActivity(intent);
+                    }
+                });
                 break;
         }
     }
@@ -121,20 +146,24 @@ public class TransferDetailActivity extends NetWorkActivity {
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.btn_transfer_detail_state_more://更多状态
-                //TODO
-                break;
-            case R.id.btn_transfer_detail_action://右下角按钮，根据状态
-                switch(mTransferEntity.getPickingState()){
-                    case TransferEntity.STATE_DELIVER://状态已发出，则入库
-                        if(isDestLocation){
-
-                        }
-                        break;
-                }
+                Intent intent = new Intent(this,TransferStateActivity.class);
+                intent.putExtra(TransferStateActivity.INTENT_KEY_TRANSFER,mTransferEntity);
+                startActivity(intent);
                 break;
             case R.id.btn_transfer_detail_action2:
                 //取消
-                requestCancel();
+                dialog.setTitle("提示");
+                dialog.setMessage("确认取消订单?");
+                dialog.setMessageGravity();
+                dialog.setModel(CustomDialog.BOTH);
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //发送取消订单请求
+                        requestCancel();
+                    }
+                });
+                dialog.show();
                 break;
         }
     }
@@ -147,8 +176,12 @@ public class TransferDetailActivity extends NetWorkActivity {
         sendConnection("/gongfu/shop/transfer/"+mTransferEntity.getPickingID(),request,REQUEST_DETAIL,true, TransferDetailResponse.class);
     }
 
+    /**
+     * 取消调拨单
+     */
     private void requestCancel(){
-        //TODO:展示Dialog，取消调拨单
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/cancel/"+mTransferEntity.getPickingID(),REQUEST_CANCEL_TRANSFER,true,null);
     }
 
     @Override
@@ -158,15 +191,23 @@ public class TransferDetailActivity extends NetWorkActivity {
                 TransferDetailResponse transferDetailResponse = (TransferDetailResponse) result.getResult().getData();
                 mTransferProductAdapter.setProductList(transferDetailResponse.getLines());
                 break;
+            case REQUEST_CANCEL_TRANSFER:
+                finish();
+                break;
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        Log.d("haha",errMsg);
+        Toast.makeText(this,errMsg,Toast.LENGTH_LONG).show();
     }
 
-    public class TransferProductAdapter extends RecyclerView.Adapter<TransferProductAdapter.ViewHolder>{
+    /**
+     * 商品列表
+     */
+    private class TransferProductAdapter extends RecyclerView.Adapter<TransferProductAdapter.ViewHolder>{
+        private static final int TYPE_FOOTER = 0;
+        private static final int TYPE_ITEM = 1;
         private Context context;
         private boolean hasReturn;          //是否有退货，默认没有
         private boolean isTwoUnit;           //双单位,有值就显示
@@ -204,14 +245,35 @@ public class TransferDetailActivity extends NetWorkActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.orderdetail_list_item,parent,false);
-            ViewHolder vh = new ViewHolder(view);
-            vh.oldPriceTv.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-            return vh;
+            if(viewType==TYPE_ITEM){
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.orderdetail_list_item,parent,false);
+                ViewHolder vh = new ViewHolder(view);
+                vh.oldPriceTv.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                return vh;
+            }else{
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.transfer_detail_bottom_layout,null);
+                ViewHolder vh = new ViewHolder(view);
+                return vh;
+            }
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
+            if(getItemViewType(position)==TYPE_FOOTER){boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+//                if (!canSeePrice) {
+//                    view.findViewById(R.id.priceLL).setVisibility(View.GONE);
+//                }
+                //实收判断
+//                if ((Constant.ORDER_STATE_DONE.equals(listBean.getState()) || Constant.ORDER_STATE_RATED.equals(listBean.getState())) && listBean.getDeliveredQty() != listBean.getAmount()) {
+//                    ((TextView)view.findViewById(R.id.countTv)).setText((int) listBean.getDeliveredQty() + "件");
+//                } else {
+//                    ((TextView)view.findViewById(R.id.countTv)).setText((int) listBean.getAmount() + "件");
+//                }
+                //商品数量/预估金额
+                DecimalFormat df = new DecimalFormat("#.##");
+                holder.mmTvMoney.setText("¥" + df.format(mTransferEntity.getTotalPrice()));
+                holder.mmTvNum.setText(mTransferEntity.getTotalNum()+"件");
+            }
             final OrderResponse.ListBean.LinesBean bean = productList.get(position);
             int pId = bean.getProductID();
             ViewHolder vh = holder;
@@ -286,8 +348,14 @@ public class TransferDetailActivity extends NetWorkActivity {
         }
 
         @Override
+        public int getItemViewType(int position) {
+            if(position==productList.size())return TYPE_FOOTER;
+            return TYPE_ITEM;
+        }
+
+        @Override
         public int getItemCount() {
-            return productList.size();
+            return productList==null?0:productList.size()+1;
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder{
@@ -299,6 +367,9 @@ public class TransferDetailActivity extends NetWorkActivity {
             public TextView weightTv;
             public TextView unit1;
             public View rootView;
+
+            public TextView mmTvNum;
+            public TextView mmTvMoney;
             public ViewHolder(View itemView) {
                 super(itemView);
                 rootView = itemView;
@@ -309,6 +380,9 @@ public class TransferDetailActivity extends NetWorkActivity {
                 nowPriceTv = (TextView)itemView.findViewById(R.id.nowPriceTv);
                 weightTv = (TextView)itemView.findViewById(R.id.weightTv);
                 unit1 = (TextView)itemView.findViewById(R.id.unit1);
+
+                mmTvNum = (TextView)itemView.findViewById(R.id.tv_count);
+                mmTvMoney = (TextView)itemView.findViewById(R.id.tv_estimate_money);
             }
         }
     }

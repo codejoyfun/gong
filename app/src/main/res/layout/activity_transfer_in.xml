@@ -3,7 +3,7 @@
     android:id="@+id/rl_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#F5F5F5">
 
     <include
         android:id="@+id/title_bar"
@@ -17,19 +17,29 @@
         android:id="@+id/tl_transfer_info_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_bar">
+        android:layout_below="@id/title_bar"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:background="@color/white">
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="调入门店"
+                android:text="调入门店："
+                android:textColor="#999999"
+                android:textSize="15sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 />
             <TextView
                 android:id="@+id/tv_transfer_to"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:layout_margin="5dp"
                 />
         </TableRow>
         <TableRow
@@ -38,12 +48,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="调出门店"
+                android:text="调出门店："
+                android:textColor="#999999"
+                android:textSize="15sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 />
             <TextView
                 android:id="@+id/tv_transfer_from"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:layout_margin="5dp"
                 />
         </TableRow>
     </TableLayout>
@@ -51,8 +67,15 @@
     <TextView
         android:id="@+id/label"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_below="@id/tl_transfer_info_layout"
+        android:layout_height="40dp"
+        android:textColor="#666666"
+        android:textSize="15sp"
+        android:gravity="center_vertical|left"
+        android:paddingLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:layout_marginBottom="1dp"
         android:text="调拨明细"/>
 
     <android.support.v7.widget.RecyclerView
@@ -65,40 +88,58 @@
     <RelativeLayout
         android:id="@+id/rl_transfer_bottom_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="54dp"
+        android:background="@color/white"
         android:layout_alignParentBottom="true">
         <TextView
             android:id="@+id/tv_do_transfer_in"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
             android:text="入库"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_marginLeft="10dp"
             android:layout_alignParentRight="true"
+            android:background="@drawable/btn_green_gradian"
             />
         <TextView
             android:id="@+id/tv_unit_label"
             android:layout_toLeftOf="@id/tv_do_transfer_in"
             android:text="件"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="22dp"
+            android:layout_alignBottom="@+id/tv_transfer_in_count"
+            android:gravity="center"
+            android:textSize="10sp"/>
         <TextView
             android:id="@+id/tv_transfer_in_count"
             android:layout_toLeftOf="@id/tv_unit_label"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="22dp"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
             android:text="6"/>
         <TextView
             android:id="@+id/tv_transfer_in_money"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="22dp"
             android:layout_below="@id/tv_unit_label"
             android:layout_alignRight="@id/tv_unit_label"
+            android:textSize="16sp"
+            android:textColor="#FF3B30"
+            android:gravity="center"
             android:text="240"/>
         <TextView
             android:id="@+id/tv_money_label"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="22dp"
             android:layout_toLeftOf="@id/tv_transfer_in_money"
             android:layout_alignBottom="@id/tv_transfer_in_money"
-            android:text="Y"/>
+            android:textColor="#FF3B30"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:text="¥"/>
     </RelativeLayout>
 </RelativeLayout>

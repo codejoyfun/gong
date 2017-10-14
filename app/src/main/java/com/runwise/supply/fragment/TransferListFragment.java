@@ -49,7 +49,6 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView mPullListView;
     private TransferListAdapter mTransferListAdapter;
-    private List<TransferEntity> mTransferList = new ArrayList<>();
     private int page = 1;
 
     @Override
@@ -143,6 +142,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
             viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
             viewHolder.mmTvLocations.setText(transferEntity.getLocationName()+"\u2192"+transferEntity.getLocationDestName());
+            viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice()+"元，"+transferEntity.getTotalNum()+"件商品");
 
             if(STATE_SUBMITTED.equals(transferEntity.getPickingState())){//已提交
                 viewHolder.mmTvStatus.setText("已提交");
@@ -158,10 +158,11 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 });
             }else if(STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())){//待出库
                 viewHolder.mmTvStatus.setText("待出库");
+                viewHolder.mmTvAction.setText("出库");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        //TODO
                     }
                 });
             }

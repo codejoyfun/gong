@@ -50,7 +50,7 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
 
     private void initViews(){
         setTitleLeftIcon(true,R.drawable.returned);
-        setTitleRightText(true,"添加");
+        setTitleRigthIcon(true,R.drawable.ic_nav_add);
         addTitleBarBtn();
     }
 
