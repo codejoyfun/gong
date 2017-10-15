@@ -3,11 +3,15 @@ package com.runwise.supply.orderpage;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,6 +24,7 @@ import com.kids.commonframe.config.Constant;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferInActivity;
+import com.runwise.supply.adapter.TransferOutBatchAdapter;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.TransferOutDetailResponse;
@@ -57,6 +62,9 @@ public class TransferOutActivity extends NetWorkActivity {
     TransferEntity mTransferEntity;
     ProductAdapter mProductAdapter;
 
+    private PopupWindow mPopWindow;     //底部弹出
+    private View dialogView;            //弹窗的view
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +72,13 @@ public class TransferOutActivity extends NetWorkActivity {
         ButterKnife.bind(this);
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER_ENTITY);
         requestData();
-
+        mLvProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showPopWindow(mTransferOutDetailResponse.getLines().get(position));
+            }
+        });
+        initPopWindow();
     }
 
     TransferOutDetailResponse mTransferOutDetailResponse;
@@ -74,12 +88,12 @@ public class TransferOutActivity extends NetWorkActivity {
         switch (where) {
             case REQUEST_DETAIL:
                 mTransferOutDetailResponse = (TransferOutDetailResponse) result.getResult().getData();
-                setUpdata();
+                setUpData();
                 break;
         }
     }
 
-    private void setUpdata() {
+    private void setUpData() {
         mTvCallInStore.setText(mTransferOutDetailResponse.getInfo().getLocationDestName());
         mTvCallOutStore.setText(mTransferOutDetailResponse.getInfo().getLocationName());
         mProductAdapter = new ProductAdapter();
@@ -108,6 +122,45 @@ public class TransferOutActivity extends NetWorkActivity {
 
     @OnClick(R.id.tv_submit)
     public void onViewClicked() {
+    }
+
+    private void initPopWindow() {
+        dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_transferout_batch_list, null);
+        mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        mPopWindow.setContentView(dialogView);
+        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mPopWindow.setFocusable(true);
+        mPopWindow.setOutsideTouchable(true);
+    }
+
+    private void showPopWindow(TransferOutDetailResponse.TransferBatchLine transferBatchLine){
+        SimpleDraweeView productImage = (SimpleDraweeView) dialogView.findViewById(R.id.productImage);
+        TextView name = (TextView) dialogView.findViewById(R.id.name);
+        TextView content = (TextView) dialogView.findViewById(R.id.content);
+        TextView tv_count = (TextView) dialogView.findViewById(R.id.tv_count);
+        ListView lv_batch = (ListView) dialogView.findViewById(R.id.lv_batch);
+        FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + transferBatchLine.getProductImage());
+        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
+        if (listBean != null) {
+            name.setText(listBean.getName());
+            StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
+            sb.append("  ").append(listBean.getUnit());
+            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if (canSeePrice) {
+                if (listBean.isTwoUnit()) {
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
+                } else {
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
+                }
+            }
+            content.setText(sb.toString());
+        }
+//        tv_count.setText(transferBatchLine.get);
+        TransferOutBatchAdapter transferOutBatchAdapter = new TransferOutBatchAdapter();
+        transferOutBatchAdapter.setData(transferBatchLine.getProductInfo());
+        lv_batch.setAdapter(transferOutBatchAdapter);
+        mPopWindow.showAtLocation(findViewById(R.id.root_layout), Gravity.BOTTOM, 0, 0);
     }
 
     public class ProductAdapter extends IBaseAdapter {

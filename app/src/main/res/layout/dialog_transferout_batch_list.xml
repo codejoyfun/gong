@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="编辑出库数量"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="@dimen/third_title"/>
+
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:padding="15dp"
+        android:src="@drawable/dialog_btn_closed"/>
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/productImage"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_below="@id/tv_title"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="18dp"
+        fresco:placeholderImage="@drawable/placeholder"
+        fresco:placeholderImageScaleType="focusCrop"/>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/productImage"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@id/productImage"
+        android:gravity="top"
+        android:singleLine="false"
+        android:text="黑鱼(大型)"
+        android:textColor="#444444"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/name"
+        android:layout_below="@id/name"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_toLeftOf="@id/editLL"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:singleLine="true"
+        android:text="3305335 2-3斤／条"
+        android:textColor="#999999"
+        android:textSize="11sp"
+        />
+
+    <TextView
+        android:id="@+id/tv_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/name"
+        android:layout_below="@id/content"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:text=""
+        android:textColor="#999999"
+        android:textSize="11sp"
+        />
+
+    <TextView
+        android:id="@+id/unit1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/productImage"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/productImage"
+        android:layout_marginRight="@dimen/padding_right"
+        android:gravity="center"
+        android:text="袋"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="@dimen/second_title"/>
+
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/productImage"
+        android:layout_alignTop="@id/productImage"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/unit1"
+        android:gravity="center"
+        android:text="4"
+        android:textColor="@color/black"
+        android:textSize="@dimen/large_title"/>
+
+    <TextView
+        android:id="@+id/tv_count_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/productImage"
+        android:layout_alignTop="@id/productImage"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/tv_count"
+        android:gravity="center"
+        android:text="X"
+        android:textColor="@color/second_color"
+        android:textSize="@dimen/small_title"/>
+
+    <View
+        android:id="@+id/v_line"
+        style="@style/divider_horizontal"
+        android:layout_below="@id/productImage"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_batch_number"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/v_line"
+        android:layout_marginLeft="10dp"
+        android:gravity="center|left"
+        android:text="批次号"
+        android:textColor="@color/textColorThird"
+        android:textSize="@dimen/second_title"/>
+
+    <TextView
+        android:id="@+id/tv_product_stock"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/v_line"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/tv_batch_number"
+        android:gravity="center|left"
+        android:text="库存(袋)"
+        android:textColor="@color/textColorThird"
+        android:textSize="@dimen/second_title"/>
+
+    <View
+        android:id="@+id/v_line1"
+        style="@style/divider_horizontal"
+        android:layout_below="@id/tv_product_stock"
+        android:layout_marginTop="10dp"/>
+
+    <ListView
+        android:id="@+id/lv_batch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_submit"
+        android:layout_below="@id/v_line1"
+        android:background="@color/white"
+        android:divider="#ededed"
+        android:dividerHeight="0.5dp"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:listSelector="#0000"></ListView>
+
+    <TextView
+        android:id="@+id/tv_submit"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="确认修改"
+        android:textColor="@color/white"
+        android:textSize="@dimen/second_title"/>
+
+</RelativeLayout>
