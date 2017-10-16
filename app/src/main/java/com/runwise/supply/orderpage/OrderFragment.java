@@ -86,7 +86,7 @@ public class OrderFragment extends NetWorkFragment {
                     popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(mContext,R.drawable.order_whitebg));
                 }
                 if(popupWindow.isShowing()){
-                    popupWindow.dismiss();;
+                    popupWindow.dismiss();
                 }else{
                     popupWindow.show();
                 }

@@ -34,8 +34,10 @@ public class TransferOutSuccessActivity extends NetWorkActivity {
 
     private TransferEntity mTransferEntity;
 
-    public static Intent getStartIntent(Context context){
-        return new Intent(context,TransferOutSuccessActivity.class);
+    public static Intent getStartIntent(Context context,TransferEntity transferEntity){
+        Intent intent =  new Intent(context,TransferOutSuccessActivity.class);
+        intent.putExtra(EXTRA_TRANSFER_ENTITY,transferEntity);
+        return intent;
     }
 
     @Override

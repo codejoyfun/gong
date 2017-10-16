@@ -43,6 +43,7 @@
         android:layout_toLeftOf="@id/iv_add"
         android:background="@null"
         android:gravity="center"
+        android:inputType="number"
         android:text="1"/>
 
     <ImageView

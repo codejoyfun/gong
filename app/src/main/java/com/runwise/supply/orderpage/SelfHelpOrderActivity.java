@@ -91,6 +91,8 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     private View bgView;
     @ViewInject(R.id.orderSuccessIv)
     private ImageView orderSuccessIv;
+    @ViewInject(R.id.onekeyBtn)
+    private Button onekeyBtn;
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
     //弹窗星期的View集合
@@ -193,7 +195,9 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 mCustomProgressDialog = new CustomProgressDialog(this);
                 mCustomProgressDialog.setMsg("下单中...");
                 mCustomProgressDialog.show();
-                findViewById(R.id.onekeyBtn).setEnabled(false);
+                onekeyBtn.setBackgroundColor(Color.parseColor("#7F9ACC35"));
+                onekeyBtn.setEnabled(false);
+                dateTv.setEnabled(false);
                 break;
             case R.id.deleteBtn:
                 dialog.setTitle("提示");
@@ -523,10 +527,11 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     public void run() {
                         finish();
                         EventBus.getDefault().post(new OrderSuccessEvent());
-                        findViewById(R.id.onekeyBtn).setEnabled(true);
+                        onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+                        onekeyBtn.setEnabled(true);
+                        dateTv.setEnabled(true);
                     }
                 }, 1500);
-
                 break;
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
@@ -542,7 +547,15 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        findViewById(R.id.onekeyBtn).setEnabled(true);
+        switch (where) {
+            case COMMIT_TYPE:
+                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+                onekeyBtn.setEnabled(true);
+                dateTv.setEnabled(true);
+                mCustomProgressDialog.dismiss();
+                toast("网络错误");
+                break;
+        }
 
     }
 

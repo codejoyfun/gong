@@ -162,6 +162,7 @@
         android:layout_below="@id/v_line"
         android:background="@null"
         android:gravity="center"
+        android:inputType="number"
         android:text="1"/>
 
     <ImageView
