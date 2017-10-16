@@ -53,24 +53,24 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
             convertView.setTag(viewHolder);
         }
         viewHolder = (ViewHolder) convertView.getTag();
-        viewHolder.mEtCount.setText(String.valueOf(transferBatchLot.getQuantQty()));
+        viewHolder.mEtCount.setText(String.valueOf(transferBatchLot.getActualQty()));
         viewHolder.mIvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkCount(v.getContext());
-                int quantQty = transferBatchLot.getQuantQty() + 1;
-                transferBatchLot.setQuantQty(quantQty);
+                int actualQty = transferBatchLot.getActualQty() + 1;
+                transferBatchLot.setActualQty(actualQty);
                 notifyDataSetChanged();
             }
         });
         viewHolder.mIvReduce.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int quantQty = transferBatchLot.getQuantQty() - 1;
-                if (quantQty == 0) {
+                int actualQty = transferBatchLot.getActualQty() - 1;
+                if (actualQty == 0) {
                     return;
                 }
-                transferBatchLot.setQuantQty(quantQty);
+                transferBatchLot.setActualQty(actualQty);
                 notifyDataSetChanged();
             }
         });
@@ -88,11 +88,14 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
 
             @Override
             public void afterTextChanged(Editable s) {
-                int quantQty = Integer.parseInt(s.toString());
-                int lastQuantQty = transferBatchLot.getQuantQty();
-                transferBatchLot.setQuantQty(quantQty);
+                int actualQty = Integer.parseInt(s.toString());
+                int lastActualQty = transferBatchLot.getActualQty();
+                transferBatchLot.setActualQty(lastActualQty);
+                if(actualQty>transferBatchLot.getQuantQty()){
+                    ToastUtil.show(parent.getContext(),"");
+                }
                 if (!checkCount(parent.getContext())) {
-                    transferBatchLot.setQuantQty(lastQuantQty);
+                    transferBatchLot.setActualQty(lastActualQty);
                 }
 
             }
