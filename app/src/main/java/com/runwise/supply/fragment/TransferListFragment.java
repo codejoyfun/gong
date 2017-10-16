@@ -21,9 +21,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferListResponse;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.runwise.supply.orderpage.TransferOutActivity;
 
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
@@ -163,6 +161,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     @Override
                     public void onClick(View view) {
                         //TODO
+                        startActivity(TransferOutActivity.getStartIntent(getActivity(),transferEntity));
                     }
                 });
             }

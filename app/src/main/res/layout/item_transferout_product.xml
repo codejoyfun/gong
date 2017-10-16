@@ -39,8 +39,8 @@
         android:layout_marginTop="5dp"
         android:layout_toLeftOf="@id/editLL"
         android:ellipsize="end"
+        android:lineSpacingExtra="5dp"
         android:maxLines="3"
-        android:singleLine="true"
         android:text="3305335 2-3斤／条"
         android:textColor="#999999"
         android:textSize="11sp"
@@ -93,6 +93,7 @@
         style="@style/divider_horizontal"
         android:layout_below="@id/productImage"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/productImage"/>
 
     <LinearLayout
@@ -101,6 +102,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/v_line1"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:paddingBottom="10dp"
         android:layout_toRightOf="@id/productImage"
         android:visibility="gone"

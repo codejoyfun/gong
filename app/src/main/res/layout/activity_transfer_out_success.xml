@@ -27,7 +27,7 @@
         android:layout_below="@id/icon"
         android:layout_marginTop="15dp"
         android:gravity="center"
-        android:text="收货成功"
+        android:text="出库成功"
         android:textColor="#2E2E2E"
         android:textSize="17sp"
         />
@@ -46,18 +46,18 @@
             android:layout_height="35dp"
             android:background="@drawable/upload_btn_circle"
             android:gravity="center"
-            android:text="评价订单"
+            android:text="查看订单"
             android:textColor="#333333"
             />
 
         <TextView
-            android:id="@+id/uploadBtn"
+            android:id="@+id/tv_home_page"
             android:layout_width="110dp"
             android:layout_height="35dp"
             android:layout_marginLeft="15dp"
             android:background="@drawable/upload_btn_circle"
             android:gravity="center"
-            android:text="上传支付凭证"
+            android:text="回到首页"
             android:textColor="#333333"
             />
     </LinearLayout>

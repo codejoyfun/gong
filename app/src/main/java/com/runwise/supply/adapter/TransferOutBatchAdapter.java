@@ -26,7 +26,7 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         final TransferOutDetailResponse.TransferBatchLot transferBatchLot = (TransferOutDetailResponse.TransferBatchLot) mList.get(position);
         ViewHolder viewHolder;
         if (convertView == null){
-            convertView = LayoutInflater.from(convertView.getContext()).inflate(R.layout.item_tranferout_batch, null);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tranferout_batch, null);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         }
