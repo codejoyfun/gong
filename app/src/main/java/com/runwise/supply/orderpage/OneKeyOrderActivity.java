@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -94,6 +95,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     private RelativeLayout nopurchaseRL;
     @ViewInject(loadingLayout)
     private LoadingLayout mLoadingLayout;
+    @ViewInject(R.id.onekeyBtn)
+    private Button onekeyBtn;
 
     //标记是否主动点击全部,默认是主动true
     private boolean isInitiative = true;
@@ -268,7 +271,17 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 }
                 request.setProducts(cList);
                 sendConnection("/gongfu/v2/order/create/", request, COMMIT_TYPE, true, CommitResponse.class);
-
+//                progressDialog.setCancelable(false);
+//                backgroundAlpha(0.4f);
+//                progressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                        backgroundAlpha(1f);
+//                    }
+//                });
+                onekeyBtn.setBackgroundColor(Color.parseColor("#7F9ACC35"));
+                onekeyBtn.setEnabled(false);
+                dateTv.setEnabled(false);
                 break;
             case R.id.deleteBtn:
                 dialog.setTitle("提示");
@@ -287,6 +300,12 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             default:
                 break;
         }
+    }
+
+    private void backgroundAlpha(float f) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = f;
+        getWindow().setAttributes(lp);
     }
 
     private void switchEditMode() {
@@ -439,7 +458,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             loadingImgs[i] = getResIdByDrawableName(sb.toString());
         }
     }
-    private void onSuccessCallBack(){
+
+    private void onSuccessCallBack() {
         //停止动画
         handler.removeCallbacks(runnable);
         loadingImg.setVisibility(View.INVISIBLE);
@@ -448,6 +468,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
         pullListView.setVisibility(View.VISIBLE);
     }
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         BaseEntity.ResultBean resultBean = result.getResult();
@@ -477,9 +498,13 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     @Override
                     public void run() {
                         finish();
+                        onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+                        onekeyBtn.setEnabled(true);
+                        dateTv.setEnabled(true);
                         EventBus.getDefault().post(new OrderSuccessEvent());
                     }
                 }, 1500);
+
                 break;
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
@@ -505,6 +530,13 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 bottom_bar.setVisibility(View.VISIBLE);
                 ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
                 pullListView.setVisibility(View.VISIBLE);
+                break;
+            case COMMIT_TYPE:
+                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+                onekeyBtn.setEnabled(true);
+                dateTv.setEnabled(true);
+                toast("网络错误");
+                progressDialog.dismiss();
                 break;
         }
     }
@@ -556,24 +588,24 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
-                List<DefaultPBean> newList = new ArrayList<>();
-                if (backList != null) {
-                    for (AddedProduct pro : backList) {
-                        Integer proId = Integer.valueOf(pro.getProductId());
-                        Integer count = pro.getCount();
-                        DefaultPBean bean = new DefaultPBean();
-                        bean.setProductID(proId);
-                        newList.add(bean);
-                        adapter.getCountMap().put(proId, count);
-                    }
-                    adapter.setData(newList);
-                    if (backList.size() > 0) {
-                        ToastUtil.show(mContext, "添加成功");
-                        nopurchaseRL.setVisibility(View.GONE);
-                    }
+            Bundle bundle = data.getExtras();
+            ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
+            List<DefaultPBean> newList = new ArrayList<>();
+            if (backList != null) {
+                for (AddedProduct pro : backList) {
+                    Integer proId = Integer.valueOf(pro.getProductId());
+                    Integer count = pro.getCount();
+                    DefaultPBean bean = new DefaultPBean();
+                    bean.setProductID(proId);
+                    newList.add(bean);
+                    adapter.getCountMap().put(proId, count);
                 }
+                adapter.setData(newList);
+                if (backList.size() > 0) {
+                    ToastUtil.show(mContext, "添加成功");
+                    nopurchaseRL.setVisibility(View.GONE);
+                }
+            }
         }
     }
 

@@ -55,7 +55,7 @@ public abstract class BaseActivity extends FragmentActivity {
     protected Context mContext;
     //通用对话框子类可以直接使用
     protected CustomDialog dialog;
-    private CustomProgressDialog progressDialog;
+    protected CustomProgressDialog progressDialog;
     private List<BroadcastReceiver> receiverList;
 
     private boolean login, logout;

@@ -37,6 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.runwise.supply.R.id.productImage;
 import static com.runwise.supply.R.id.tv_submit;
 
 public class TransferOutActivity extends NetWorkActivity {
@@ -143,7 +144,6 @@ public class TransferOutActivity extends NetWorkActivity {
         switch (where) {
             case REQUEST_DETAIL:
                 mTransferOutDetailResponse = (TransferOutDetailResponse) result.getResult().getData();
-                simulationData();
                 setUpData();
                 break;
             case REQUEST_TRANSFEROUT:
@@ -163,8 +163,8 @@ public class TransferOutActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        simulationData();
-        setUpData();
+//        simulationData();
+//        setUpData();
     }
 
     public static Intent getStartIntent(Context context, TransferEntity transferEntity) {
@@ -209,6 +209,27 @@ public class TransferOutActivity extends NetWorkActivity {
         mPopWindowNoBatch.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindowNoBatch.setFocusable(true);
         mPopWindowNoBatch.setOutsideTouchable(true);
+    }
+
+    TransferOutDetailResponse.TransferBatchLine copyTransferBatchLine(TransferOutDetailResponse.TransferBatchLine transferBatchLine) {
+        TransferOutDetailResponse.TransferBatchLine copyTransferBatchLine = new TransferOutDetailResponse.TransferBatchLine();
+        copyTransferBatchLine.setPriceUnit(transferBatchLine.getPriceUnit());
+        copyTransferBatchLine.setProductUomQty(transferBatchLine.getProductUomQty());
+        copyTransferBatchLine.setProductUom(transferBatchLine.getProductUom());
+        copyTransferBatchLine.setProductID(transferBatchLine.getProductID());
+        copyTransferBatchLine.setProductImage(transferBatchLine.getProductImage());
+        copyTransferBatchLine.setProductUnit(transferBatchLine.getProductUnit());
+
+        ArrayList<TransferOutDetailResponse.TransferBatchLot> transferBatchLots = new ArrayList<>();
+        for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
+            TransferOutDetailResponse.TransferBatchLot copyTransferBatchLot = new TransferOutDetailResponse.TransferBatchLot();
+            copyTransferBatchLot.setQuantQty(transferBatchLot.getQuantQty());
+            copyTransferBatchLot.setLotID(transferBatchLot.getLotID());
+            copyTransferBatchLot.setActualQty(transferBatchLot.getActualQty());
+            transferBatchLots.add(copyTransferBatchLot);
+        }
+        copyTransferBatchLine.setProductInfo(transferBatchLots);
+        return copyTransferBatchLine;
     }
 
     private void showPopWindowNoBatch(final TransferOutDetailResponse.TransferBatchLine transferBatchLine) {
@@ -291,7 +312,8 @@ public class TransferOutActivity extends NetWorkActivity {
         });
     }
 
-    private void showPopWindow(final TransferOutDetailResponse.TransferBatchLine transferBatchLine) {
+    private void showPopWindow(TransferOutDetailResponse.TransferBatchLine sourceTransferBatchLine) {
+        final TransferOutDetailResponse.TransferBatchLine transferBatchLine = copyTransferBatchLine(sourceTransferBatchLine);
         SimpleDraweeView productImage = (SimpleDraweeView) dialogView.findViewById(R.id.productImage);
         TextView name = (TextView) dialogView.findViewById(R.id.name);
         TextView content = (TextView) dialogView.findViewById(R.id.content);
@@ -328,14 +350,20 @@ public class TransferOutActivity extends NetWorkActivity {
                 }
                 if (totalCount > transferBatchLine.getProductUomQty()) {
                     toast("总数量不能超过订单量");
+                    return;
                 }
-//                int quantQty = Integer.parseInt(et_count.getText().toString());
-//                if (quantQty > transferBatchLine.getProductUomQty()) {
-//                    toast("总数量不能超过订单量");
-//                    return;
-//                }
-//                transferBatchLine.setPriceUnit(quantQty);
-//                mProductAdapter.notifyDataSetChanged();
+                int findIndex = -1;
+                for (int i = 0; i < mProductAdapter.getList().size(); i++) {
+                    TransferOutDetailResponse.TransferBatchLine tempTransferBatchLine = (TransferOutDetailResponse.TransferBatchLine) mProductAdapter.getList().get(i);
+                    if (transferBatchLine.getProductID().equals(tempTransferBatchLine.getProductID())) {
+                        findIndex = i;
+                        break;
+                    }
+                }
+                if (findIndex != -1){
+                    mProductAdapter.getList().set(findIndex,transferBatchLine);
+                }
+                mProductAdapter.notifyDataSetChanged();
             }
         });
 
@@ -392,26 +420,26 @@ public class TransferOutActivity extends NetWorkActivity {
             viewHolder.mUnit1.setText("/" + transferBatchLine.getProductUomQty() + transferBatchLine.getProductUom());
             viewHolder.mTvCount.setText(String.valueOf(transferBatchLine.getPriceUnit()));
             viewHolder.mLlBatch.removeAllViews();
-            if (transferBatchLine.getProductInfo().size() == 0) {
+            if (transferBatchLine.getProductInfo()==null||transferBatchLine.getProductInfo().size() == 0) {
                 viewHolder.mLlBatch.setVisibility(View.GONE);
                 viewHolder.mVLine1.setVisibility(View.GONE);
             } else {
                 viewHolder.mLlBatch.setVisibility(View.VISIBLE);
                 viewHolder.mVLine1.setVisibility(View.VISIBLE);
-            }
-            for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
-                View view = LayoutInflater.from(getActivityContext()).inflate(R.layout.item_batch, null);
-                TextView tvName = (TextView) view.findViewById(R.id.tv_batch_name);
-                tvName.setText(transferBatchLot.getLotID());
-                TextView tvCount = (TextView) view.findViewById(R.id.tv_batch_count);
-                tvCount.setText(String.valueOf(transferBatchLot.getQuantQty()));
-                viewHolder.mLlBatch.addView(view);
+                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
+                    View view = LayoutInflater.from(getActivityContext()).inflate(R.layout.item_batch, null);
+                    TextView tvName = (TextView) view.findViewById(R.id.tv_batch_name);
+                    tvName.setText(transferBatchLot.getLotID());
+                    TextView tvCount = (TextView) view.findViewById(R.id.tv_batch_count);
+                    tvCount.setText(String.valueOf(transferBatchLot.getQuantQty()));
+                    viewHolder.mLlBatch.addView(view);
+                }
             }
             return convertView;
         }
 
         class ViewHolder {
-            @BindView(R.id.productImage)
+            @BindView(productImage)
             SimpleDraweeView mProductImage;
             @BindView(R.id.name)
             TextView mName;
