@@ -271,6 +271,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                 DecimalFormat df = new DecimalFormat("#.##");
                 holder.mmTvMoney.setText("¥" + df.format(mTransferEntity.getTotalPrice()));
                 holder.mmTvNum.setText(mTransferEntity.getTotalNum()+"件");
+                return;
             }
             final OrderResponse.ListBean.LinesBean bean = productList.get(position);
             int pId = bean.getProductID();
