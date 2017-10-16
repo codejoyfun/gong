@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.R;
@@ -25,6 +26,9 @@ public class CustomUpdateDialog extends Dialog {
 	private TextView updateContext;
 	private Button okBtn;
 	private Button cancle;
+	private ImageView icon;
+	private TextView mTvVersion;
+	private View mViewClose;
 
 	private UpdateDialogOkListener listener;
 	private UpdateDialogCancelListener cancelListener;
@@ -34,6 +38,7 @@ public class CustomUpdateDialog extends Dialog {
 		this.context = context;
 		this.checkVersionManager = mCheckVersionManager;
 		setContentView(R.layout.update_dialog_layout);
+		//setContentView(R.layout.dialog_update_tip);
 		this.setCanceledOnTouchOutside(false);
 		getWindow().getAttributes().gravity = Gravity.CENTER;
 		this.setCancelable(true);
@@ -41,16 +46,20 @@ public class CustomUpdateDialog extends Dialog {
 		updateContext = (TextView) this.findViewById(R.id.update_context);
 		cancle = (Button) this.findViewById(R.id.update_cancle);
 		okBtn = (Button) this.findViewById(R.id.update_ok);
+		icon = (ImageView) this.findViewById(R.id.iv_update);
+		mTvVersion = (TextView) this.findViewById(R.id.update_version);
+		mViewClose = findViewById(R.id.iv_update_close);
 
 		if (!bean.isMandatory()) {
-			title.setText("发现新版本，更新内容为：");
+			//title.setText("发现新版本，更新内容为：");
 			okBtn.setText("立即更新");
-			cancle.setText("取消");
+			icon.setImageResource(R.drawable.check_update_icon);
+			//cancle.setText("取消");
 		}
 		else{
-			title.setText("发现新版本，需要更新才能继续使用：");
+			//title.setText("发现新版本，需要更新才能继续使用：");
 			okBtn.setText("立即更新");
-			cancle.setText("退出");
+			//cancle.setText("退出");
 			this.setOnDismissListener(new OnDismissListener() {
 				@Override
 				public void onDismiss(DialogInterface dialog) {
@@ -59,6 +68,7 @@ public class CustomUpdateDialog extends Dialog {
 			});
 		}
 
+		mTvVersion.setText("最新版本（"+bean.getVersionName()+"）");
 		updateContext.setText(bean.getDescription());
 		cancle.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -83,6 +93,17 @@ public class CustomUpdateDialog extends Dialog {
 //							"com.android.browser.BrowserActivity");
 //				}
 //				CustomUpdateDialog.this.context.startActivity(intent);
+			}
+		});
+		mViewClose.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				CustomUpdateDialog.this.dismiss();
+				if (CustomUpdateDialog.this.cancelListener != null) {
+					CustomUpdateDialog.this.cancelListener.doCancelButton(
+							cancle, CustomUpdateDialog.this);
+
+				}
 			}
 		});
 	}
