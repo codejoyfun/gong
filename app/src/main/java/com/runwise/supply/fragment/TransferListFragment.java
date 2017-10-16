@@ -6,6 +6,7 @@ import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -14,16 +15,19 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
+import com.runwise.supply.TransferInActivity;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
 
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
+import static com.runwise.supply.entity.TransferEntity.STATE_CANCEL;
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
 import static com.runwise.supply.entity.TransferEntity.STATE_PENDING_DELIVER;
 import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
@@ -41,6 +45,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     public static final int TYPE_OUT = 1;
     private static final int REQUEST_REFRESH = 0;
     private static final int REQUEST_MORE = 1;
+    private static final int REQUEST_CANCEL_TRANSFER = 2;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout mLoadingLayout;
@@ -100,6 +105,11 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 break;
             case REQUEST_MORE:
                 break;
+            case REQUEST_CANCEL_TRANSFER:
+                //refresh
+                page = 1;
+                requestData(false, REQUEST_REFRESH, page, 10);
+                break;
         }
     }
 
@@ -112,9 +122,14 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
      * 调度单列表项点击
      */
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int pos, long position) {
+    public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
         //去详情页
-        TransferEntity transferEntity = (TransferEntity) mTransferListAdapter.getItem(pos);
+        if(id == -1) {
+            // 点击的是headerView或者footerView
+            return;
+        }
+        int realPosition=(int)id;
+        TransferEntity transferEntity = (TransferEntity) mTransferListAdapter.getItem(realPosition);
         Intent intent = new Intent(getActivity(), TransferDetailActivity.class);
         intent.putExtra(EXTRA_TRANSFER_ENTITY, transferEntity);
         startActivity(intent);
@@ -141,17 +156,38 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
             viewHolder.mmTvLocations.setText(transferEntity.getLocationName()+"\u2192"+transferEntity.getLocationDestName());
             viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice()+"元，"+transferEntity.getTotalNum()+"件商品");
+            viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
             if(STATE_SUBMITTED.equals(transferEntity.getPickingState())){//已提交
                 viewHolder.mmTvStatus.setText("已提交");
                 viewHolder.mmTvAction.setText("取消");
+                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //取消
+                        dialog.setTitle("提示");
+                        dialog.setMessage("确认取消订单?");
+                        dialog.setMessageGravity();
+                        dialog.setModel(CustomDialog.BOTH);
+                        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                //发送取消订单请求
+                                requestCancel(transferEntity);
+                            }
+                        });
+                        dialog.show();
+                    }
+                });
             }else if(STATE_DELIVER.equals(transferEntity.getPickingState())){//已发出
                 viewHolder.mmTvStatus.setText("已发出");
                 viewHolder.mmTvAction.setText("入库");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //TODO
+                        Intent intent = new Intent(getActivity(), TransferInActivity.class);
+                        intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY,transferEntity);
+                        startActivity(intent);
                     }
                 });
             }else if(STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())){//待出库
@@ -160,10 +196,16 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //TODO
                         startActivity(TransferOutActivity.getStartIntent(getActivity(),transferEntity));
                     }
                 });
+            }else if(STATE_CANCEL.equals(transferEntity.getPickingState())){
+                viewHolder.mmTvStatus.setText("已取消");
+                viewHolder.mmTvAction.setVisibility(View.GONE);
+            }
+            else{
+                viewHolder.mmTvStatus.setText("已完成");
+                viewHolder.mmTvAction.setVisibility(View.GONE);
             }
 
             return convertView;
@@ -202,5 +244,13 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         public void onPullUpToRefresh(PullToRefreshBase refreshView) {
             requestData(false, REQUEST_MORE, (++page), 10);
         }
+    }
+
+    /**
+     * 取消调拨单
+     */
+    private void requestCancel(TransferEntity transferEntity){
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/cancel/"+transferEntity.getPickingID(),request,REQUEST_CANCEL_TRANSFER,true,null);
     }
 }

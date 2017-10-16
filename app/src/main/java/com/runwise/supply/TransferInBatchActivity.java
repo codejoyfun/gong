@@ -82,12 +82,19 @@ public class TransferInBatchActivity extends NetWorkActivity {
 
     }
 
-    @OnClick({R.id.btn_confirm})
+    @OnClick({R.id.btn_confirm,R.id.iv_cancle})
     public void onBtnClick(View v){
-        Intent data = new Intent();
-        data.putExtra(INTENT_KEY_TRANSFER_BATCH, mTransferBatchLine);
-        setResult(RESULT_OK,data);
-        finish();
+        switch (v.getId()){
+            case R.id.btn_confirm:
+                Intent data = new Intent();
+                data.putExtra(INTENT_KEY_TRANSFER_BATCH, mTransferBatchLine);
+                setResult(RESULT_OK,data);
+                finish();
+                break;
+            case R.id.iv_cancle:
+                finish();
+                break;
+        }
     }
 
     private class BatchListAdapter extends BaseAdapter {
@@ -127,7 +134,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
                 public void onClick(View view) {
                     int current = lot.getActualQty();
                     lot.setActualQty(current+1);
-                    if(checkTotal()){
+                    if(!checkTotal()){
                         Toast.makeText(TransferInBatchActivity.this,"总数量不能超过订单量",Toast.LENGTH_LONG).show();
                         lot.setActualQty(current);
                         return;
@@ -141,7 +148,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
                 public void onClick(View view) {
                     int current = lot.getActualQty();
                     if(current-1>=0)lot.setActualQty(current-1);
-                    if(checkTotal()){
+                    if(!checkTotal()){
                         Toast.makeText(TransferInBatchActivity.this,"总数量不能超过订单量",Toast.LENGTH_LONG).show();
                         lot.setActualQty(current);
                         return;

@@ -10,6 +10,7 @@ import java.util.List;
 
 public class TransferDetailResponse {
     private List<OrderResponse.ListBean.LinesBean> lines;
+    private TransferEntity info;
 
     public void setLines(List<OrderResponse.ListBean.LinesBean> lines) {
         this.lines = lines;

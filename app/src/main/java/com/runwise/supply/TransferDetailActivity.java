@@ -70,6 +70,8 @@ public class TransferDetailActivity extends NetWorkActivity {
     private Button mBtnDoAction;
     @ViewInject(R.id.btn_transfer_detail_action2)
     private Button mBtnDoAction2;
+    @ViewInject(R.id.tv_transfer_detail_id)
+    private TextView mTvTransferId;
 
     private TransferEntity mTransferEntity;
     private TransferProductAdapter mTransferProductAdapter;
@@ -81,8 +83,8 @@ public class TransferDetailActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_transfer_detail);
+        showBackBtn();
         setTitleText(true,"调拨单详情");
-        setTitleLeftIcon(true, R.drawable.nav_back);
         mTransferEntity = getIntent().getParcelableExtra(EXTRA_TRANSFER_ENTITY);
         mDtlDragLayout.setOverDrag(false);
         mRvProducts.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
@@ -103,6 +105,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         mTvCount.setText(mTransferEntity.getTotalNum()+"件");
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         mTvEstimateMoney.setText("¥"+decimalFormat.format(mTransferEntity.getTotalPrice()));
+        mTvTransferId.setText(mTransferEntity.getPickingName());
         initBottomBar();
     }
 
@@ -133,7 +136,10 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mTransferEntity));
+                        //startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mTransferEntity));
+                        Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
+                        intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
+                        startActivity(intent);
                     }
                 });
                 break;

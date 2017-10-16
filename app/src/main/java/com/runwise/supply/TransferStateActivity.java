@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -15,7 +14,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.TransferEntity;
-import com.runwise.supply.entity.TransferStateEntitiy;
+import com.runwise.supply.entity.TransferStateEntity;
 import com.runwise.supply.entity.TransferStateResponse;
 import com.runwise.supply.tools.StatusBarUtil;
 
@@ -34,7 +33,7 @@ public class TransferStateActivity extends NetWorkActivity {
     private static final int REQUEST_STATE = 0;
 
     private TransferEntity mTransferEntity;
-    private List<TransferStateEntitiy> mStateList;
+    private List<TransferStateEntity> mStateList;
     @ViewInject(R.id.rv_transfer_state)
     private RecyclerView mRvStates;
     private StateAdapter mStateAdapter;
@@ -45,20 +44,60 @@ public class TransferStateActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_transfer_state);
+        showBackBtn();
+        setTitleText(true,"调拨单状态");
         setTitleLeftIcon(true,R.drawable.nav_back);
         mStateAdapter = new StateAdapter(this);
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER);
         mRvStates.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         mRvStates.setAdapter(mStateAdapter);
-        requestStates();
+        //requestStates();
+
+        List<String> list = new ArrayList<>();
+        list.add("2017-09-16 23:23 已完成");
+        list.add("2017-09-15 23:20 已发出");
+        list.add("2017-09-14 23:03 已修改");
+        list.add("2017-09-13 20:23 已提交");
+        mTransferEntity.setStateTracker(list);
+
+        initStates();
     }
 
-    @OnClick({R.id.title_iv_left})
-    private void btnClick(View view){
-        switch (view.getId()){
-            case R.id.title_iv_left:
-                finish();
-                break;
+    private void initStates(){
+        if(mTransferEntity.getStateTracker()!=null){
+            mStateList = new ArrayList<>();
+            for(String strState:mTransferEntity.getStateTracker()){
+                TransferStateEntity stateEntity = new TransferStateEntity();
+                String[] pieces = strState.split(" ");
+                String state = pieces[2];
+                String stateTime = pieces[0]+" "+pieces[1];
+                StringBuilder sbContent = new StringBuilder();
+                stateEntity.setOperateTime(stateTime);
+                stateEntity.setState(state);
+                if(state.contains(TransferEntity.STATE_SUBMITTED)){//已提交
+                    sbContent.append("操作人：").append("\n")
+                            .append("调拨单号：").append(mTransferEntity.getPickingName()).append("\n")
+                            .append("调拨商品：").append(mTransferEntity.getTotalNum())
+                            .append("件，共").append(mTransferEntity.getTotalPrice()).append("元");
+                }
+                else if(state.contains(TransferEntity.STATE_MODIFIED)){//已修改
+                    sbContent.append("操作人：").append("\n")
+                            .append("调拨商品：").append(mTransferEntity.getTotalNum())
+                            .append("件，共").append(mTransferEntity.getTotalPrice()).append("元");
+                }
+                else if(state.contains(TransferEntity.STATE_DELIVER)){//已发出
+                    sbContent.append("操作人：").append("\n")
+                            .append("调拨路径：").append(mTransferEntity.getLocationName()).append("\u2192")
+                            .append(mTransferEntity.getLocationDestName());
+                }else if(state.contains(TransferEntity.STATE_COMPLETE)){//已完成
+                    sbContent.append("入库人：").append("\n")
+                            .append("收货商品：").append(mTransferEntity.getTotalNum())
+                            .append("件，共").append(mTransferEntity.getTotalPrice()).append("元");//TODO:实际收货
+                }
+                stateEntity.setContent(sbContent.toString());
+                mStateList.add(stateEntity);
+            }
+            mStateAdapter.notifyDataSetChanged();
         }
     }
 
@@ -81,7 +120,7 @@ public class TransferStateActivity extends NetWorkActivity {
 
     }
 
-    class StateAdapter extends RecyclerView.Adapter {
+    private class StateAdapter extends RecyclerView.Adapter {
         private LayoutInflater inflater;
         private static final int TYPE_TOP = 0x0000;
         private static final int TYPE_NORMAL= 0x0001;
@@ -112,11 +151,10 @@ public class TransferStateActivity extends NetWorkActivity {
             if (position == mStateList.size() - 1){
                 itemHolder.tvDownLine.setVisibility(View.INVISIBLE);
             }
-            TransferStateEntitiy osl = mStateList.get(position);
-            //TODO:
-//            itemHolder.orderStateTv.setText(osl.getState());
-//            itemHolder.orderContentTv.setText(osl.getContent());
-//            itemHolder.stateTimeTv.setText(osl.getTime());
+            TransferStateEntity osl = mStateList.get(position);
+            itemHolder.orderStateTv.setText("调拨单"+osl.getState());
+            itemHolder.orderContentTv.setText(osl.getContent());
+            itemHolder.stateTimeTv.setText(osl.getOperateTime());
         }
         @Override
         public int getItemViewType(int position) {
