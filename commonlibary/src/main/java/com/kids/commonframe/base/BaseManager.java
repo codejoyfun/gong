@@ -10,10 +10,13 @@ import java.util.Set;
  */
 public class BaseManager {
     private Set<Activity> activityList;
+
     private BaseManager() {
         activityList = new LinkedHashSet<Activity>();
     }
+
     private static BaseManager instance;
+
     public static BaseManager getInstance() {
         if (instance == null) {
             synchronized (BaseManager.class) {
@@ -54,20 +57,22 @@ public class BaseManager {
         }
         return activity;
     }
+
     /**
      * 获取栈中上一个activity的名字
      * 用于查找avtivity的跳转来源
-     * */
+     */
     public String preActvityName() {
         if (activityList != null && activityList.size() > 1) {
-            Object[] stack =  activityList.toArray();
-            Activity activity = (Activity) stack[stack.length-2];
-            if ( activity!= null) {
+            Object[] stack = activityList.toArray();
+            Activity activity = (Activity) stack[stack.length - 2];
+            if (activity != null) {
                 return activity.getClass().getSimpleName();
             }
         }
         return null;
     }
+
     public void finishAll() {
         synchronized (this) {
             if (activityList != null && activityList.size() > 0) {
@@ -83,6 +88,18 @@ public class BaseManager {
         synchronized (this) {
             if (!activityList.isEmpty() && activityList.contains(activity))
                 activityList.remove(activity);
+        }
+    }
+
+    public void returnHomePage(Class classInstance) {
+        synchronized (this) {
+            if (activityList != null && activityList.size() > 0) {
+                for (Activity a : activityList) {
+                    if (!classInstance.isInstance(a)) {
+                        a.finish();
+                    }
+                }
+            }
         }
     }
 }

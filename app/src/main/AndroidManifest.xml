@@ -462,16 +462,20 @@
         <activity android:name=".mine.ProcurementLimitActivity"/>
         <activity android:name=".firstpage.ReturnSuccessActivity"/>
         <activity android:name=".firstpage.UploadReturnPicActivity"/>
-        <activity android:name=".TransferListActivity"
-        android:configChanges="keyboardHidden|orientation|screenSize"
-        android:screenOrientation="portrait"/>
-        <activity android:name=".TransferDetailActivity"
+        <activity
+            android:name=".TransferListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
-        <activity android:name=".TransferInActivity"
+        <activity
+            android:name=".TransferDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
-        <activity android:name=".TransferInBatchActivity"
+        <activity
+            android:name=".TransferInActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".TransferInBatchActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
         <activity android:name=".TransferStateActivity"
@@ -506,6 +510,8 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
         <activity android:name=".orderpage.TransferOutActivity">
+        </activity>
+        <activity android:name=".orderpage.TransferOutSuccessActivity">
         </activity>
     </application>
 

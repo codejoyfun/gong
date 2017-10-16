@@ -26,9 +26,6 @@ import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
 import static com.runwise.supply.entity.TransferEntity.STATE_CANCEL;
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
