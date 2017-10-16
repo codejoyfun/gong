@@ -7,13 +7,13 @@ import java.util.List;
  */
 
 public class TransferStateResponse {
-    private List<TransferStateEntitiy> stateList;
+    private List<TransferStateEntity> stateList;
 
-    public List<TransferStateEntitiy> getStateList() {
+    public List<TransferStateEntity> getStateList() {
         return stateList;
     }
 
-    public void setStateList(List<TransferStateEntitiy> stateList) {
+    public void setStateList(List<TransferStateEntity> stateList) {
         this.stateList = stateList;
     }
 }

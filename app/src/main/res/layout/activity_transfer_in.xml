@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="调入门店："
                 android:textColor="#999999"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 />
@@ -38,7 +38,8 @@
                 android:id="@+id/tv_transfer_to"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="14sp"
+                android:textColor="#2E2E2E"
                 android:layout_margin="5dp"
                 />
         </TableRow>
@@ -50,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:text="调出门店："
                 android:textColor="#999999"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 />
@@ -58,7 +59,8 @@
                 android:id="@+id/tv_transfer_from"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="14sp"
+                android:textColor="#2E2E2E"
                 android:layout_margin="5dp"
                 />
         </TableRow>
@@ -70,7 +72,7 @@
         android:layout_below="@id/tl_transfer_info_layout"
         android:layout_height="40dp"
         android:textColor="#666666"
-        android:textSize="15sp"
+        android:textSize="@dimen/third_title"
         android:gravity="center_vertical|left"
         android:paddingLeft="15dp"
         android:layout_marginTop="10dp"

@@ -5,6 +5,7 @@
     android:paddingTop="15dp"
     android:paddingLeft="@dimen/padding_left"
     android:id="@+id/itemRootView"
+    android:background="@color/white"
     >
     <com.facebook.drawee.view.SimpleDraweeView
         xmlns:fresco="http://schemas.android.com/apk/res-auto"

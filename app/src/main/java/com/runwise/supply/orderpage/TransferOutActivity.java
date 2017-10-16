@@ -107,7 +107,7 @@ public class TransferOutActivity extends NetWorkActivity {
     }
 
     public static Intent getStartIntent(Context context, TransferEntity transferEntity) {
-        Intent intent = new Intent(context, TransferInActivity.class);
+        Intent intent = new Intent(context, TransferOutActivity.class);
         intent.putExtra(INTENT_KEY_TRANSFER_ENTITY, transferEntity);
         return intent;
     }

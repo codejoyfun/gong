@@ -70,7 +70,7 @@ public class TransferInActivity extends NetWorkActivity {
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_transfer_in);
         setTitleText(true,"入库");
-        setTitleLeftIcon(true, R.drawable.nav_back);
+        showBackBtn();
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER_ENTITY);
         initViews();
         requestData();
@@ -143,8 +143,8 @@ public class TransferInActivity extends NetWorkActivity {
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(productId);
             totalMoney = totalMoney + basicBean.getPrice() * mTransferInMap.get(productId);
         }
-        DecimalFormat decimalFormat = new DecimalFormat("#.$$");
-        mTvTransferInMoney.setText("¥"+decimalFormat.format(totalMoney));
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        mTvTransferInMoney.setText(decimalFormat.format(totalMoney));
     }
 
     @Override
@@ -192,7 +192,7 @@ public class TransferInActivity extends NetWorkActivity {
                 line2.setProductInfo(lotList);
 
                 TransferBatchResponse.TransferBatchLot lot2 = new TransferBatchResponse.TransferBatchLot();
-                lot2.setLotID("Z90909090");
+                lot2.setLotID("Z90909091");
                 lot2.setQuantQty(4);
                 lotList.add(lot2);
 

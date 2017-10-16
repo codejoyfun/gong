@@ -21,6 +21,7 @@ public class TransferEntity implements Parcelable{
     public static final String STATE_DELIVER = "已发出";//已发出
     public static final String STATE_COMPLETE = "已完成";//完成
     public static final String STATE_CANCEL = "已取消";
+    public static final String STATE_MODIFIED = "已修改";
 
     private String pickingID;
     private String pickingName;
@@ -29,6 +30,7 @@ public class TransferEntity implements Parcelable{
     private String locationName;
     private String locationDestName;
     private List<OrderResponse.ListBean.LinesBean> lines;
+    private List<String> stateTracker;
     private float totalPrice;
     private int totalNum;
 
@@ -104,6 +106,17 @@ public class TransferEntity implements Parcelable{
         this.totalNum = totalNum;
     }
 
+    public List<String> getStateTracker() {
+        return stateTracker;
+    }
+
+    public void setStateTracker(List<String> stateTracker) {
+        this.stateTracker = stateTracker;
+    }
+
+    public TransferEntity() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -118,11 +131,9 @@ public class TransferEntity implements Parcelable{
         dest.writeString(this.locationName);
         dest.writeString(this.locationDestName);
         dest.writeTypedList(this.lines);
+        dest.writeStringList(this.stateTracker);
         dest.writeFloat(this.totalPrice);
         dest.writeInt(this.totalNum);
-    }
-
-    public TransferEntity() {
     }
 
     protected TransferEntity(Parcel in) {
@@ -133,6 +144,7 @@ public class TransferEntity implements Parcelable{
         this.locationName = in.readString();
         this.locationDestName = in.readString();
         this.lines = in.createTypedArrayList(OrderResponse.ListBean.LinesBean.CREATOR);
+        this.stateTracker = in.createStringArrayList();
         this.totalPrice = in.readFloat();
         this.totalNum = in.readInt();
     }
