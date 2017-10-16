@@ -29,6 +29,8 @@ public class CustomUpdateDialog extends Dialog {
 	private ImageView icon;
 	private TextView mTvVersion;
 	private View mViewClose;
+	private View mLayoutBtns;
+	private View mBtnMandatory;
 
 	private UpdateDialogOkListener listener;
 	private UpdateDialogCancelListener cancelListener;
@@ -49,12 +51,15 @@ public class CustomUpdateDialog extends Dialog {
 		icon = (ImageView) this.findViewById(R.id.iv_update);
 		mTvVersion = (TextView) this.findViewById(R.id.update_version);
 		mViewClose = findViewById(R.id.iv_update_close);
+		mBtnMandatory = (findViewById(R.id.btn_mandatory_update));
+		mLayoutBtns = findViewById(R.id.ll_not_mandatory_update);
 
 		if (!bean.isMandatory()) {
 			//title.setText("发现新版本，更新内容为：");
 			okBtn.setText("立即更新");
 			icon.setImageResource(R.drawable.check_update_icon);
 			//cancle.setText("取消");
+			mBtnMandatory.setVisibility(View.GONE);
 		}
 		else{
 			//title.setText("发现新版本，需要更新才能继续使用：");
@@ -64,6 +69,15 @@ public class CustomUpdateDialog extends Dialog {
 				@Override
 				public void onDismiss(DialogInterface dialog) {
 					BaseManager.getInstance().finishAll();
+				}
+			});
+			mBtnMandatory.setVisibility(View.VISIBLE);
+			mLayoutBtns.setVisibility(View.GONE);
+			mBtnMandatory.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dismiss();
+					checkVersionManager.startDownloadFile(Constant.BASE_URL+bean.getUrl());
 				}
 			});
 		}
