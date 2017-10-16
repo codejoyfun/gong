@@ -25,6 +25,7 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
@@ -92,6 +93,10 @@ public class OrderFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.sureBtn:
+                if(!SPUtils.isLogin(getActivity())){
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    return;
+                }
                 //跳转到智能下单页面
                 Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
                 intent.putExtra("yongliang_factor",Double.valueOf(safeArr.get(selectedIndex)));
@@ -99,12 +104,12 @@ public class OrderFragment extends NetWorkFragment {
                 startActivity(intent);
                 break;
             case R.id.selfHelpBtn:
-//                if (SPUtils.isLogin(mContext)){
+                if (SPUtils.isLogin(mContext)){
                     Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
                     startActivity(intent2);
-//                }else{
-//
-//                }
+                }else{
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                }
                 break;
             case R.id.safeValueTv:
                 if (opv == null){
