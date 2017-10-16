@@ -106,6 +106,12 @@ public class TransferDetailActivity extends NetWorkActivity {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         mTvEstimateMoney.setText("¥"+decimalFormat.format(mTransferEntity.getTotalPrice()));
         mTvTransferId.setText(mTransferEntity.getPickingName());
+        //提交，待出库，已修改-》可以修改
+        if(TransferEntity.STATE_SUBMITTED.equals(mTransferEntity.getPickingState())
+                || TransferEntity.STATE_PENDING_DELIVER.equals(mTransferEntity.getPickingState())
+                || TransferEntity.STATE_MODIFIED.equals(mTransferEntity.getPickingState())){
+            setTitleRightText(true,"修改");
+        }
         initBottomBar();
     }
 
@@ -146,7 +152,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         }
     }
 
-    @OnClick({R.id.btn_transfer_detail_state_more,R.id.btn_transfer_detail_action,R.id.btn_transfer_detail_action2})
+    @OnClick({R.id.btn_transfer_detail_state_more,R.id.btn_transfer_detail_action,R.id.btn_transfer_detail_action2,R.id.right_layout})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.btn_transfer_detail_state_more://更多状态
@@ -168,6 +174,9 @@ public class TransferDetailActivity extends NetWorkActivity {
                     }
                 });
                 dialog.show();
+                break;
+            case R.id.right_layout:
+                //todo:修改调拨单
                 break;
         }
     }
@@ -233,7 +242,7 @@ public class TransferDetailActivity extends NetWorkActivity {
             this.context = context;
         }
 
-        public void setProductList(List<OrderResponse.ListBean.LinesBean> productList) {
+        public void setProductList(List<? extends OrderResponse.ListBean.LinesBean> productList) {
             this.productList.clear();
             if (productList != null && productList.size() > 0){
                 this.productList.addAll(productList);

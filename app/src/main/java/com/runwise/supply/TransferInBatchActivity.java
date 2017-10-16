@@ -2,6 +2,7 @@ package com.runwise.supply;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +19,12 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.entity.TransferBatchResponse;
-import com.runwise.supply.entity.TransferEntity;
+import com.runwise.supply.entity.TransferBatchLot;
+import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
-import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.view.NoWatchEditText;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +49,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
     private TextView mTvProductContent;
 
     private OrderResponse.ListBean.LinesBean mLinesBean;//商品基本信息
-    private TransferBatchResponse.TransferBatchLine mTransferBatchLine;//批次信息
+    private TransferDetailResponse.LinesBean mTransferBatchLine;//批次信息
     private BatchListAdapter mBatchListAdapter;
 
     @Override
@@ -87,7 +85,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
         switch (v.getId()){
             case R.id.btn_confirm:
                 Intent data = new Intent();
-                data.putExtra(INTENT_KEY_TRANSFER_BATCH, mTransferBatchLine);
+                data.putExtra(INTENT_KEY_TRANSFER_BATCH, (Parcelable) mTransferBatchLine);
                 setResult(RESULT_OK,data);
                 finish();
                 break;
@@ -105,7 +103,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
         }
 
         @Override
-        public TransferBatchResponse.TransferBatchLot getItem(int position) {
+        public TransferBatchLot getItem(int position) {
             return mTransferBatchLine.getProductInfo().get(position);
         }
 
@@ -124,7 +122,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
                 convertView.setTag(viewHolder);
             }
             viewHolder = (ViewHolder) convertView.getTag();
-            final TransferBatchResponse.TransferBatchLot lot = getItem(position);
+            final TransferBatchLot lot = getItem(position);
             viewHolder.tvBatch.setText(lot.getLotID());
             viewHolder.tvDeliverCount.setText(lot.getQuantQty()+"");
             viewHolder.etProductCount.setText(lot.getActualQty()+"");
@@ -167,7 +165,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
     private boolean checkTotal(){
         int totalActual = 0;//实际数量
         int totalExpected = 0;//订单量
-        for(TransferBatchResponse.TransferBatchLot lot:mTransferBatchLine.getProductInfo()){
+        for(TransferBatchLot lot:mTransferBatchLine.getProductInfo()){
             totalActual = totalActual + lot.getActualQty();
             totalExpected = totalExpected + lot.getQuantQty();
         }
