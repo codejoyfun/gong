@@ -160,6 +160,24 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                 String latestVersion = updateResponse.getVersionName();
                 if(TextUtils.isEmpty(latestVersion) || TextUtils.isEmpty(updateResponse.getUrl()))return;
 
+                try{
+                    int intLatestVersion = Integer.valueOf(latestVersion);
+                    int intCurrentVersion = Integer.valueOf(CommonUtils.getVersionCode(baseActivity));
+                    if(intLatestVersion > intCurrentVersion){
+                        CustomUpdateDialog customUpdateDialog = new CustomUpdateDialog(baseActivity,updateResponse,CheckVersionManager.this);
+                        if(!baseActivity.isFinishing()) {
+                            customUpdateDialog.show();
+                        }
+                    }else {
+                        if(showToast) {
+                            ToastUtil.show(baseActivity,"已是最新版本");
+                        }
+                    }
+                    return;
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
                 if(!latestVersion.equals(CommonUtils.getVersionCode(baseActivity))) {
                     CustomUpdateDialog customUpdateDialog = new CustomUpdateDialog(baseActivity,updateResponse,CheckVersionManager.this);
                     if(!baseActivity.isFinishing()) {
