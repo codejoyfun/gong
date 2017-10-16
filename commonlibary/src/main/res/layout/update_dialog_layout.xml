@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dip"
         android:layout_marginRight="20dip"
-        android:background="@drawable/dialog_bg"
+        android:background="@drawable/dialog_bg_white"
         android:gravity="center_horizontal"
         android:orientation="vertical" >
 
@@ -20,16 +20,50 @@
             android:layout_height="wrap_content"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:paddingTop="8dp"
-            android:gravity="left"
+            android:paddingTop="14dp"
+            android:gravity="center"
+            android:text="检查更新"
             android:textColor="#666666"
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/update_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:gravity="center"
+            android:text="最新版本（20170909）"
+            android:layout_below="@id/update_title"
+            android:textColor="@android:color/holo_red_light"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/iv_update"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/update_version"
+            android:src="@drawable/check_update_icon"/>
+        <TextView
+            android:id="@+id/tv_update_tip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_update"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="left"
+            android:textColor="#666666"
+            android:textSize="16sp"
+            android:text="发现新版本，更新内容："
+            android:lineSpacingExtra="4dp"
+            />
+        <TextView
             android:id="@+id/update_context"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/update_title"
+            android:layout_below="@+id/tv_update_tip"
             android:layout_margin="10dp"
             android:gravity="left"
             android:minHeight="60dp"
@@ -38,50 +72,48 @@
             android:lineSpacingExtra="4dp"
             />
 
-        <View
-            android:id="@+id/update_hline"
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_below="@id/update_context"
-            android:background="#919191" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/update_hline" >
+            android:layout_below="@id/update_context"
+            android:paddingBottom="10dp">
 
             <Button
                 android:id="@+id/update_cancle"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_weight="1"
-                android:background="@drawable/white_btn_selector"
                 android:onClick="doClick"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="取消"
+                android:text="忽略"
+                android:gravity="center"
                 android:textColor="#999999"
+                android:background="@android:color/white"
                 android:textSize="16sp" />
-
-            <View
-                android:layout_width="1px"
-                android:layout_height="match_parent"
-                android:background="#919191" />
 
             <Button
                 android:id="@+id/update_ok"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_weight="1"
-                android:background="@drawable/white_btn_selector"
                 android:minWidth="120dip"
                 android:onClick="doClick"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="确定"
+                android:gravity="center"
+                android:text="立即更新"
                 android:textColor="@color/colorAccent"
+                android:background="@android:color/white"
                 android:textSize="16sp" />
         </LinearLayout>
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_update_close"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/dialog_sys_update_btn_closed"/>
 
 </LinearLayout>

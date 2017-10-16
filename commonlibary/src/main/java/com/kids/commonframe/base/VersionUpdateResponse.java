@@ -34,7 +34,7 @@ public class VersionUpdateResponse extends BaseEntity implements Serializable {
 		return versionName;
 	}
 
-	public void setMandatory(boolean mandatory) {
+	public void setIsMandatory(boolean mandatory) {
 		isMandatory = mandatory;
 	}
 
