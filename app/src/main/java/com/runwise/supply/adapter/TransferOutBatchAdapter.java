@@ -1,5 +1,6 @@
 package com.runwise.supply.adapter;
 
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.TransferOutDetailResponse;
 import com.runwise.supply.view.NoWatchEditText;
@@ -21,11 +23,31 @@ import butterknife.ButterKnife;
  */
 
 public class TransferOutBatchAdapter extends IBaseAdapter {
+
+    public void setTotalCount(int totalCount) {
+        mTotalCount = totalCount;
+    }
+
+    int mTotalCount = 0;
+
+    boolean checkCount(Context context) {
+        int actualCount = 0;
+        for (Object o : mList) {
+            TransferOutDetailResponse.TransferBatchLot transferBatchLot = (TransferOutDetailResponse.TransferBatchLot) o;
+            actualCount += transferBatchLot.getQuantQty();
+        }
+        if (actualCount == mTotalCount) {
+            ToastUtil.show(context, "总数量不能超过订单量");
+            return false;
+        }
+        return true;
+    }
+
     @Override
-    protected View getExView(int position, View convertView, ViewGroup parent) {
+    protected View getExView(int position, View convertView, final ViewGroup parent) {
         final TransferOutDetailResponse.TransferBatchLot transferBatchLot = (TransferOutDetailResponse.TransferBatchLot) mList.get(position);
         ViewHolder viewHolder;
-        if (convertView == null){
+        if (convertView == null) {
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tranferout_batch, null);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
@@ -35,7 +57,8 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         viewHolder.mIvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int quantQty = transferBatchLot.getQuantQty()+1;
+                checkCount(v.getContext());
+                int quantQty = transferBatchLot.getQuantQty() + 1;
                 transferBatchLot.setQuantQty(quantQty);
                 notifyDataSetChanged();
             }
@@ -43,8 +66,8 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         viewHolder.mIvReduce.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int quantQty = transferBatchLot.getQuantQty()-1;
-                if (quantQty == 0){
+                int quantQty = transferBatchLot.getQuantQty() - 1;
+                if (quantQty == 0) {
                     return;
                 }
                 transferBatchLot.setQuantQty(quantQty);
@@ -66,7 +89,12 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
             @Override
             public void afterTextChanged(Editable s) {
                 int quantQty = Integer.parseInt(s.toString());
+                int lastQuantQty = transferBatchLot.getQuantQty();
                 transferBatchLot.setQuantQty(quantQty);
+                if (!checkCount(parent.getContext())) {
+                    transferBatchLot.setQuantQty(lastQuantQty);
+                }
+
             }
         });
         return convertView;

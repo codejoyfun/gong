@@ -16,12 +16,11 @@
     <TextView
         android:id="@+id/tv_call_in_store_tag"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/titleLayout"
         android:background="@color/white"
         android:gravity="center"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:padding="10dp"
         android:text="调入门店:"
         android:textColor="@color/textColorThird"
         android:textSize="@dimen/second_title"/>
@@ -29,11 +28,13 @@
     <TextView
         android:id="@+id/tv_call_in_store"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/titleLayout"
         android:layout_toRightOf="@id/tv_call_in_store_tag"
         android:background="@color/white"
         android:gravity="center|left"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:paddingRight="10dp"
         android:text="东风东路店"
         android:textColor="@color/textColorPrimary"
@@ -42,12 +43,13 @@
     <TextView
         android:id="@+id/tv_call_out_store_tag"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/tv_call_in_store"
         android:background="@color/white"
         android:gravity="center"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         android:text="调出门店:"
         android:textColor="@color/textColorThird"
         android:textSize="@dimen/second_title"/>
@@ -55,12 +57,13 @@
     <TextView
         android:id="@+id/tv_call_out_store"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/tv_call_in_store"
         android:layout_toRightOf="@id/tv_call_out_store_tag"
         android:background="@color/white"
         android:gravity="center|left"
         android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         android:text="环市东路东圃店"
         android:textColor="@color/textColorPrimary"
         android:textSize="@dimen/second_title"/>
@@ -80,8 +83,8 @@
             android:gravity="center|left"
             android:paddingLeft="10dp"
             android:text="调拨明细"
-            android:textColor="@color/textColorThird"
-            android:textSize="@dimen/third_title"/>
+            android:textColor="@color/textColorSecondary"
+            android:textSize="@dimen/second_title"/>
 
 
     </RelativeLayout>
