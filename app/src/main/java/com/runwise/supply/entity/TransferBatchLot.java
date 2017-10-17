@@ -80,12 +80,18 @@ public class TransferBatchLot implements Parcelable{
         dest.writeString(this.lotID);
         dest.writeInt(this.quantQty);
         dest.writeInt(this.actualQty);
+        dest.writeFloat(this.usedQty);
+        dest.writeString(this.lotDate);
+        dest.writeInt(this.lotIDID);
     }
 
     protected TransferBatchLot(Parcel in) {
         this.lotID = in.readString();
         this.quantQty = in.readInt();
         this.actualQty = in.readInt();
+        this.usedQty = in.readFloat();
+        this.lotDate = in.readString();
+        this.lotIDID = in.readInt();
     }
 
     public static final Creator<TransferBatchLot> CREATOR = new Parcelable.Creator<TransferBatchLot>() {

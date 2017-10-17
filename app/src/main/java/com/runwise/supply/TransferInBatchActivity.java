@@ -124,8 +124,9 @@ public class TransferInBatchActivity extends NetWorkActivity {
             viewHolder = (ViewHolder) convertView.getTag();
             final TransferBatchLot lot = getItem(position);
             viewHolder.tvBatch.setText(lot.getLotID());
-            viewHolder.tvDeliverCount.setText(lot.getQuantQty()+"");
+            viewHolder.tvDeliverCount.setText((int)lot.getUsedQty()+"");
             viewHolder.etProductCount.setText(lot.getActualQty()+"");
+            viewHolder.tvProductDateValue.setText(lot.getLotDate());
             //增加
             viewHolder.btnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -167,7 +168,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
         int totalExpected = 0;//订单量
         for(TransferBatchLot lot:mTransferBatchLine.getProductLotInfo()){
             totalActual = totalActual + lot.getActualQty();
-            totalExpected = totalExpected + lot.getQuantQty();
+            totalExpected = totalExpected + (int)lot.getUsedQty();
         }
         return totalActual <= totalExpected;
     }

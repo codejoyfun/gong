@@ -77,7 +77,7 @@
             android:textColor="@color/bottom_dialog_textcolor"
             android:textSize="13sp" />
 
-        <com.runwise.supply.view.NoWatchEditText
+        <TextView
             android:id="@+id/et_deliver_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,7 +87,6 @@
             android:layout_toRightOf="@id/tv_deliver_count"
             android:background="@null"
             android:gravity="center|right"
-            android:hint="请填写数量"
             android:inputType="number"
             android:singleLine="true"
             android:cursorVisible="true"

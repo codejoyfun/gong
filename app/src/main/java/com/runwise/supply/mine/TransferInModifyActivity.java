@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -32,6 +33,7 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.TransferListActivity;
 import com.runwise.supply.entity.ModifyTransferRequest;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.orderpage.ProductActivity;
@@ -196,11 +198,11 @@ public class TransferInModifyActivity extends NetWorkActivity {
                     return;
                 }
                 ModifyTransferRequest modifyTransferRequest = new ModifyTransferRequest();
-                modifyTransferRequest.setPicking_id(mTransferEntity.getPickingID());
+                modifyTransferRequest.setPickingID(mTransferEntity.getPickingID());
                 List<ModifyTransferRequest.Product> products = new ArrayList<>();
                 for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
                     ModifyTransferRequest.Product product = new ModifyTransferRequest.Product();
-                    product.setProduct_id(Integer.parseInt(entry.getKey()));
+                    product.setProductID(Integer.parseInt(entry.getKey()));
                     product.setQty(entry.getValue());
                     products.add(product);
                 }
@@ -391,15 +393,16 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 break;
             case REQUEST_CODE_MODIFY:
                 toast("提交成功");
-                setResult(RESULT_OK);
-                finish();
+                Intent intent = new Intent(this, TransferListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
                 break;
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        Toast.makeText(this,errMsg,Toast.LENGTH_LONG).show();
     }
 
     public class ProductAdapter extends IBaseAdapter {
