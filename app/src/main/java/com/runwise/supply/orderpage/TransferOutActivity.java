@@ -40,8 +40,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.runwise.supply.R.id.productImage;
 import static com.runwise.supply.R.id.tv_submit;
+
 
 public class TransferOutActivity extends NetWorkActivity {
 
@@ -128,13 +128,14 @@ public class TransferOutActivity extends NetWorkActivity {
         transferBatchLine.setPriceUnit(10);
         transferBatchLine.setProductUnit("产品单位");
         transferBatchLine.setProductUom("库存单位");
-        transferBatchLine.setProductUomQty(11);
+        transferBatchLine.setProductUomQty(15);
         ArrayList<TransferOutDetailResponse.TransferBatchLot> transferBatchLots = new ArrayList<TransferOutDetailResponse.TransferBatchLot>();
         if (!productId.equals("674")) {
             for (int i = 0; i < 3; i++) {
                 TransferOutDetailResponse.TransferBatchLot transferBatchLot = new TransferOutDetailResponse.TransferBatchLot();
-                transferBatchLot.setLotID("Z2017092400002");
-                transferBatchLot.setQuantQty(5);
+                transferBatchLot.setLotID("" + i);
+                transferBatchLot.setQuantQty(10);
+                transferBatchLot.setActualQty(5);
                 transferBatchLots.add(transferBatchLot);
             }
         }
@@ -147,6 +148,7 @@ public class TransferOutActivity extends NetWorkActivity {
         switch (where) {
             case REQUEST_DETAIL:
                 mTransferOutDetailResponse = (TransferOutDetailResponse) result.getResult().getData();
+//                simulationData();
                 setUpData();
                 break;
             case REQUEST_TRANSFEROUT:
@@ -209,7 +211,7 @@ public class TransferOutActivity extends NetWorkActivity {
         sendConnection("/gongfu/shop/transfer/confirm/" + mTransferEntity.getPickingID(), products, REQUEST_TRANSFEROUT, true, null);
     }
 
-    @OnClick(tv_submit)
+    @OnClick(R.id.tv_submit)
     public void onViewClicked() {
         submit();
     }
@@ -282,7 +284,7 @@ public class TransferOutActivity extends NetWorkActivity {
         }
 
         tv_count.setText(String.valueOf(transferBatchLine.getProductUomQty()));
-        et_count.setText(String.valueOf(transferBatchLine.getPriceUnit()));
+        et_count.setText(String.valueOf(transferBatchLine.getActualQty()));
 
         iv_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -291,13 +293,13 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("输入的数量不能为空");
                     return;
                 }
-                int quantQty = Integer.parseInt(et_count.getText().toString());
-                quantQty += 1;
-                if (quantQty > transferBatchLine.getProductUomQty()) {
+                int actualQty = Integer.parseInt(et_count.getText().toString());
+                actualQty += 1;
+                if (actualQty > transferBatchLine.getProductUomQty()) {
                     toast("总数量不能超过订单量");
                     return;
                 }
-                et_count.setText(String.valueOf(quantQty));
+                et_count.setText(String.valueOf(actualQty));
             }
         });
         iv_reduce.setOnClickListener(new View.OnClickListener() {
@@ -307,12 +309,12 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("输入的数量不能为空");
                     return;
                 }
-                int quantQty = Integer.parseInt(et_count.getText().toString());
-                quantQty -= 1;
-                if (quantQty < 0) {
+                int actualQty = Integer.parseInt(et_count.getText().toString());
+                actualQty -= 1;
+                if (actualQty < 0) {
                     return;
                 }
-                et_count.setText(String.valueOf(quantQty));
+                et_count.setText(String.valueOf(actualQty));
             }
         });
 
@@ -323,12 +325,12 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("输入的数量不能为空");
                     return;
                 }
-                int quantQty = Integer.parseInt(et_count.getText().toString());
-                if (quantQty > transferBatchLine.getProductUomQty()) {
+                int actualQty = Integer.parseInt(et_count.getText().toString());
+                if (actualQty > transferBatchLine.getProductUomQty()) {
                     toast("总数量不能超过订单量");
                     return;
                 }
-                transferBatchLine.setPriceUnit(quantQty);
+                transferBatchLine.setActualQty(actualQty);
                 mProductAdapter.notifyDataSetChanged();
                 mPopWindowNoBatch.dismiss();
 
@@ -351,7 +353,7 @@ public class TransferOutActivity extends NetWorkActivity {
         });
     }
 
-    private void showPopWindow(TransferOutDetailResponse.TransferBatchLine sourceTransferBatchLine) {
+    private void showPopWindow(final TransferOutDetailResponse.TransferBatchLine sourceTransferBatchLine) {
         final TransferOutDetailResponse.TransferBatchLine transferBatchLine = copyTransferBatchLine(sourceTransferBatchLine);
         SimpleDraweeView productImage = (SimpleDraweeView) dialogView.findViewById(R.id.productImage);
         TextView name = (TextView) dialogView.findViewById(R.id.name);
@@ -377,6 +379,7 @@ public class TransferOutActivity extends NetWorkActivity {
         }
         tv_count.setText(String.valueOf(transferBatchLine.getProductUomQty()));
         TransferOutBatchAdapter transferOutBatchAdapter = new TransferOutBatchAdapter();
+        transferOutBatchAdapter.setTotalCount(transferBatchLine.getProductUomQty());
         transferOutBatchAdapter.setData(transferBatchLine.getProductInfo());
         lv_batch.setAdapter(transferOutBatchAdapter);
 
@@ -391,18 +394,15 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("总数量不能超过订单量");
                     return;
                 }
-                int findIndex = -1;
-                for (int i = 0; i < mProductAdapter.getList().size(); i++) {
-                    TransferOutDetailResponse.TransferBatchLine tempTransferBatchLine = (TransferOutDetailResponse.TransferBatchLine) mProductAdapter.getList().get(i);
-                    if (transferBatchLine.getProductID().equals(tempTransferBatchLine.getProductID())) {
-                        findIndex = i;
-                        break;
-                    }
+                int totalActualQty = 0;
+                sourceTransferBatchLine.setProductInfo(new ArrayList<TransferOutDetailResponse.TransferBatchLot>());
+                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
+                    totalActualQty += transferBatchLot.getActualQty();
+                    sourceTransferBatchLine.getProductInfo().add(transferBatchLot);
                 }
-                if (findIndex != -1) {
-                    mProductAdapter.getList().set(findIndex, transferBatchLine);
-                }
+                sourceTransferBatchLine.setActualQty(totalActualQty);
                 mProductAdapter.notifyDataSetChanged();
+                mPopWindow.dismiss();
             }
         });
 
@@ -470,7 +470,7 @@ public class TransferOutActivity extends NetWorkActivity {
                     TextView tvName = (TextView) view.findViewById(R.id.tv_batch_name);
                     tvName.setText(transferBatchLot.getLotID());
                     TextView tvCount = (TextView) view.findViewById(R.id.tv_batch_count);
-                    tvCount.setText(String.valueOf(transferBatchLot.getQuantQty()));
+                    tvCount.setText(String.valueOf(transferBatchLot.getActualQty()));
                     viewHolder.mLlBatch.addView(view);
                 }
             }
@@ -478,7 +478,7 @@ public class TransferOutActivity extends NetWorkActivity {
         }
 
         class ViewHolder {
-            @BindView(productImage)
+            @BindView(R.id.productImage)
             SimpleDraweeView mProductImage;
             @BindView(R.id.name)
             TextView mName;

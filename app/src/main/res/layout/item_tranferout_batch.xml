@@ -44,6 +44,9 @@
         android:background="@null"
         android:gravity="center"
         android:inputType="number"
+        android:hint="0"
+        android:textColor="@color/textColorPrimary"
+        android:textColorHint="@color/textColorPrimary"
         android:text="1"/>
 
     <ImageView

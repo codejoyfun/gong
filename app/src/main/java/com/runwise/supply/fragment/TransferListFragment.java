@@ -15,6 +15,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
@@ -34,7 +35,7 @@ import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
 
 /**
  * 调入调出fragment
- *
+ * <p>
  * Created by Dong on 2017/10/10.
  */
 
@@ -46,6 +47,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     private static final int REQUEST_REFRESH = 0;
     private static final int REQUEST_MORE = 1;
     private static final int REQUEST_CANCEL_TRANSFER = 2;
+    private static final int REQUEST_OUTPUT_CONFIRM = 3;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout mLoadingLayout;
@@ -69,29 +71,29 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         mTransferListAdapter = new TransferListAdapter();
         mPullListView.setAdapter(mTransferListAdapter);
         mPullListView.setOnRefreshListener(new PullToRefreshListener());
-        requestData(true,REQUEST_REFRESH,page,10);
+        requestData(true, REQUEST_REFRESH, page, 10);
     }
 
-    public void refresh(){
-        requestData(true,REQUEST_REFRESH,1,10);
+    public void refresh() {
+        requestData(true, REQUEST_REFRESH, 1, 10);
     }
 
-    protected void requestData(boolean showDialog, int where, int page, int limit){
+    protected void requestData(boolean showDialog, int where, int page, int limit) {
         int type = getArguments().getInt(ARG_KEY_TYPE);
         Object request = null;
-        switch(type){
+        switch (type) {
             case TYPE_IN:
-                sendConnection("/gongfu/shop/transfer/input_list",request,where,showDialog, TransferListResponse.class);
+                sendConnection("/gongfu/shop/transfer/input_list", request, where, showDialog, TransferListResponse.class);
                 break;
             case TYPE_OUT:
-                sendConnection("/gongfu/shop/transfer/output_list",request,where,showDialog, TransferListResponse.class);
+                sendConnection("/gongfu/shop/transfer/output_list", request, where, showDialog, TransferListResponse.class);
                 break;
         }
     }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where){
+        switch (where) {
             case REQUEST_REFRESH:
                 TransferListResponse response = (TransferListResponse) result.getResult().getData();
                 mTransferListAdapter.setData(response.getList());
@@ -110,12 +112,21 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 page = 1;
                 requestData(false, REQUEST_REFRESH, page, 10);
                 break;
+            case REQUEST_OUTPUT_CONFIRM:
+                startActivity(TransferOutActivity.getStartIntent(getActivity(),mSelectTransferEntity));
+                mInTheRequest = false;
+                break;
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        switch(where){
+            case REQUEST_OUTPUT_CONFIRM:
+                mInTheRequest = false;
+                ToastUtil.show(getActivity(),"网络错误");
+                break;
+        }
     }
 
     /**
@@ -124,41 +135,52 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
         //去详情页
-        if(id == -1) {
+        if (id == -1) {
             // 点击的是headerView或者footerView
             return;
         }
-        int realPosition=(int)id;
+        int realPosition = (int) id;
         TransferEntity transferEntity = (TransferEntity) mTransferListAdapter.getItem(realPosition);
         Intent intent = new Intent(getActivity(), TransferDetailActivity.class);
         intent.putExtra(EXTRA_TRANSFER_ENTITY, transferEntity);
         startActivity(intent);
     }
+    TransferEntity mSelectTransferEntity;
+    boolean mInTheRequest  = false;
+    private void requestOutputConfirm(TransferEntity transferEntity) {
+        if(mInTheRequest){
+            return;
+        }
+        mInTheRequest = true;
+        mSelectTransferEntity = transferEntity;
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
+    }
 
     /**
      * 列表adapter
      */
-    private class TransferListAdapter extends IBaseAdapter<TransferEntity>{
+    private class TransferListAdapter extends IBaseAdapter<TransferEntity> {
 
         @Override
-        protected View getExView(int position, View convertView, ViewGroup parent) {
+        protected View getExView(final int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
-            if(convertView==null){
-                convertView = View.inflate(getActivity(),R.layout.item_transfer_list,null);
+            if (convertView == null) {
+                convertView = View.inflate(getActivity(), R.layout.item_transfer_list, null);
                 viewHolder = new ViewHolder();
-                ViewUtils.inject(viewHolder,convertView);
+                ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-            }else{
-                viewHolder = (ViewHolder)convertView.getTag();
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
             }
             final TransferEntity transferEntity = mList.get(position);
             viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
             viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
-            viewHolder.mmTvLocations.setText(transferEntity.getLocationName()+"\u2192"+transferEntity.getLocationDestName());
-            viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice()+"元，"+transferEntity.getTotalNum()+"件商品");
+            viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
+            viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice() + "元，" + transferEntity.getTotalNum() + "件商品");
             viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
-            if(STATE_SUBMITTED.equals(transferEntity.getPickingState())){//已提交
+            if (STATE_SUBMITTED.equals(transferEntity.getPickingState())) {//已提交
                 viewHolder.mmTvStatus.setText("已提交");
                 viewHolder.mmTvAction.setText("取消");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
@@ -179,31 +201,36 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                         dialog.show();
                     }
                 });
-            }else if(STATE_DELIVER.equals(transferEntity.getPickingState())){//已发出
+            } else if (STATE_DELIVER.equals(transferEntity.getPickingState())) {//已发出
                 viewHolder.mmTvStatus.setText("已发出");
                 viewHolder.mmTvAction.setText("入库");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getActivity(), TransferInActivity.class);
-                        intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY,transferEntity);
+                        intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
                         startActivity(intent);
                     }
                 });
-            }else if(STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())){//待出库
+            } else if (STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())) {//待出库
                 viewHolder.mmTvStatus.setText("待出库");
                 viewHolder.mmTvAction.setText("出库");
+                //防止错位
+                viewHolder.mmTvAction.setTag(position);
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(TransferOutActivity.getStartIntent(getActivity(),transferEntity));
+                        int realPosition = (int) view.getTag();
+                        if (realPosition == position) {
+                            //变成可用状态
+                            requestOutputConfirm(transferEntity);
+                        }
                     }
                 });
-            }else if(STATE_CANCEL.equals(transferEntity.getPickingState())){
+            } else if (STATE_CANCEL.equals(transferEntity.getPickingState())) {
                 viewHolder.mmTvStatus.setText("已取消");
                 viewHolder.mmTvAction.setVisibility(View.GONE);
-            }
-            else{
+            } else {
                 viewHolder.mmTvStatus.setText("已完成");
                 viewHolder.mmTvAction.setVisibility(View.GONE);
             }
@@ -211,7 +238,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             @ViewInject(R.id.item_transfer_title_tv)
             TextView mmTvTitle;
             @ViewInject(R.id.tv_item_transfer_status)
@@ -230,7 +257,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     /**
      * 下拉监听
      */
-    private class PullToRefreshListener implements PullToRefreshBase.OnRefreshListener2<ListView>{
+    private class PullToRefreshListener implements PullToRefreshBase.OnRefreshListener2<ListView> {
         @Override
         public void onPullDownToRefresh(PullToRefreshBase refreshView) {
             String label = DateUtils.formatDateTime(mContext, System.currentTimeMillis(),
@@ -249,8 +276,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     /**
      * 取消调拨单
      */
-    private void requestCancel(TransferEntity transferEntity){
+    private void requestCancel(TransferEntity transferEntity) {
         Object request = null;
-        sendConnection("/gongfu/shop/transfer/cancel/"+transferEntity.getPickingID(),request,REQUEST_CANCEL_TRANSFER,true,null);
+        sendConnection("/gongfu/shop/transfer/cancel/" + transferEntity.getPickingID(), request, REQUEST_CANCEL_TRANSFER, true, null);
     }
 }
