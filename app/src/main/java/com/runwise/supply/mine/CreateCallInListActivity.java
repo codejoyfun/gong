@@ -32,6 +32,7 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.ProductActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
@@ -95,6 +96,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
     ArrayList<String> mStoreNameList = new ArrayList<>();
     public static final int REQUEST_CODE_GET_STORE_LIST = 1 << 0;
     public static final int REQUEST_CODE_CREATE_CALL_IN_LIST = 1 << 1;
+    public static final int REQUEST_CODE_PRODUCT_DETAIL = 1 << 2;
     StoreResponse mStoreResponse;
     UserInfo mUserInfo;
 
@@ -148,7 +150,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 break;
             case R.id.tv_submit:
                 //提交调度单
-                if (!checkInput()){
+                if (!checkInput()) {
                     return;
                 }
                 CreateCallInListRequest createCallInListRequest = new CreateCallInListRequest();
@@ -257,20 +259,25 @@ public class CreateCallInListActivity extends NetWorkActivity {
                         if (!findIt) {
                             countMap.put(addedProduct.getProductId(), addedProduct.getCount());
                             ProductBasicList.ListBean bean = ProductBasicUtils.getBasicMap(getActivityContext()).get(addedProduct.getProductId());
-                            ProductData.ListBean listBean = new ProductData.ListBean();
-                            listBean.setName(bean.getName());
-                            listBean.setSettlePrice(String.valueOf(bean.getSettlePrice()));
-                            listBean.setUom(bean.getUom());
-                            listBean.setSettleUomId(bean.getSettleUomId());
-                            listBean.setPrice(bean.getPrice());
-                            listBean.setDefaultCode(bean.getDefaultCode());
-                            listBean.setStockType(bean.getStockType());
-                            listBean.setCategory(bean.getCategory());
-                            listBean.setUnit(bean.getUnit());
-                            listBean.setProductUom(bean.getProductUom());
-                            listBean.setProductID(bean.getProductID());
-                            listBean.setTracking(bean.getTracking());
-                            mProductAdapter.append(listBean);
+                            if (bean != null) {
+                                ProductData.ListBean listBean = new ProductData.ListBean();
+                                listBean.setName(bean.getName());
+                                listBean.setSettlePrice(String.valueOf(bean.getSettlePrice()));
+                                listBean.setUom(bean.getUom());
+                                listBean.setSettleUomId(bean.getSettleUomId());
+                                listBean.setPrice(bean.getPrice());
+                                listBean.setDefaultCode(bean.getDefaultCode());
+                                listBean.setStockType(bean.getStockType());
+                                listBean.setCategory(bean.getCategory());
+                                listBean.setUnit(bean.getUnit());
+                                listBean.setProductUom(bean.getProductUom());
+                                listBean.setProductID(bean.getProductID());
+                                listBean.setTracking(bean.getTracking());
+                                mProductAdapter.append(listBean);
+                            } else {
+                                //网络请求
+                                requestProduct(addedProduct.getProductId());
+                            }
                         }
                     }
                     mProductAdapter.notifyDataSetChanged();
@@ -278,6 +285,13 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     break;
             }
         }
+    }
+
+    private void requestProduct(String productId) {
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
+        sb.append(productId).append("/");
+        sendConnection(sb.toString(), request, REQUEST_CODE_PRODUCT_DETAIL, false, ProductOne.class);
     }
 
     private void refreshTotalCountAndMoney() {
@@ -333,7 +347,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     com.alibaba.fastjson.JSONObject json = shopList.getJSONObject(i);
                     int shopID = (int) json.get("shopID");
                     String shopName = (String) json.get("shopName");
-                    if (shopName.equals(mUserInfo.getMendian())){
+                    if (shopName.equals(mUserInfo.getMendian())) {
                         continue;
                     }
                     StoreResponse.Store store = new StoreResponse.Store();
@@ -349,6 +363,29 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 toast("提交成功");
                 setResult(RESULT_OK);
                 finish();
+                break;
+            case REQUEST_CODE_PRODUCT_DETAIL:
+                ProductOne productOne = (ProductOne) result.getResult().getData();
+                ProductBasicList.ListBean bean = productOne.getProduct();
+                ProductBasicUtils.getBasicMap(this).put(bean.getProductID() + "", bean);//更新内存缓存
+                List<ProductBasicList.ListBean> listBeanList = new ArrayList<>();
+                listBeanList.add(bean);
+                ProductBasicUtils.saveProductInfoAsync(this, listBeanList);
+
+                ProductData.ListBean listBean = new ProductData.ListBean();
+                listBean.setName(bean.getName());
+                listBean.setSettlePrice(String.valueOf(bean.getSettlePrice()));
+                listBean.setUom(bean.getUom());
+                listBean.setSettleUomId(bean.getSettleUomId());
+                listBean.setPrice(bean.getPrice());
+                listBean.setDefaultCode(bean.getDefaultCode());
+                listBean.setStockType(bean.getStockType());
+                listBean.setCategory(bean.getCategory());
+                listBean.setUnit(bean.getUnit());
+                listBean.setProductUom(bean.getProductUom());
+                listBean.setProductID(bean.getProductID());
+                listBean.setTracking(bean.getTracking());
+                mProductAdapter.append(listBean);
                 break;
         }
     }

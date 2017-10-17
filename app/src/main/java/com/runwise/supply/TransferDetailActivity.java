@@ -53,6 +53,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     public static final String EXTRA_TRANSFER_ENTITY = "extra_transfer";
     private static final int REQUEST_DETAIL = 0;
     private static final int REQUEST_CANCEL_TRANSFER = 1;
+    private static final int REQUEST_OUTPUT_CONFIRM = 2;
 
     @ViewInject(R.id.tv_transfer_detail_state)
     private TextView mTvTransferState;
@@ -122,6 +123,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     protected void initBottomBar(){
         switch(mTransferEntity.getPickingState()){
             case TransferEntity.STATE_DELIVER://已发出
+            case TransferEntity.STATE_DELIVER2:
                 mBtnDoAction2.setVisibility(View.GONE);
                 if(isDestLocation){//接收门店，可以取消和入库
                     mBtnDoAction.setText("入库");
@@ -138,7 +140,6 @@ public class TransferDetailActivity extends NetWorkActivity {
                 }
                 break;
             case TransferEntity.STATE_PENDING_DELIVER://待出库
-            case TransferEntity.STATE_DELIVER2:
             case TransferEntity.STATE_SUBMITTED:
             case TransferEntity.STATE_MODIFIED:
                 if(!isDestLocation){//发出方
@@ -146,10 +147,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                     mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            //startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mTransferEntity));
-                            Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
-                            intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
-                            startActivity(intent);
+                            requestOutputConfirm(mTransferEntity);
                         }
                     });
                     mBtnDoAction2.setVisibility(View.GONE);
@@ -169,6 +167,18 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mBtnDoAction2.setVisibility(View.GONE);
                 break;
         }
+    }
+
+    TransferEntity mSelectTransferEntity;
+    boolean mInTheRequest  = false;
+    private void requestOutputConfirm(TransferEntity transferEntity) {
+        if(mInTheRequest){
+            return;
+        }
+        mInTheRequest = true;
+        mSelectTransferEntity = transferEntity;
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
     }
 
     @OnClick({R.id.btn_transfer_detail_state_more,R.id.btn_transfer_detail_action,R.id.btn_transfer_detail_action2,R.id.right_layout})
@@ -242,6 +252,10 @@ public class TransferDetailActivity extends NetWorkActivity {
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 finish();
+                break;
+            case REQUEST_OUTPUT_CONFIRM:
+                startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mSelectTransferEntity));
+                mInTheRequest = false;
                 break;
         }
     }

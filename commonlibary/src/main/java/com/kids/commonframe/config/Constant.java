@@ -7,9 +7,12 @@ public interface Constant {
     //正式环境地址
 //   public final static String RELEASE_URL = "http://develop.runwise.cn";
 //   public final static String RELEASE_URL = "http://test.runwise.cn";
+   public final static String RELEASE_URL = "http://192.168.0.126:8069";
 
     boolean test = true;
-    String RELEASE_URL = test?"http://192.168.0.126:8069"/*"http://develop.runwise.cn"*/:"http://erp.runwise.cn";
+
+//    String RELEASE_URL = test?"http://develop.runwise.cn":"http://erp.runwise.cn";
+
 
     //测试环境地址
     String TEST_URL = "http://114.215.40.244:8083/";

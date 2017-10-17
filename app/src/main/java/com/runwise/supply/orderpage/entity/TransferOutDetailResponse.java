@@ -76,6 +76,34 @@ public class TransferOutDetailResponse implements Serializable {
         private String productUom;
         private String productImage;
         private String productUnit;
+
+        public String getProductCode() {
+            return productCode;
+        }
+
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
+
+        public String getProductTracking() {
+            return productTracking;
+        }
+
+        public void setProductTracking(String productTracking) {
+            this.productTracking = productTracking;
+        }
+
+        public String getProductName() {
+            return productName;
+        }
+
+        public void setProductName(String productName) {
+            this.productName = productName;
+        }
+
+        private String productCode;
+        private String productTracking;
+        private String productName;
         private int priceUnit;
         private int productUomQty;
 
