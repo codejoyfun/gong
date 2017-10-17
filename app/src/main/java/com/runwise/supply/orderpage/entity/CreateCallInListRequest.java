@@ -7,12 +7,20 @@ import java.util.List;
  */
 
 public class CreateCallInListRequest {
-    private String mendian_id;
+    public String getMenDianID() {
+        return menDianID;
+    }
+
+    public void setMenDianID(String menDianID) {
+        this.menDianID = menDianID;
+    }
+
+    private String menDianID;
     List<Product> products;
 
     public static class Product{
         private int qty;
-        private int product_id;
+        private int productID;
         public int getQty() {
             return qty;
         }
@@ -21,20 +29,13 @@ public class CreateCallInListRequest {
             this.qty = qty;
         }
 
-        public int getProduct_id() {
-            return product_id;
+        public int getProductID() {
+            return productID;
         }
 
-        public void setProduct_id(int product_id) {
-            this.product_id = product_id;
+        public void setProductID(int productID) {
+            this.productID = productID;
         }
-    }
-    public String getMendian_id() {
-        return mendian_id;
-    }
-
-    public void setMendian_id(String mendian_id) {
-        this.mendian_id = mendian_id;
     }
     public List<Product> getProducts() {
         return products;

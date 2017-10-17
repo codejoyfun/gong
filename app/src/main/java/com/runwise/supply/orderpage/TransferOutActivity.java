@@ -191,24 +191,26 @@ public class TransferOutActivity extends NetWorkActivity {
 
     private void submit() {
         TransferOutRequest transferOutRequest = new TransferOutRequest();
-        transferOutRequest.setPicking_id(mTransferEntity.getPickingID());
+        transferOutRequest.setPickingID(mTransferEntity.getPickingID());
         List<TransferOutRequest.Product> products = new ArrayList<>();
         for (int i = 0; i < mProductAdapter.getList().size(); i++) {
             TransferOutDetailResponse.TransferBatchLine transferBatchLine = (TransferOutDetailResponse.TransferBatchLine) mProductAdapter.getList().get(i);
             TransferOutRequest.Product product = new TransferOutRequest.Product();
-            product.setProduct_id(Integer.parseInt(transferBatchLine.getProductID()));
+            product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
             List<TransferOutRequest.Lot> lots = new ArrayList<>();
-            for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
-                TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
-                lot.setLot_id(transferBatchLot.getLotID());
-                lot.setQty(String.valueOf(transferBatchLot.getActualQty()));
-                lots.add(lot);
+            if(transferBatchLine.getProductInfo()!=null){
+                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
+                    TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
+                    lot.setLotID(transferBatchLot.getLotID());
+                    lot.setQty(String.valueOf(transferBatchLot.getActualQty()));
+                    lots.add(lot);
+                }
             }
-            product.setLots_info(lots);
+            product.setLotsInfo(lots);
             products.add(product);
         }
-
-        sendConnection("/gongfu/shop/transfer/confirm/" + mTransferEntity.getPickingID(), products, REQUEST_TRANSFEROUT, true, null);
+        transferOutRequest.setProducts(products);
+        sendConnection("/gongfu/shop/transfer/confirm/" + mTransferEntity.getPickingID(), transferOutRequest, REQUEST_TRANSFEROUT, true, null);
     }
 
     @OnClick(R.id.tv_submit)

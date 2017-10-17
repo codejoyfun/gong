@@ -5,21 +5,21 @@ import java.util.List;
 /**
  * Created by mike on 2017/10/16.
  * "products": [{
- * "product_id": 651
- * "lots_info": [{"lot_id":Z170929000001,
+ * "productID": 651
+ * "lotsInfo": [{"lotID":Z170929000001,
  * "qty": 1},
- * {"lot_id":Z170929000002,
+ * {"lotID":Z170929000002,
  * "qty": 2}]
  * }]
  */
 
 public class TransferOutRequest {
-    public String getPicking_id() {
-        return picking_id;
+    public String getPickingID() {
+        return pickingID;
     }
 
-    public void setPicking_id(String picking_id) {
-        this.picking_id = picking_id;
+    public void setPickingID(String pickingID) {
+        this.pickingID = pickingID;
     }
 
     public List<Product> getProducts() {
@@ -30,41 +30,41 @@ public class TransferOutRequest {
         this.products = products;
     }
 
-    private String picking_id;
+    private String pickingID;
     private List<Product> products;
 
 
     public static class Product {
-        public int getProduct_id() {
-            return product_id;
+        public int getProductID() {
+            return productID;
         }
 
-        public void setProduct_id(int product_id) {
-            this.product_id = product_id;
+        public void setProductID(int productID) {
+            this.productID = productID;
         }
 
-        public List<Lot> getLots_info() {
-            return lots_info;
+        public List<Lot> getLotsInfo() {
+            return lotsInfo;
         }
 
-        public void setLots_info(List<Lot> lots_info) {
-            this.lots_info = lots_info;
+        public void setLotsInfo(List<Lot> lotsInfo) {
+            this.lotsInfo = lotsInfo;
         }
 
-        private int product_id;
-        private List<Lot> lots_info;
+        private int productID;
+        private List<Lot> lotsInfo;
     }
 
     public static class Lot {
-        public String getLot_id() {
-            return lot_id;
+        public String getLotID() {
+            return lotID;
         }
 
-        public void setLot_id(String lot_id) {
-            this.lot_id = lot_id;
+        public void setLotID(String lotID) {
+            this.lotID = lotID;
         }
 
-        private String lot_id;
+        private String lotID;
 
         public String getQty() {
             return qty;
