@@ -32,11 +32,11 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.ModifyTransferRequest;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.orderpage.ProductActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
-import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.orderpage.entity.StoreResponse;
@@ -96,7 +96,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
     boolean mEditMode = false;
     ArrayList<String> mStoreNameList = new ArrayList<>();
     public static final int REQUEST_CODE_GET_STORE_LIST = 1 << 0;
-    public static final int REQUEST_CODE_CREATE_CALL_IN_LIST = 1 << 1;
+    public static final int REQUEST_CODE_MODIFY = 1 << 1;
     StoreResponse mStoreResponse;
     UserInfo mUserInfo;
     private TransferEntity mTransferEntity;
@@ -123,27 +123,63 @@ public class TransferInModifyActivity extends NetWorkActivity {
         if (mUserInfo != null) {
             mTvCallInStore.setText(mUserInfo.getMendian());
         }
-
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER);
+        mTvCallOutStore.setText(mTransferEntity.getLocationName());
+        mTvCallOutStore.setClickable(false);
         initProductList();
     }
 
     private void initProductList(){
+        ArrayList<AddedProduct> addedList = getIntent().getParcelableArrayListExtra(INTENT_KEY_BACKAP);
+        for (AddedProduct addedProduct : addedList) {
+            boolean findIt = false;
+            for (Object object : mProductAdapter.getList()) {
+                ProductData.ListBean listBean = (ProductData.ListBean) object;
+                if (addedProduct.getProductId().equals(String.valueOf(listBean.getProductID()))) {
+                    int count = countMap.get(String.valueOf(listBean.getProductID()));
+                    count += addedProduct.getCount();
+                    countMap.put(String.valueOf(listBean.getProductID()), count);
+                    findIt = true;
+                    break;
+                }
+            }
+            //新增产品种类
+            if (!findIt) {
+                countMap.put(addedProduct.getProductId(), addedProduct.getCount());
+                ProductBasicList.ListBean bean = ProductBasicUtils.getBasicMap(getActivityContext()).get(addedProduct.getProductId());
+                ProductData.ListBean listBean = new ProductData.ListBean();
+                listBean.setName(bean.getName());
+                listBean.setSettlePrice(String.valueOf(bean.getSettlePrice()));
+                listBean.setUom(bean.getUom());
+                listBean.setSettleUomId(bean.getSettleUomId());
+                listBean.setPrice(bean.getPrice());
+                listBean.setDefaultCode(bean.getDefaultCode());
+                listBean.setStockType(bean.getStockType());
+                listBean.setCategory(bean.getCategory());
+                listBean.setUnit(bean.getUnit());
+                listBean.setProductUom(bean.getProductUom());
+                listBean.setProductID(bean.getProductID());
+                listBean.setTracking(bean.getTracking());
+                mProductAdapter.append(listBean);
+            }
+        }
+        mProductAdapter.notifyDataSetChanged();
+        refreshTotalCountAndMoney();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick({R.id.title_iv_left, R.id.rl_call_out, tv_edit_or_finish, R.id.tv_submit})
+    @OnClick({R.id.title_iv_left, /*R.id.rl_call_out,*/ tv_edit_or_finish, R.id.tv_submit})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.rl_call_out:
-                //选择门店
-                if (mStoreResponse == null) {
-                    Object param = null;
-                    sendConnection("/gongfu/shop/list", param, REQUEST_CODE_GET_STORE_LIST, true, StoreResponse.class);
-                } else {
-                    showStoreSelectDialog();
-                }
-                break;
+//            case R.id.rl_call_out:
+//                //选择门店
+//                if (mStoreResponse == null) {
+//                    Object param = null;
+//                    sendConnection("/gongfu/shop/list", param, REQUEST_CODE_GET_STORE_LIST, true, StoreResponse.class);
+//                } else {
+//                    showStoreSelectDialog();
+//                }
+//                break;
             case tv_edit_or_finish:
                 //编辑或完成商品
                 mEditMode = !mEditMode;
@@ -155,21 +191,21 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 mProductAdapter.notifyDataSetChanged();
                 break;
             case R.id.tv_submit:
-                //提交调度单
+                //修改调度单
                 if (!checkInput()){
                     return;
                 }
-                CreateCallInListRequest createCallInListRequest = new CreateCallInListRequest();
-                createCallInListRequest.setMendian_id(String.valueOf(mStoreResponse.getList().get(selectShopIndex).getShopID()));
-                List<CreateCallInListRequest.Product> products = new ArrayList<>();
+                ModifyTransferRequest modifyTransferRequest = new ModifyTransferRequest();
+                modifyTransferRequest.setPicking_id(mTransferEntity.getPickingID());
+                List<ModifyTransferRequest.Product> products = new ArrayList<>();
                 for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
-                    CreateCallInListRequest.Product product = new CreateCallInListRequest.Product();
+                    ModifyTransferRequest.Product product = new ModifyTransferRequest.Product();
                     product.setProduct_id(Integer.parseInt(entry.getKey()));
                     product.setQty(entry.getValue());
                     products.add(product);
                 }
-                createCallInListRequest.setProducts(products);
-                sendConnection("/gongfu/shop/transfer/create", createCallInListRequest, REQUEST_CODE_CREATE_CALL_IN_LIST, true, null);
+                modifyTransferRequest.setProducts(products);
+                sendConnection("/gongfu/shop/transfer/change/"+mTransferEntity.getPickingID(), modifyTransferRequest, REQUEST_CODE_MODIFY, true, null);
                 break;
             case R.id.title_iv_left:
                 if (mProductAdapter.getList().isEmpty()) {
@@ -192,10 +228,10 @@ public class TransferInModifyActivity extends NetWorkActivity {
     }
 
     private boolean checkInput() {
-        if (selectShopIndex == -1) {
-            toast("还没选择门店");
-            return false;
-        }
+//        if (selectShopIndex == -1) {
+//            toast("还没选择门店");
+//            return false;
+//        }
         if (mProductAdapter.getList().size() == 0) {
             toast("还没选择任何商品!");
             return false;
@@ -353,7 +389,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 mStoreResponse.setList(shopArrayList);
                 showStoreSelectDialog();
                 break;
-            case REQUEST_CODE_CREATE_CALL_IN_LIST:
+            case REQUEST_CODE_MODIFY:
                 toast("提交成功");
                 setResult(RESULT_OK);
                 finish();

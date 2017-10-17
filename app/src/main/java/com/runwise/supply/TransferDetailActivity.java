@@ -24,8 +24,10 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.mine.TransferInModifyActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TransferOutActivity;
+import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
@@ -37,6 +39,8 @@ import java.util.List;
 import github.chenupt.dragtoplayout.DragTopLayout;
 
 import static com.runwise.supply.TransferInActivity.INTENT_KEY_TRANSFER_ENTITY;
+import static com.runwise.supply.mine.TransferInModifyActivity.INTENT_KEY_TRANSFER;
+import static com.runwise.supply.orderpage.ProductActivity.INTENT_KEY_BACKAP;
 
 /**
  * 调拨单详情页
@@ -74,6 +78,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     private TextView mTvTransferId;
 
     private TransferEntity mTransferEntity;
+    private TransferDetailResponse mTransferDetail;
     private TransferProductAdapter mTransferProductAdapter;
     private boolean isDestLocation;//是否是收货门店
 
@@ -98,8 +103,6 @@ public class TransferDetailActivity extends NetWorkActivity {
 
     protected void initViews(){
         mTvTransferState.setText("调拨单"+mTransferEntity.getPickingState());
-        //TODO:操作人。。。
-        mTvTransferStateTip.setText("操作人");
         mTvTransferLocations.setText(mTransferEntity.getLocationName()+"\u2192"+mTransferEntity.getLocationDestName());
         mTvCreateTime.setText(mTransferEntity.getDate());
         mTvCount.setText(mTransferEntity.getTotalNum()+"件");
@@ -118,10 +121,8 @@ public class TransferDetailActivity extends NetWorkActivity {
     //根据单据状态设置底部按钮
     protected void initBottomBar(){
         switch(mTransferEntity.getPickingState()){
-            case TransferEntity.STATE_SUBMITTED://已提交，可以取消
-                mBtnDoAction.setVisibility(View.GONE);
-                break;
             case TransferEntity.STATE_DELIVER://已发出
+                mBtnDoAction2.setVisibility(View.GONE);
                 if(isDestLocation){//接收门店，可以取消和入库
                     mBtnDoAction.setText("入库");
                     mBtnDoAction.setOnClickListener(new View.OnClickListener() {
@@ -137,17 +138,35 @@ public class TransferDetailActivity extends NetWorkActivity {
                 }
                 break;
             case TransferEntity.STATE_PENDING_DELIVER://待出库
+            case TransferEntity.STATE_DELIVER2:
+            case TransferEntity.STATE_SUBMITTED:
+            case TransferEntity.STATE_MODIFIED:
+                if(!isDestLocation){//发出方
+                    mBtnDoAction.setText("出库");
+                    mBtnDoAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mTransferEntity));
+                            Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
+                            intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
+                            startActivity(intent);
+                        }
+                    });
+                    mBtnDoAction2.setVisibility(View.GONE);
+                }else{//接收方
+                    setTitleRightText(true,"修改");
+                    mBtnDoAction.setVisibility(View.GONE);
+                    mBtnDoAction2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showCancelDialog();
+                        }
+                    });
+                }
+                break;
+            default:
+                mBtnDoAction.setVisibility(View.GONE);
                 mBtnDoAction2.setVisibility(View.GONE);
-                mBtnDoAction.setText("出库");
-                mBtnDoAction.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mTransferEntity));
-                        Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
-                        intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
-                        startActivity(intent);
-                    }
-                });
                 break;
         }
     }
@@ -176,7 +195,14 @@ public class TransferDetailActivity extends NetWorkActivity {
                 dialog.show();
                 break;
             case R.id.right_layout:
-                //todo:修改调拨单
+                Intent intent1 = new Intent(this, TransferInModifyActivity.class);
+                intent1.putExtra(INTENT_KEY_TRANSFER,mTransferEntity);
+                ArrayList<AddedProduct> addedProducts = new ArrayList<AddedProduct>();
+                for(TransferDetailResponse.LinesBean linesBean:mTransferDetail.getLines()){
+                    addedProducts.add(new AddedProduct(linesBean.getProductID()+"",(int)linesBean.getProductUomQty()));
+                }
+                intent1.putParcelableArrayListExtra(INTENT_KEY_BACKAP,addedProducts);
+                startActivity(intent1);
                 break;
         }
     }
@@ -201,8 +227,18 @@ public class TransferDetailActivity extends NetWorkActivity {
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case REQUEST_DETAIL:
-                TransferDetailResponse transferDetailResponse = (TransferDetailResponse) result.getResult().getData();
-                mTransferProductAdapter.setProductList(transferDetailResponse.getLines());
+                mTransferDetail = (TransferDetailResponse) result.getResult().getData();
+
+                if(mTransferDetail.getInfo().getStateTracker()==null || mTransferDetail.getInfo().getStateTracker().size()==0){
+                    //TODO:test
+                    List<String> list = new ArrayList<>();
+                    list.add("2017-10-17 13:46 调拨单已提交 4.0袋,共4.0元 刘志滑");
+                    mTransferDetail.getInfo().setStateTracker(list);
+                }
+
+                mTransferEntity.setStateTracker(mTransferDetail.getInfo().getStateTracker());
+                setStatusText();
+                mTransferProductAdapter.setProductList(mTransferDetail.getLines());
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 finish();
@@ -213,6 +249,53 @@ public class TransferDetailActivity extends NetWorkActivity {
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         Toast.makeText(this,errMsg,Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * 拿statetracker最新一条设置状态textview
+     */
+    private void setStatusText(){
+        //拿statetracker最新一条
+        if(mTransferEntity.getStateTracker()!=null){
+            List<String> stateList = mTransferEntity.getStateTracker();
+            String latestState = stateList.get(0);
+            String[] pieces = latestState.split(" ");
+            String state = pieces[2];
+            StringBuilder sbContent = new StringBuilder();
+            if(state.contains(TransferEntity.STATE_SUBMITTED)){//已提交
+                sbContent.append("操作人：").append(pieces[4]).append("；")
+                        .append("调拨单号：").append(mTransferEntity.getPickingName()).append("；")
+                        .append("调拨商品：").append(pieces[3]);
+            }
+            else if(state.contains(TransferEntity.STATE_MODIFIED)){//已修改
+                sbContent.append("操作人：").append(pieces[4]).append("；")
+                        .append("调拨商品：").append(pieces[3]);
+            }
+            else if(state.contains(TransferEntity.STATE_DELIVER)){//已发出
+                sbContent.append("操作人：").append(pieces[4]).append("；")
+                        .append("调拨路径：").append(mTransferEntity.getLocationName()).append("\u2192")
+                        .append(mTransferEntity.getLocationDestName());
+            }else if(state.contains(TransferEntity.STATE_COMPLETE)){//已完成
+                sbContent.append("入库人：").append(pieces[4]).append("；")
+                        .append("收货商品：").append(pieces[3]);
+            }
+            mTvTransferStateTip.setText(sbContent.toString());
+        }
+    }
+
+    private void showCancelDialog(){
+        dialog.setTitle("提示");
+        dialog.setMessage("确认取消订单?");
+        dialog.setMessageGravity();
+        dialog.setModel(CustomDialog.BOTH);
+        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+            @Override
+            public void doClickButton(Button btn, CustomDialog dialog) {
+                //发送取消订单请求
+                requestCancel();
+            }
+        });
+        dialog.show();
     }
 
     /**

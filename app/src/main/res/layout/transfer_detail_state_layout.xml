@@ -20,12 +20,15 @@
 
     <TextView
         android:id="@+id/tv_transfer_detail_state_tip"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_toLeftOf="@+id/btn_transfer_detail_state_more"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_transfer_detail_state"
         android:layout_below="@id/tv_transfer_detail_state"
         android:layout_marginTop="7dp"
         android:text="操作人..."
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="#999999"
         android:textSize="14sp"
         />

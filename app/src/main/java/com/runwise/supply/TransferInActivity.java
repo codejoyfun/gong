@@ -6,10 +6,14 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
@@ -26,6 +30,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.UserUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -63,6 +68,9 @@ public class TransferInActivity extends NetWorkActivity {
     private Map<String,TransferDetailResponse.LinesBean> mBatchDataMap;//商品ID对应批次对象
     private Map<String,Integer> mTransferInMap = new HashMap<>();//商品ID对应入库数量
 
+    private View dialogView;
+    private PopupWindow mPopWindow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,9 +79,10 @@ public class TransferInActivity extends NetWorkActivity {
         setContentView(R.layout.activity_transfer_in);
         setTitleText(true,"入库");
         showBackBtn();
+        initPopWindow();
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER_ENTITY);
         initViews();
-        requestProductList();
+        requestDetail();//如果从列表过来，没有详情信息，要查
     }
 
     private void initViews(){
@@ -96,7 +105,7 @@ public class TransferInActivity extends NetWorkActivity {
     /**
      * 从调拨单详情 获取商品列表
      */
-    private void requestProductList(){
+    private void requestDetail(){
         Object request = null;
         sendConnection("/gongfu/shop/transfer/"+mTransferEntity.getPickingID(),request,REQUEST_DETAIL,true, TransferDetailResponse.class);
     }
@@ -156,22 +165,26 @@ public class TransferInActivity extends NetWorkActivity {
                     int total = 0;
 
                     //TODO:测试
-                    TransferBatchLot lot = new TransferBatchLot();
-                    lot.setLotID("Z90909090");
-                    lot.setQuantQty(2);
-                    List<TransferBatchLot> lotList = new ArrayList<>();
-                    lotList.add(lot);
-                    TransferBatchLot lot2 = new TransferBatchLot();
-                    lot2.setLotID("Z90909091");
-                    lot2.setQuantQty(4);
-                    lotList.add(lot2);
-                    line.setProductInfo(lotList);
+//                    TransferBatchLot lot = new TransferBatchLot();
+//                    lot.setLotID("Z90909090");
+//                    lot.setQuantQty(2);
+//                    List<TransferBatchLot> lotList = new ArrayList<>();
+//                    lotList.add(lot);
+//                    TransferBatchLot lot2 = new TransferBatchLot();
+//                    lot2.setLotID("Z90909091");
+//                    lot2.setQuantQty(4);
+//                    lotList.add(lot2);
+//                    line.setProductLotInfo(lotList);
 
-                    if(line.getProductInfo()==null){
-                        //TODO:没有批次信息
+                    if(line.getProductLotInfo()==null){
+                        //没有批次信息
+                        mTransferInMap.put(line.getProductID()+"",(int)line.getProductUomQty());
                         continue;
                     }
-                    for(TransferBatchLot transferBatchLot:line.getProductInfo()){
+
+                    //usedQty表示实际发送的批次
+                    //根据批次信息设置初始收货数量,过滤掉usedQty为0的
+                    for(TransferBatchLot transferBatchLot:line.getProductLotInfo()){
                         transferBatchLot.setActualQty(transferBatchLot.getQuantQty());
                         total = total + transferBatchLot.getQuantQty();
                     }
@@ -195,7 +208,7 @@ public class TransferInActivity extends NetWorkActivity {
                 line2.setProductID(656);
                 List<TransferBatchLot> lotList = new ArrayList<>();
                 lotList.add(lot);
-                line2.setProductInfo(lotList);
+                line2.setProductLotInfo(lotList);
 
                 TransferBatchLot lot2 = new TransferBatchLot();
                 lot2.setLotID("Z90909091");
@@ -212,13 +225,13 @@ public class TransferInActivity extends NetWorkActivity {
 
                     //初始化接收信息，默认全部收到
                     int total = 0;
-                    for(TransferBatchLot transferBatchLot:line.getProductInfo()){
+                    for(TransferBatchLot transferBatchLot:line.getProductLotInfo()){
                         transferBatchLot.setActualQty(transferBatchLot.getQuantQty());
                         total = total + transferBatchLot.getQuantQty();
                     }
                     mTransferInMap.put(line.getProductID()+"",total);
                 }
-                requestProductList();
+                requestDetail();
                 break;
             case REQUEST_DETAIL://调拨单详情 从中获取商品列表
                 OrderResponse.ListBean.LinesBean linesBean = new OrderResponse.ListBean.LinesBean();
@@ -242,7 +255,7 @@ public class TransferInActivity extends NetWorkActivity {
             mBatchDataMap.put(batchLine.getProductID()+"",batchLine);
             //cal total transfer in
             int total = 0;
-            for(TransferBatchLot lot:batchLine.getProductInfo()){
+            for(TransferBatchLot lot:batchLine.getProductLotInfo()){
                 total = total + lot.getActualQty();
             }
             mTransferInMap.put(batchLine.getProductID()+"",total);
@@ -250,6 +263,101 @@ public class TransferInActivity extends NetWorkActivity {
             setupSummaryUI();
             mProductAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void initPopWindow() {
+        dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_transferin_set_count, null);
+        mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        mPopWindow.setContentView(dialogView);
+        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mPopWindow.setFocusable(true);
+        mPopWindow.setOutsideTouchable(true);
+    }
+
+    private void showPopWindow(final TransferDetailResponse.LinesBean linesBean) {
+        SimpleDraweeView productImage = (SimpleDraweeView) dialogView.findViewById(R.id.iv_transfer_in_product);
+        TextView name = (TextView) dialogView.findViewById(R.id.tv_name);
+        TextView content = (TextView) dialogView.findViewById(R.id.tv_content);
+        TextView tvCount = (TextView) dialogView.findViewById(R.id.et_deliver_count);
+        View vAdd = dialogView.findViewById(R.id.btn_transfer_in_add);
+        View vSubtract = dialogView.findViewById(R.id.btn_transfer_in_subtract);
+        final TextView tvActual = (TextView) dialogView.findViewById(R.id.et_product_count);
+        View vSubmit = dialogView.findViewById(R.id.btn_confirm);
+        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(linesBean.getProductID());
+        if (listBean != null) {
+            FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + listBean.getImage().getImageSmall());
+            name.setText(listBean.getName());
+            StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
+            sb.append("  ").append(listBean.getUnit());
+            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if (canSeePrice) {
+                if (listBean.isTwoUnit()) {
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
+                } else {
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
+                }
+            }
+            content.setText(sb.toString());
+        }
+        tvCount.setText(String.valueOf(linesBean.getProductUomQty()));
+        tvActual.setText(String.valueOf(mTransferInMap.get(linesBean.getProductID()+"")));
+
+        vSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTransferInMap.put(linesBean.getProductID()+"", Integer.valueOf(tvActual.getText().toString()));
+                mProductAdapter.notifyDataSetChanged();
+            }
+        });
+
+        vAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int current = Integer.valueOf(tvActual.getText().toString());
+                if(current + 1 > linesBean.getProductUomQty()){
+                    Toast.makeText(TransferInActivity.this,"不能超过发货数量",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                current = current + 1;
+                tvActual.setText(String.valueOf(current));
+
+            }
+        });
+
+        vSubtract.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int current = Integer.valueOf(tvActual.getText().toString());
+                if(current - 1 < 0 ){
+                    Toast.makeText(TransferInActivity.this,"不能小于0",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                current = current - 1;
+                tvActual.setText(String.valueOf(current));
+            }
+        });
+
+        mPopWindow.showAtLocation(findViewById(R.id.root_layout), Gravity.BOTTOM, 0, 0);
+        backgroundAlpha(0.4f);
+        dialogView.findViewById(R.id.iv_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPopWindow.dismiss();
+            }
+        });
+        mPopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                backgroundAlpha(1);
+            }
+        });
+    }
+
+    private void backgroundAlpha(float f) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = f;
+        getWindow().setAttributes(lp);
     }
 
     private class TransferInProductAdapter extends RecyclerView.Adapter<TransferInProductAdapter.ViewHolder>{
@@ -308,9 +416,9 @@ public class TransferInActivity extends NetWorkActivity {
                             return;
                         }
                         TransferDetailResponse.LinesBean transferBatchLine = mBatchDataMap.get(pId+"");
-                        if(transferBatchLine.getProductInfo()==null){
+                        if(transferBatchLine.getProductLotInfo()==null){
                             //无批次信息，输入数量
-
+                            showPopWindow(transferBatchLine);
                             return;
                         }
                         Intent intent = new Intent(TransferInActivity.this, TransferInBatchActivity.class);

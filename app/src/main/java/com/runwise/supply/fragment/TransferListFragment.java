@@ -15,6 +15,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
@@ -53,6 +54,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     private PullToRefreshListView mPullListView;
     private TransferListAdapter mTransferListAdapter;
     private int page = 1;
+    int mType;
 
     @Override
     protected int createViewByLayoutId() {
@@ -77,9 +79,9 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     }
 
     protected void requestData(boolean showDialog, int where, int page, int limit){
-        int type = getArguments().getInt(ARG_KEY_TYPE);
+        mType = getArguments().getInt(ARG_KEY_TYPE);
         Object request = null;
-        switch(type){
+        switch(mType){
             case TYPE_IN:
                 sendConnection("/gongfu/shop/transfer/input_list",request,where,showDialog, TransferListResponse.class);
                 break;
@@ -115,7 +117,13 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        mLoadingLayout.onFailure(errMsg);
+        mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
+            @Override
+            public void retryOnClick(View view) {
+                requestData(false, REQUEST_REFRESH, page, 10);
+            }
+        });
     }
 
     /**
@@ -158,8 +166,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice()+"元，"+transferEntity.getTotalNum()+"件商品");
             viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
+            viewHolder.mmTvStatus.setText(transferEntity.getPickingState());
             if(STATE_SUBMITTED.equals(transferEntity.getPickingState())){//已提交
-                viewHolder.mmTvStatus.setText("已提交");
                 viewHolder.mmTvAction.setText("取消");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -180,8 +188,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     }
                 });
             }else if(STATE_DELIVER.equals(transferEntity.getPickingState())){//已发出
-                viewHolder.mmTvStatus.setText("已发出");
-                viewHolder.mmTvAction.setText("入库");
+                if(mType==TYPE_IN)viewHolder.mmTvAction.setText("入库");
+                else viewHolder.mmTvAction.setVisibility(View.GONE);
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -191,8 +199,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     }
                 });
             }else if(STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())){//待出库
-                viewHolder.mmTvStatus.setText("待出库");
-                viewHolder.mmTvAction.setText("出库");
+                if(mType==TYPE_OUT)viewHolder.mmTvAction.setText("出库");
+                else viewHolder.mmTvAction.setVisibility(View.GONE);
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -200,11 +208,9 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     }
                 });
             }else if(STATE_CANCEL.equals(transferEntity.getPickingState())){
-                viewHolder.mmTvStatus.setText("已取消");
                 viewHolder.mmTvAction.setVisibility(View.GONE);
             }
             else{
-                viewHolder.mmTvStatus.setText("已完成");
                 viewHolder.mmTvAction.setVisibility(View.GONE);
             }
 

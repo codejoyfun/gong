@@ -4,12 +4,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by Denzel on 2017/10/16.
+ * 调拨单详情，商品信息下的批次信息
+ *
+ * Created by Dong on 2017/10/16.
  */
 
 public class TransferBatchLot implements Parcelable{
     private String lotID;
     private int quantQty;
+    private String lotDate;
+    private int lotIDID;
+    private float usedQty;
 
     //本地数据
     private int actualQty;
@@ -39,6 +44,30 @@ public class TransferBatchLot implements Parcelable{
     }
 
     public TransferBatchLot() {
+    }
+
+    public String getLotDate() {
+        return lotDate;
+    }
+
+    public int getLotIDID() {
+        return lotIDID;
+    }
+
+    public float getUsedQty() {
+        return usedQty;
+    }
+
+    public void setLotDate(String lotDate) {
+        this.lotDate = lotDate;
+    }
+
+    public void setLotIDID(int lotIDID) {
+        this.lotIDID = lotIDID;
+    }
+
+    public void setUsedQty(float usedQty) {
+        this.usedQty = usedQty;
     }
 
     @Override

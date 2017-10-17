@@ -27,6 +27,13 @@ public class AddedProduct implements Parcelable {
         this.count = count;
     }
 
+    public AddedProduct(String id, int count){
+        productId = id;
+        this.count = count;
+    }
+
+    public AddedProduct(){}
+
     protected AddedProduct(Parcel in) {
         productId = in.readString();
         count = in.readInt();

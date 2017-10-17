@@ -18,10 +18,15 @@ public class TransferEntity implements Parcelable{
     //调拨单状态
     public static final String STATE_SUBMITTED = "已提交";//已提交
     public static final String STATE_PENDING_DELIVER = "待出库";//待出库
-    public static final String STATE_DELIVER = "已发出";//已发出
+
+    public static final String STATE_PENDING_CONFIRM = "等待可用";
+    public static final String STATE_MODIFIED = "已修改";
+
+    public static final String STATE_DELIVER = "已发货";//已发出
+    public static final String STATE_DELIVER2 = "已出库";//已出库
+
     public static final String STATE_COMPLETE = "已完成";//完成
     public static final String STATE_CANCEL = "已取消";
-    public static final String STATE_MODIFIED = "已修改";
 
     private String pickingID;
     private String pickingName;
@@ -29,7 +34,7 @@ public class TransferEntity implements Parcelable{
     private String pickingState;
     private String locationName;
     private String locationDestName;
-    private List<OrderResponse.ListBean.LinesBean> lines;
+    //private List<TransferDetailResponse.LinesBean> lines;
     private List<String> stateTracker;
     private float totalPrice;
     private int totalNum;
@@ -66,9 +71,9 @@ public class TransferEntity implements Parcelable{
         return totalNum;
     }
 
-    public List<OrderResponse.ListBean.LinesBean> getLines() {
-        return lines;
-    }
+//    public List<TransferDetailResponse.LinesBean> getLines() {
+//        return lines;
+//    }
 
     public void setPickingID(String pickingID) {
         this.pickingID = pickingID;
@@ -78,9 +83,9 @@ public class TransferEntity implements Parcelable{
         this.pickingState = pickingState;
     }
 
-    public void setLines(List<OrderResponse.ListBean.LinesBean> lines) {
-        this.lines = lines;
-    }
+//    public void setLines(List<TransferDetailResponse.LinesBean> lines) {
+//        this.lines = lines;
+//    }
 
     public void setPickingName(String pickingName) {
         this.pickingName = pickingName;
@@ -130,7 +135,7 @@ public class TransferEntity implements Parcelable{
         dest.writeString(this.pickingState);
         dest.writeString(this.locationName);
         dest.writeString(this.locationDestName);
-        dest.writeTypedList(this.lines);
+//        dest.writeTypedList(this.lines);
         dest.writeStringList(this.stateTracker);
         dest.writeFloat(this.totalPrice);
         dest.writeInt(this.totalNum);
@@ -143,7 +148,7 @@ public class TransferEntity implements Parcelable{
         this.pickingState = in.readString();
         this.locationName = in.readString();
         this.locationDestName = in.readString();
-        this.lines = in.createTypedArrayList(OrderResponse.ListBean.LinesBean.CREATOR);
+//        this.lines = in.createTypedArrayList(TransferDetailResponse.LinesBean.CREATOR);
         this.stateTracker = in.createStringArrayList();
         this.totalPrice = in.readFloat();
         this.totalNum = in.readInt();

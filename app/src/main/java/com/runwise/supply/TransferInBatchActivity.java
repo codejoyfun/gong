@@ -99,12 +99,12 @@ public class TransferInBatchActivity extends NetWorkActivity {
 
         @Override
         public int getCount() {
-            return mTransferBatchLine==null?0:mTransferBatchLine.getProductInfo().size();
+            return mTransferBatchLine==null?0:mTransferBatchLine.getProductLotInfo().size();
         }
 
         @Override
         public TransferBatchLot getItem(int position) {
-            return mTransferBatchLine.getProductInfo().get(position);
+            return mTransferBatchLine.getProductLotInfo().get(position);
         }
 
         @Override
@@ -165,7 +165,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
     private boolean checkTotal(){
         int totalActual = 0;//实际数量
         int totalExpected = 0;//订单量
-        for(TransferBatchLot lot:mTransferBatchLine.getProductInfo()){
+        for(TransferBatchLot lot:mTransferBatchLine.getProductLotInfo()){
             totalActual = totalActual + lot.getActualQty();
             totalExpected = totalExpected + lot.getQuantQty();
         }

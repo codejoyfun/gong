@@ -8,6 +8,8 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import java.util.List;
 
 /**
+ *  调拨单详情
+ *
  * Created by Dong on 2017/10/12.
  */
 
@@ -32,16 +34,25 @@ public class TransferDetailResponse {
     }
 
     public static class LinesBean extends OrderResponse.ListBean.LinesBean implements Parcelable{
-        private List<TransferBatchLot> productInfo;
+        public static final String TRACKING_LOT = "lot";
+        private String productTracking;
+        private List<TransferBatchLot> productLotInfo;
 
-        public List<TransferBatchLot> getProductInfo() {
-            return productInfo;
+        public List<TransferBatchLot> getProductLotInfo() {
+            return productLotInfo;
         }
 
-        public void setProductInfo(List<TransferBatchLot> productInfo) {
-            this.productInfo = productInfo;
+        public void setProductLotInfo(List<TransferBatchLot> productLotInfo) {
+            this.productLotInfo = productLotInfo;
         }
 
+        public String getProductTracking() {
+            return productTracking;
+        }
+
+        public void setProductTracking(String productTracking) {
+            this.productTracking = productTracking;
+        }
 
         @Override
         public int describeContents() {
@@ -51,7 +62,8 @@ public class TransferDetailResponse {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            dest.writeTypedList(this.productInfo);
+            dest.writeTypedList(this.productLotInfo);
+            dest.writeString(productTracking);
         }
 
         public LinesBean() {
@@ -59,7 +71,8 @@ public class TransferDetailResponse {
 
         protected LinesBean(Parcel in) {
             super(in);
-            this.productInfo = in.createTypedArrayList(TransferBatchLot.CREATOR);
+            this.productLotInfo = in.createTypedArrayList(TransferBatchLot.CREATOR);
+            this.productTracking = in.readString();
         }
 
         public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

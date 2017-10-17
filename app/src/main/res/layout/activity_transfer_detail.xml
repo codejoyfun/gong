@@ -6,44 +6,12 @@
                 android:background="#FFFFFF">
 
 
-    <RelativeLayout
-        android:id="@+id/bottom_bar"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_vertical"
-        android:paddingRight="15dp">
-
-        <Button
-            android:id="@+id/btn_transfer_detail_action"
-            android:layout_width="86dp"
-            android:layout_height="31dp"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/firstpage_do_circle"
-            android:text="入库"
-            android:gravity="center"
-            android:textColor="#333333"
-            android:textSize="14sp"/>
-
-        <Button
-            android:id="@+id/btn_transfer_detail_action2"
-            android:layout_width="86dp"
-            android:layout_height="31dp"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/btn_transfer_detail_action"
-            android:background="@drawable/firstpage_do_circle"
-            android:text="取消"
-            android:gravity="center"
-            android:textColor="#333333"
-            android:textSize="14sp"/>
-    </RelativeLayout>
-
     <View
         android:id="@+id/v_space"
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="#F0F0F0"
-        android:layout_above="@id/bottom_bar"
+        android:layout_above="@+id/bottom_bar"
         android:visibility="visible"/>
     <!--汇总信息-->
     <include
@@ -124,4 +92,37 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         />
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:gravity="center_vertical|right"
+        android:paddingRight="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:id="@+id/btn_transfer_detail_action2"
+            android:layout_width="86dp"
+            android:layout_height="31dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/firstpage_do_circle"
+            android:text="取消"
+            android:gravity="center"
+            android:textColor="#333333"
+            android:textSize="14sp"/>
+
+        <Button
+            android:id="@+id/btn_transfer_detail_action"
+            android:layout_width="86dp"
+            android:layout_height="31dp"
+            android:background="@drawable/firstpage_do_circle"
+            android:text="入库"
+            android:gravity="center"
+            android:textColor="#333333"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
 </RelativeLayout>

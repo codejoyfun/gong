@@ -52,14 +52,6 @@ public class TransferStateActivity extends NetWorkActivity {
         mRvStates.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         mRvStates.setAdapter(mStateAdapter);
         //requestStates();
-
-        List<String> list = new ArrayList<>();
-        list.add("2017-09-16 23:23 已完成");
-        list.add("2017-09-15 23:20 已发出");
-        list.add("2017-09-14 23:03 已修改");
-        list.add("2017-09-13 20:23 已提交");
-        mTransferEntity.setStateTracker(list);
-
         initStates();
     }
 
@@ -74,35 +66,29 @@ public class TransferStateActivity extends NetWorkActivity {
                 StringBuilder sbContent = new StringBuilder();
                 stateEntity.setOperateTime(stateTime);
                 stateEntity.setState(state);
+                stateEntity.setOperator(pieces[4]);
                 if(state.contains(TransferEntity.STATE_SUBMITTED)){//已提交
-                    sbContent.append("操作人：").append("\n")
+                    sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨单号：").append(mTransferEntity.getPickingName()).append("\n")
-                            .append("调拨商品：").append(mTransferEntity.getTotalNum())
-                            .append("件，共").append(mTransferEntity.getTotalPrice()).append("元");
+                            .append("调拨商品：").append(pieces[3]);
                 }
                 else if(state.contains(TransferEntity.STATE_MODIFIED)){//已修改
-                    sbContent.append("操作人：").append("\n")
-                            .append("调拨商品：").append(mTransferEntity.getTotalNum())
-                            .append("件，共").append(mTransferEntity.getTotalPrice()).append("元");
+                    sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
+                            .append("调拨商品：").append(pieces[3]);
                 }
                 else if(state.contains(TransferEntity.STATE_DELIVER)){//已发出
-                    sbContent.append("操作人：").append("\n")
+                    sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨路径：").append(mTransferEntity.getLocationName()).append("\u2192")
                             .append(mTransferEntity.getLocationDestName());
                 }else if(state.contains(TransferEntity.STATE_COMPLETE)){//已完成
-                    sbContent.append("入库人：").append("\n")
-                            .append("收货商品：").append(mTransferEntity.getTotalNum())
-                            .append("件，共").append(mTransferEntity.getTotalPrice()).append("元");//TODO:实际收货
+                    sbContent.append("入库人：").append(stateEntity.getOperator()).append("\n")
+                            .append("收货商品：").append(pieces[3]);
                 }
                 stateEntity.setContent(sbContent.toString());
                 mStateList.add(stateEntity);
             }
             mStateAdapter.notifyDataSetChanged();
         }
-    }
-
-    private void requestStates(){
-        sendConnection("/gongfu/shop/transfer/state_list/"+mTransferEntity.getPickingID(),REQUEST_STATE,true,TransferStateResponse.class);
     }
 
     @Override
@@ -152,7 +138,7 @@ public class TransferStateActivity extends NetWorkActivity {
                 itemHolder.tvDownLine.setVisibility(View.INVISIBLE);
             }
             TransferStateEntity osl = mStateList.get(position);
-            itemHolder.orderStateTv.setText("调拨单"+osl.getState());
+            itemHolder.orderStateTv.setText(osl.getState());
             itemHolder.orderContentTv.setText(osl.getContent());
             itemHolder.stateTimeTv.setText(osl.getOperateTime());
         }
