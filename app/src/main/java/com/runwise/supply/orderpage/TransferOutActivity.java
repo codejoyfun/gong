@@ -441,17 +441,17 @@ public class TransferOutActivity extends NetWorkActivity {
             TransferOutDetailResponse.TransferBatchLine transferBatchLine = (TransferOutDetailResponse.TransferBatchLine) mList.get(position);
             viewHolder = (ViewHolder) convertView.getTag();
             FrecoFactory.getInstance(getActivityContext()).disPlay(viewHolder.mProductImage, Constant.BASE_URL + transferBatchLine.getProductImage());
+            viewHolder.mName.setText(transferBatchLine.getProductName());
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
             if (listBean != null) {
-                viewHolder.mName.setText(listBean.getName());
-                StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
-                sb.append("  |  ").append(listBean.getUnit());
+                StringBuffer sb = new StringBuffer(transferBatchLine.getProductCode());
+                sb.append("  |  ").append(transferBatchLine.getProductUnit());
                 boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
                 if (canSeePrice) {
                     if (listBean.isTwoUnit()) {
                         sb.append("\n").append("¥").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
                     } else {
-                        sb.append("\n").append("¥").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
+                        sb.append("\n").append("¥").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(transferBatchLine.getProductUom());
                     }
                 }
                 viewHolder.mContent.setText(sb.toString());

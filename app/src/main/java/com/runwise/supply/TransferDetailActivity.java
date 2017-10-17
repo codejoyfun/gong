@@ -49,6 +49,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     public static final String EXTRA_TRANSFER_ENTITY = "extra_transfer";
     private static final int REQUEST_DETAIL = 0;
     private static final int REQUEST_CANCEL_TRANSFER = 1;
+    private static final int REQUEST_OUTPUT_CONFIRM = 2;
 
     @ViewInject(R.id.tv_transfer_detail_state)
     private TextView mTvTransferState;
@@ -142,14 +143,23 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mTransferEntity));
-                        Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
-                        intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
-                        startActivity(intent);
+                        requestOutputConfirm(mTransferEntity);
                     }
                 });
                 break;
         }
+    }
+
+    TransferEntity mSelectTransferEntity;
+    boolean mInTheRequest  = false;
+    private void requestOutputConfirm(TransferEntity transferEntity) {
+        if(mInTheRequest){
+            return;
+        }
+        mInTheRequest = true;
+        mSelectTransferEntity = transferEntity;
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
     }
 
     @OnClick({R.id.btn_transfer_detail_state_more,R.id.btn_transfer_detail_action,R.id.btn_transfer_detail_action2,R.id.right_layout})
@@ -206,6 +216,10 @@ public class TransferDetailActivity extends NetWorkActivity {
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 finish();
+                break;
+            case REQUEST_OUTPUT_CONFIRM:
+                startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mSelectTransferEntity));
+                mInTheRequest = false;
                 break;
         }
     }
