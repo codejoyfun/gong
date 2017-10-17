@@ -209,8 +209,8 @@ public class TransferOutActivity extends NetWorkActivity {
             product.setLotsInfo(lots);
             products.add(product);
         }
-
-        sendConnection("/gongfu/shop/transfer/confirm/" + mTransferEntity.getPickingID(), products, REQUEST_TRANSFEROUT, true, null);
+        transferOutRequest.setProducts(products);
+        sendConnection("/gongfu/shop/transfer/confirm/" + mTransferEntity.getPickingID(), transferOutRequest, REQUEST_TRANSFEROUT, true, null);
     }
 
     @OnClick(R.id.tv_submit)
