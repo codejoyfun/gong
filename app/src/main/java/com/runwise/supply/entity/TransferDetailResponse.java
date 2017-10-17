@@ -87,5 +87,8 @@ public class TransferDetailResponse {
             }
         };
 
+        public boolean isLotTracking(){
+            return TRACKING_LOT.equals(productTracking);
+        }
     }
 }

@@ -31,6 +31,7 @@ import com.runwise.supply.orderpage.TransferOutActivity;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
 import static com.runwise.supply.entity.TransferEntity.STATE_CANCEL;
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
+import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER2;
 import static com.runwise.supply.entity.TransferEntity.STATE_PENDING_DELIVER;
 import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
 
@@ -166,6 +167,12 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
+    }
+
     /**
      * 列表adapter
      */
@@ -211,7 +218,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                         dialog.show();
                     }
                 });
-            }else if(STATE_DELIVER.equals(transferEntity.getPickingState())){//已发出
+            }else if(STATE_DELIVER.equals(transferEntity.getPickingState()) ||
+                    STATE_DELIVER2.equals(transferEntity.getPickingState())){//已发出
                 if(mType==TYPE_IN)viewHolder.mmTvAction.setText("入库");
                 else viewHolder.mmTvAction.setVisibility(View.GONE);
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {

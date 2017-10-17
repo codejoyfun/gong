@@ -19,14 +19,14 @@ public class TransferEntity implements Parcelable{
     public static final String STATE_SUBMITTED = "已提交";//已提交
     public static final String STATE_PENDING_DELIVER = "待出库";//待出库
 
-    public static final String STATE_PENDING_CONFIRM = "等待可用";
     public static final String STATE_MODIFIED = "已修改";
 
-    public static final String STATE_DELIVER = "已发货";//已发出
+    public static final String STATE_DELIVER = "已发出";//已发出
     public static final String STATE_DELIVER2 = "已出库";//已出库
 
     public static final String STATE_COMPLETE = "已完成";//完成
     public static final String STATE_CANCEL = "已取消";
+
 
     private String pickingID;
     private String pickingName;

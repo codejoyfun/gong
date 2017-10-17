@@ -1,7 +1,5 @@
 package com.runwise.supply.entity;
 
-import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
-
 import java.util.List;
 
 /**
@@ -11,19 +9,19 @@ import java.util.List;
  */
 
 public class ModifyTransferRequest {
-    private String picking_id;
+    private String pickingID;
     private List<Product> products;
 
-    public String getPicking_id() {
-        return picking_id;
+    public String getPickingID() {
+        return pickingID;
     }
 
     public List<Product> getProducts() {
         return products;
     }
 
-    public void setPicking_id(String picking_id) {
-        this.picking_id = picking_id;
+    public void setPickingID(String pickingID) {
+        this.pickingID = pickingID;
     }
 
     public void setProducts(List<Product> products) {
@@ -32,7 +30,7 @@ public class ModifyTransferRequest {
 
     public static class Product{
         private int qty;
-        private int product_id;
+        private int productID;
         public int getQty() {
             return qty;
         }
@@ -41,12 +39,12 @@ public class ModifyTransferRequest {
             this.qty = qty;
         }
 
-        public int getProduct_id() {
-            return product_id;
+        public int getProductID() {
+            return productID;
         }
 
-        public void setProduct_id(int product_id) {
-            this.product_id = product_id;
+        public void setProductID(int productID) {
+            this.productID = productID;
         }
     }
 }

@@ -9,19 +9,19 @@ import java.util.List;
  */
 
 public class TransferInRequest {
-    private String picking_id;
+    private String pickingID;
     private List<ProductData> products;
 
-    public String getPicking_id() {
-        return picking_id;
+    public String getPickingID() {
+        return pickingID;
     }
 
     public List<ProductData> getProducts() {
         return products;
     }
 
-    public void setPicking_id(String picking_id) {
-        this.picking_id = picking_id;
+    public void setPickingID(String pickingID) {
+        this.pickingID = pickingID;
     }
 
     public void setProducts(List<ProductData> products) {
@@ -29,23 +29,44 @@ public class TransferInRequest {
     }
 
     public static class ProductData {
-        private int product_id;
-        private int qty;
+        private int productID;
+        private List<ProductLotData> lotsInfo;
 
-        public int getProduct_id() {
-            return product_id;
+        public int getProductID() {
+            return productID;
         }
 
-        public void setQty(int qty) {
-            this.qty = qty;
+        public void setProductID(int productID) {
+            this.productID = productID;
         }
 
-        public int getQty() {
-            return qty;
+        public List<ProductLotData> getLotsInfo() {
+            return lotsInfo;
         }
 
-        public void setProduct_id(int product_id) {
-            this.product_id = product_id;
+        public void setLotsInfo(List<ProductLotData> lotsInfo) {
+            this.lotsInfo = lotsInfo;
+        }
+    }
+
+    public static class ProductLotData{
+        private int lotID;
+        private int qtyDone;
+
+        public int getLotID() {
+            return lotID;
+        }
+
+        public int getQtyDone() {
+            return qtyDone;
+        }
+
+        public void setLotID(int lotID) {
+            this.lotID = lotID;
+        }
+
+        public void setQtyDone(int qtyDone) {
+            this.qtyDone = qtyDone;
         }
     }
 }
