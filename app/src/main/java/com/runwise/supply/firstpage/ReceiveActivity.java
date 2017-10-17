@@ -51,6 +51,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.fragment.TabFragment;
+import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -76,8 +77,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.vov.vitamio.utils.Log;
 
@@ -97,6 +100,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private static final int DONE_TALLY = 300;          //第二个人完成点货
     private static final int BEGIN_TALLY = 400;           //开始点货
     private static final int END_TALLY = 500;           //退出点货
+    private static final int PRODUCT_DETAIL = 600;
     @ViewInject(R.id.indicator)
     private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -216,10 +220,35 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startOrEndTally(true);
             }
         }
+//        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+//        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+//        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+//        getReceiveInfoFromDB();
+        getMissingBeanData();
+    }
+
+    private void getCategory(){
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-//        getReceiveInfoFromDB();
+    }
+
+    private Set<Integer> missingProducts = new HashSet<>();
+    private void getMissingBeanData(){
+        for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
+            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(linesBean.getProductID()+"");
+            if(basicBean==null){
+                missingProducts.add(linesBean.getProductID());
+                requestDetail(linesBean.getProductID());
+            }
+        }
+        if(missingProducts.size()==0)getCategory();
+    }
+    private void requestDetail(int productId){
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
+        sb.append(productId).append("/");
+        sendConnection(sb.toString(), request, PRODUCT_DETAIL, false, ProductOne.class);
     }
 
     private void getReceiveInfoFromDB(){
@@ -860,6 +889,16 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage();
+                break;
+            case PRODUCT_DETAIL:
+                ProductOne productOne = (ProductOne) result.getResult().getData();
+                ProductBasicList.ListBean listBean = productOne.getProduct();
+                //保存进缓存
+                missingProducts.remove(listBean.getProductID());
+                ProductBasicUtils.getBasicMap(this).put(listBean.getProductID()+"",listBean);//更新内存缓存
+                if(missingProducts.size()==0){
+                    getCategory();
+                }
                 break;
         }
 
