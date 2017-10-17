@@ -123,6 +123,12 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        switch(where){
+            case REQUEST_OUTPUT_CONFIRM:
+                mInTheRequest = false;
+                ToastUtil.show(getActivity(),errMsg);
+                return;
+        }
         mLoadingLayout.onFailure(errMsg);
         mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
             @Override
@@ -130,12 +136,6 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 requestData(false, REQUEST_REFRESH, page, 10);
             }
         });
-        switch(where){
-            case REQUEST_OUTPUT_CONFIRM:
-                mInTheRequest = false;
-                ToastUtil.show(getActivity(),"网络错误");
-                break;
-        }
     }
 
     /**

@@ -154,11 +154,11 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     return;
                 }
                 CreateCallInListRequest createCallInListRequest = new CreateCallInListRequest();
-                createCallInListRequest.setMendian_id(String.valueOf(mStoreResponse.getList().get(selectShopIndex).getShopID()));
+                createCallInListRequest.setMenDianID(String.valueOf(mStoreResponse.getList().get(selectShopIndex).getShopID()));
                 List<CreateCallInListRequest.Product> products = new ArrayList<>();
                 for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
                     CreateCallInListRequest.Product product = new CreateCallInListRequest.Product();
-                    product.setProduct_id(Integer.parseInt(entry.getKey()));
+                    product.setProductID(Integer.parseInt(entry.getKey()));
                     product.setQty(entry.getValue());
                     products.add(product);
                 }

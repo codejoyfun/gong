@@ -77,6 +77,7 @@ public class ProductListFragment extends NetWorkFragment {
 //        if (count > 0){
 //            countMap.put(String.valueOf(bean.getProductID()),count);
 //        }
+//        countMap.clear();
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
