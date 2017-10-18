@@ -51,6 +51,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
 import static com.runwise.supply.MainActivity.INTENT_KEY_SKIP_TO_LOGIN;
 
 
@@ -125,6 +127,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 SPUtils.loginOut(mContext);
                 MessageFragment.isLogin = false;
                 GlobalApplication.getInstance().cleanUesrInfo();
+                JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
                 //退出登录
                 EventBus.getDefault().post(new UserLogoutEvent());
                 Intent intent = new Intent(this, MainActivity.class);
