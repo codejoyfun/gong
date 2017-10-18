@@ -2,15 +2,20 @@ package com.runwise.supply.orderpage;
 
 import android.content.Context;
 
+import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
+import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ReceiveInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by libin on 2017/7/6.
@@ -128,5 +133,25 @@ public class ProductBasicUtils {
 
     public static void setReceiveInfoList(List<ReceiveInfo> mReceiveInfoList) {
         ProductBasicUtils.mReceiveInfoList = mReceiveInfoList;
+    }
+
+    public static Set<Integer> check(Context context,List<? extends OrderResponse.ListBean.LinesBean> list){
+        Set<Integer> missingInfo = new HashSet<>();
+        for(OrderResponse.ListBean.LinesBean linesBean:list){
+            if(getBasicMap(context).get(linesBean.getProductID()+"")==null){
+                missingInfo.add(linesBean.getProductID());
+            }
+        }
+        return missingInfo;
+    }
+
+    public static void request(NetWorkHelper netWorkHelper,int where, Set<Integer> missingInfo){
+
+        for(Integer id:missingInfo){
+            Object request = null;
+            StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
+            sb.append(id).append("/");
+            netWorkHelper.sendConnection(sb.toString(), request, where, false, ProductOne.class);
+        }
     }
 }

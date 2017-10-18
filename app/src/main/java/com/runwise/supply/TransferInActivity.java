@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.runwise.supply.TransferSuccessActivity.INTENT_KEY_TRANSFER_ID;
+
 /**
  * 入库页面
  *
@@ -199,6 +201,7 @@ public class TransferInActivity extends NetWorkActivity {
                     if(line.getProductLotInfo()==null){
                         //没有批次信息
                         mTransferInMap.put(line.getProductID()+"",(int)line.getProductUomQty());
+                        line.setIsLotTracking(false);
                         continue;
                     }
 
@@ -212,12 +215,22 @@ public class TransferInActivity extends NetWorkActivity {
                         actualTransferOutList.add(transferBatchLot);
                     }
                     line.setProductLotInfo(actualTransferOutList);//重设批次信息
+
+                    //批次信息中没有发货信息
+                    if(actualTransferOutList.size()==0){
+                        //没有批次信息
+                        //用数量接收
+                        total = (int)line.getProductUomQty();
+                        line.setIsLotTracking(false);
+                    }
+
                     mTransferInMap.put(line.getProductID()+"",total);
                 }
                 setupSummaryUI();
                 break;
             case REQUEST_TRANSFER_IN_ACTION:
                 Intent intent = new Intent(this,TransferSuccessActivity.class);
+                intent.putExtra(INTENT_KEY_TRANSFER_ID,mTransferEntity.getPickingID());
                 startActivity(intent);
                 break;
         }
@@ -255,6 +268,7 @@ public class TransferInActivity extends NetWorkActivity {
         mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow.setFocusable(true);
         mPopWindow.setOutsideTouchable(true);
+        mPopWindow.setAnimationStyle(R.style.MyPopwindow_anim_style);
     }
 
     private void showPopWindow(final TransferDetailResponse.LinesBean linesBean) {
@@ -290,6 +304,8 @@ public class TransferInActivity extends NetWorkActivity {
             public void onClick(View v) {
                 mTransferInMap.put(linesBean.getProductID()+"", Integer.valueOf(tvActual.getText().toString()));
                 mProductAdapter.notifyDataSetChanged();
+                mPopWindow.dismiss();
+                setupSummaryUI();
             }
         });
 
@@ -389,7 +405,7 @@ public class TransferInActivity extends NetWorkActivity {
                 vh.content.setText(sb.toString());
 
                 vh.actualTransferIn.setText(""+mTransferInMap.get(bean.getProductID()+""));
-                vh.heightTransferIn.setText("/"+bean.getProductUomQty()+bean.getProductUom());
+                vh.heightTransferIn.setText("/"+(int)bean.getProductUomQty()+bean.getProductUom());
                 vh.rootView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -398,7 +414,7 @@ public class TransferInActivity extends NetWorkActivity {
                             return;
                         }
                         TransferDetailResponse.LinesBean transferBatchLine = mBatchDataMap.get(pId+"");
-                        if(transferBatchLine.getProductLotInfo()==null){
+                        if(!transferBatchLine.isLotTracking()){
                             //无批次信息，输入数量
                             showPopWindow(transferBatchLine);
                             return;

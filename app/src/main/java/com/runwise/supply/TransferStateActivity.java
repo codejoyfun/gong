@@ -83,6 +83,10 @@ public class TransferStateActivity extends NetWorkActivity {
                 }else if(state.contains(TransferEntity.STATE_COMPLETE)){//已完成
                     sbContent.append("入库人：").append(stateEntity.getOperator()).append("\n")
                             .append("收货商品：").append(pieces[3]);
+                }else{
+                    sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
+                            .append("调拨单号：").append(mTransferEntity.getPickingName()).append("\n")
+                            .append("调拨商品：").append(pieces[3]);
                 }
                 stateEntity.setContent(sbContent.toString());
                 mStateList.add(stateEntity);

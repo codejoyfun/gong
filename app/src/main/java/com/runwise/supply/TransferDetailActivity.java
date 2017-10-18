@@ -25,9 +25,11 @@ import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.mine.TransferInModifyActivity;
+import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.orderpage.entity.AddedProduct;
+import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
@@ -35,10 +37,12 @@ import com.runwise.supply.tools.UserUtils;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
 
 import static com.runwise.supply.TransferInActivity.INTENT_KEY_TRANSFER_ENTITY;
+import static com.runwise.supply.entity.TransferEntity.STATE_INSUFFICIENT;
 import static com.runwise.supply.mine.TransferInModifyActivity.INTENT_KEY_TRANSFER;
 import static com.runwise.supply.orderpage.ProductActivity.INTENT_KEY_BACKAP;
 
@@ -51,9 +55,11 @@ import static com.runwise.supply.orderpage.ProductActivity.INTENT_KEY_BACKAP;
 public class TransferDetailActivity extends NetWorkActivity {
 
     public static final String EXTRA_TRANSFER_ENTITY = "extra_transfer";
+    public static final String EXTRA_TRANSFER_ID = "extra_transfer_id";
     private static final int REQUEST_DETAIL = 0;
     private static final int REQUEST_CANCEL_TRANSFER = 1;
     private static final int REQUEST_OUTPUT_CONFIRM = 2;
+    private static final int PRODUCT_DETAIL = 3;
 
     @ViewInject(R.id.tv_transfer_detail_state)
     private TextView mTvTransferState;
@@ -77,6 +83,8 @@ public class TransferDetailActivity extends NetWorkActivity {
     private Button mBtnDoAction2;
     @ViewInject(R.id.tv_transfer_detail_id)
     private TextView mTvTransferId;
+    @ViewInject(R.id.bottom_bar)
+    private View mLayoutBottomBar;
 
     private TransferEntity mTransferEntity;
     private TransferDetailResponse mTransferDetail;
@@ -96,10 +104,16 @@ public class TransferDetailActivity extends NetWorkActivity {
         mRvProducts.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         mTransferProductAdapter = new TransferProductAdapter(this);
         mRvProducts.setAdapter(mTransferProductAdapter);
+        showUI();
+        requestData();
+    }
+
+    private void showUI(){
+        if(mTransferEntity==null)return;
         //是否是接收门店
         isDestLocation = GlobalApplication.getInstance().loadUserInfo().getMendian().equals(mTransferEntity.getLocationDestName());
         initViews();
-        requestData();
+        setStatusText();
     }
 
     protected void initViews(){
@@ -137,6 +151,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                     });
                 }else{
                     mBtnDoAction.setVisibility(View.GONE);
+                    mLayoutBottomBar.setVisibility(View.INVISIBLE);
                 }
                 break;
             case TransferEntity.STATE_PENDING_DELIVER://待出库
@@ -162,9 +177,13 @@ public class TransferDetailActivity extends NetWorkActivity {
                     });
                 }
                 break;
+            case STATE_INSUFFICIENT:
+                mBtnDoAction.setVisibility(View.GONE);
+                break;
             default:
                 mBtnDoAction.setVisibility(View.GONE);
                 mBtnDoAction2.setVisibility(View.GONE);
+                mLayoutBottomBar.setVisibility(View.INVISIBLE);
                 break;
         }
     }
@@ -221,8 +240,12 @@ public class TransferDetailActivity extends NetWorkActivity {
      * 请求订单详情，拿商品列表
      */
     private void requestData(){
+        String pickingID = null;
+        if(mTransferEntity!=null)pickingID = mTransferEntity.getPickingID();
+        else pickingID = getIntent().getStringExtra(EXTRA_TRANSFER_ID);
+
         Object request = null;
-        sendConnection("/gongfu/shop/transfer/"+mTransferEntity.getPickingID(),request,REQUEST_DETAIL,true, TransferDetailResponse.class);
+        sendConnection("/gongfu/shop/transfer/"+pickingID,request,REQUEST_DETAIL,true, TransferDetailResponse.class);
     }
 
     /**
@@ -233,22 +256,30 @@ public class TransferDetailActivity extends NetWorkActivity {
         sendConnection("/gongfu/shop/transfer/cancel/"+mTransferEntity.getPickingID(),REQUEST_CANCEL_TRANSFER,true,null);
     }
 
+    Set<Integer> missingInfo;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case REQUEST_DETAIL:
                 mTransferDetail = (TransferDetailResponse) result.getResult().getData();
-
+                mTransferEntity = mTransferDetail.getInfo();
                 if(mTransferDetail.getInfo().getStateTracker()==null || mTransferDetail.getInfo().getStateTracker().size()==0){
                     //TODO:test
                     List<String> list = new ArrayList<>();
                     list.add("2017-10-17 13:46 调拨单已提交 4.0袋,共4.0元 刘志滑");
                     mTransferDetail.getInfo().setStateTracker(list);
                 }
-
                 mTransferEntity.setStateTracker(mTransferDetail.getInfo().getStateTracker());
-                setStatusText();
-                mTransferProductAdapter.setProductList(mTransferDetail.getLines());
+                showUI();
+                //检查信息是否齐全
+                missingInfo = ProductBasicUtils.check(this,mTransferDetail.getLines());
+                if(missingInfo==null||missingInfo.size()==0){//商品信息OK，显示
+                    mTransferProductAdapter.setProductList(mTransferDetail.getLines());
+                }
+                else {//不齐全，查接口
+                    ProductBasicUtils.request(netWorkHelper,PRODUCT_DETAIL,missingInfo);
+                }
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 finish();
@@ -256,6 +287,16 @@ public class TransferDetailActivity extends NetWorkActivity {
             case REQUEST_OUTPUT_CONFIRM:
                 startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mSelectTransferEntity));
                 mInTheRequest = false;
+                break;
+            case PRODUCT_DETAIL:
+                ProductOne productOne = (ProductOne) result.getResult().getData();
+                ProductBasicList.ListBean listBean = productOne.getProduct();
+                //保存进缓存
+                missingInfo.remove(listBean.getProductID());
+                ProductBasicUtils.getBasicMap(this).put(listBean.getProductID()+"",listBean);//更新内存缓存
+                if(missingInfo.size()==0){//所有都返回了
+                    mTransferProductAdapter.setProductList(mTransferDetail.getLines());
+                }
                 break;
         }
     }
@@ -292,6 +333,10 @@ public class TransferDetailActivity extends NetWorkActivity {
             }else if(state.contains(TransferEntity.STATE_COMPLETE)){//已完成
                 sbContent.append("入库人：").append(pieces[4]).append("；")
                         .append("收货商品：").append(pieces[3]);
+            }else{
+                sbContent.append("操作人：").append(pieces[4]).append("；")
+                        .append("调拨单号：").append(mTransferEntity.getPickingName()).append("；")
+                        .append("调拨商品：").append(pieces[3]);
             }
             mTvTransferStateTip.setText(sbContent.toString());
         }
@@ -369,7 +414,8 @@ public class TransferDetailActivity extends NetWorkActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if(getItemViewType(position)==TYPE_FOOTER){boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if(getItemViewType(position)==TYPE_FOOTER){
+//                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
 //                if (!canSeePrice) {
 //                    view.findViewById(R.id.priceLL).setVisibility(View.GONE);
 //                }
@@ -380,6 +426,7 @@ public class TransferDetailActivity extends NetWorkActivity {
 //                    ((TextView)view.findViewById(R.id.countTv)).setText((int) listBean.getAmount() + "件");
 //                }
                 //商品数量/预估金额
+                if(mTransferEntity==null)return;
                 DecimalFormat df = new DecimalFormat("#.##");
                 holder.mmTvMoney.setText("¥" + df.format(mTransferEntity.getTotalPrice()));
                 holder.mmTvNum.setText(mTransferEntity.getTotalNum()+"件");
