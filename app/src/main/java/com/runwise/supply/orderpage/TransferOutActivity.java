@@ -205,6 +205,11 @@ public class TransferOutActivity extends NetWorkActivity {
                     lot.setQty(String.valueOf(transferBatchLot.getActualQty()));
                     lots.add(lot);
                 }
+            }else{
+                TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
+                lot.setLotID("");
+                lot.setQty(String.valueOf(transferBatchLine.getActualQty()));
+                lots.add(lot);
             }
             product.setLotsInfo(lots);
             products.add(product);
