@@ -13,11 +13,11 @@
         ptr:ptrAnimationStyle="flip"
         />
 
-    <com.kids.commonframe.base.view.LoadingLayout
-        android:id="@+id/loadingLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+    <!--<com.kids.commonframe.base.view.LoadingLayout-->
+        <!--android:id="@+id/loadingLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--/>-->
 
     <RelativeLayout
         android:id="@+id/rl_title"

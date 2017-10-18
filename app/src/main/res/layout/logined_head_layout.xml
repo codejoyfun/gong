@@ -117,9 +117,16 @@
         </LinearLayout>
     </LinearLayout>
     <View
+        android:id="@+id/v_space"
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="#F0F0F0"
         android:layout_below="@id/numsLL"
+        />
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/v_space"
         />
 </RelativeLayout>
