@@ -88,7 +88,7 @@ public class TransferOutActivity extends NetWorkActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TransferOutDetailResponse.TransferBatchLine transferBatchLine = mTransferOutDetailResponse.getLines().get(position);
-                if (transferBatchLine.getProductInfo() == null || transferBatchLine.getProductInfo().size() == 0) {
+                if (transferBatchLine.getProductLotInfo() == null || transferBatchLine.getProductLotInfo().size() == 0) {
                     showPopWindowNoBatch(mTransferOutDetailResponse.getLines().get(position));
                 } else {
                     showPopWindow(mTransferOutDetailResponse.getLines().get(position));
@@ -135,11 +135,11 @@ public class TransferOutActivity extends NetWorkActivity {
                 TransferOutDetailResponse.TransferBatchLot transferBatchLot = new TransferOutDetailResponse.TransferBatchLot();
                 transferBatchLot.setLotID("" + i);
                 transferBatchLot.setQuantQty(10);
-                transferBatchLot.setActualQty(5);
+                transferBatchLot.setUsedQty(5);
                 transferBatchLots.add(transferBatchLot);
             }
         }
-        transferBatchLine.setProductInfo(transferBatchLots);
+        transferBatchLine.setProductLotInfo(transferBatchLots);
         return transferBatchLine;
     }
 
@@ -198,11 +198,11 @@ public class TransferOutActivity extends NetWorkActivity {
             TransferOutRequest.Product product = new TransferOutRequest.Product();
             product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
             List<TransferOutRequest.Lot> lots = new ArrayList<>();
-            if(transferBatchLine.getProductInfo()!=null){
-                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
+            if(transferBatchLine.getProductLotInfo()!=null){
+                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
                     TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
-                    lot.setLotID(transferBatchLot.getLotID());
-                    lot.setQty(String.valueOf(transferBatchLot.getActualQty()));
+                    lot.setLotID(transferBatchLot.getLotIDID());
+                    lot.setQty(String.valueOf(transferBatchLot.getUsedQty()));
                     lots.add(lot);
                 }
             }else{
@@ -253,14 +253,14 @@ public class TransferOutActivity extends NetWorkActivity {
         copyTransferBatchLine.setProductUnit(transferBatchLine.getProductUnit());
 
         ArrayList<TransferOutDetailResponse.TransferBatchLot> transferBatchLots = new ArrayList<>();
-        for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
+        for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
             TransferOutDetailResponse.TransferBatchLot copyTransferBatchLot = new TransferOutDetailResponse.TransferBatchLot();
             copyTransferBatchLot.setQuantQty(transferBatchLot.getQuantQty());
             copyTransferBatchLot.setLotID(transferBatchLot.getLotID());
-            copyTransferBatchLot.setActualQty(transferBatchLot.getActualQty());
+            copyTransferBatchLot.setUsedQty(transferBatchLot.getUsedQty());
             transferBatchLots.add(copyTransferBatchLot);
         }
-        copyTransferBatchLine.setProductInfo(transferBatchLots);
+        copyTransferBatchLine.setProductLotInfo(transferBatchLots);
         return copyTransferBatchLine;
     }
 
@@ -387,25 +387,25 @@ public class TransferOutActivity extends NetWorkActivity {
         tv_count.setText(String.valueOf(transferBatchLine.getProductUomQty()));
         TransferOutBatchAdapter transferOutBatchAdapter = new TransferOutBatchAdapter();
         transferOutBatchAdapter.setTotalCount(transferBatchLine.getProductUomQty());
-        transferOutBatchAdapter.setData(transferBatchLine.getProductInfo());
+        transferOutBatchAdapter.setData(transferBatchLine.getProductLotInfo());
         lv_batch.setAdapter(transferOutBatchAdapter);
 
         tv_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int totalCount = 0;
-                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
-                    totalCount += transferBatchLot.getActualQty();
+                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
+                    totalCount += transferBatchLot.getUsedQty();
                 }
                 if (totalCount > transferBatchLine.getProductUomQty()) {
                     toast("总数量不能超过订单量");
                     return;
                 }
                 int totalActualQty = 0;
-                sourceTransferBatchLine.setProductInfo(new ArrayList<TransferOutDetailResponse.TransferBatchLot>());
-                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
-                    totalActualQty += transferBatchLot.getActualQty();
-                    sourceTransferBatchLine.getProductInfo().add(transferBatchLot);
+                sourceTransferBatchLine.setProductLotInfo(new ArrayList<TransferOutDetailResponse.TransferBatchLot>());
+                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
+                    totalActualQty += transferBatchLot.getUsedQty();
+                    sourceTransferBatchLine.getProductLotInfo().add(transferBatchLot);
                 }
                 sourceTransferBatchLine.setActualQty(totalActualQty);
                 mProductAdapter.notifyDataSetChanged();
@@ -466,18 +466,18 @@ public class TransferOutActivity extends NetWorkActivity {
             viewHolder.mUnit1.setText("/" + transferBatchLine.getProductUomQty() + transferBatchLine.getProductUom());
             viewHolder.mTvCount.setText(String.valueOf(transferBatchLine.getActualQty()));
             viewHolder.mLlBatch.removeAllViews();
-            if (transferBatchLine.getProductInfo() == null || transferBatchLine.getProductInfo().size() == 0) {
+            if (transferBatchLine.getProductLotInfo() == null || transferBatchLine.getProductLotInfo().size() == 0) {
                 viewHolder.mLlBatch.setVisibility(View.GONE);
                 viewHolder.mVLine1.setVisibility(View.GONE);
             } else {
                 viewHolder.mLlBatch.setVisibility(View.VISIBLE);
                 viewHolder.mVLine1.setVisibility(View.VISIBLE);
-                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductInfo()) {
+                for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
                     View view = LayoutInflater.from(getActivityContext()).inflate(R.layout.item_batch, null);
                     TextView tvName = (TextView) view.findViewById(R.id.tv_batch_name);
                     tvName.setText(transferBatchLot.getLotID());
                     TextView tvCount = (TextView) view.findViewById(R.id.tv_batch_count);
-                    tvCount.setText(String.valueOf(transferBatchLot.getActualQty()));
+                    tvCount.setText(String.valueOf(transferBatchLot.getUsedQty()));
                     viewHolder.mLlBatch.addView(view);
                 }
             }

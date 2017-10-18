@@ -116,7 +116,7 @@ public class TransferOutDetailResponse implements Serializable {
         }
 
         private int actualQty;
-        private List<TransferBatchLot> productInfo;
+        private List<TransferBatchLot> productLotInfo;
 
         public String getProductUom() {
             return productUom;
@@ -162,21 +162,31 @@ public class TransferOutDetailResponse implements Serializable {
             return priceUnit;
         }
 
-        public List<TransferBatchLot> getProductInfo() {
-            return productInfo;
+        public List<TransferBatchLot> getProductLotInfo() {
+            return productLotInfo;
         }
 
         public void setPriceUnit(int priceUnit) {
             this.priceUnit = priceUnit;
         }
 
-        public void setProductInfo(List<TransferBatchLot> productInfo) {
-            this.productInfo = productInfo;
+        public void setProductLotInfo(List<TransferBatchLot> productLotInfo) {
+            this.productLotInfo = productLotInfo;
         }
     }
 
     public static class TransferBatchLot implements Serializable {
         private String lotID;
+
+        public String getLotIDID() {
+            return lotIDID;
+        }
+
+        public void setLotIDID(String lotIDID) {
+            this.lotIDID = lotIDID;
+        }
+
+        private String lotIDID;
         private int quantQty;
 
         //本地数据
@@ -198,12 +208,12 @@ public class TransferOutDetailResponse implements Serializable {
             this.quantQty = quantQty;
         }
 
-        public int getActualQty() {
+        public int getUsedQty() {
             return usedQty;
         }
 
-        public void setActualQty(int actualQty) {
-            this.usedQty = actualQty;
+        public void setUsedQty(int usedQty) {
+            this.usedQty = usedQty;
         }
 
         public TransferBatchLot() {

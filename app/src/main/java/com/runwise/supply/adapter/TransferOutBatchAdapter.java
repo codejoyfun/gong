@@ -35,7 +35,7 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         int actualCount = 0;
         for (Object o : mList) {
             TransferOutDetailResponse.TransferBatchLot transferBatchLot = (TransferOutDetailResponse.TransferBatchLot) o;
-            actualCount += transferBatchLot.getActualQty();
+            actualCount += transferBatchLot.getUsedQty();
         }
         if (actualCount > mTotalCount) {
             ToastUtil.show(context, "总数量不能超过订单量");
@@ -56,17 +56,17 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.mTvBatchName.setText(String.valueOf(transferBatchLot.getLotID()));
         viewHolder.mEtCount.removeTextChangedListener();
-        viewHolder.mEtCount.setText(String.valueOf(transferBatchLot.getActualQty()));
+        viewHolder.mEtCount.setText(String.valueOf(transferBatchLot.getUsedQty()));
         viewHolder.mTvBatchCount.setText(String.valueOf(transferBatchLot.getQuantQty()));
         viewHolder.mIvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int actualQty = transferBatchLot.getActualQty() + 1;
+                int actualQty = transferBatchLot.getUsedQty() + 1;
                 if (actualQty >transferBatchLot.getQuantQty()){
                     ToastUtil.show(parent.getContext(),"超过库存数量");
                     return;
                 }
-                transferBatchLot.setActualQty(actualQty);
+                transferBatchLot.setUsedQty(actualQty);
                 notifyDataSetChanged();
                 checkCount(parent.getContext());
             }
@@ -74,11 +74,11 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         viewHolder.mIvReduce.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int actualQty = transferBatchLot.getActualQty() - 1;
+                int actualQty = transferBatchLot.getUsedQty() - 1;
                 if (actualQty == 0) {
                     return;
                 }
-                transferBatchLot.setActualQty(actualQty);
+                transferBatchLot.setUsedQty(actualQty);
                 notifyDataSetChanged();
             }
         });
@@ -96,12 +96,12 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
             @Override
             public void afterTextChanged(Editable s) {
                 if (TextUtils.isEmpty(s.toString())){
-                    transferBatchLot.setActualQty(0);
+                    transferBatchLot.setUsedQty(0);
                     notifyDataSetChanged();
                     return;
                 }
                 int actualQty = Integer.parseInt(s.toString());
-                transferBatchLot.setActualQty(actualQty);
+                transferBatchLot.setUsedQty(actualQty);
                 if(actualQty>transferBatchLot.getQuantQty()){
                     ToastUtil.show(parent.getContext(),"超过库存数量");
                     return;
