@@ -58,6 +58,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ReceiveInfo;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoScrollViewPager;
@@ -158,6 +159,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     public boolean ShuangRensShouHuoQueRen = false;
 
+    private ProductBasicHelper productBasicHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,31 +227,18 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
 //        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
 //        getReceiveInfoFromDB();
-        getMissingBeanData();
+        productBasicHelper = new ProductBasicHelper(this,netWorkHelper);
+        if(productBasicHelper.check(lbean.getLines())){
+            getCategory();
+        }else{
+            productBasicHelper.requestDetail(PRODUCT_DETAIL);
+        }
     }
 
     private void getCategory(){
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-    }
-
-    private Set<Integer> missingProducts = new HashSet<>();
-    private void getMissingBeanData(){
-        for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
-            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(linesBean.getProductID()+"");
-            if(basicBean==null){
-                missingProducts.add(linesBean.getProductID());
-                requestDetail(linesBean.getProductID());
-            }
-        }
-        if(missingProducts.size()==0)getCategory();
-    }
-    private void requestDetail(int productId){
-        Object request = null;
-        StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
-        sb.append(productId).append("/");
-        sendConnection(sb.toString(), request, PRODUCT_DETAIL, false, ProductOne.class);
     }
 
     private void getReceiveInfoFromDB(){
@@ -891,12 +881,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 setUpDataForViewPage();
                 break;
             case PRODUCT_DETAIL:
-                ProductOne productOne = (ProductOne) result.getResult().getData();
-                ProductBasicList.ListBean listBean = productOne.getProduct();
-                //保存进缓存
-                missingProducts.remove(listBean.getProductID());
-                ProductBasicUtils.getBasicMap(this).put(listBean.getProductID()+"",listBean);//更新内存缓存
-                if(missingProducts.size()==0){
+                if(productBasicHelper.onSuccess(result)){
                     getCategory();
                 }
                 break;
