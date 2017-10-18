@@ -31,6 +31,7 @@ import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
 
@@ -85,11 +86,14 @@ public class TransferDetailActivity extends NetWorkActivity {
     private TextView mTvTransferId;
     @ViewInject(R.id.bottom_bar)
     private View mLayoutBottomBar;
+    @ViewInject(R.id.tv_transfer_state_date)
+    private TextView mTvStateDate;
 
     private TransferEntity mTransferEntity;
     private TransferDetailResponse mTransferDetail;
     private TransferProductAdapter mTransferProductAdapter;
     private boolean isDestLocation;//是否是收货门店
+    private ProductBasicHelper productBasicHelper;//用于检查商品信息
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +108,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         mRvProducts.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         mTransferProductAdapter = new TransferProductAdapter(this);
         mRvProducts.setAdapter(mTransferProductAdapter);
+        productBasicHelper = new ProductBasicHelper(this,netWorkHelper);
         showUI();
         requestData();
     }
@@ -256,8 +261,6 @@ public class TransferDetailActivity extends NetWorkActivity {
         sendConnection("/gongfu/shop/transfer/cancel/"+mTransferEntity.getPickingID(),REQUEST_CANCEL_TRANSFER,true,null);
     }
 
-    Set<Integer> missingInfo;
-
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
@@ -273,12 +276,11 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mTransferEntity.setStateTracker(mTransferDetail.getInfo().getStateTracker());
                 showUI();
                 //检查信息是否齐全
-                missingInfo = ProductBasicUtils.check(this,mTransferDetail.getLines());
-                if(missingInfo==null||missingInfo.size()==0){//商品信息OK，显示
+                if(productBasicHelper.check(mTransferDetail.getLines())){//商品信息OK，显示
                     mTransferProductAdapter.setProductList(mTransferDetail.getLines());
                 }
                 else {//不齐全，查接口
-                    ProductBasicUtils.request(netWorkHelper,PRODUCT_DETAIL,missingInfo);
+                    productBasicHelper.requestDetail(PRODUCT_DETAIL);
                 }
                 break;
             case REQUEST_CANCEL_TRANSFER:
@@ -289,12 +291,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mInTheRequest = false;
                 break;
             case PRODUCT_DETAIL:
-                ProductOne productOne = (ProductOne) result.getResult().getData();
-                ProductBasicList.ListBean listBean = productOne.getProduct();
-                //保存进缓存
-                missingInfo.remove(listBean.getProductID());
-                ProductBasicUtils.getBasicMap(this).put(listBean.getProductID()+"",listBean);//更新内存缓存
-                if(missingInfo.size()==0){//所有都返回了
+                if(productBasicHelper.onSuccess(result)){
                     mTransferProductAdapter.setProductList(mTransferDetail.getLines());
                 }
                 break;
@@ -317,6 +314,7 @@ public class TransferDetailActivity extends NetWorkActivity {
             String[] pieces = latestState.split(" ");
             String state = pieces[2];
             StringBuilder sbContent = new StringBuilder();
+            mTvStateDate.setText(pieces[0]);
             if(state.contains(TransferEntity.STATE_SUBMITTED)){//已提交
                 sbContent.append("操作人：").append(pieces[4]).append("；")
                         .append("调拨单号：").append(mTransferEntity.getPickingName()).append("；")

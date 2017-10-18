@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -76,7 +77,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         mTransferListAdapter = new TransferListAdapter();
         mPullListView.setAdapter(mTransferListAdapter);
         mPullListView.setOnRefreshListener(new PullToRefreshListener());
-        requestData(true, REQUEST_REFRESH, page, 10);
+        //requestData(true, REQUEST_REFRESH, page, 10);
     }
 
     public void refresh() {
@@ -187,6 +188,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 viewHolder = new ViewHolder();
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
+                viewHolder.mmIvIcon.setImageResource(mType==TYPE_IN?R.drawable.state_delivery_8_callin:R.drawable.state_delivery_8_callout);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
@@ -257,6 +259,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         }
 
         class ViewHolder {
+            @ViewInject(R.id.iv_transfer_status)
+            ImageView mmIvIcon;
             @ViewInject(R.id.item_transfer_title_tv)
             TextView mmTvTitle;
             @ViewInject(R.id.tv_item_transfer_status)

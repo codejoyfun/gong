@@ -38,9 +38,6 @@ public class TransferDetailResponse {
         private String productTracking;
         private List<TransferBatchLot> productLotInfo;
 
-        //本地，是否批次
-        private boolean isLotTracking = true;
-
         public List<TransferBatchLot> getProductLotInfo() {
             return productLotInfo;
         }
@@ -91,11 +88,7 @@ public class TransferDetailResponse {
         };
 
         public boolean isLotTracking(){
-            return isLotTracking;
-        }
-
-        public void setIsLotTracking(boolean isLotTracking){
-            this.isLotTracking = isLotTracking;
+            return TRACKING_LOT.equals(productTracking);
         }
     }
 }

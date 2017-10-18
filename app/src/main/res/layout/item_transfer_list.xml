@@ -17,7 +17,7 @@
             android:id="@+id/iv_transfer_status"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/ic_state_delivery_8_callout"
+            android:src="@drawable/state_delivery_8_callout"
             />
         <LinearLayout
             android:layout_width="0dp"

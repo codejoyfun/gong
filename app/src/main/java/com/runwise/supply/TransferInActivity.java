@@ -48,7 +48,6 @@ import static com.runwise.supply.TransferSuccessActivity.INTENT_KEY_TRANSFER_ID;
 
 public class TransferInActivity extends NetWorkActivity {
     private static final int REQUEST_DETAIL = 0;
-    private static final int REQUEST_TRANSFER_BATCH = 1;
     private static final int REQUEST_TRANSFER_IN_ACTION = 2;
     private static final int ACT_REQ_TRANSFER_IN_BATCH = 0x123;
 
@@ -198,10 +197,9 @@ public class TransferInActivity extends NetWorkActivity {
 //                    lotList.add(lot2);
 //                    line.setProductLotInfo(lotList);
 
-                    if(line.getProductLotInfo()==null){
-                        //没有批次信息
+                    if(line.getProductLotInfo()==null || line.getProductLotInfo().size()==0 || !line.isLotTracking()){
+                        //不是批次商品
                         mTransferInMap.put(line.getProductID()+"",(int)line.getProductUomQty());
-                        line.setIsLotTracking(false);
                         continue;
                     }
 
@@ -214,16 +212,7 @@ public class TransferInActivity extends NetWorkActivity {
                         total = total + transferBatchLot.getActualQty();
                         actualTransferOutList.add(transferBatchLot);
                     }
-                    line.setProductLotInfo(actualTransferOutList);//重设批次信息
-
-                    //批次信息中没有发货信息
-                    if(actualTransferOutList.size()==0){
-                        //没有批次信息
-                        //用数量接收
-                        total = (int)line.getProductUomQty();
-                        line.setIsLotTracking(false);
-                    }
-
+                    line.setProductLotInfo(actualTransferOutList);//重设批次信息,只保留有发出的批次
                     mTransferInMap.put(line.getProductID()+"",total);
                 }
                 setupSummaryUI();
