@@ -110,6 +110,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         unPayMoney = (TextView) headView.findViewById(R.id.unPayAccount);
         lqCountTv = (TextView) headView.findViewById(R.id.lqCountTv);
         dqCountTv = (TextView) headView.findViewById(R.id.dqCountTv);
+        loadingLayout = (LoadingLayout)headView.findViewById(R.id.loadingLayout);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
         headView.findViewById(R.id.lqLL).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,7 +217,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         getProcurement();
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
-        loadingLayout = new LoadingLayout(getActivity());
     }
 
     public void getProcurement() {

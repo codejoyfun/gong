@@ -42,6 +42,8 @@ public class OrderActionUtils {
             btnText = "评价";
         }else if(bean.getState().equals(OrderState.RATED.getName())){
             btnText = "已评价";
+        }else if(OrderState.CANCEL.getName().equals(bean.getState())){
+            btnText = "删除订单";
         }
         return btnText;
     }
@@ -80,6 +82,8 @@ public class OrderActionUtils {
             action = OrderDoAction.RATE;
         }else if ("完成退货".equals(OrderDoAction.FINISH_RETURN)){
             action = OrderDoAction.FINISH_RETURN;
+        }else if("删除订单".equals(doAction)){
+            action = OrderDoAction.DELETE;
         }
         return action;
     }

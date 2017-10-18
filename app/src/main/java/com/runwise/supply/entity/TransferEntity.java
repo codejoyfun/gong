@@ -27,6 +27,8 @@ public class TransferEntity implements Parcelable{
     public static final String STATE_COMPLETE = "已完成";//完成
     public static final String STATE_CANCEL = "已取消";
 
+    public static final String STATE_INSUFFICIENT = "库存不足";
+
 
     private String pickingID;
     private String pickingName;

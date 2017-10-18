@@ -34,12 +34,11 @@
         />
 
     <TextView
-        android:id="@+id/dateTv"
+        android:id="@+id/tv_transfer_state_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginTop="19dp"
-        android:text="04-30"
         android:textColor="#999999"
         android:textSize="13sp"
         />

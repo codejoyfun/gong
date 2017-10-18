@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
+import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 
 public class TransferOutSuccessActivity extends NetWorkActivity {
 
@@ -65,7 +66,7 @@ public class TransferOutSuccessActivity extends NetWorkActivity {
         switch (view.getId()) {
             case R.id.orderBtn:
                 Intent intent = new Intent(getActivityContext(), TransferDetailActivity.class);
-                intent.putExtra(EXTRA_TRANSFER_ENTITY,mTransferEntity);
+                intent.putExtra(EXTRA_TRANSFER_ID,mTransferEntity.getPickingID());
                 startActivity(intent);
                 finish();
                 break;

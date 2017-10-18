@@ -12,6 +12,8 @@ import com.runwise.supply.firstpage.UploadPayedPicActivity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.tools.StatusBarUtil;
 
+import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
+
 /**
  * 入库成功页
  *
@@ -19,6 +21,9 @@ import com.runwise.supply.tools.StatusBarUtil;
  */
 
 public class TransferSuccessActivity extends BaseActivity {
+
+    public static final String INTENT_KEY_TRANSFER_ID = "transfer_id";
+    private String pickingID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +33,7 @@ public class TransferSuccessActivity extends BaseActivity {
         setContentView(R.layout.activity_transfer_in_success);
         setTitleText(true,"入库成功");
         setTitleLeftIcon(true,R.drawable.nav_closed);
+        pickingID = getIntent().getStringExtra(INTENT_KEY_TRANSFER_ID);
     }
     @OnClick({R.id.title_iv_left,R.id.tv_to_transfer_list,R.id.tv_to_main})
     public void btnClick(View view){
@@ -38,6 +44,9 @@ public class TransferSuccessActivity extends BaseActivity {
                 Intent intent = new Intent(this,TransferListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                Intent intent2 = new Intent(this,TransferDetailActivity.class);
+                intent2.putExtra(EXTRA_TRANSFER_ID,pickingID);
+                startActivity(intent2);
                 break;
             case R.id.tv_to_main://回到首页
                 BaseManager.getInstance().finishAll();

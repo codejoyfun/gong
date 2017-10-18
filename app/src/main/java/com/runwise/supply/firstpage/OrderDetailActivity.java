@@ -14,6 +14,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -312,6 +313,9 @@ public class OrderDetailActivity extends NetWorkActivity {
                         });
                         dialog.show();
                         break;
+                    case DELETE:
+                        //TODO
+                        break;
                 }
 //               if (rightBtn.getText().toString().equals("收货")){
 //                    intent2 = new Intent(mContext,ReceiveActivity.class);
@@ -607,6 +611,9 @@ public class OrderDetailActivity extends NetWorkActivity {
                 lp.height = 0;
                 bottom_bar.setLayoutParams(lp);
                 tip = "感谢您的评价，供鲜生祝您生活愉快！";
+            } else if ("cancel".equals(bean.getState())){
+                state = "订单已取消";
+                tip = "您的订单已取消成功";
             }
             orderStateTv.setText(state);
             tipTv.setText(tip);

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,9 +30,11 @@ import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
 
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
+import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 import static com.runwise.supply.entity.TransferEntity.STATE_CANCEL;
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
 import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER2;
+import static com.runwise.supply.entity.TransferEntity.STATE_INSUFFICIENT;
 import static com.runwise.supply.entity.TransferEntity.STATE_PENDING_DELIVER;
 import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
 
@@ -74,7 +77,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         mTransferListAdapter = new TransferListAdapter();
         mPullListView.setAdapter(mTransferListAdapter);
         mPullListView.setOnRefreshListener(new PullToRefreshListener());
-        requestData(true, REQUEST_REFRESH, page, 10);
+        //requestData(true, REQUEST_REFRESH, page, 10);
     }
 
     public void refresh() {
@@ -98,6 +101,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_REFRESH:
+            case REQUEST_MORE://接口无分页
                 TransferListResponse response = (TransferListResponse) result.getResult().getData();
                 mTransferListAdapter.setData(response.getList());
                 if (mTransferListAdapter.getCount() == 0 && mPullListView.getRefreshableView().getHeaderViewsCount() == 1) {
@@ -107,8 +111,6 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     mLoadingLayout.onSuccess(mTransferListAdapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
                 }
                 mPullListView.onRefreshComplete(Integer.MAX_VALUE);
-                break;
-            case REQUEST_MORE:
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 //refresh
@@ -130,7 +132,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 ToastUtil.show(getActivity(),errMsg);
                 return;
         }
-        mLoadingLayout.onFailure(errMsg);
+        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
         mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
             @Override
             public void retryOnClick(View view) {
@@ -152,7 +154,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         int realPosition = (int) id;
         TransferEntity transferEntity = (TransferEntity) mTransferListAdapter.getItem(realPosition);
         Intent intent = new Intent(getActivity(), TransferDetailActivity.class);
-        intent.putExtra(EXTRA_TRANSFER_ENTITY, transferEntity);
+        intent.putExtra(EXTRA_TRANSFER_ID, transferEntity.getPickingID());
         startActivity(intent);
     }
     TransferEntity mSelectTransferEntity;
@@ -186,6 +188,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 viewHolder = new ViewHolder();
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
+                viewHolder.mmIvIcon.setImageResource(mType==TYPE_IN?R.drawable.state_delivery_8_callin:R.drawable.state_delivery_8_callout);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
@@ -197,8 +200,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
             viewHolder.mmTvStatus.setText(transferEntity.getPickingState());
-            if (STATE_SUBMITTED.equals(transferEntity.getPickingState())) {//已提交
-                viewHolder.mmTvStatus.setText("已提交");
+            if (STATE_SUBMITTED.equals(transferEntity.getPickingState()) ||
+                    STATE_INSUFFICIENT.equals(transferEntity.getPickingState())) {//已提交
                 viewHolder.mmTvAction.setText("取消");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -256,6 +259,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         }
 
         class ViewHolder {
+            @ViewInject(R.id.iv_transfer_status)
+            ImageView mmIvIcon;
             @ViewInject(R.id.item_transfer_title_tv)
             TextView mmTvTitle;
             @ViewInject(R.id.tv_item_transfer_status)
@@ -286,6 +291,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
 
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView) {
+            //无分页
             requestData(false, REQUEST_MORE, (++page), 10);
         }
     }
