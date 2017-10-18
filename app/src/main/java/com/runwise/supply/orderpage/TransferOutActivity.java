@@ -31,10 +31,14 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.TransferOutDetailResponse;
 import com.runwise.supply.orderpage.entity.TransferOutRequest;
 import com.runwise.supply.tools.UserUtils;
+import com.runwise.supply.view.MaxHeightListView;
 import com.runwise.supply.view.NoWatchEditText;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -149,12 +153,29 @@ public class TransferOutActivity extends NetWorkActivity {
             case REQUEST_DETAIL:
                 mTransferOutDetailResponse = (TransferOutDetailResponse) result.getResult().getData();
 //                simulationData();
+                processData();
                 setUpData();
                 break;
             case REQUEST_TRANSFEROUT:
                 finish();
                 startActivity(TransferOutSuccessActivity.getStartIntent(getActivityContext(), mTransferEntity));
                 break;
+        }
+    }
+
+    private void processData() {
+        for (TransferOutDetailResponse.TransferBatchLine transferBatchLine : mTransferOutDetailResponse.getLines()) {
+            HashMap<String, TransferOutDetailResponse.TransferBatchLot> transferBatchLotHashMap = new HashMap<>();
+            List<TransferOutDetailResponse.TransferBatchLot> transferBatchLots = new ArrayList<>();
+            for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
+                transferBatchLotHashMap.put(transferBatchLot.getLotIDID(), transferBatchLot);
+            }
+            Iterator iter = transferBatchLotHashMap.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                transferBatchLots.add((TransferOutDetailResponse.TransferBatchLot) entry.getValue());
+            }
+            transferBatchLine.setProductLotInfo(transferBatchLots);
         }
     }
 
@@ -198,14 +219,14 @@ public class TransferOutActivity extends NetWorkActivity {
             TransferOutRequest.Product product = new TransferOutRequest.Product();
             product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
             List<TransferOutRequest.Lot> lots = new ArrayList<>();
-            if(transferBatchLine.getProductLotInfo()!=null){
+            if (transferBatchLine.getProductLotInfo() != null) {
                 for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
                     TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
                     lot.setLotID(transferBatchLot.getLotIDID());
                     lot.setQty(String.valueOf(transferBatchLot.getUsedQty()));
                     lots.add(lot);
                 }
-            }else{
+            } else {
                 TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
                 lot.setLotID("");
                 lot.setQty(String.valueOf(transferBatchLine.getActualQty()));
@@ -367,7 +388,7 @@ public class TransferOutActivity extends NetWorkActivity {
         TextView content = (TextView) dialogView.findViewById(R.id.content);
         TextView tv_count = (TextView) dialogView.findViewById(R.id.tv_count);
         TextView tv_submit = (TextView) dialogView.findViewById(R.id.tv_submit);
-        ListView lv_batch = (ListView) dialogView.findViewById(R.id.lv_batch);
+        MaxHeightListView lv_batch = (MaxHeightListView) dialogView.findViewById(R.id.lv_batch);
         FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + transferBatchLine.getProductImage());
         ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
         if (listBean != null) {
