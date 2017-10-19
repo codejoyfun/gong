@@ -202,6 +202,7 @@ public class MineFragment extends NetWorkFragment {
                 } else {
                     orderRed.setVisibility(View.GONE);
                 }
+                GlobalApplication.getInstance().saveUserInfo(userInfo);
                 break;
             case REQUEST_USERINFO_PROCUMENT:
                 userInfo = (UserInfo) result.getResult().getData();
