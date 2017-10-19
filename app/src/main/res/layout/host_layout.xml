@@ -1,8 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/common_title_bar" />
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <include layout="@layout/common_title_bar"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/rb_formal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="正式(erp)"/>
+
+        <RadioButton
+            android:id="@+id/rb_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="测试(develop)"/>
+
+        <RadioButton
+            android:id="@+id/rb_custom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="自定义"/>
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/et_host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:hint="请输入你自定义的host"/>
+
+    <EditText
+        android:id="@+id/et_database"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:hint="请输入你自定义的数据库"/>
+
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:hint="确认"/>
+
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
@@ -11,12 +60,13 @@
         android:background="#FFFFFF">
 
     </ListView>
+
     <TextView
         android:id="@+id/tipTv"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="#FFFFFF"
-        android:textColor="#1F9FFF"
         android:gravity="center"
-        android:text="更改将会重新登录"/>
+        android:text="更改将会重新登录"
+        android:textColor="#1F9FFF"/>
 </LinearLayout>

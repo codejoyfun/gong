@@ -48,7 +48,8 @@ public class MineFragment extends NetWorkFragment {
     private final int REQUEST_SYSTEM = 1;
     private final int REQUEST_SUM = 2;
     private static final int REQUEST_USERINFO = 3;
-    private static final int REQUEST_USERINFO_REFRESH = 4;
+    private static final int REQUEST_USERINFO_PROCUMENT = 4;
+    private static final int REQUEST_USERINFO_TRANSFER = 5;
 
     //电话
     @ViewInject(R.id.minePhone)
@@ -96,6 +97,7 @@ public class MineFragment extends NetWorkFragment {
     private ImageView rightImageView;
     @ViewInject(R.id.titleTextView)
     private TextView titleTextView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,12 +105,11 @@ public class MineFragment extends NetWorkFragment {
         if (isLogin) {
             userInfo = GlobalApplication.getInstance().loadUserInfo();
             setLoginStatus(userInfo);
-        }
-        else {
+        } else {
             setLogoutStatus();
         }
         mTitleLayout.setBackgroundColor(Color.TRANSPARENT);
-        observableScrollView.setImageViews(leftImageView,rightImageView,titleTextView);
+        observableScrollView.setImageViews(leftImageView, rightImageView, titleTextView);
         observableScrollView.initAlphaTitle(mTitleLayout, headView, getResources().getColor(R.color.white), new int[]{226, 229, 232});
         observableScrollView.setSlowlyChange(true);
     }
@@ -125,8 +126,7 @@ public class MineFragment extends NetWorkFragment {
             peisongStr.setText(NumberUtil.formatOneBit(String.valueOf(userInfo.getCateringServiceScore())));
             if ("-1".equals(userInfo.getCateringServiceTrend())) {
                 peisongImg.setImageResource(R.drawable.tag_down);
-            }
-            else {
+            } else {
                 peisongImg.setImageResource(R.drawable.tag_up);
             }
 
@@ -134,8 +134,7 @@ public class MineFragment extends NetWorkFragment {
             zhiliangStr.setText(NumberUtil.formatOneBit(String.valueOf(userInfo.getCateringQualityScore())));
             if ("-1".equals(userInfo.getCateringQualityTrend())) {
                 zhiliangImg.setImageResource(R.drawable.tag_down);
-            }
-            else {
+            } else {
                 zhiliangImg.setImageResource(R.drawable.tag_up);
             }
         }
@@ -145,11 +144,17 @@ public class MineFragment extends NetWorkFragment {
 
     private void requestUserInfo() {
         Object paramBean = null;
-        this.sendConnection("/gongfu/v2/user/information",paramBean ,REQUEST_USERINFO, false, UserInfo.class);
+        this.sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USERINFO, false, UserInfo.class);
     }
-    private void refreshUserInfo() {
+
+    private void refreshProcument() {
         Object paramBean = null;
-        this.sendConnection("/gongfu/v2/user/information",paramBean ,REQUEST_USERINFO_REFRESH, false, UserInfo.class);
+        this.sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USERINFO_PROCUMENT, false, UserInfo.class);
+    }
+
+    private void refreshTransfer() {
+        Object paramBean = null;
+        this.sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USERINFO_TRANSFER, false, UserInfo.class);
     }
 
     private void setLogoutStatus() {
@@ -159,25 +164,25 @@ public class MineFragment extends NetWorkFragment {
         minePhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!SPUtils.isLogin(mContext)) {
+                if (!SPUtils.isLogin(mContext)) {
                     Intent intent = new Intent(mContext, LoginActivity.class);
                     startActivity(intent);
                 }
             }
         });
         ratingbarPeisong.setRating(0);
-        peisongStr.setText(0.0+"");
+        peisongStr.setText(0.0 + "");
         peisongImg.setImageResource(R.drawable.tag_up);
 
         ratingbarZhiliang.setRating(0);
-        zhiliangStr.setText(0.0+"");
+        zhiliangStr.setText(0.0 + "");
         zhiliangImg.setImageResource(R.drawable.tag_down);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(isLogin) {
+        if (isLogin) {
             requestUserInfo();
         }
     }
@@ -186,44 +191,50 @@ public class MineFragment extends NetWorkFragment {
     protected int createViewByLayoutId() {
         return R.layout.fragment_mine;
     }
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_USERINFO:
                 userInfo = (UserInfo) result.getResult().getData();
-                if(userInfo.isHasNewInvoice()) {
+                if (userInfo.isHasNewInvoice()) {
                     orderRed.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     orderRed.setVisibility(View.GONE);
                 }
                 break;
-            case REQUEST_USERINFO_REFRESH:
+            case REQUEST_USERINFO_PROCUMENT:
                 userInfo = (UserInfo) result.getResult().getData();
-                if(Boolean.parseBoolean(userInfo.getIsZicai())){
+                if (Boolean.parseBoolean(userInfo.getIsZicai())) {
                     startActivity(new Intent(mContext, ProcurementActivity.class));
-                }else{
-                    ToastUtil.show(mContext,"没有自采权限");
+                } else {
+                    ToastUtil.show(mContext, "没有自采权限");
                 }
                 break;
-            case  REQUEST_SUM:
-                 sumMoneyData = (SumMoneyData)result.getResult().getData();
-                if(GlobalApplication.getInstance().getCanSeePrice()) {
-                    if(sumMoneyData.getTotal_amount() > 10000) {
-                        double price = sumMoneyData.getTotal_amount()/10000;
-                        moneySum.setText(UserUtils.formatPrice(price+"")+"");
+            case REQUEST_USERINFO_TRANSFER:
+                userInfo = (UserInfo) result.getResult().getData();
+                if (userInfo.isShopTransfer()) {
+                    startActivity(new Intent(mContext, TransferListActivity.class));
+                } else {
+                    ToastUtil.show(mContext, "没有门店调拨权限");
+                }
+                break;
+            case REQUEST_SUM:
+                sumMoneyData = (SumMoneyData) result.getResult().getData();
+                if (GlobalApplication.getInstance().getCanSeePrice()) {
+                    if (sumMoneyData.getTotal_amount() > 10000) {
+                        double price = sumMoneyData.getTotal_amount() / 10000;
+                        moneySum.setText(UserUtils.formatPrice(price + "") + "");
                         moneyNuit.setText("万元");
                         moneyNuit.setVisibility(View.VISIBLE);
-                    }
-                    else {
-                        moneySum.setText(UserUtils.formatPrice(sumMoneyData.getTotal_amount()+"")+"");
+                    } else {
+                        moneySum.setText(UserUtils.formatPrice(sumMoneyData.getTotal_amount() + "") + "");
                         moneyNuit.setVisibility(View.VISIBLE);
                         moneyNuit.setText("元");
                     }
                     showText.setText("上周采购额");
-                }
-                else{
-                    moneySum.setText(sumMoneyData.getTotal_number()+"");
+                } else {
+                    moneySum.setText(sumMoneyData.getTotal_number() + "");
                     moneyNuit.setText("件");
                     moneyNuit.setVisibility(View.VISIBLE);
                     showText.setText("上周采购量");
@@ -236,92 +247,92 @@ public class MineFragment extends NetWorkFragment {
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
-    @OnClick({R.id.settingIcon,R.id.cellIcon,R.id.mineHead,R.id.itemLayout_1,R.id.itemLayout_2, R.id.itemLayout_3,R.id.itemLayout_4,
-            R.id.rl_stocktaking_record,R.id.rl_price_list,R.id.rl_bill,R.id.rl_procurement,R.id.ll_cai_gou_e,R.id.rl_transfer})
+
+    @OnClick({R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_2, R.id.itemLayout_3, R.id.itemLayout_4,
+            R.id.rl_stocktaking_record, R.id.rl_price_list, R.id.rl_bill, R.id.rl_procurement, R.id.ll_cai_gou_e, R.id.rl_transfer})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
             //头像
             case R.id.mineHead:
                 intent = new Intent(mContext, EditUserinfoActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
+                if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             case R.id.cellIcon:
                 String name = "供鲜生";
-                if(isLogin) {
-                    if(userInfo != null) {
+                if (isLogin) {
+                    if (userInfo != null) {
                         number = userInfo.getCompanyHotLine();
                         name = userInfo.getCompany();
                     }
                 }
                 dialog.setModel(CustomDialog.BOTH);
-                dialog.setTitle("致电"+" "+ name +" 客服热线");
+                dialog.setTitle("致电" + " " + name + " 客服热线");
                 dialog.setMessageGravity();
                 dialog.setMessage(number);
-                dialog.setLeftBtnListener("取消",null);
+                dialog.setLeftBtnListener("取消", null);
                 dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
-                        CommonUtils.callNumber(mContext,number);
+                        CommonUtils.callNumber(mContext, number);
                     }
                 });
                 dialog.show();
                 break;
             case R.id.settingIcon:
                 intent = new Intent(mContext, SettingActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
+                if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             case R.id.itemLayout_1:
                 intent = new Intent(mContext, OrderActivity.class);
-                intent.putExtra("position",1);
-                if (UserUtils.checkLogin(intent,mContext)) {
+                intent.putExtra("position", 1);
+                if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             case R.id.itemLayout_2:
                 intent = new Intent(mContext, OrderActivity.class);
-                intent.putExtra("position",2);
-                if (UserUtils.checkLogin(intent,mContext)) {
+                intent.putExtra("position", 2);
+                if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             //退货记录
             case R.id.itemLayout_3:
                 intent = new Intent(mContext, ReturnActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
+                if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             case R.id.itemLayout_4:
                 intent = new Intent(mContext, OrderActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
+                if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             //盘点记录
             case R.id.rl_stocktaking_record:
                 intent = new Intent(mContext, CheckActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
+                if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             //价目表
             case R.id.rl_price_list:
                 intent = new Intent(mContext, PriceActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
-                    if(GlobalApplication.getInstance().getCanSeePrice()) {
+                if (UserUtils.checkLogin(intent, mContext)) {
+                    if (GlobalApplication.getInstance().getCanSeePrice()) {
                         startActivity(intent);
-                    }
-                    else{
+                    } else {
                         dialog.setTitle("提示");
                         dialog.setModel(CustomDialog.RIGHT);
                         dialog.setMessageGravity();
                         dialog.setMessage("您没有查看的权限");
-                        dialog.setRightBtnListener("知道啦",null);
+                        dialog.setRightBtnListener("知道啦", null);
                         dialog.show();
                     }
                 }
@@ -329,34 +340,32 @@ public class MineFragment extends NetWorkFragment {
             //对账单
             case R.id.rl_bill:
                 intent = new Intent(mContext, AccountsListActivity.class);
-                if (UserUtils.checkLogin(intent,mContext)) {
-                    if(GlobalApplication.getInstance().getCanSeePrice()) {
+                if (UserUtils.checkLogin(intent, mContext)) {
+                    if (GlobalApplication.getInstance().getCanSeePrice()) {
                         startActivity(intent);
-                    }
-                    else{
+                    } else {
                         dialog.setTitle("提示");
                         dialog.setModel(CustomDialog.RIGHT);
                         dialog.setMessageGravity();
                         dialog.setMessage("您没有查看的权限");
-                        dialog.setRightBtnListener("知道啦",null);
+                        dialog.setRightBtnListener("知道啦", null);
                         dialog.show();
                     }
                 }
                 break;
             case R.id.rl_procurement:
-                refreshUserInfo();
+                refreshProcument();
                 break;
             case R.id.ll_cai_gou_e:
                 if (SPUtils.isLogin(getActivity())) {
-                    intent = new Intent(mContext,ProcurementLimitActivity.class);
-                    intent.putExtra(KEY_SUM_MONEY_DATA,sumMoneyData);
+                    intent = new Intent(mContext, ProcurementLimitActivity.class);
+                    intent.putExtra(KEY_SUM_MONEY_DATA, sumMoneyData);
                     startActivity(intent);
                 }
                 break;
             case R.id.rl_transfer://门店调度
                 if (SPUtils.isLogin(getActivity())) {
-                    intent = new Intent(mContext,TransferListActivity.class);
-                    startActivity(intent);
+                  refreshTransfer();
                 }
         }
 

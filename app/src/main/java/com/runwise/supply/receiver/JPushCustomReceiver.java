@@ -24,6 +24,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TAG = "JPushCustomReceiver";
     public static final String TYPE_LOGOUT = "logout";
     public static final String TYPE_LOGIN_CONFICT = "login_confict";
+    public static final String TYPE_ORDER = "order";
 
     private static final int REQUEST_LOGINOUT = 1 << 0;
     @Override
@@ -39,11 +40,13 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                         //发送被迫下线通知
                         EventBus.getDefault().post(new ReceiverLogoutEvent());
                     }
-
                     if (type.equals(TYPE_LOGIN_CONFICT)){
                         resetLoginStatus(context);
                     }
+                    if (type.equals(TYPE_ORDER)){
+                        //刷新订单列表
 
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

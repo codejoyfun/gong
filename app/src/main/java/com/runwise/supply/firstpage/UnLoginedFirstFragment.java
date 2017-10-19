@@ -178,6 +178,17 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
             pullListView.setRefreshing(true);
         }
     }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Fragment fragment = getFragmentManager().findFragmentByTag(LOGIN_FRAGMENT);
+        if (fragment != null){
+            LoginedFirstFragment loginedFirstFragment = (LoginedFirstFragment)fragment;
+            loginedFirstFragment.setUserVisibleHint(isVisibleToUser);
+        }
+
+    }
+
 
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {

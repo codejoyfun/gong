@@ -227,7 +227,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     @Override
     public void onResume() {
         super.onResume();
-        if (this.isVisible()) {
+        if (getUserVisibleHint()) {
+            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
+        } else {
+            PollingUtil.getInstance().stopRequestOrder();
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
             PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
         } else {
             PollingUtil.getInstance().stopRequestOrder();

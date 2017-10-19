@@ -494,6 +494,9 @@ public class TransferOutActivity extends NetWorkActivity {
                 viewHolder.mLlBatch.setVisibility(View.VISIBLE);
                 viewHolder.mVLine1.setVisibility(View.VISIBLE);
                 for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
+                    if (transferBatchLot.getUsedQty() == 0){
+                        continue;
+                    }
                     View view = LayoutInflater.from(getActivityContext()).inflate(R.layout.item_batch, null);
                     TextView tvName = (TextView) view.findViewById(R.id.tv_batch_name);
                     tvName.setText(transferBatchLot.getLotID());

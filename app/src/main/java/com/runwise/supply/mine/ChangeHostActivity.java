@@ -2,11 +2,16 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -15,6 +20,7 @@ import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.LoginActivity;
@@ -40,11 +46,26 @@ public class ChangeHostActivity extends NetWorkActivity {
     private ListView listview;
     @ViewInject(R.id.tipTv)
     private TextView tipTv;
+    @ViewInject(R.id.rb_formal)
+    private RadioButton mRbFormal;
+    @ViewInject(R.id.rb_test)
+    private RadioButton mRbTest;
+    @ViewInject(R.id.rb_custom)
+    private RadioButton RbCustom;
+    @ViewInject(R.id.radioGroupID)
+    private RadioGroup mRadioGroupID;
+    @ViewInject(R.id.et_host)
+    private EditText mEtHost;
+    @ViewInject(R.id.et_database)
+    private EditText mEtDatabase;
+    @ViewInject(R.id.btn_confirm)
+    private Button mBtnConfirm;
     private ArrayAdapter<String> adapter;
-    private String[]  datas = {"海大数据库","老班长数据库","GoldenClient2017Test数据库",DEFAULT_DATABASE_NAME,"TestFor...Company数据库"};
-    private String[] values = {"DemoforHD20170516","LBZ20170607","GoldenClient2017Test",DEFAULT_DATABASE_NAME,"Testfor...Company"};
+    private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", "LBZTest1012", "TestFor...Company数据库", "不设置数据库"};
+    private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", "LBZTest1012", "Testfor...Company", ""};
     private int which;
     private boolean isLogin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,16 +73,54 @@ public class ChangeHostActivity extends NetWorkActivity {
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.host_layout);
         isLogin = SPUtils.isLogin(mContext);
-        setTitleText(true,"更改HOST");
-        setTitleLeftIcon(true,R.drawable.nav_back);
-        adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,android.R.id.text1,datas);
+        setTitleText(true, "更改HOST");
+        setTitleLeftIcon(true, R.drawable.nav_back);
+        mRadioGroupID.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId) {
+                    case R.id.rb_formal:
+                        mEtHost.setVisibility(View.GONE);
+                        mEtDatabase.setVisibility(View.GONE);
+                        mBtnConfirm.setVisibility(View.GONE);
+                        Constant.BASE_URL = Constant.RELEASE_URL;
+                        listview.setVisibility(View.VISIBLE);
+                        break;
+                    case R.id.rb_test:
+                        mEtHost.setVisibility(View.GONE);
+                        mEtDatabase.setVisibility(View.GONE);
+                        mBtnConfirm.setVisibility(View.GONE);
+                        Constant.BASE_URL = Constant.DEBUG_URL;
+                        listview.setVisibility(View.VISIBLE);
+                        break;
+                    case R.id.rb_custom:
+                        mEtHost.setVisibility(View.VISIBLE);
+                        mEtDatabase.setVisibility(View.VISIBLE);
+                        mBtnConfirm.setVisibility(View.VISIBLE);
+                        listview.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+        mBtnConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (TextUtils.isEmpty(mEtHost.getText().toString())) {
+                    toast("填写的host不能为空");
+                    return;
+                }
+                Constant.RELEASE_URL = mEtHost.getText().toString();
+            }
+        });
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, datas);
         listview.setAdapter(adapter);
-        ToastUtil.show(mContext,"请选择你要切换的数据库");
-        String dbStr = (String)SPUtils.get(mContext,"X-Odoo-Db",DEFAULT_DATABASE_NAME);
-        for (int i = 0; i < datas.length; i++){
+        ToastUtil.show(mContext, "请选择你要切换的数据库");
+        String dbStr = (String) SPUtils.get(mContext, "X-Odoo-Db", DEFAULT_DATABASE_NAME);
+        for (int i = 0; i < datas.length; i++) {
             String value = values[i];
-            if (value.equals(dbStr)){
-                tipTv.setText("当前所在数据库："+datas[i]+"\n切换数据库将会重新登录");
+            if (value.equals(dbStr)) {
+                tipTv.setText("当前所在数据库：" + datas[i] + "\n切换数据库将会重新登录");
                 break;
             }
         }
@@ -69,7 +128,7 @@ public class ChangeHostActivity extends NetWorkActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int realPositon = (int) id;
-                switch (realPositon){
+                switch (realPositon) {
                     case 0:
                         dialog.setMessage("即将切换到海大数据库");
                         dialog.setMessageGravity();
@@ -77,9 +136,9 @@ public class ChangeHostActivity extends NetWorkActivity {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
                                 //删库，进入重新登录界面
-                                if (isLogin){
+                                if (isLogin) {
                                     loginOut(LOGINOUT_HD);
-                                }else{
+                                } else {
                                     switchDBByIndex(0);
 
                                 }
@@ -95,9 +154,9 @@ public class ChangeHostActivity extends NetWorkActivity {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
                                 //删库，进入重新登录界面
-                                if (isLogin){
+                                if (isLogin) {
                                     loginOut(LOGINOUT_LBZ);
-                                }else{
+                                } else {
                                     switchDBByIndex(1);
                                 }
 
@@ -111,9 +170,9 @@ public class ChangeHostActivity extends NetWorkActivity {
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
-                                if (isLogin){
+                                if (isLogin) {
                                     loginOut(LOGINOUT_Golden);
-                                }else{
+                                } else {
                                     switchDBByIndex(2);
                                 }
                             }
@@ -122,14 +181,14 @@ public class ChangeHostActivity extends NetWorkActivity {
 
                         break;
                     case 3:
-                        dialog.setMessage("即将切换到"+DEFAULT_DATABASE_NAME +"数据库");
+                        dialog.setMessage("即将切换到" + DEFAULT_DATABASE_NAME + "数据库");
                         dialog.setMessageGravity();
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
-                                if (isLogin){
+                                if (isLogin) {
                                     loginOut(LOGINOUT_Golden2);
-                                }else{
+                                } else {
                                     switchDBByIndex(3);
                                 }
 
@@ -143,10 +202,27 @@ public class ChangeHostActivity extends NetWorkActivity {
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
-                                if (isLogin){
+                                if (isLogin) {
                                     loginOut(LOGINOUT_Test);
-                                }else{
+                                } else {
                                     switchDBByIndex(4);
+                                }
+
+                            }
+                        });
+                        dialog.show();
+
+                        break;
+                    case 5:
+                        dialog.setMessage("不设置数据库");
+                        dialog.setMessageGravity();
+                        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                if (isLogin) {
+                                    loginOut(LOGINOUT_Test);
+                                } else {
+                                    switchDBByIndex(5);
                                 }
 
                             }
@@ -161,18 +237,18 @@ public class ChangeHostActivity extends NetWorkActivity {
 
     private void switchDBByIndex(int i) {
         ProductBasicUtils.clearCache(mContext);
-        SPUtils.put(mContext,"X-Odoo-Db",values[i]);
+        SPUtils.put(mContext, "X-Odoo-Db", values[i]);
         gotoLogin();
     }
 
     private void loginOut(int type) {
         Object param = null;
-        sendConnection("/gongfu/logout",param,type,true,null);
+        sendConnection("/gongfu/logout", param, type, true, null);
     }
 
     @OnClick(R.id.title_iv_left)
-    public void btnClick(View view){
-        switch(view.getId()){
+    public void btnClick(View view) {
+        switch (view.getId()) {
             case R.id.title_iv_left:
                 finish();
                 break;
@@ -184,7 +260,7 @@ public class ChangeHostActivity extends NetWorkActivity {
         SPUtils.loginOut(mContext);
         //退出登录
         EventBus.getDefault().post(new UserLogoutEvent());
-        switch (where){
+        switch (where) {
             case LOGINOUT_HD:
                 switchDBByIndex(0);
                 break;
@@ -202,11 +278,11 @@ public class ChangeHostActivity extends NetWorkActivity {
                 break;
 
         }
-        
+
     }
 
     private void gotoLogin() {
-        Intent intent  = new Intent(mContext, LoginActivity.class);
+        Intent intent = new Intent(mContext, LoginActivity.class);
         startActivity(intent);
         finish();
     }

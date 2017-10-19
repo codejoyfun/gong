@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,17 +51,18 @@ public class MainActivity extends NetWorkActivity {
     private static final int QUERY_ALL = 1;
     private final int REQUEST_UNREAD = 2;
 
-//    private int devicesConnected = -1;
+    //    private int devicesConnected = -1;
     private long mExitTime;
     @ViewInject(android.R.id.tabhost)
     private FragmentTabHost mTabHost;
     //未读小红点
     private TextView mMsgHite;
-//    private UserInfo userInfo;
+    //    private UserInfo userInfo;
     private boolean isLogin;
     public static final String INTENT_KEY_SKIP_TO_LOGIN = "intent_key_skip_to_login";
+
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
-    private class CachRunnale implements  Runnable{
+    private class CachRunnale implements Runnable {
         private List<ProductBasicList.ListBean> basicList;
 
         public CachRunnale(List basicList) {
@@ -71,10 +73,10 @@ public class MainActivity extends NetWorkActivity {
         public void run() {
             DbUtils dbUtils = DbUtils.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
-            HashMap<String,ProductBasicList.ListBean> map = new HashMap<>();
+            HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
             dbUtils.configAllowTransaction(true);
-            for (ProductBasicList.ListBean bean : basicList){
-                map.put(String.valueOf(bean.getProductID()),bean);
+            for (ProductBasicList.ListBean bean : basicList) {
+                map.put(String.valueOf(bean.getProductID()), bean);
                 //同时存到dB里面
                 try {
                     dbUtils.saveOrUpdate(bean);
@@ -86,7 +88,8 @@ public class MainActivity extends NetWorkActivity {
 
         }
     }
-//    private CaptureClient.Listener mListener= new CaptureClient.Listener()
+
+    //    private CaptureClient.Listener mListener= new CaptureClient.Listener()
 //    {
 //
 //
@@ -105,6 +108,7 @@ public class MainActivity extends NetWorkActivity {
 //            print(decodedData.getString());
 //        }
 //    };
+    String[] mTags;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +118,7 @@ public class MainActivity extends NetWorkActivity {
         requestPermissions();
         initTabView();
         String registrationID = JPushInterface.getRegistrationID(this);
-        Log.i("JPushInterface","dfd "+registrationID);
+        Log.i("JPushInterface", "dfd " + registrationID);
         //检查版本
         CheckVersionManager checkVersionManager = new CheckVersionManager(this);
         checkVersionManager.checkVersion(true);
@@ -124,14 +128,20 @@ public class MainActivity extends NetWorkActivity {
 //        mClient.connect();
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
         isLogin = SPUtils.isLogin(mContext);
-        if (isLogin){
+        if (isLogin) {
             queryProductList();
         }
-        if(getIntent().getBooleanExtra(INTENT_KEY_SKIP_TO_LOGIN,false)){
-            startActivity(new Intent(getActivityContext(),LoginActivity.class));
-        }else{
+        if (getIntent().getBooleanExtra(INTENT_KEY_SKIP_TO_LOGIN, false)) {
+            startActivity(new Intent(getActivityContext(), LoginActivity.class));
+        } else {
 
         }
+        String tab1 = getString(R.string.tab_1);
+        String tab2 = getString(R.string.tab_2);
+        String tab3 = getString(R.string.tab_3);
+        String tab4 = getString(R.string.tab_4);
+        String tab5 = getString(R.string.tab_5);
+        mTags = new String[]{tab1,tab2,tab3,tab4,tab5};
     }
 
     @TargetApi(23)
@@ -153,16 +163,17 @@ public class MainActivity extends NetWorkActivity {
             }
         });
     }
+
     private void initTabView() {
         //TODO:这里根据登录状态，设置不同的页面进去
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 //        if (!isLogined()){
-            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
+        mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
 //            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
-            mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);
+        mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
+        mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
+        mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
+        mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);
 //        }
 //        else{
 //            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), IndexFragment.class, null);
@@ -170,8 +181,23 @@ public class MainActivity extends NetWorkActivity {
 //            mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_3), MineFragment.class, null);
 //        }
         mTabHost.getTabWidget().setDividerDrawable(null);
-
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                for (int i = 0;i<mTags.length;i++){
+                    Fragment fragment = getSupportFragmentManager().findFragmentByTag(mTags[i]);
+                    if (fragment!=null){
+                        fragment.setUserVisibleHint(false);
+                    }
+                }
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tabId);
+                if (fragment!=null){
+                    fragment.setUserVisibleHint(true);
+                }
+            }
+        });
     }
+
     private boolean isLogined() {
         return false;
     }
@@ -183,7 +209,7 @@ public class MainActivity extends NetWorkActivity {
             View subTabView = LayoutInflater.from(this).inflate(R.layout.main_tab_item, null);
             ImageView tabIv = (ImageView) subTabView.findViewById(R.id.tab_iv_icon);
             TextView tabTv = (TextView) subTabView.findViewById(R.id.tab_tv_name);
-            if( R.string.tab_4 == tabNameRes) {
+            if (R.string.tab_4 == tabNameRes) {
                 mMsgHite = (TextView) subTabView.findViewById(R.id.tv_hint);
             }
             tabIv.setImageResource(bgRes);
@@ -196,18 +222,17 @@ public class MainActivity extends NetWorkActivity {
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch(where){
+        switch (where) {
             case QUERY_ALL:
-                BaseEntity.ResultBean resultBean= result.getResult();
+                BaseEntity.ResultBean resultBean = result.getResult();
                 ProductBasicList basicList = (ProductBasicList) resultBean.getData();
                 new Thread(new CachRunnale(basicList.getList())).start();
                 break;
             case REQUEST_UNREAD:
-                UnReadData unReadData = (UnReadData)result.getResult().getData();
-                if(unReadData.getUnread()) {
+                UnReadData unReadData = (UnReadData) result.getResult().getData();
+                if (unReadData.getUnread()) {
                     mMsgHite.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     mMsgHite.setVisibility(View.GONE);
                 }
                 break;
@@ -226,11 +251,11 @@ public class MainActivity extends NetWorkActivity {
         if ((System.currentTimeMillis() - mExitTime) > 2000) {
             ToastUtil.show(this, "再按一次退出程序");
             mExitTime = System.currentTimeMillis();
-        }
-        else {
+        } else {
             finish();
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -243,10 +268,12 @@ public class MainActivity extends NetWorkActivity {
             sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
         }
     }
+
     @Override
     protected void onStop() {
         super.onStop();
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -326,21 +353,24 @@ public class MainActivity extends NetWorkActivity {
 //    }
 
     private void print(String message) {
-        ToastUtil.show(mContext,message);
+        ToastUtil.show(mContext, message);
 //        ((TextView) findViewById(R.id.hello_scan)).append("\n" + message);
     }
+
     private void queryProductList() {
         Object request = null;
-        sendConnection("/gongfu/v2/product/list/",request, QUERY_ALL,false, ProductBasicList.class);
+        sendConnection("/gongfu/v2/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
     }
-    public int getCurrentTabIndex(){
-        if( mTabHost == null) {
+
+    public int getCurrentTabIndex() {
+        if (mTabHost == null) {
             return 0;
         }
         return mTabHost.getCurrentTab();
     }
+
     //跳转到哪个tab页下面
-    public void gotoTabByIndex(int index){
+    public void gotoTabByIndex(int index) {
         mTabHost.setCurrentTab(index);
     }
 }

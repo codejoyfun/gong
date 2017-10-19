@@ -59,6 +59,16 @@ public class UserInfo implements Serializable{
     private String companyHotLine;
     private String isAgreeItem;
     private boolean hasNewInvoice;
+
+    public boolean isShopTransfer() {
+        return isShopTransfer;
+    }
+
+    public void setShopTransfer(boolean shopTransfer) {
+        isShopTransfer = shopTransfer;
+    }
+
+    private boolean isShopTransfer;
     private String company;
     private int reserveGoodsAdvanceDate;
 
