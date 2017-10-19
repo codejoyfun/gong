@@ -14,7 +14,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,6 +32,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -84,6 +84,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     public static final int CATEGORY = 3333;
     public static final int RETURN_DETAIL = 4;
     public static final int PRODUCT_DETAIL = 5;
+    public static final int REQUEST_USERINFO_TRANSFER = 6;
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -223,11 +224,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                     startActivity(mIntent);
                     finish();
                 } else {
-                    if (!bDialog.isVisible()) {
-                        bDialog.show();
-                    } else {
-                        bDialog.dismiss();
-                    }
+                    requestCustomerService();
                 }
                 break;
             case R.id.rightBtn:
@@ -381,6 +378,10 @@ public class OrderDetailActivity extends NetWorkActivity {
                 break;
         }
     }
+    private void requestCustomerService() {
+        Object paramBean = null;
+        this.sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USERINFO_TRANSFER, false, UserInfo.class);
+    }
 
     boolean canShow = false;
 
@@ -452,6 +453,18 @@ public class OrderDetailActivity extends NetWorkActivity {
                     ProductBasicUtils.saveProductInfoAsync(this,cacheProductInfo);
                     //刷新页面
                     setUpDataForViewPage();
+                }
+                break;
+            case REQUEST_USERINFO_TRANSFER:
+                UserInfo userInfo = (UserInfo) result.getResult().getData();
+                if (!userInfo.isNoAfterSaleApply()) {
+                    if (!bDialog.isVisible()) {
+                        bDialog.show();
+                    } else {
+                        bDialog.dismiss();
+                    }
+                } else {
+                    ToastUtil.show(mContext, "无法申请售后");
                 }
                 break;
         }
@@ -619,6 +632,13 @@ public class OrderDetailActivity extends NetWorkActivity {
             tipTv.setText(tip);
             rightBtn.setText(OrderActionUtils.getDoBtnTextByState(bean));
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
+
+            if (bean.getOrderSettleName().contains("先付款后收货")){
+
+            }else{
+
+            }
+
             //支付凭证在收货流程后，才显示
             if ((bean.getState().equals("rated") || bean.getState().equals("done"))
                     && bean.getOrderSettleName().contains("单次结算")) {
@@ -635,7 +655,8 @@ public class OrderDetailActivity extends NetWorkActivity {
                     isHasAttachment = true;
                 }
                 isModifyOrder = false;
-            } else if (bean.getState().equals(OrderState.DRAFT.getName())) {
+            }
+            if (bean.getState().equals(OrderState.DRAFT.getName())) {
                 setTitleRightText(true, "修改");
                 isModifyOrder = true;
             }

@@ -59,6 +59,7 @@ public class UserInfo implements Serializable{
     private String companyHotLine;
     private String isAgreeItem;
     private boolean hasNewInvoice;
+    private boolean noAfterSaleApply;
 
     public boolean isShopTransfer() {
         return isShopTransfer;
@@ -71,6 +72,14 @@ public class UserInfo implements Serializable{
     private boolean isShopTransfer;
     private String company;
     private int reserveGoodsAdvanceDate;
+
+    public boolean isNoAfterSaleApply() {
+        return noAfterSaleApply;
+    }
+
+    public void setNoAfterSaleApply(boolean noAfterSaleApply) {
+        this.noAfterSaleApply = noAfterSaleApply;
+    }
 
     public int getReserveGoodsAdvanceDate() {
         return reserveGoodsAdvanceDate;
