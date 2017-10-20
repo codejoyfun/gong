@@ -75,6 +75,7 @@ public class OrderResponse {
         private String receiveUserName;
         private String tallyingUserName;
         private boolean isDoubleReceive;
+        private boolean unApplyService;
         private StoreBean store;
         //退货记录里加的字段，貌似收货人
         private String  driver;
@@ -133,6 +134,7 @@ public class OrderResponse {
             receiveUserName = in.readString();
             tallyingUserName = in.readString();
             isDoubleReceive = in.readByte() != 0;
+            unApplyService = in.readByte() != 0;
             settleAmountTotal = in.readDouble();
             waybill = in.readParcelable(WaybillBean.class.getClassLoader());
             hasAttachment = in.readInt();
@@ -430,6 +432,14 @@ public class OrderResponse {
             this.returnOrders = returnOrders;
         }
 
+
+        public boolean isUnApplyService() {
+            return unApplyService;
+        }
+
+        public void setUnApplyService(boolean unApplyService) {
+            this.unApplyService = unApplyService;
+        }
         @Override
         public int describeContents() {
             return 0;
@@ -451,6 +461,7 @@ public class OrderResponse {
             dest.writeString(receiveUserName);
             dest.writeString(tallyingUserName);
             dest.writeByte((byte) (isDoubleReceive ? 1 : 0));
+            dest.writeByte((byte) (unApplyService ? 1 : 0));
             dest.writeDouble(settleAmountTotal);
             dest.writeParcelable(waybill,flags);
             dest.writeInt(hasAttachment);

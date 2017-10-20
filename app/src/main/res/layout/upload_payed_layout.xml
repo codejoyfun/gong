@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:background="#FFFFFF"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:orientation="vertical">
+
     <include
         android:id="@+id/ic_title"
-        layout="@layout/common_title_bar" />
+        layout="@layout/common_title_bar"/>
+
     <TextView
         android:id="@+id/tv_return"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/ic_title"
         android:paddingLeft="15dp"
         android:paddingTop="10dp"
-        android:textSize="14sp"
+        android:text="上传支付凭证"
         android:textColor="#2E2E2E"
-        android:layout_below="@id/ic_title"
-        android:text="上传支付凭证"/>
+        android:textSize="14sp"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
+        android:layout_height="wrap_content"
         android:layout_above="@id/uploadBtn"
-        android:layout_marginTop="12dp"
         android:layout_below="@id/tv_return"
-        android:layout_height="wrap_content">
+        android:layout_marginTop="12dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
     </android.support.v7.widget.RecyclerView>
 
     <Button
@@ -33,9 +36,17 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:text="上传"
         android:background="#9ACC35"
+        android:text="上传"
         android:textColor="#FFFFFF"
+        />
+
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ic_title"
+        android:visibility="gone"
         />
 
 </RelativeLayout>

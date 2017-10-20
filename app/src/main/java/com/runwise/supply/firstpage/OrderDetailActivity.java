@@ -224,7 +224,15 @@ public class OrderDetailActivity extends NetWorkActivity {
                     startActivity(mIntent);
                     finish();
                 } else {
-                    requestCustomerService();
+                    if (bean.isUnApplyService()){
+                        ToastUtil.show(mContext, "无法申请售后");
+                    }else{
+                        if (!bDialog.isVisible()) {
+                            bDialog.show();
+                        } else {
+                            bDialog.dismiss();
+                        }
+                    }
                 }
                 break;
             case R.id.rightBtn:
@@ -337,6 +345,10 @@ public class OrderDetailActivity extends NetWorkActivity {
                     intent3.putExtra("orderid", bean.getOrderID());
                     intent3.putExtra("ordername", bean.getName());
                     intent3.putExtra("hasattachment", isHasAttachment);
+                    if (bean.getState().equals(OrderState.SALE.getName())&&bean.getOrderSettleName().contains("单次结算")
+                            &&bean.getOrderSettleName().contains("先付款后收货")){
+                        intent3.putExtra(UploadPayedPicActivity.INTENT_KEY_CANN_NO_EDIT, true);
+                    }
                     startActivityForResult(intent3, UPLOAD);
                 }
                 break;
@@ -453,18 +465,6 @@ public class OrderDetailActivity extends NetWorkActivity {
                     ProductBasicUtils.saveProductInfoAsync(this,cacheProductInfo);
                     //刷新页面
                     setUpDataForViewPage();
-                }
-                break;
-            case REQUEST_USERINFO_TRANSFER:
-                UserInfo userInfo = (UserInfo) result.getResult().getData();
-                if (!userInfo.isNoAfterSaleApply()) {
-                    if (!bDialog.isVisible()) {
-                        bDialog.show();
-                    } else {
-                        bDialog.dismiss();
-                    }
-                } else {
-                    ToastUtil.show(mContext, "无法申请售后");
                 }
                 break;
         }
@@ -633,28 +633,14 @@ public class OrderDetailActivity extends NetWorkActivity {
             rightBtn.setText(OrderActionUtils.getDoBtnTextByState(bean));
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
 
-            if (bean.getOrderSettleName().contains("先付款后收货")){
-
-            }else{
-
+            if (bean.getState().equals(OrderState.DRAFT.getName())&&bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
+                setUpPaymenInstrument();
             }
 
             //支付凭证在收货流程后，才显示
             if ((bean.getState().equals("rated") || bean.getState().equals("done"))
                     && bean.getOrderSettleName().contains("单次结算")) {
-                payStateTv.setVisibility(View.VISIBLE);
-                payStateValue.setVisibility(View.VISIBLE);
-                uploadBtn.setVisibility(View.VISIBLE);
-                if (bean.getHasAttachment() == 0) {
-                    payStateValue.setText("未有支付凭证");
-                    uploadBtn.setText("上传凭证");
-                    isHasAttachment = false;
-                } else {
-                    payStateValue.setText("已上传支付凭证");
-                    uploadBtn.setText("查看凭证");
-                    isHasAttachment = true;
-                }
-                isModifyOrder = false;
+                setUpPaymenInstrument();
             }
             if (bean.getState().equals(OrderState.DRAFT.getName())) {
                 setTitleRightText(true, "修改");
@@ -690,6 +676,22 @@ public class OrderDetailActivity extends NetWorkActivity {
             setUpDataForViewPage();
 
         }
+    }
+
+    private void setUpPaymenInstrument(){
+        payStateTv.setVisibility(View.VISIBLE);
+        payStateValue.setVisibility(View.VISIBLE);
+        uploadBtn.setVisibility(View.VISIBLE);
+        if (bean.getHasAttachment() == 0) {
+            payStateValue.setText("未有支付凭证");
+            uploadBtn.setText("上传凭证");
+            isHasAttachment = false;
+        } else {
+            payStateValue.setText("已上传支付凭证");
+            uploadBtn.setText("查看凭证");
+            isHasAttachment = true;
+        }
+        isModifyOrder = false;
     }
 
     /**

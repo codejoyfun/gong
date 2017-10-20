@@ -39,10 +39,13 @@ import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VE
 public class OrderAdapter extends IBaseAdapter {
     protected static final int TYPE_ORDER = 0;        //正常订单
     protected static final int TYPE_RETURN = 1;       //退货单
-    public interface DoActionInterface{
-        void doAction(OrderDoAction action,int postion);
+
+    public interface DoActionInterface {
+        void doAction(OrderDoAction action, int postion);
+
         void call(String phone);
     }
+
     private DoActionInterface callback;
     private Context context;
     private int returnCount;            //退货单数量
@@ -61,8 +64,9 @@ public class OrderAdapter extends IBaseAdapter {
     }
 
     //记录当前扩展打开的状态
-    private HashMap<Integer,Boolean> expandMap = new HashMap<>();
-    public OrderAdapter(Context context,DoActionInterface callback) {
+    private HashMap<Integer, Boolean> expandMap = new HashMap<>();
+
+    public OrderAdapter(Context context, DoActionInterface callback) {
         this.context = context;
         this.callback = callback;
     }
@@ -70,40 +74,40 @@ public class OrderAdapter extends IBaseAdapter {
     @Override
     protected View getExView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
-        if (convertView == null){
+        if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
-            ViewUtils.inject(viewHolder,convertView);
+            ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
-            if (!GlobalApplication.getInstance().getCanSeePrice()){
+            if (!GlobalApplication.getInstance().getCanSeePrice()) {
                 viewHolder.priceLL.setVisibility(View.GONE);
             }
-        }else{
-            viewHolder = (ViewHolder)convertView.getTag();
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
         final LinearLayout tlLL = viewHolder.timelineLL;
         final ImageButton downArrow = viewHolder.arrowBtn;
-        final RecyclerView recyclerView =  viewHolder.recyclerView;
-        if (getItemViewType(position) == TYPE_ORDER){
+        final RecyclerView recyclerView = viewHolder.recyclerView;
+        if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Boolean isExpand;
                     //更改boolean状态
-                    if (expandMap.get(Integer.valueOf(bean.getOrderID()))!=null){
+                    if (expandMap.get(Integer.valueOf(bean.getOrderID())) != null) {
                         isExpand = expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue();
                         isExpand = !isExpand;
-                    }else{
+                    } else {
                         isExpand = true;
                     }
-                    expandMap.put(Integer.valueOf(bean.getOrderID()),isExpand);
-                    if (isExpand){
+                    expandMap.put(Integer.valueOf(bean.getOrderID()), isExpand);
+                    if (isExpand) {
                         //只有点击时，才去放timeline的内容
-                        setTimeLineContent(bean.getStateTracker(),recyclerView);
+                        setTimeLineContent(bean.getStateTracker(), recyclerView);
                         tlLL.setVisibility(View.VISIBLE);
                         downArrow.setImageResource(R.drawable.login_btn_dropup);
-                    }else{
+                    } else {
                         tlLL.setVisibility(View.GONE);
                         downArrow.setImageResource(R.drawable.login_btn_dropdown);
                     }
@@ -114,102 +118,104 @@ public class OrderAdapter extends IBaseAdapter {
                 @Override
                 public void onClick(View v) {
                     //根据状态进行不同的逻辑处理
-                    String doAction = ((TextView)v).getText().toString();
-                    OrderDoAction action = OrderActionUtils.getDoActionByText(doAction,bean);
-                    if (callback != null){
-                        callback.doAction(action,position);
+                    String doAction = ((TextView) v).getText().toString();
+                    OrderDoAction action = OrderActionUtils.getDoActionByText(doAction, bean);
+                    if (callback != null) {
+                        callback.doAction(action, position);
                     }
 
                 }
             });
-            if (expandMap.get(Integer.valueOf(bean.getOrderID())) != null && expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue()){
+            if (expandMap.get(Integer.valueOf(bean.getOrderID())) != null && expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue()) {
                 viewHolder.timelineLL.setVisibility(View.VISIBLE);
                 //重刷一次，免得重复
                 downArrow.setImageResource(R.drawable.login_btn_dropup);
-                setTimeLineContent(bean.getStateTracker(),recyclerView);
-            }else{
+                setTimeLineContent(bean.getStateTracker(), recyclerView);
+            } else {
                 viewHolder.timelineLL.setVisibility(View.GONE);
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
             }
             viewHolder.titleTv.setText(bean.getName());
             //派单前，派单后，用户收货后
             StringBuffer etSb = new StringBuffer();
-            if (bean.getState().equals(OrderState.DRAFT.getName()) || bean.getState().equals(OrderState.SALE.getName())){
+            if (bean.getState().equals(OrderState.DRAFT.getName()) || bean.getState().equals(OrderState.SALE.getName())) {
                 etSb.append("预计").append(bean.getEstimatedDate()).append("送达");
-            }else if(bean.getState().equals(OrderState.PEISONG.getName())){
+            } else if (bean.getState().equals(OrderState.PEISONG.getName())) {
                 etSb.append("预计").append(bean.getEstimatedTime()).append("送达");
-            }else{
+            } else {
                 etSb.append(bean.getDoneDatetime()).append("已送达");
             }
             viewHolder.timeTv.setText(etSb.toString());
             viewHolder.stateTv.setText(OrderState.getValueByName(bean.getState()));
             viewHolder.stateTv.setTextColor(Color.parseColor("#333333"));
-            if (bean.getWaybill() != null && bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null){
+            if (bean.getWaybill() != null && bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null) {
                 viewHolder.carNumTv.setText(bean.getWaybill().getDeliverVehicle().getLicensePlate());
                 viewHolder.driverLL.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 viewHolder.carNumTv.setText("未指派");
                 viewHolder.driverLL.setVisibility(View.GONE);
             }
-            if (bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null){
+            if (bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null) {
                 viewHolder.senderTv.setText(bean.getWaybill().getDeliverUser().getName());
                 viewHolder.senderTv.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 viewHolder.senderTv.setText("未指派");
                 viewHolder.senderTv.setVisibility(View.GONE);
             }
             viewHolder.callIb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (bean != null && bean.getWaybill() !=  null && bean.getWaybill().getDeliverUser()!= null
-                            && bean.getWaybill().getDeliverUser().getMobile() != null){
+                    if (bean != null && bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null
+                            && bean.getWaybill().getDeliverUser().getMobile() != null) {
                         callback.call(bean.getWaybill().getDeliverUser().getMobile());
-                    }else{
+                    } else {
                         callback.call(null);
                     }
 
                 }
             });
             StringBuffer sb = new StringBuffer("共");
-            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
-                sb.append((int)bean.getDeliveredQty()).append("件商品");
-            }
-            else {
-                sb.append((int)bean.getAmount()).append("件商品");
+            if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+                sb.append((int) bean.getDeliveredQty()).append("件商品");
+            } else {
+                sb.append((int) bean.getAmount()).append("件商品");
             }
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
             StringBuffer drawableSb = new StringBuffer("state_restaurant_");
             drawableSb.append(bean.getState());
-            if (getResIdByDrawableName(drawableSb.toString()) == 0){
+            if (getResIdByDrawableName(drawableSb.toString()) == 0) {
                 viewHolder.imgIv.setImageResource(R.drawable.state_restaurant_draft);
-            }else{
+            } else {
                 viewHolder.imgIv.setImageResource(getResIdByDrawableName(drawableSb.toString()));
             }
             String doString = OrderActionUtils.getDoBtnTextByState(bean);
-            if (!TextUtils.isEmpty(doString)){
-                if (doString.equals("已评价")){
+            if (!TextUtils.isEmpty(doString)) {
+                if (doString.equals("已评价")) {
                     viewHolder.doBtn.setVisibility(View.INVISIBLE);
-                }else{
+                } else {
                     viewHolder.doBtn.setVisibility(View.VISIBLE);
                     viewHolder.doBtn.setText(doString);
                 }
-            }else{
+            } else {
                 viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
-            if(bean.getHasReturn() != 0){
+            if (bean.getHasReturn() != 0) {
                 viewHolder.returnTv.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 viewHolder.returnTv.setVisibility(View.GONE);
             }
-            if("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+            if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
                 viewHolder.realTv.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 viewHolder.realTv.setVisibility(View.GONE);
             }
-        }
-        else{
+            if (bean.getOrderSettleName().contains("单次结算") && bean.getOrderSettleName().contains("先付款后收货") && bean.getState().equals(OrderState.DRAFT.name())) {
+                viewHolder.tvToPay.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.tvToPay.setVisibility(View.GONE);
+            }
+        } else {
             final ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) mList.get(position);
             //发货单
             viewHolder.returnTv.setVisibility(View.GONE);
@@ -220,32 +226,32 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.stateTv.setTextColor(Color.parseColor("#FA694D"));
             viewHolder.timeTv.setText(TimeUtils.getMMddHHmm(bean.getCreateDate()));
             StringBuffer sb = new StringBuffer("共");
-            sb.append((int)bean.getAmount()).append("件商品");
+            sb.append((int) bean.getAmount()).append("件商品");
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
-            if (!TextUtils.isEmpty(bean.getDriveMobile())){
+            if (!TextUtils.isEmpty(bean.getDriveMobile())) {
                 viewHolder.carNumTv.setText(bean.getVehicle());
                 viewHolder.carNumTv.setVisibility(View.VISIBLE);
                 viewHolder.callIb.setVisibility(View.VISIBLE);
                 viewHolder.driverLL.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 viewHolder.carNumTv.setText("未指派");
                 viewHolder.carNumTv.setVisibility(View.GONE);
                 viewHolder.callIb.setVisibility(View.GONE);
                 viewHolder.driverLL.setVisibility(View.GONE);
             }
-            if (!TextUtils.isEmpty(bean.getDriver())){
+            if (!TextUtils.isEmpty(bean.getDriver())) {
                 viewHolder.senderTv.setText(bean.getDriver());
-            }else{
+            } else {
                 viewHolder.senderTv.setText("未指派");
             }
             viewHolder.callIb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!TextUtils.isEmpty(bean.getDriveMobile())){
+                    if (!TextUtils.isEmpty(bean.getDriveMobile())) {
                         callback.call(bean.getDriveMobile());
-                    }else{
+                    } else {
                         callback.call(null);
                     }
                 }
@@ -255,52 +261,52 @@ public class OrderAdapter extends IBaseAdapter {
                 public void onClick(View v) {
                     //更改boolean状态
                     Boolean isExpand = expandMap.get(Integer.valueOf(bean.getOrderID()));
-                    if (isExpand != null){
+                    if (isExpand != null) {
                         isExpand = !isExpand;
-                    }else{
+                    } else {
                         isExpand = true;
                     }
-                    expandMap.put(Integer.valueOf(bean.getOrderID()),isExpand);
-                    if (isExpand){
+                    expandMap.put(Integer.valueOf(bean.getOrderID()), isExpand);
+                    if (isExpand) {
                         //只有点击时，才去放timeline的内容
-                        setTimeLineContent(bean.getStateTracker(),recyclerView);
+                        setTimeLineContent(bean.getStateTracker(), recyclerView);
                         tlLL.setVisibility(View.VISIBLE);
                         downArrow.setImageResource(R.drawable.login_btn_dropup);
-                    }else{
+                    } else {
                         tlLL.setVisibility(View.GONE);
                         downArrow.setImageResource(R.drawable.login_btn_dropdown);
                     }
 
                 }
             });
-            if (expandMap.get(Integer.valueOf(bean.getOrderID())) != null && expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue()){
+            if (expandMap.get(Integer.valueOf(bean.getOrderID())) != null && expandMap.get(Integer.valueOf(bean.getOrderID())).booleanValue()) {
                 viewHolder.timelineLL.setVisibility(View.VISIBLE);
                 //重刷一次，免得重复
                 downArrow.setImageResource(R.drawable.login_btn_dropup);
-                setTimeLineContent(bean.getStateTracker(),recyclerView);
-            }else{
+                setTimeLineContent(bean.getStateTracker(), recyclerView);
+            } else {
                 viewHolder.timelineLL.setVisibility(View.GONE);
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
             }
             String deliveryType = bean.getDeliveryType();
-            if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
-            deliveryType.equals(TYPE_VENDOR_DELIVERY)
-                    ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
-                    &&bean.isReturnThirdPartLog())
-            ){
+            if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY) ||
+                    deliveryType.equals(TYPE_VENDOR_DELIVERY)
+                    || ((deliveryType.equals(TYPE_THIRD_PART_DELIVERY) || deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
+                    && bean.isReturnThirdPartLog())
+                    ) {
                 viewHolder.doBtn.setVisibility(View.VISIBLE);
                 viewHolder.doBtn.setText("完成退货");
                 viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //根据状态进行不同的逻辑处理
-                        if (callback != null){
-                            callback.doAction(OrderDoAction.FINISH_RETURN,position);
+                        if (callback != null) {
+                            callback.doAction(OrderDoAction.FINISH_RETURN, position);
                         }
 
                     }
                 });
-            }else{
+            } else {
                 viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
 
@@ -310,7 +316,7 @@ public class OrderAdapter extends IBaseAdapter {
         return convertView;
     }
 
-    public class ViewHolder{
+    public class ViewHolder {
         @ViewInject(R.id.img)
         ImageView imgIv;
         @ViewInject(R.id.orderNumTv)
@@ -345,15 +351,18 @@ public class OrderAdapter extends IBaseAdapter {
         TextView returnTv;
         @ViewInject(R.id.realTv)
         TextView realTv;
+        @ViewInject(R.id.tv_to_pay)
+        TextView tvToPay;
 
     }
 
-    private void setTimeLineContent(List<String> stList, RecyclerView recyclerView){
-        TimeLineAdapter adapter = new TimeLineAdapter(context,stList);
+    private void setTimeLineContent(List<String> stList, RecyclerView recyclerView) {
+        TimeLineAdapter adapter = new TimeLineAdapter(context, stList);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
     }
-    private int getResIdByDrawableName(String name){
+
+    private int getResIdByDrawableName(String name) {
         ApplicationInfo appInfo = context.getApplicationInfo();
         int resID = context.getResources().getIdentifier(name, "drawable", appInfo.packageName);
         return resID;
@@ -361,8 +370,8 @@ public class OrderAdapter extends IBaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-         Object object =  mList.get(position);
-        if(object instanceof OrderResponse.ListBean) {
+        Object object = mList.get(position);
+        if (object instanceof OrderResponse.ListBean) {
             return TYPE_ORDER;
         }
         return TYPE_RETURN;
