@@ -8,6 +8,7 @@ import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.mine.entity.ProductOne;
+import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
@@ -45,6 +46,16 @@ public class ProductBasicHelper {
         return false;
     }
 
+    public boolean checkRepertoryProducts(List<? extends RepertoryEntity.ListBean> listToCheck){
+        for(RepertoryEntity.ListBean listBean:listToCheck){
+            if(ProductBasicUtils.getBasicMap(context).get(listBean.getProductID()+"")==null){
+                missingProductsID.add(listBean.getProductID());
+            }
+        }
+        if(missingProductsID.size()==0)return true;
+        return false;
+    }
+
     /**
      * 向接口查询所有缺失的商品信息
      * @param where
@@ -54,7 +65,7 @@ public class ProductBasicHelper {
             Object request = null;
             StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
             sb.append(id).append("/");
-            netWorkHelper.sendConnection(sb.toString(), request, where, false, ProductOne.class);
+            netWorkHelper.sendConnection(sb.toString(), request, where, true, ProductOne.class);
         }
     }
 

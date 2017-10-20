@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.kids.commonframe.base.BaseEntity;
@@ -42,6 +43,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.ProductBasicHelper;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -74,6 +76,7 @@ public class RepertoryFragment extends NetWorkFragment {
     private RepertoryEntity repertoryEntity;
     boolean isLogin;
     private Handler handler = new Handler();
+    private ProductBasicHelper mProductHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +88,7 @@ public class RepertoryFragment extends NetWorkFragment {
         else{
             buildData();
         }
+        mProductHelper = new ProductBasicHelper(getActivity(),netWorkHelper);
     }
 
     public void onLogout(UserLogoutEvent userLogoutEvent){
@@ -415,31 +419,43 @@ public class RepertoryFragment extends NetWorkFragment {
             case PRODUCT_GET:
                 repertoryEntity = (RepertoryEntity)result.getResult().getData();
                 productList = repertoryEntity.getList();
-                boolean nullProductExit = false;
-                for(RepertoryEntity.ListBean bean : productList) {
-                    ProductBasicList.ListBean baseProduct = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
-                    if( baseProduct == null ) {
-                        getProductDetail(bean.getProductID());
-                        nullProductExit = true;
-                    }
-                    else{
-                        bean.setProduct(baseProduct);
-                    }
-                }
-                if(!nullProductExit) {
-                    setUpDataForViewPage(categoryRespone,repertoryEntity);
-                }
-                break;
-            case PRODUCT_DETAIL:
-                ProductOne productOne = (ProductOne) result.getResult().getData();
-                for(RepertoryEntity.ListBean bean : productList) {
-                    if(productOne.getProduct().getProductID() == bean.getProductID()) {
-                        bean.setProduct(productOne.getProduct());
-                        ProductBasicUtils.getBasicMap(mContext).put(productOne.getProduct().getProductID()+"",productOne.getProduct());
-                        break;
-                    }
+
+                if(!mProductHelper.checkRepertoryProducts(productList)){
+                    mProductHelper.requestDetail(PRODUCT_DETAIL);
+                    return;
                 }
                 setUpDataForViewPage(categoryRespone,repertoryEntity);
+
+//                boolean nullProductExit = false;
+//                for(RepertoryEntity.ListBean bean : productList) {
+//                    ProductBasicList.ListBean baseProduct = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
+//                    if( baseProduct == null ) {
+//                        getProductDetail(bean.getProductID());
+//                        nullProductExit = true;
+//                    }
+//                    else{
+//                        bean.setProduct(baseProduct);
+//                    }
+//                }
+//                if(!nullProductExit) {
+//                    setUpDataForViewPage(categoryRespone,repertoryEntity);
+//                }
+                break;
+            case PRODUCT_DETAIL:
+                if(mProductHelper.onSuccess(result)){
+                    setUpDataForViewPage(categoryRespone,repertoryEntity);
+                    return;
+                }
+
+//                ProductOne productOne = (ProductOne) result.getResult().getData();
+//                for(RepertoryEntity.ListBean bean : productList) {
+//                    if(productOne.getProduct().getProductID() == bean.getProductID()) {
+//                        bean.setProduct(productOne.getProduct());
+//                        ProductBasicUtils.getBasicMap(mContext).put(productOne.getProduct().getProductID()+"",productOne.getProduct());
+//                        break;
+//                    }
+//                }
+//                setUpDataForViewPage(categoryRespone,repertoryEntity);
                 break;
             case OrderDetailActivity.CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
@@ -464,6 +480,7 @@ public class RepertoryFragment extends NetWorkFragment {
             map.put(category,new ArrayList<RepertoryEntity.ListBean>());
         }
         for (RepertoryEntity.ListBean listBean : repertoryEntity.getList()) {
+            listBean.setProduct(ProductBasicUtils.getBasicMap(getActivity()).get(listBean.getProductID()+""));
             if(listBean.getProduct() != null && !TextUtils.isEmpty(listBean.getProduct().getCategory())){
                 ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getCategory());
                 if (listBeen == null) {
