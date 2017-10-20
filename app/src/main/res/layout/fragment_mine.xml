@@ -475,7 +475,7 @@
                     android:drawableLeft="@drawable/ic_more_restaurant_call"
                     android:drawablePadding="10dp"
                     android:gravity="center"
-                    android:text="门店调度"
+                    android:text="门店调拨"
                     android:textColor="#3e3e3e"
                     android:textSize="15sp" />
 
