@@ -31,6 +31,7 @@ import com.runwise.supply.mine.entity.MsgResult;
 import com.runwise.supply.mine.entity.ReturnData;
 import com.runwise.supply.tools.TimeUtils;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -45,6 +46,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
+    private static final int PRODUCT_GET = 4;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -62,7 +64,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
 
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
-        pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
+        //pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setOnItemClickListener(this);
 
         adapter = new CarInfoListAdapter();
@@ -112,15 +114,18 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
                 adapter.setData(allList);
                 break;
         }
+        pullListView.onRefreshComplete(adapter.getCount());
         loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
     }
 
 
     public void requestData (boolean showDialog,int where, int page,int limit) {
-        PageRequest request = new PageRequest();
-        request.setLimit(limit);
-        request.setPz(page);
-        sendConnection("message/list.json",request,where,showDialog,MsgResult.class);
+//        PageRequest request = new PageRequest();
+//        request.setLimit(limit);
+//        request.setPz(page);
+//        sendConnection("message/list.json",request,where,showDialog,MsgResult.class);
+        Object param = null;
+        sendConnection("/API/v2/return_order/list",param,PRODUCT_GET,false, ReturnData.class);
     }
 
 
@@ -150,6 +155,10 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
                 else {
                     pullListView.onRefreshComplete(adapter.getCount());
                 }
+                break;
+            case PRODUCT_GET:
+                ReturnData repertoryEntity = (ReturnData)result.getResult().getData();
+                EventBus.getDefault().post(repertoryEntity);
                 break;
         }
     }

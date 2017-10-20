@@ -183,10 +183,10 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     TabLayout mTablayout;
     @BindView(R.id.viewpager)
     YourScrollableViewPager mViewpager;
-    @BindView(R.id.drag_content_view)
-    LinearLayout mDragContentView;
-    @BindView(R.id.drag_layout)
-    DragTopLayout mDragLayout;
+//    @BindView(R.id.drag_content_view)
+//    LinearLayout mDragContentView;
+//    @BindView(R.id.drag_layout)
+//    DragTopLayout mDragLayout;
     @BindView(R.id.tv_submit)
     TextView mTvSubmit;
     private OrderResponse.ListBean bean;
@@ -211,8 +211,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         ButterKnife.bind(this);
         setTitleText(true, "评价");
         setTitleLeftIcon(true, R.drawable.nav_back);
-        mDragLayout.setOverDrag(false);
-        mDragLayout.setTouchMode(false);
+//        mDragLayout.setOverDrag(false);
+//        mDragLayout.setTouchMode(false);
         setDefaultDatas();
         mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
     }
@@ -661,41 +661,41 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             case R.id.cb20:
             case R.id.cb21:
                 break;
-            case R.id.tv_open:
-                if (mDragLayout.getState() == DragTopLayout.PanelState.EXPANDED) {
-                    mDragLayout.toggleTopView();
-                    canShow = true;
-                } else {
-                    if (mProductTypeWindow.isShowing()) {
-                        mProductTypeWindow.dismiss();
-                    } else {
-                        showPopWindow();
-                    }
-                }
-                mDragLayout.listener(new DragTopLayout.PanelListener() {
-                    @Override
-                    public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
-                        if (panelState == DragTopLayout.PanelState.COLLAPSED) {
-                            if (canShow) {
-                                showPopWindow();
-                                canShow = false;
-                            }
-                        } else {
-                            mProductTypeWindow.dismiss();
-                        }
-                    }
-
-                    @Override
-                    public void onSliding(float ratio) {
-
-                    }
-
-                    @Override
-                    public void onRefresh() {
-
-                    }
-                });
-                break;
+//            case R.id.tv_open:
+//                if (mDragLayout.getState() == DragTopLayout.PanelState.EXPANDED) {
+//                    mDragLayout.toggleTopView();
+//                    canShow = true;
+//                } else {
+//                    if (mProductTypeWindow.isShowing()) {
+//                        mProductTypeWindow.dismiss();
+//                    } else {
+//                        showPopWindow();
+//                    }
+//                }
+//                mDragLayout.listener(new DragTopLayout.PanelListener() {
+//                    @Override
+//                    public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
+//                        if (panelState == DragTopLayout.PanelState.COLLAPSED) {
+//                            if (canShow) {
+//                                showPopWindow();
+//                                canShow = false;
+//                            }
+//                        } else {
+//                            mProductTypeWindow.dismiss();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onSliding(float ratio) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onRefresh() {
+//
+//                    }
+//                });
+//                break;
         }
     }
 

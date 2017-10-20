@@ -27,7 +27,7 @@
                    android:id="@+id/orderNumTv"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="SO345345345"
+                   android:text=""
                    android:textColor="#2E2E2E"
                    android:textSize="16sp"
                    android:textStyle="bold"
@@ -41,7 +41,8 @@
                    android:textSize="9sp"
                    android:textColor="#FA5900"
                    android:gravity="center"
-                   android:background="@drawable/receive_circle"/>
+                   android:background="@drawable/receive_circle"
+                   android:visibility="gone"/>
                <TextView
                    android:id="@+id/returnTv"
                    android:layout_width="18dp"
@@ -51,6 +52,7 @@
                    android:textSize="9sp"
                    android:textColor="#FA5900"
                    android:gravity="center"
+                   android:visibility="gone"
                    android:background="@drawable/receive_circle"/>
            </LinearLayout>
             <TextView
@@ -89,7 +91,7 @@
                 android:id="@+id/buyerValue"
                 android:layout_width="wrap_content"
                 android:layout_height="26dp"
-                android:text="张云飞"
+                android:text=""
                 android:gravity="center_vertical"
                 android:layout_alignTop="@id/buyerTv"
                 android:layout_toRightOf="@id/buyerTv"
@@ -100,7 +102,7 @@
                 android:id="@+id/orderTimeValue"
                 android:layout_width="wrap_content"
                 android:layout_height="26dp"
-                android:text="2017-04-12"
+                android:text=""
                 android:gravity="center_vertical"
                 android:layout_alignTop="@id/buyTimeTv"
                 android:layout_toRightOf="@id/buyTimeTv"
