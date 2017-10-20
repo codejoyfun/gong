@@ -125,7 +125,7 @@ public class MainActivity extends NetWorkActivity {
         Log.i("JPushInterface", "dfd " + registrationID);
         //检查版本
         CheckVersionManager checkVersionManager = new CheckVersionManager(this);
-        checkVersionManager.checkVersion(true);
+        checkVersionManager.checkVersion(false);
 //        Capture.init(getApplicationContext());
 //        CaptureClient mClient = new CaptureClient();
 //        mClient.setListener(mListener);
