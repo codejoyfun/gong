@@ -45,6 +45,7 @@ public class ChangeHostActivity extends NetWorkActivity {
     private static final int LOGINOUT_Golden2 = 3;
     private static final int LOGINOUT_Test = 4;
     private static final int LOGINOUT_NONE = 5;
+    private static final int LOGINOUT_CUSTOMER = 6;
     @ViewInject(R.id.list)
     private ListView listview;
     @ViewInject(R.id.tipTv)
@@ -118,8 +119,17 @@ public class ChangeHostActivity extends NetWorkActivity {
                     toast("填写的host不能为空");
                     return;
                 }
-                Constant.BASE_URL = mEtHost.getText().toString();
-                SPUtils.put(mContext, FILE_KEY_HOST, Constant.BASE_URL);
+                //删库，进入重新登录界面
+                if (isLogin) {
+                    loginOut(LOGINOUT_CUSTOMER);
+                } else {
+                    ProductBasicUtils.clearCache(mContext);
+                    Constant.BASE_URL = mEtHost.getText().toString();
+                    SPUtils.put(mContext, FILE_KEY_HOST, Constant.BASE_URL);
+                    SPUtils.put(mContext, "X-Odoo-Db", mEtDatabase.getText().toString());
+                    gotoLogin();
+                }
+
             }
         });
 
@@ -292,6 +302,13 @@ public class ChangeHostActivity extends NetWorkActivity {
                 break;
             case LOGINOUT_NONE:
                 switchDBByIndex(5);
+                break;
+            case LOGINOUT_CUSTOMER:
+                Constant.BASE_URL = mEtHost.getText().toString();
+                SPUtils.put(mContext, FILE_KEY_HOST, Constant.BASE_URL);
+                SPUtils.put(mContext, "X-Odoo-Db", mEtDatabase.getText().toString());
+                ProductBasicUtils.clearCache(mContext);
+                gotoLogin();
                 break;
 
         }
