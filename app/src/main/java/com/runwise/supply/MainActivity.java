@@ -61,6 +61,10 @@ public class MainActivity extends NetWorkActivity {
     private boolean isLogin;
     public static final String INTENT_KEY_SKIP_TO_LOGIN = "intent_key_skip_to_login";
 
+    long mTimeStartQUERY_ALL;
+
+    long mTimeStartREQUEST_UNREAD;
+
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements Runnable {
         private List<ProductBasicList.ListBean> basicList;
@@ -227,6 +231,7 @@ public class MainActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean = result.getResult();
                 ProductBasicList basicList = (ProductBasicList) resultBean.getData();
                 new Thread(new CachRunnale(basicList.getList())).start();
+//                LogUtils.e("onSuccessTime QUERY_ALL "+String.valueOf(System.currentTimeMillis() - mTimeStartQUERY_ALL));
                 break;
             case REQUEST_UNREAD:
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
@@ -235,6 +240,7 @@ public class MainActivity extends NetWorkActivity {
                 } else {
                     mMsgHite.setVisibility(View.GONE);
                 }
+//                LogUtils.e("onSuccessTime REQUEST_UNREAD "+String.valueOf(System.currentTimeMillis() - mTimeStartREQUEST_UNREAD));
                 break;
             default:
                 break;
@@ -266,6 +272,7 @@ public class MainActivity extends NetWorkActivity {
         if (isLogin) {
             Object request = null;
             sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
+            mTimeStartREQUEST_UNREAD = System.currentTimeMillis();
         }
     }
 
@@ -360,6 +367,7 @@ public class MainActivity extends NetWorkActivity {
     private void queryProductList() {
         Object request = null;
         sendConnection("/gongfu/v2/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
+        mTimeStartQUERY_ALL = System.currentTimeMillis();
     }
 
     public int getCurrentTabIndex() {

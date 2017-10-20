@@ -69,6 +69,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int FINISHRETURN = 5;
     private static final int REQUEST_SUM = 6;
 
+    long mTimeStartFROMORDER;
+    long mTimeStartFROMLB;
+    long mTimeStartFROMDB;
+    long mTimeStartFROMRETURN;
+    long mTimeStartREQUEST_SUM;
+
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.rl_title)
@@ -222,6 +228,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void getProcurement() {
         Object request = null;
         sendConnection("/api/sale/shop/info", request, REQUEST_SUM, false, SumMoneyData.class);
+        mTimeStartREQUEST_SUM = System.currentTimeMillis();
     }
 
     @Override
@@ -239,6 +246,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
+            mTimeStartFROMRETURN = System.currentTimeMillis();
         } else {
             PollingUtil.getInstance().stopRequestOrder();
         }
@@ -280,15 +288,18 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 } else {
                     loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
                 }
+//                LogUtils.e("onSuccessTime FROMORDER "+String.valueOf(System.currentTimeMillis() - mTimeStartFROMORDER));
                 break;
             case FROMLB:
                 LunboResponse lRes = (LunboResponse) result.getResult();
                 updateLb(lRes.getPost_list());
+//                LogUtils.e("onSuccessTime FROMLB "+String.valueOf(System.currentTimeMillis() - mTimeStartFROMLB));
                 break;
             case FROMDB:
                 BaseEntity.ResultBean resultBean2 = result.getResult();
                 DashBoardResponse dbResponse = (DashBoardResponse) resultBean2.getData();
                 updateDashBoard(dbResponse);
+//                LogUtils.e("onSuccessTime FROMDB "+String.valueOf(System.currentTimeMillis() - mTimeStartFROMDB));
                 break;
             case CANCEL:
                 ToastUtil.show(mContext, "取消成功");
@@ -308,6 +319,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 cachReturnList(rob.getList());
                 Object request = null;
                 sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
+                mTimeStartFROMORDER = System.currentTimeMillis();
+//                LogUtils.e("onSuccessTime FROMRETURN "+String.valueOf(System.currentTimeMillis() - mTimeStartFROMRETURN));
                 break;
             case FINISHRETURN:
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
@@ -319,6 +332,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_SUM:
                 mSumMoneyData = (SumMoneyData) result.getResult().getData();
+//                LogUtils.e("onSuccessTime REQUEST_SUM "+(System.currentTimeMillis() - mTimeStartREQUEST_SUM));
                 break;
         }
     }
@@ -523,11 +537,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         Object request = null;
         LunboRequest lbRequest = new LunboRequest("餐户端");
         sendConnection("/gongfu/blog/post/list/login", lbRequest, FROMLB, false, LunboResponse.class);
+        mTimeStartFROMLB = System.currentTimeMillis();
     }
 
     private void requestDashBoard() {
         Object request = null;
         sendConnection("/gongfu/v2/shop/stock/dashboard", request, FROMDB, false, DashBoardResponse.class);
+        mTimeStartFROMDB = System.currentTimeMillis();
     }
 
     private void updateLb(final List<ImagesBean> post_list) {
