@@ -75,6 +75,17 @@
         <!--<item name="android:windowTranslucentStatus">true</item>-->
     </style>
 
+    <style name="hostStyle" parent="@android:style/Theme.Holo">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowAnimationStyle">@style/Animation.ComActivity</item>
+        <item name="colorPrimary">@color/colorAccent</item>
+        <!--<item name="colorPrimaryDark">@color/base_color</item>-->
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+    </style>
+
     <style name="Animation.ComActivity" parent="@android:style/Animation.Activity">
         <item name="@android:activityOpenEnterAnimation">@anim/activity_open_enter</item>
         <item name="@android:activityOpenExitAnimation">@anim/activity_open_exit</item>

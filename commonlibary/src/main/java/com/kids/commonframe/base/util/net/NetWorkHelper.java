@@ -2,6 +2,7 @@ package com.kids.commonframe.base.util.net;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -35,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
 
 /**
  * 网络请求帮助类
@@ -234,18 +237,30 @@ public class NetWorkHelper<T extends BaseEntity> {
         } else {
             bodyParamStr = "{}";
         }
+       String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
+        if (!TextUtils.isEmpty(url)){
+            Constant.BASE_URL = url;
+        }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
     }
 
 
     public void sendConnection(String bizName, int where, boolean showDialog, Class<?> targerClass) {
         this.setJsonParseType();
+        String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
+        if (!TextUtils.isEmpty(url)){
+            Constant.BASE_URL = url;
+        }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
     }
 
     public void sendConnection(String bizName, Map<String, String> paramMap, int where, boolean showDialog, Class<?> targerClass) {
         this.setJsonParseType();
         bodyParams = paramMap;
+        String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
+        if (!TextUtils.isEmpty(url)){
+            Constant.BASE_URL = url;
+        }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
     }
 
@@ -260,6 +275,10 @@ public class NetWorkHelper<T extends BaseEntity> {
      */
     public void sendConnection(String bizName, List<Part> partList, int where, boolean showDialog, Class<?> targerClass) {
         this.setJsonParseType();
+        String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
+        if (!TextUtils.isEmpty(url)){
+            Constant.BASE_URL = url;
+        }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList);
     }
 
