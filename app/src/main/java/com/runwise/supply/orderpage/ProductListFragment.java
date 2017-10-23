@@ -103,7 +103,7 @@ public class ProductListFragment extends NetWorkFragment {
         }
 
         adapter.setData(arrayList);
-        mLoadingLayout.onSuccess(adapter.getCount(),"这里是空哒~~",R.drawable.default_ico_none);
+        mLoadingLayout.onSuccess(adapter.getCount(), "这里是空哒~~", R.drawable.default_ico_none);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -239,34 +239,31 @@ public class ProductListFragment extends NetWorkFragment {
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
                 }
             });
+            viewHolder.name.setText(bean.getName());
 
-            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
-            if (basicBean != null) {
-                viewHolder.name.setText(basicBean.getName());
-                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append(" | ").append(basicBean.getUnit());
-                viewHolder.content.setText(sb.toString());
-                DecimalFormat df = new DecimalFormat("#.##");
-                if (canSeePrice) {
-                    StringBuffer sb1 = new StringBuffer();
-                    if (bean.isIsTwoUnit()) {
-                        sb1.append("¥")
-                                .append(df.format(Double.valueOf(bean.getSettlePrice())))
-                                .append("元/")
-                                .append(bean.getSettleUomId());
-                    } else {
-                        sb1.append("¥")
-                                .append(df.format(Double.valueOf(bean.getPrice())))
-                                .append("元/")
-                                .append(bean.getUom());
-                    }
-                    viewHolder.tv_price.setText(sb1.toString());
+            StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+            sb.append(" | ").append(bean.getUnit());
+            viewHolder.content.setText(sb.toString());
+            DecimalFormat df = new DecimalFormat("#.##");
+            if (canSeePrice) {
+                StringBuffer sb1 = new StringBuffer();
+                if (bean.isIsTwoUnit()) {
+                    sb1.append("¥")
+                            .append(df.format(Double.valueOf(bean.getSettlePrice())))
+                            .append("元/")
+                            .append(bean.getSettleUomId());
                 } else {
-                    viewHolder.tv_price.setText("");
+                    sb1.append("¥")
+                            .append(df.format(Double.valueOf(bean.getPrice())))
+                            .append("元/")
+                            .append(bean.getUom());
                 }
-
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
+                viewHolder.tv_price.setText(sb1.toString());
+            } else {
+                viewHolder.tv_price.setText("");
             }
+
+            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
             viewHolder.unit1.setText(bean.getUom());
             return convertView;
         }

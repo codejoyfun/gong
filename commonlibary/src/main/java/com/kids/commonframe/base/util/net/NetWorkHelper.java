@@ -331,7 +331,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0914";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0927";
 //    public static final String DEFAULT_DATABASE_NAME = "lbz80";
-    public static final String DEFAULT_DATABASE_NAME = "LBZTest1012";
+//    public static final String DEFAULT_DATABASE_NAME = "LBZTest1012";
+    public static final String DEFAULT_DATABASE_NAME = "MF-PreGolive-001";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "";
     // -------------------------------------------------
