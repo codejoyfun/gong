@@ -43,6 +43,8 @@ import java.util.List;
 
 import me.shaohui.bottomdialog.BottomDialog;
 
+import static java.lang.System.currentTimeMillis;
+
 /**
  * Created by libin on 2017/8/13.
  */
@@ -76,8 +78,9 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
     private TextView[] dArr = new TextView[3];
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
     private int selectedDate = 1;
+    int mDayDiff = 0;
     //缓存外部显示用的日期周几
-    private String cachedDWStr = TimeUtils.getABFormatDate(1).substring(5) + " " + TimeUtils.getWeekStr(1);
+    private String cachedDWStr;
     //标记当前是否在编辑模式
     private boolean editMode;
     private int orderId;
@@ -100,6 +103,18 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_modify_layout);
+        //订单得到数据
+        OrderResponse.ListBean bean = getIntent().getExtras().getParcelable("order");
+        long estimatedStamp = TimeUtils.getFormatTime(bean.getEstimatedTime());
+        String estimatedTimeStr = TimeUtils.getMMdd(bean.getEstimatedTime());
+        if ((currentTimeMillis() - estimatedStamp) >= 1000 * 3600 * 24) {
+            mDayDiff = 2;
+            long estimatedTime = System.currentTimeMillis() + mDayDiff*1000 * 3600 * 24;
+            estimatedTimeStr = TimeUtils.getMMdd(estimatedTime);
+        }else{
+            mDayDiff = TimeUtils.differentDaysByMillisecond(currentTimeMillis(), estimatedStamp);
+        }
+        cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         setTitleRightText(true, "编辑");
         setTitleLeftIcon(true, R.drawable.nav_back);
@@ -109,8 +124,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         pullListView.setAdapter(adapter);
         bottom_bar.setVisibility(View.VISIBLE);
         ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
-        //订单得到数据
-        OrderResponse.ListBean bean = getIntent().getExtras().getParcelable("order");
+
         setTitleText(true, bean.getName());
         orderId = bean.getOrderID();
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
@@ -159,7 +173,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
 
     }
 
-    private void setUpEditMode(){
+    private void setUpEditMode() {
         this.setTitleRightText(true, "完成");
         this.setTitleLeftIcon(true, R.drawable.nav_add);
         select_bar.setVisibility(View.VISIBLE);
@@ -219,7 +233,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
             case R.id.onekeyBtn:
                 //下单按钮
                 CommitOrderRequest request = new CommitOrderRequest();
-                request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
+                request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate - 1 + mDayDiff));
                 List<DefaultPBean> list = adapter.getList();
                 List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
                 for (DefaultPBean bean : list) {
@@ -264,18 +278,18 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         wArr[selectedDate].setTextColor(Color.parseColor("#6BB400"));
         dArr[selectedDate].setTextColor(Color.parseColor("#6BB400"));
         //计算当前日期起，明后天的星期几+号数
-        wTv1.setText(TimeUtils.getWeekStr(0));
-        String[] t = TimeUtils.getABFormatDate(0).split("-");
+        wTv1.setText(TimeUtils.getWeekStr(mDayDiff - 1));
+        String[] t = TimeUtils.getABFormatDate(mDayDiff - 1).split("-");
         if (t.length > 2) {
             dTv1.setText(t[1] + "-" + t[2]);
         }
-        wTv2.setText(TimeUtils.getWeekStr(1));
-        t = TimeUtils.getABFormatDate(1).split("-");
+        wTv2.setText(TimeUtils.getWeekStr(mDayDiff));
+        t = TimeUtils.getABFormatDate(mDayDiff).split("-");
         if (t.length > 2) {
             dTv2.setText(t[1] + "-" + t[2]);
         }
-        wTv3.setText(TimeUtils.getWeekStr(2));
-        t = TimeUtils.getABFormatDate(2).split("-");
+        wTv3.setText(TimeUtils.getWeekStr(mDayDiff + 1));
+        t = TimeUtils.getABFormatDate(mDayDiff + 1).split("-");
         if (t.length > 2) {
             dTv3.setText(t[1] + "-" + t[2]);
         }
@@ -290,7 +304,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                     public void run() {
                         selectedDate = 0;
                         dialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(0).substring(5) + " " + TimeUtils.getWeekStr(0));
+                        dateTv.setText(TimeUtils.getABFormatDate(mDayDiff - 1).substring(5) + " " + TimeUtils.getWeekStr(mDayDiff - 1));
                     }
                 }, 500);
             }
@@ -305,7 +319,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                     public void run() {
                         selectedDate = 1;
                         dialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(1).substring(5) + " " + TimeUtils.getWeekStr(1));
+                        dateTv.setText(TimeUtils.getABFormatDate(mDayDiff).substring(5) + " " + TimeUtils.getWeekStr(mDayDiff));
                     }
                 }, 500);
             }
@@ -320,7 +334,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                     public void run() {
                         selectedDate = 2;
                         dialog.dismiss();
-                        dateTv.setText(TimeUtils.getABFormatDate(2).substring(5) + " " + TimeUtils.getWeekStr(2));
+                        dateTv.setText(TimeUtils.getABFormatDate(mDayDiff + 1).substring(5) + " " + TimeUtils.getWeekStr(mDayDiff + 1));
                     }
                 }, 500);
             }

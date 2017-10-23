@@ -61,8 +61,8 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.et_host)
     private EditText mEtHost;
     private ArrayAdapter<String> adapter;
-    private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", "LBZTest1012", "TestFor...Company数据库", "不设置数据库"};
-    private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", "LBZTest1012", "Testfor...Company", ""};
+    private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", "MF-PreGolive-001", "TestFor...Company数据库", "不设置数据库"};
+    private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", "MF-PreGolive-001", "Testfor...Company", ""};
     private int which;
     @ViewInject(R.id.et_database)
     private EditText mEtDatabase;
@@ -137,13 +137,7 @@ public class ChangeHostActivity extends NetWorkActivity {
         listview.setAdapter(adapter);
         ToastUtil.show(mContext, "请选择你要切换的数据库");
         String dbStr = (String) SPUtils.get(mContext, "X-Odoo-Db", DEFAULT_DATABASE_NAME);
-        for (int i = 0; i < datas.length; i++) {
-            String value = values[i];
-            if (value.equals(dbStr)) {
-                tipTv.setText("当前所在数据库：" + datas[i] + "\n切换数据库将会重新登录");
-                break;
-            }
-        }
+        tipTv.setText("当前所在数据库：" + dbStr + "\n切换数据库将会重新登录");
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
