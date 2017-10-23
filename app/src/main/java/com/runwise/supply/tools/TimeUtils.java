@@ -162,6 +162,8 @@ public class TimeUtils {
 		return sdf.format(new Date(time));
 	}
 
+
+
 	public static String getTimeStamps3(String date) {
 		if(TextUtils.isEmpty(date)) {
 			return "";
@@ -352,6 +354,25 @@ public class TimeUtils {
 		}
 		return weekStr;
 
+	}
+
+	/**
+	 * 通过时间秒毫秒数判断两个时间的间隔
+	 * @return
+	 */
+	public static int differentDaysByMillisecond(long dateTimeStamp1,long dateTimeStamp2)
+	{
+		int days = (int) ((dateTimeStamp2 - dateTimeStamp1) / (1000*3600*24));
+		if (days == 0){
+			if (dateTimeStamp2 > dateTimeStamp1){
+				return 1;
+			}
+			if (dateTimeStamp2 < dateTimeStamp1){
+				return -1;
+			}
+			return 0;
+		}
+		return days;
 	}
 
 	/**
