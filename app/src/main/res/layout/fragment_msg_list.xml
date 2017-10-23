@@ -17,6 +17,11 @@
         <include
             android:id="@+id/tipLayout"
             layout="@layout/login_tip_layout"></include>
+
+        <com.runwise.supply.view.SystemUpgradeLayout
+            android:id="@+id/layout_system_upgrade_notice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <com.handmark.pulltorefresh.library.PullToRefreshListView
@@ -39,4 +44,9 @@
         android:layout_height="match_parent"
         android:visibility="gone"
         />
+    <Button
+        android:id="@+id/test"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="asdfasdfasdfafd"/>
 </RelativeLayout>

@@ -59,6 +59,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.kids.commonframe.base.util.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -190,6 +191,9 @@ public class OrderDetailActivity extends NetWorkActivity {
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
         dragLayout.setOverDrag(false);
+
+        //SystemUpgradeHelper.getInstance(this).setTime("1508297831.0-1508297894.0");
+        SystemUpgradeHelper.getInstance(this).setTime("1508394075.0-1508624483.0");
     }
 
     private void getReturnOrder(String rid) {
@@ -345,7 +349,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                     intent3.putExtra("orderid", bean.getOrderID());
                     intent3.putExtra("ordername", bean.getName());
                     intent3.putExtra("hasattachment", isHasAttachment);
-                    if (bean.getState().equals(OrderState.SALE.getName())&&bean.getOrderSettleName().contains("单次结算")
+                    if (!bean.getState().equals(OrderState.DRAFT.getName())&&bean.getOrderSettleName().contains("单次结算")
                             &&bean.getOrderSettleName().contains("先付款后收货")){
                         intent3.putExtra(UploadPayedPicActivity.INTENT_KEY_CANN_NO_EDIT, true);
                     }
@@ -633,7 +637,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             rightBtn.setText(OrderActionUtils.getDoBtnTextByState(bean));
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
 
-            if (bean.getState().equals(OrderState.DRAFT.getName())&&bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
+            if (bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
                 setUpPaymenInstrument();
             }
 

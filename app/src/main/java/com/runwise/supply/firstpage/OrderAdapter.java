@@ -24,8 +24,11 @@ import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.TimeUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import io.vov.vitamio.utils.NumberUtil;
 
@@ -139,9 +142,9 @@ public class OrderAdapter extends IBaseAdapter {
             //派单前，派单后，用户收货后
             StringBuffer etSb = new StringBuffer();
             if (bean.getState().equals(OrderState.DRAFT.getName()) || bean.getState().equals(OrderState.SALE.getName())) {
-                etSb.append("预计").append(bean.getEstimatedDate()).append("送达");
+                etSb.append("预计").append(formatTimeStr(bean.getEstimatedDate())).append("送达");
             } else if (bean.getState().equals(OrderState.PEISONG.getName())) {
-                etSb.append("预计").append(bean.getEstimatedTime()).append("送达");
+                etSb.append("预计").append(formatTimeStr(bean.getEstimatedDate())).append("送达");
             } else {
                 etSb.append(bean.getDoneDatetime()).append("已送达");
             }
@@ -210,7 +213,7 @@ public class OrderAdapter extends IBaseAdapter {
             } else {
                 viewHolder.realTv.setVisibility(View.GONE);
             }
-            if (bean.getOrderSettleName().contains("单次结算") && bean.getOrderSettleName().contains("先付款后收货") && bean.getState().equals(OrderState.DRAFT.name())) {
+            if (bean.getOrderSettleName().contains("单次结算") && bean.getOrderSettleName().contains("先付款后收货") && bean.getState().equals(OrderState.DRAFT.getName())) {
                 viewHolder.tvToPay.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.tvToPay.setVisibility(View.GONE);
@@ -319,9 +322,9 @@ public class OrderAdapter extends IBaseAdapter {
     public class ViewHolder {
         @ViewInject(R.id.img)
         ImageView imgIv;
-        @ViewInject(R.id.orderNumTv)
-        TextView titleTv;
         @ViewInject(R.id.orderTimeTv)
+        TextView titleTv;
+        @ViewInject(R.id.orderNumTv)
         TextView timeTv;
         @ViewInject(R.id.countTv)
         TextView countTv;
@@ -380,5 +383,16 @@ public class OrderAdapter extends IBaseAdapter {
     @Override
     public int getViewTypeCount() {
         return 2;
+    }
+
+    SimpleDateFormat sdfSource = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    SimpleDateFormat sdfTarget = new SimpleDateFormat("MM月dd日",Locale.getDefault());
+    private String formatTimeStr(String str){
+        try{
+            return sdfTarget.format(sdfSource.parse(str));
+        }catch (ParseException e){
+            e.printStackTrace();
+            return str;
+        }
     }
 }

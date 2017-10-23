@@ -6,4 +6,6 @@
     <string name="tab_3">库存</string>
     <string name="tab_4">消息</string>
     <string name="tab_5">更多</string>
+
+    <string name="system_upgrade_notice">系统于%1$s进行更新维护，%2$s暂时无法使用，给您造成不便深感抱歉，感谢您的谅解</string>
 </resources>

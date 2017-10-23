@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"/>
 
 
-        <github.chenupt.dragtoplayout.DragTopLayout
+        <ScrollView
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,23 +35,32 @@
                     style="@style/space_horizontal"/>
 
                 <include layout="@layout/evaluate_product"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/drag_content_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <!--种类bar-->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
                 <include
                     android:id="@+id/ic_bar"
                     layout="@layout/tab_viewpage_wrap"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>
-
             </LinearLayout>
-        </github.chenupt.dragtoplayout.DragTopLayout>
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/drag_content_view"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:orientation="vertical">-->
+                <!--&lt;!&ndash;种类bar&ndash;&gt;-->
+                <!--<include-->
+                    <!--android:id="@+id/ic_bar"-->
+                    <!--layout="@layout/tab_viewpage_wrap"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:visibility="gone"/>-->
+
+            <!--</LinearLayout>-->
+        </ScrollView>
 
 
 

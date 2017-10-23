@@ -37,6 +37,10 @@
             android:textColor="#666666"
             android:text="自助下单"/>
     </LinearLayout>
+    <com.runwise.supply.view.SystemUpgradeLayout
+        android:id="@+id/layout_system_upgrade_notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

@@ -8,7 +8,9 @@ import android.text.TextUtils;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
+import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
+import com.kids.commonframe.base.util.SystemUpgradeHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -24,6 +26,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TAG = "JPushCustomReceiver";
     public static final String TYPE_LOGOUT = "logout";
     public static final String TYPE_LOGIN_CONFICT = "login_confict";
+    public static final String TYPE_SYSTEM_UPGRADE = "update";
     public static final String TYPE_ORDER = "order";
 
     private static final int REQUEST_LOGINOUT = 1 << 0;
@@ -45,7 +48,11 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                     }
                     if (type.equals(TYPE_ORDER)){
                         //刷新订单列表
-
+                    }
+                    if (TYPE_SYSTEM_UPGRADE.equals(type)){
+                        String dataid = jsonObject.optString("dataid");
+                        SystemUpgradeHelper.getInstance(context).setTime(dataid);
+                        EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -79,5 +86,6 @@ public class JPushCustomReceiver extends BroadcastReceiver {
         });
         netWorkHelper.sendConnection("/gongfu/v2/reset_login_status",param,REQUEST_LOGINOUT,true,null);
     }
+
 
 }

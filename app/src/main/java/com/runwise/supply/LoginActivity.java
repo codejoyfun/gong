@@ -10,6 +10,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -137,6 +138,15 @@ public class  LoginActivity extends NetWorkActivity {
 			e.printStackTrace();
 		}
 		mDb.close();
+	}
+
+	@OnClick(R.id.root_layout)
+	public void hideInput(View v){
+		View focusView = getCurrentFocus();
+		if(focusView!=null){
+			InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+			inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+		}
 	}
 
 	@OnClick(R.id.login_pop_btn)

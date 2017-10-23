@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="15dp"
-        android:text="订单已确认"
+        android:text=""
         android:textStyle="bold"
         android:textColor="#2E2E2E"
         android:textSize="16sp"
@@ -25,7 +25,7 @@
         android:layout_alignLeft="@id/orderStateTv"
         android:layout_below="@id/orderStateTv"
         android:layout_marginTop="7dp"
-        android:text="正在为您挑商品"
+        android:text=""
         android:textColor="#999999"
         android:textSize="14sp"
         />
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginTop="19dp"
-        android:text="04-30"
+        android:text=""
         android:textColor="#999999"
         android:textSize="13sp"
         />

@@ -20,6 +20,7 @@ import com.bigkoo.pickerview.OptionsPickerView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
+import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -29,6 +30,7 @@ import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
+import com.runwise.supply.view.SystemUpgradeLayout;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -55,6 +57,8 @@ public class OrderFragment extends NetWorkFragment {
     private TextView safeValueTv;
     @ViewInject(R.id.editText)
     private EditText editText;
+    @ViewInject(R.id.layout_system_upgrade_notice)
+    private SystemUpgradeLayout mLayoutUpgradeNotice;
     private ListPopupWindow popupWindow;
     String[] times = {"天","周"};
     private OptionsPickerView opv;
@@ -181,6 +185,7 @@ public class OrderFragment extends NetWorkFragment {
                 return true;
             }
         });
+        mLayoutUpgradeNotice.setPageName("下单功能");
     }
 
     @Override

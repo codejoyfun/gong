@@ -20,6 +20,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
@@ -35,8 +36,12 @@ import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
+import com.kids.commonframe.base.util.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
+import com.runwise.supply.view.SystemUpgradeLayout;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +73,9 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
     @ViewInject(R.id.titleLayout)
     private View titleLayout;
+    @ViewInject(R.id.layout_system_upgrade_notice)
+    private SystemUpgradeLayout mLayoutUpgradeNotice;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +134,16 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return true;
+            }
+        });
+
+        mLayoutUpgradeNotice.setPageName("客服功能");
+
+        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SystemUpgradeHelper.getInstance(getContext()).setTime("1508394075.0-1608629483.0");
+                EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
             }
         });
     }

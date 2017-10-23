@@ -43,6 +43,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.view.SystemUpgradeLayout;
 import com.runwise.supply.tools.ProductBasicHelper;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -70,6 +71,8 @@ public class RepertoryFragment extends NetWorkFragment {
     private ViewPager viewPager;
     @ViewInject(R.id.iv_open)
     private ImageView ivOpen;
+    @ViewInject(R.id.layout_system_upgrade_notice)
+    private SystemUpgradeLayout mLayoutUpgradeNotice;
     private TabPageIndicatorAdapter adapter;
 
     private List<RepertoryEntity.ListBean> productList;
@@ -88,6 +91,7 @@ public class RepertoryFragment extends NetWorkFragment {
         else{
             buildData();
         }
+        mLayoutUpgradeNotice.setPageName("盘点功能");
         mProductHelper = new ProductBasicHelper(getActivity(),netWorkHelper);
     }
 

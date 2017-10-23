@@ -110,7 +110,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         setTitleText(true, orderName);
         if (hasAttachment) {
             setTitleRightText(true, "修改");
-            upLoadBtn.setVisibility(View.GONE);
+//            upLoadBtn.setVisibility(View.GONE);
         } else {
             //没有才需要有默认
             if (picList.size() == 0) {
@@ -130,7 +130,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         }
         if (getIntent().getBooleanExtra(INTENT_KEY_CANN_NO_EDIT, false)) {
             setTitleRightText(false, "修改");
-            upLoadBtn.setVisibility(View.GONE);
+            showUpLoadBtn(false);
             if (!hasAttachment){
                 mLoadingLayout.onSuccess(0,"没有支付凭证");
             }
@@ -138,6 +138,9 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
     }
 
     public void showUpLoadBtn(boolean isShow) {
+        if (getIntent().getBooleanExtra(INTENT_KEY_CANN_NO_EDIT, false)) {
+            upLoadBtn.setVisibility(View.INVISIBLE);
+        }
         if (isShow) {
             upLoadBtn.setVisibility(View.VISIBLE);
         } else {
