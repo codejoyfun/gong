@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import static com.runwise.supply.R.id.date;
+
 /**
  * @version 1.0
  * @Desc 工具类
@@ -374,22 +376,15 @@ public class TimeUtils {
      * @return
      */
     public static int differentDaysByMillisecond(long dateTimeStamp1, long dateTimeStamp2) {
-        long diff = dateTimeStamp2 - dateTimeStamp1;
-        double diffDouble = (double) diff / (double) (1000 * 3600 * 24);
-        int diffInt = (int) (diff / (1000 * 3600 * 24));
-        if (diffDouble > diffInt) {
-            diffInt += 1;
-        }
-
-        int days = diffInt;
-        if (days == 0) {
-            if (dateTimeStamp2 > dateTimeStamp1) {
-                return 1;
-            }
-            if (dateTimeStamp2 < dateTimeStamp1) {
-                return -1;
-            }
-            return 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+        int days = 0;
+        try {
+            Date date1 = sdf.parse(getYMD(new Date(dateTimeStamp1)));
+            Date date2 = sdf.parse(getYMD(new Date(dateTimeStamp2)));
+            long diff = date2.getTime() - date1.getTime();
+            days = (int) (diff / (1000 * 3600 * 24));
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
         return days;
     }
