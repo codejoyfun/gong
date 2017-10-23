@@ -33,6 +33,7 @@ import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.UserUtils;
 
 import java.text.DecimalFormat;
@@ -149,6 +150,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                     mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            if(!SystemUpgradeHelper.getInstance(TransferDetailActivity.this).check(TransferDetailActivity.this))return;
                             Intent intent = new Intent(TransferDetailActivity.this,TransferInActivity.class);
                             intent.putExtra(INTENT_KEY_TRANSFER_ENTITY,mTransferEntity);
                             startActivity(intent);
@@ -167,6 +169,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                     mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            if(!SystemUpgradeHelper.getInstance(TransferDetailActivity.this).check(TransferDetailActivity.this))return;
                             requestOutputConfirm(mTransferEntity);
                         }
                     });
@@ -177,6 +180,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                     mBtnDoAction2.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            if(!SystemUpgradeHelper.getInstance(TransferDetailActivity.this).check(TransferDetailActivity.this))return;
                             showCancelDialog();
                         }
                     });
@@ -213,8 +217,8 @@ public class TransferDetailActivity extends NetWorkActivity {
                 intent.putExtra(TransferStateActivity.INTENT_KEY_TRANSFER,mTransferEntity);
                 startActivity(intent);
                 break;
-            case R.id.btn_transfer_detail_action2:
-                //取消
+            case R.id.btn_transfer_detail_action2://取消
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 dialog.setTitle("提示");
                 dialog.setMessage("确认取消订单?");
                 dialog.setMessageGravity();
@@ -228,7 +232,8 @@ public class TransferDetailActivity extends NetWorkActivity {
                 });
                 dialog.show();
                 break;
-            case R.id.right_layout:
+            case R.id.right_layout://修改
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 Intent intent1 = new Intent(this, TransferInModifyActivity.class);
                 intent1.putExtra(INTENT_KEY_TRANSFER,mTransferEntity);
                 ArrayList<AddedProduct> addedProducts = new ArrayList<AddedProduct>();

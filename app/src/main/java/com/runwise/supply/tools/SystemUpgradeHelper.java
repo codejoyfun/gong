@@ -1,9 +1,14 @@
-package com.kids.commonframe.base.util;
+package com.runwise.supply.tools;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.runwise.supply.R;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by Dong on 2017/10/19.
@@ -28,7 +33,7 @@ public class SystemUpgradeHelper {
         preferences = context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);
     }
 
-    public void setTime(String dataid){
+    public void create(String dataid){
         String[] times = dataid.split("-");
         long startTimeStamp = Long.valueOf(getLongString(times[0]));
         long endTimeStamp = Long.valueOf(getLongString(times[1]));
@@ -48,7 +53,7 @@ public class SystemUpgradeHelper {
     }
 
     public boolean isUpgradingTime(){
-        long current = System.currentTimeMillis();
+        long current = System.currentTimeMillis()/1000;
         long startTime = getStartTime();
         long endTime = getEndTime();
         return current > startTime && current < endTime;
@@ -71,23 +76,10 @@ public class SystemUpgradeHelper {
         preferences.edit().putBoolean(pageName+"_is_read",true).apply();
     }
 
-    public boolean checkBlock(Context context,String url){
-        Log.d("haha","check url:"+url);
+    public boolean check(Context context){
         if(!isUpgradingTime())return true;
-        for(int i=0;i<BLOCK_URLS.length;i++){
-            if(BLOCK_URLS[i].equals(url)){
-                Toast.makeText(context,BLOCK_TIPS[i],Toast.LENGTH_LONG).show();
-                return false;
-            }
-        }
-        return true;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        Toast.makeText(context,context.getString(R.string.system_upgrading_toast,sdf.format(getEndTime()*1000)),Toast.LENGTH_LONG).show();
+        return false;
     }
-
-    public static final String[] BLOCK_URLS = {
-            ""
-    };
-
-    public static final String[] BLOCK_TIPS = {
-            ""
-    };
 }

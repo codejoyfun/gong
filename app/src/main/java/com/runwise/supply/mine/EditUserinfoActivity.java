@@ -24,6 +24,7 @@ import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ImageUtils;
 import com.kids.commonframe.base.util.SPUtils;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomBottomDialog;
@@ -159,6 +160,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
     public void handlerClickEvent(View view) {
         switch (view.getId()) {
             case R.id.userInfoHead:
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 uploadDialog = new CustomUploadDialog(mContext);
                 final CustomBottomDialog customBottomDialog = new CustomBottomDialog(mContext);
                 capTempPhotoUrl = Uri.fromFile(new File(CommonUtils.getCachePath(mContext),"temp.jpg"));
@@ -192,10 +194,12 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             //重置密码
             case R.id.userInfoChangePhoneLayout:
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 this.startActivity(new Intent(this, FindPasswordActivity.class));
                 break;
             //手机号
             case R.id.userInfoPhoneLayout:
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 Intent intentPhone = new Intent(this, ChangePhoneActivity.class);
                 startActivity(intentPhone);
 //                Intent intentPhone = new Intent(this, UpdateUserInfoActivity.class);

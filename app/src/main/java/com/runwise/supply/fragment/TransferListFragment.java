@@ -28,6 +28,7 @@ import com.runwise.supply.TransferInActivity;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
@@ -207,6 +208,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     @Override
                     public void onClick(View view) {
                         //取消
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         dialog.setTitle("提示");
                         dialog.setMessage("确认取消订单?");
                         dialog.setMessageGravity();
@@ -228,6 +230,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         Intent intent = new Intent(getActivity(), TransferInActivity.class);
                         intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
                         startActivity(intent);
@@ -241,6 +244,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         int realPosition = (int) view.getTag();
                         if (realPosition == position) {
                             //变成可用状态

@@ -36,7 +36,7 @@ import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
-import com.kids.commonframe.base.util.SystemUpgradeHelper;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.SystemUpgradeLayout;
@@ -142,7 +142,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SystemUpgradeHelper.getInstance(getContext()).setTime("1508394075.0-1608629483.0");
+                SystemUpgradeHelper.getInstance(getContext()).create("1408394075.0-1408629483.0");
                 EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
             }
         });
@@ -265,6 +265,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
             MessageListEntity bean = (MessageListEntity)parent.getAdapter().getItem(position);

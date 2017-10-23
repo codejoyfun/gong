@@ -30,6 +30,7 @@ import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.view.SystemUpgradeLayout;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -97,6 +98,7 @@ public class OrderFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.sureBtn:
+                if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if(!SPUtils.isLogin(getActivity())){
                     startActivity(new Intent(getActivity(), RegisterActivity.class));
                     return;
@@ -108,6 +110,7 @@ public class OrderFragment extends NetWorkFragment {
                 startActivity(intent);
                 break;
             case R.id.selfHelpBtn:
+                if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
                     Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
                     startActivity(intent2);

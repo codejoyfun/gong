@@ -17,6 +17,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.mine.RepertoryFragment;
 import com.runwise.supply.repertory.entity.PandianResult;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 
 /**
  * 库存
@@ -63,6 +64,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
     }
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
+        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
             Object parma = null;

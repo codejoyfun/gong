@@ -368,7 +368,7 @@ public class MineFragment extends NetWorkFragment {
                     startActivity(intent);
                 }
                 break;
-            case R.id.rl_transfer://门店调度
+            case R.id.rl_transfer://门店调拨
                 if (SPUtils.isLogin(getActivity())) {
                   refreshTransfer();
                 }

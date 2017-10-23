@@ -36,6 +36,7 @@ import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.tools.PollingUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -329,6 +330,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         dialog.setMessage("您确定要取消订单吗?");
                         dialog.setModel(CustomDialog.BOTH);
                         dialog.setLeftBtnListener("不取消了", null);
@@ -370,6 +372,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
                         OrderDoAction action;
                         if (bean.isIsDoubleReceive()) {
@@ -421,6 +424,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         Intent intent2 = new Intent(mContext, EvaluateActivity.class);
                         Bundle bundle2 = new Bundle();
                         bundle2.putParcelable("order", bean);
@@ -444,6 +448,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         dialog.setMessage("您确定要取消订单吗?");
                         dialog.setModel(CustomDialog.BOTH);
                         dialog.setLeftBtnListener("不删除了", null);

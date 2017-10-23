@@ -26,7 +26,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.ReLoginData;
 import com.kids.commonframe.base.util.SPUtils;
-import com.kids.commonframe.base.util.SystemUpgradeHelper;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
 
@@ -166,8 +165,6 @@ public class NetWorkHelper<T extends BaseEntity> {
      */
     public void sendConnection(int method, String url, String[] argsKeys,
                                String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList) {
-
-        if(SystemUpgradeHelper.getInstance(context).checkBlock(context,url))return;
 
         if (argsKeys.length != argsValues.length) {
             throw new IllegalArgumentException("check your Params key or value length!");
@@ -335,7 +332,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0914";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0927";
 //    public static final String DEFAULT_DATABASE_NAME = "lbz80";
-    public static final String DEFAULT_DATABASE_NAME = "LBZTest1012";
+    public static final String DEFAULT_DATABASE_NAME = "LBZTest1023";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "";
     // -------------------------------------------------

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.runwise.supply.R;
-import com.kids.commonframe.base.util.SystemUpgradeHelper;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
