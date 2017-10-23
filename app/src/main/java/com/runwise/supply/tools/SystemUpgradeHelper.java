@@ -69,6 +69,7 @@ public class SystemUpgradeHelper {
 
     public boolean needShowNotice(String pageName){
         boolean iii = !preferences.getBoolean(pageName+"_is_read",false);
+        Log.d("haha","current:"+System.currentTimeMillis()/1000+" end:"+getEndTime()+" "+iii);
         return System.currentTimeMillis()/1000 < getEndTime() && !preferences.getBoolean(pageName+"_is_read",false);
     }
 

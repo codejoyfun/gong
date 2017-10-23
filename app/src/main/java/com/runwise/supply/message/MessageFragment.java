@@ -142,7 +142,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SystemUpgradeHelper.getInstance(getContext()).create("1408394075.0-1408629483.0");
+                SystemUpgradeHelper.getInstance(getContext()).create("1508394075.0-1508747938.0");
                 EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
             }
         });

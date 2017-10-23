@@ -65,7 +65,7 @@ public class SystemUpgradeLayout extends FrameLayout {
         SystemUpgradeHelper systemUpgradeHelper = SystemUpgradeHelper.getInstance(getContext());
         if(SystemUpgradeHelper.getInstance(getContext()).needShowNotice(mPageName)){
             mVgUpgradeNotice.setVisibility(View.VISIBLE);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(systemUpgradeHelper.getStartTime()*1000);
             StringBuilder sb = new StringBuilder();
