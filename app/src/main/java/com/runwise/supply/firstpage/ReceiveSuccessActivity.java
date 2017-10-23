@@ -34,6 +34,10 @@ public class ReceiveSuccessActivity extends BaseActivity {
         }else{
             findViewById(R.id.uploadBtn).setVisibility(View.GONE);
         }
+        if (bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
+            findViewById(R.id.uploadBtn).setVisibility(View.GONE);
+        }
+
     }
     @OnClick({R.id.title_iv_left,R.id.orderBtn,R.id.uploadBtn})
     public void btnClick(View view){

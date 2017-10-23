@@ -30,6 +30,8 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import static android.os.Build.VERSION_CODES.KITKAT;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
 import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
 
 /**
@@ -42,6 +44,8 @@ public class ChangeHostActivity extends NetWorkActivity {
     private static final int LOGINOUT_Golden = 2;
     private static final int LOGINOUT_Golden2 = 3;
     private static final int LOGINOUT_Test = 4;
+    private static final int LOGINOUT_NONE = 5;
+    private static final int LOGINOUT_CUSTOMER = 6;
     @ViewInject(R.id.list)
     private ListView listview;
     @ViewInject(R.id.tipTv)
@@ -51,24 +55,28 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.rb_test)
     private RadioButton mRbTest;
     @ViewInject(R.id.rb_custom)
-    private RadioButton RbCustom;
+    private RadioButton mRbCustom;
     @ViewInject(R.id.radioGroupID)
     private RadioGroup mRadioGroupID;
     @ViewInject(R.id.et_host)
     private EditText mEtHost;
-    @ViewInject(R.id.et_database)
-    private EditText mEtDatabase;
-    @ViewInject(R.id.btn_confirm)
-    private Button mBtnConfirm;
     private ArrayAdapter<String> adapter;
     private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", "LBZTest1012", "TestFor...Company数据库", "不设置数据库"};
     private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", "LBZTest1012", "Testfor...Company", ""};
     private int which;
+    @ViewInject(R.id.et_database)
+    private EditText mEtDatabase;
+    @ViewInject(R.id.btn_confirm)
+    private Button mBtnConfirm;
     private boolean isLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (android.os.Build.VERSION.SDK_INT <= KITKAT) {
+            setTheme(R.style.hostStyle);
+        }
+
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.host_layout);
@@ -84,6 +92,7 @@ public class ChangeHostActivity extends NetWorkActivity {
                         mEtDatabase.setVisibility(View.GONE);
                         mBtnConfirm.setVisibility(View.GONE);
                         Constant.BASE_URL = Constant.RELEASE_URL;
+                        SPUtils.put(mContext, FILE_KEY_HOST, Constant.RELEASE_URL);
                         listview.setVisibility(View.VISIBLE);
                         break;
                     case R.id.rb_test:
@@ -91,6 +100,7 @@ public class ChangeHostActivity extends NetWorkActivity {
                         mEtDatabase.setVisibility(View.GONE);
                         mBtnConfirm.setVisibility(View.GONE);
                         Constant.BASE_URL = Constant.DEBUG_URL;
+                        SPUtils.put(mContext, FILE_KEY_HOST, Constant.DEBUG_URL);
                         listview.setVisibility(View.VISIBLE);
                         break;
                     case R.id.rb_custom:
@@ -109,7 +119,17 @@ public class ChangeHostActivity extends NetWorkActivity {
                     toast("填写的host不能为空");
                     return;
                 }
-                Constant.RELEASE_URL = mEtHost.getText().toString();
+                //删库，进入重新登录界面
+                if (isLogin) {
+                    loginOut(LOGINOUT_CUSTOMER);
+                } else {
+                    ProductBasicUtils.clearCache(mContext);
+                    Constant.BASE_URL = mEtHost.getText().toString();
+                    SPUtils.put(mContext, FILE_KEY_HOST, Constant.BASE_URL);
+                    SPUtils.put(mContext, "X-Odoo-Db", mEtDatabase.getText().toString());
+                    gotoLogin();
+                }
+
             }
         });
 
@@ -220,7 +240,7 @@ public class ChangeHostActivity extends NetWorkActivity {
                             @Override
                             public void doClickButton(Button btn, CustomDialog dialog) {
                                 if (isLogin) {
-                                    loginOut(LOGINOUT_Test);
+                                    loginOut(LOGINOUT_NONE);
                                 } else {
                                     switchDBByIndex(5);
                                 }
@@ -236,6 +256,10 @@ public class ChangeHostActivity extends NetWorkActivity {
     }
 
     private void switchDBByIndex(int i) {
+        if (!mRbFormal.isChecked() && !mRbTest.isChecked() && !mRbCustom.isChecked()) {
+            toast("你还没选择环境!");
+            return;
+        }
         ProductBasicUtils.clearCache(mContext);
         SPUtils.put(mContext, "X-Odoo-Db", values[i]);
         gotoLogin();
@@ -275,6 +299,16 @@ public class ChangeHostActivity extends NetWorkActivity {
                 break;
             case LOGINOUT_Test:
                 switchDBByIndex(4);
+                break;
+            case LOGINOUT_NONE:
+                switchDBByIndex(5);
+                break;
+            case LOGINOUT_CUSTOMER:
+                Constant.BASE_URL = mEtHost.getText().toString();
+                SPUtils.put(mContext, FILE_KEY_HOST, Constant.BASE_URL);
+                SPUtils.put(mContext, "X-Odoo-Db", mEtDatabase.getText().toString());
+                ProductBasicUtils.clearCache(mContext);
+                gotoLogin();
                 break;
 
         }

@@ -15,19 +15,21 @@
             android:id="@+id/rb_formal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:text="正式(erp)"/>
 
         <RadioButton
             android:id="@+id/rb_test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:textColor="@color/black"
             android:text="测试(develop)"/>
 
         <RadioButton
             android:id="@+id/rb_custom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:text="自定义"/>
     </RadioGroup>
 
@@ -36,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:textColor="@color/black"
         android:hint="请输入你自定义的host"/>
 
     <EditText
@@ -43,6 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:textColor="@color/black"
         android:hint="请输入你自定义的数据库"/>
 
     <Button

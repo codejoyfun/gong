@@ -345,7 +345,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                     intent3.putExtra("orderid", bean.getOrderID());
                     intent3.putExtra("ordername", bean.getName());
                     intent3.putExtra("hasattachment", isHasAttachment);
-                    if (bean.getState().equals(OrderState.SALE.getName())&&bean.getOrderSettleName().contains("单次结算")
+                    if (!bean.getState().equals(OrderState.DRAFT.getName())&&bean.getOrderSettleName().contains("单次结算")
                             &&bean.getOrderSettleName().contains("先付款后收货")){
                         intent3.putExtra(UploadPayedPicActivity.INTENT_KEY_CANN_NO_EDIT, true);
                     }
@@ -633,7 +633,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             rightBtn.setText(OrderActionUtils.getDoBtnTextByState(bean));
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
 
-            if (bean.getState().equals(OrderState.DRAFT.getName())&&bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
+            if (bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
                 setUpPaymenInstrument();
             }
 

@@ -137,6 +137,9 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 }
             }
         });
+        setUpEditMode();
+        adapter.setEditMode(editMode);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -154,6 +157,15 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
+    }
+
+    private void setUpEditMode(){
+        this.setTitleRightText(true, "完成");
+        this.setTitleLeftIcon(true, R.drawable.nav_add);
+        select_bar.setVisibility(View.VISIBLE);
+        ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext, 55));
+        ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext, 55));
+        editMode = true;
     }
 
     @OnClick({R.id.dateTv, R.id.title_iv_left, R.id.title_tv_rigth, R.id.onekeyBtn, R.id.deleteBtn})
@@ -192,12 +204,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 break;
             case R.id.title_tv_rigth:
                 if (!editMode) {
-                    this.setTitleRightText(true, "完成");
-                    this.setTitleLeftIcon(true, R.drawable.nav_add);
-                    select_bar.setVisibility(View.VISIBLE);
-                    ViewPropertyAnimator.animate(bottom_bar).setDuration(500).translationY(CommonUtils.dip2px(mContext, 55));
-                    ViewPropertyAnimator.animate(select_bar).setDuration(500).translationY(-CommonUtils.dip2px(mContext, 55));
-                    editMode = true;
+                    setUpEditMode();
                 } else {
                     adapter.clearSelect();
                     this.setTitleRightText(true, "编辑");
