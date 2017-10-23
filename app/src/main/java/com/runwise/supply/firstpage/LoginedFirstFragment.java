@@ -659,7 +659,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 dialog.dismiss();
             }
         });
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(systemUpgradeHelper.getStartTime()*1000);
         StringBuilder sb = new StringBuilder();
