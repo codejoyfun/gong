@@ -226,14 +226,10 @@ public class OrderDetailActivity extends NetWorkActivity {
                     startActivity(mIntent);
                     finish();
                 } else {
-                    if (bean.isUnApplyService()){
-                        ToastUtil.show(mContext, "无法申请售后");
-                    }else{
-                        if (!bDialog.isVisible()) {
-                            bDialog.show();
-                        } else {
-                            bDialog.dismiss();
-                        }
+                    if (!bDialog.isVisible()) {
+                        bDialog.show();
+                    } else {
+                        bDialog.dismiss();
                     }
                 }
                 break;
@@ -348,8 +344,8 @@ public class OrderDetailActivity extends NetWorkActivity {
                     intent3.putExtra("orderid", bean.getOrderID());
                     intent3.putExtra("ordername", bean.getName());
                     intent3.putExtra("hasattachment", isHasAttachment);
-                    if (!bean.getState().equals(OrderState.DRAFT.getName())&&bean.getOrderSettleName().contains("单次结算")
-                            &&bean.getOrderSettleName().contains("先付款后收货")){
+                    if (!bean.getState().equals(OrderState.DRAFT.getName()) && bean.getOrderSettleName().contains("单次结算")
+                            && bean.getOrderSettleName().contains("先付款后收货")) {
                         intent3.putExtra(UploadPayedPicActivity.INTENT_KEY_CANN_NO_EDIT, true);
                     }
                     startActivityForResult(intent3, UPLOAD);
@@ -393,6 +389,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 break;
         }
     }
+
     private void requestCustomerService() {
         Object paramBean = null;
         this.sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USERINFO_TRANSFER, false, UserInfo.class);
@@ -461,11 +458,11 @@ public class OrderDetailActivity extends NetWorkActivity {
                 ProductBasicList.ListBean listBean = productOne.getProduct();
                 //保存进缓存
                 missingLinesBean.remove(listBean.getProductID());
-                if(cacheProductInfo==null)cacheProductInfo = new ArrayList<>();
-                ProductBasicUtils.getBasicMap(this).put(listBean.getProductID()+"",listBean);//更新内存缓存
+                if (cacheProductInfo == null) cacheProductInfo = new ArrayList<>();
+                ProductBasicUtils.getBasicMap(this).put(listBean.getProductID() + "", listBean);//更新内存缓存
                 cacheProductInfo.add(listBean);
-                if(missingLinesBean.size()==0){//所有都返回了
-                    ProductBasicUtils.saveProductInfoAsync(this,cacheProductInfo);
+                if (missingLinesBean.size() == 0) {//所有都返回了
+                    ProductBasicUtils.saveProductInfoAsync(this, cacheProductInfo);
                     //刷新页面
                     setUpDataForViewPage();
                 }
@@ -627,7 +624,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 lp.height = 0;
                 bottom_bar.setLayoutParams(lp);
                 tip = "感谢您的评价，供鲜生祝您生活愉快！";
-            } else if ("cancel".equals(bean.getState())){
+            } else if ("cancel".equals(bean.getState())) {
                 state = "订单已取消";
                 tip = "您的订单已取消成功";
             }
@@ -636,7 +633,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             rightBtn.setText(OrderActionUtils.getDoBtnTextByState(bean));
             dateTv.setText(TimeUtils.getMMdd(bean.getCreateDate()));
 
-            if (bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
+            if (bean.getOrderSettleName().contains("先付款后收货") && bean.getOrderSettleName().contains("单次结算")) {
                 setUpPaymenInstrument();
             }
 
@@ -649,7 +646,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 setTitleRightText(true, "修改");
                 isModifyOrder = true;
             }
-            if (bean.getState().equals("rated") || bean.getState().equals("done")) {
+            if (!bean.isUnApplyService()&&(bean.getState().equals("rated") || bean.getState().equals("done"))) {
                 //同时，显示右上角，申请售后
                 setTitleRightText(true, "申请售后");
             }
@@ -681,7 +678,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         }
     }
 
-    private void setUpPaymenInstrument(){
+    private void setUpPaymenInstrument() {
         payStateTv.setVisibility(View.VISIBLE);
         payStateValue.setVisibility(View.VISIBLE);
         uploadBtn.setVisibility(View.VISIBLE);
@@ -699,11 +696,12 @@ public class OrderDetailActivity extends NetWorkActivity {
 
     /**
      * 是否实收
+     *
      * @return
      */
-    private boolean isShiShou(){
-        for (OrderResponse.ListBean.LinesBean linesBean:bean.getLines()){
-            if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()){
+    private boolean isShiShou() {
+        for (OrderResponse.ListBean.LinesBean linesBean : bean.getLines()) {
+            if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()) {
                 return true;
             }
         }
@@ -711,9 +709,9 @@ public class OrderDetailActivity extends NetWorkActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void setBottom(View v){
+    private void setBottom(View v) {
         RelativeLayout.LayoutParams params =
-                (RelativeLayout.LayoutParams ) v.getLayoutParams();
+                (RelativeLayout.LayoutParams) v.getLayoutParams();
         params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         v.setLayoutParams(params);
     }
@@ -740,11 +738,11 @@ public class OrderDetailActivity extends NetWorkActivity {
                     map.put(listBean.getCategory(), linesBeen);
                 }
                 linesBeen.add(linesBean);
-            } else if(listBean == null){//本地没有该商品数据
-                missingLinesBean.put(linesBean.getProductID(),linesBean);
+            } else if (listBean == null) {//本地没有该商品数据
+                missingLinesBean.put(linesBean.getProductID(), linesBean);
             }
         }
-        if(missingLinesBean!=null && missingLinesBean.size()>0){
+        if (missingLinesBean != null && missingLinesBean.size() > 0) {
             //request server
             requestMissingInfo();
             return;
@@ -889,9 +887,9 @@ public class OrderDetailActivity extends NetWorkActivity {
         });
     }
 
-    private void requestMissingInfo(){
+    private void requestMissingInfo() {
         cacheProductInfo = new ArrayList<>();
-        for(int i=0;i<missingLinesBean.size();i++){
+        for (int i = 0; i < missingLinesBean.size(); i++) {
             Object request = null;
             StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
             int key = missingLinesBean.keyAt(i);
