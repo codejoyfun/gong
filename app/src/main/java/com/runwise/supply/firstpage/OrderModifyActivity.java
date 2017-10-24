@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -50,8 +51,9 @@ import static java.lang.System.currentTimeMillis;
  */
 
 public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface {
-    private static final int COMMIT_TYPE = 1;
-    private static final int ADD_PRODUCT = 1000;
+    private static final int COMMIT_TYPE = 1 << 0;
+    private static final int ADD_PRODUCT = 1 << 1;
+    private static final int REQUEST_USER_INFO = 1 << 2;
 
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
@@ -96,6 +98,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
     private Handler handler = new Handler();
     private OneKeyAdapter adapter;
     private boolean canSeePrice;
+    OrderResponse.ListBean bean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,22 +106,13 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_modify_layout);
+        requestUserInfo();
         //订单得到数据
-        OrderResponse.ListBean bean = getIntent().getExtras().getParcelable("order");
-        long estimatedStamp = TimeUtils.getFormatTime(bean.getEstimatedTime());
-        String estimatedTimeStr = TimeUtils.getMMdd(bean.getEstimatedTime());
-        if ((currentTimeMillis() - estimatedStamp) >= 1000 * 3600 * 24) {
-            mDayDiff = 2;
-            long estimatedTime = System.currentTimeMillis() + mDayDiff*1000 * 3600 * 24;
-            estimatedTimeStr = TimeUtils.getMMdd(estimatedTime);
-        }else{
-            mDayDiff = TimeUtils.differentDaysByMillisecond(currentTimeMillis(), estimatedStamp);
-        }
-        cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff);
+        bean = getIntent().getExtras().getParcelable("order");
+        setUpDate(2);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         setTitleRightText(true, "编辑");
         setTitleLeftIcon(true, R.drawable.nav_back);
-        dateTv.setText(cachedDWStr);
         adapter = new OneKeyAdapter(mContext);
         adapter.setCallback(this);
         pullListView.setAdapter(adapter);
@@ -156,6 +150,27 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         adapter.notifyDataSetChanged();
     }
 
+    private void setUpDate(int dayDiff) {
+        long estimatedStamp = TimeUtils.getFormatTime(bean.getEstimatedTime());
+        String estimatedTimeStr = TimeUtils.getMMdd(bean.getEstimatedTime());
+        if ((currentTimeMillis() - estimatedStamp) >= 0) {
+            mDayDiff = dayDiff;
+            long estimatedTime = currentTimeMillis() + mDayDiff * 1000 * 3600 * 24;
+            estimatedTimeStr = TimeUtils.getMMdd(estimatedTime);
+        } else {
+            mDayDiff = TimeUtils.differentDaysByMillisecond(currentTimeMillis(), estimatedStamp);
+        }
+        cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff);
+        dateTv.setText(cachedDWStr);
+    }
+
+    private void requestUserInfo() {
+        Object paramBean = null;
+        sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
+    }
+
+    int mReserveGoodsAdvanceDate;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -163,6 +178,15 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 ToastUtil.show(mContext, "订单修改成功");
                 EventBus.getDefault().post(new OrderChangedEvent());
                 finish();
+                break;
+            case REQUEST_USER_INFO:
+                UserInfo userInfo = (UserInfo) result.getResult().getData();
+                GlobalApplication.getInstance().saveUserInfo(userInfo);
+                mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+                cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+                selectedDate = 1;
+                setUpDate(mReserveGoodsAdvanceDate);
+                setSelectedColor(1);
                 break;
         }
 
@@ -343,6 +367,9 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
 
     //参数从0开始
     private void setSelectedColor(int i) {
+        if(wArr[0] == null){
+            return;
+        }
         for (TextView tv : wArr) {
             tv.setTextColor(Color.parseColor("#2E2E2E"));
         }
