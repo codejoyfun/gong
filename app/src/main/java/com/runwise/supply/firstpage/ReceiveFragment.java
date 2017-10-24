@@ -234,7 +234,7 @@ public class ReceiveFragment extends BaseFragment {
                     sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }
                 viewHolder.content.setText(sb.toString());
-                viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + basicBean.getUom());
+                viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + bean.getProductUom());
                 final ViewHolder finalViewHolder = viewHolder;
 
                 if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {

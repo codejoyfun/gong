@@ -42,9 +42,13 @@ import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.SystemUpgradeLayout;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by mychao on 2017/7/14.
@@ -142,8 +146,18 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SystemUpgradeHelper.getInstance(getContext()).create("1508394075.0-1508747938.0");
-                EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
+                Intent intent = new Intent();
+                intent.setAction("cn.jpush.android.intent.NOTIFICATION_RECEIVED");
+                intent.addCategory("com.runwise.supply");
+                JSONObject jsonObject = new JSONObject();
+                try{
+                    jsonObject.put("type","update");
+                    jsonObject.put("dataid","1508394075.0-1508747938.0");
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+                intent.putExtra(JPushInterface.EXTRA_EXTRA,jsonObject.toString());
+                getActivity().sendBroadcast(intent);
             }
         });
     }

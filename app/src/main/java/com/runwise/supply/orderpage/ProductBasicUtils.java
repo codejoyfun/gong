@@ -1,6 +1,8 @@
 package com.runwise.supply.orderpage;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.lidroid.xutils.DbUtils;
@@ -92,39 +94,37 @@ public class ProductBasicUtils {
     }
 
     public static void saveProductInfoAsync(final Context context, final List<ProductBasicList.ListBean> listBeanList) {
-//        AsyncTask<String,String,String> task = new AsyncTask<String, String, String>() {
-//            @Override
-//            protected String doInBackground(String... strings) {
-//                try{
-//                    DbUtils dbUtils = DbUtils.create(context);
-//                    Log.d("haha","start save!");
-//                    for(ProductBasicList.ListBean listBean:listBeanList){
-//                        dbUtils.replace(listBean);
-//                    }
-//                    Log.d("haha","save!");
-//                }catch (DbException e){
-//                    e.printStackTrace();
-//                    return null;
-//                }
-//                return null;
-//            }
-//        };
-        Runnable runnable = new Runnable() {
+        AsyncTask<String,String,String> task = new AsyncTask<String, String, String>() {
             @Override
-            public void run() {
-                DbUtils dbUtils = DbUtils.create(context);
-                //Log.d("haha","start save!");
-                for (ProductBasicList.ListBean listBean : listBeanList) {
-                    try {
-                        dbUtils.saveOrUpdate(listBean);
-                    } catch (DbException e) {
-                        e.printStackTrace();
-                    }
+            protected String doInBackground(String... strings) {
+                try{
+                    DbUtils dbUtils = DbUtils.create(context);
+                    dbUtils.saveOrUpdateAll(listBeanList);
+                    Log.d("haha","save finished!");
+                }catch (DbException e){
+                    e.printStackTrace();
+                    return null;
                 }
-                //Log.d("haha","save!");
+                return null;
             }
         };
-        new Thread(runnable).start();
+        task.execute(new String[]{});
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                DbUtils dbUtils = DbUtils.create(context);
+//                //Log.d("haha","start save!");
+//                for (ProductBasicList.ListBean listBean : listBeanList) {
+//                    try {
+//                        dbUtils.saveOrUpdate(listBean);
+//                    } catch (DbException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                //Log.d("haha","save!");
+//            }
+//        };
+//        new Thread(runnable).start();
     }
 
     public static List<ReceiveInfo> getReceiveInfoList() {
