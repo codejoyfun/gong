@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/input_minus"
             android:background="@null"/>
-        <EditText
+        <com.runwise.supply.view.NoWatchEditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

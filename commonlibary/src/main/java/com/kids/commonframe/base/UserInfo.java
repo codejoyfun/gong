@@ -61,15 +61,15 @@ public class UserInfo implements Serializable{
     private boolean hasNewInvoice;
     private boolean noAfterSaleApply;
 
-    public boolean isShopTransfer() {
+    public String getIsShopTransfer() {
         return isShopTransfer;
     }
 
-    public void setShopTransfer(boolean shopTransfer) {
-        isShopTransfer = shopTransfer;
+    public void setIsShopTransfer(String isShopTransfer) {
+        this.isShopTransfer = isShopTransfer;
     }
 
-    private boolean isShopTransfer;
+    private String isShopTransfer;
     private String company;
     private int reserveGoodsAdvanceDate;
 

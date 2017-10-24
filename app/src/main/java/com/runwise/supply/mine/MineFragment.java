@@ -214,7 +214,7 @@ public class MineFragment extends NetWorkFragment {
                 break;
             case REQUEST_USERINFO_TRANSFER:
                 userInfo = (UserInfo) result.getResult().getData();
-                if (userInfo.isShopTransfer()) {
+                if (userInfo.getIsShopTransfer().equals("true")) {
                     startActivity(new Intent(mContext, TransferListActivity.class));
                 } else {
                     ToastUtil.show(mContext, "没有门店调拨权限");

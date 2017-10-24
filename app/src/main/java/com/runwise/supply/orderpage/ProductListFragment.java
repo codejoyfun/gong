@@ -29,6 +29,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.view.NoWatchEditText;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -142,7 +143,6 @@ public class ProductListFragment extends NetWorkFragment {
     }
 
     public class ProductAdapter extends IBaseAdapter {
-        private boolean ischange;
 
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
@@ -153,8 +153,8 @@ public class ProductListFragment extends NetWorkFragment {
                 convertView = View.inflate(mContext, R.layout.product_layout_item, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-                EditText et = viewHolder.editText;
-                et.addTextChangedListener(new TextWatcher() {
+                viewHolder.editText.removeTextChangedListener();
+                viewHolder.editText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -162,13 +162,13 @@ public class ProductListFragment extends NetWorkFragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (!ischange) {
+//                        if (!ischange) {
                             int changedNum = 0;
                             if (!TextUtils.isEmpty(s)) {
                                 changedNum = Integer.valueOf(s.toString());
                             }
                             countMap.put(String.valueOf(bean.getProductID()), changedNum);
-                        }
+//                        }
                     }
 
                     @Override
@@ -190,9 +190,7 @@ public class ProductListFragment extends NetWorkFragment {
                 viewHolder.unit1.setVisibility(View.VISIBLE);
             }
             final EditText editText = viewHolder.editText;
-            ischange = true;
             editText.setText(countMap.get(String.valueOf(bean.getProductID())) + "");
-            ischange = false;
             final LinearLayout ll = viewHolder.editLL;
             final ImageButton addBtn = viewHolder.addBtn;
             final TextView unit1 = viewHolder.unit1;
@@ -203,9 +201,7 @@ public class ProductListFragment extends NetWorkFragment {
                     unit1.setVisibility(View.INVISIBLE);
                     ll.setVisibility(View.VISIBLE);
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
-                    ischange = true;
                     editText.setText(++currentNum + "");
-                    ischange = false;
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
                 }
             });
@@ -215,9 +211,7 @@ public class ProductListFragment extends NetWorkFragment {
                 public void onClick(View v) {
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     if (currentNum > 0) {
-                        ischange = true;
                         editText.setText(--currentNum + "");
-                        ischange = false;
                         countMap.put(String.valueOf(bean.getProductID()), currentNum);
                         if (currentNum == 0) {
                             addBtn.setVisibility(View.VISIBLE);
@@ -233,9 +227,7 @@ public class ProductListFragment extends NetWorkFragment {
                 @Override
                 public void onClick(View v) {
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
-                    ischange = true;
                     editText.setText(++currentNum + "");
-                    ischange = false;
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
                 }
             });
@@ -284,7 +276,7 @@ public class ProductListFragment extends NetWorkFragment {
             @ViewInject(R.id.input_add)
             ImageButton inputPBtn;//加
             @ViewInject(R.id.editText)
-            EditText editText; //输入框
+            NoWatchEditText editText; //输入框
             @ViewInject(R.id.unit1)
             TextView unit1;  //单位
             @ViewInject(R.id.tv_price)
@@ -302,5 +294,11 @@ public class ProductListFragment extends NetWorkFragment {
             }
         }
         return 0;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        countMap.clear();
     }
 }

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +39,8 @@ import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.orderpage.entity.StoreResponse;
+import com.runwise.supply.tools.DataClickListener;
+import com.runwise.supply.tools.DataTextWatch;
 import com.runwise.supply.view.NoWatchEditText;
 
 import java.text.DecimalFormat;
@@ -331,6 +332,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
         } else {
             mTvEditOrFinish.setVisibility(View.VISIBLE);
         }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -396,34 +398,31 @@ public class CreateCallInListActivity extends NetWorkActivity {
     }
 
     public class ProductAdapter extends IBaseAdapter {
-        private boolean ischange;
 
         @Override
-        protected View getExView(final int position, View convertView, ViewGroup parent) {
+        protected View getExView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
-            final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
+            ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.item_product_call_in, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
                 viewHolder.editText.removeTextChangedListener();
-                viewHolder.editText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
+                DataTextWatch dataTextWatch = new DataTextWatch() {
                     @Override
                     public void afterTextChanged(Editable s) {
-                        refreshTotalCountAndMoney();
+                        ProductData.ListBean listBean = (ProductData.ListBean) mObject;
+                        if (!TextUtils.isEmpty(s.toString())) {
+                            int count = Integer.parseInt(s.toString());
+                            countMap.put(String.valueOf(listBean.getProductID()), count);
+                            refreshTotalCountAndMoney();
+                        }
+
                     }
-                });
+                };
+                dataTextWatch.setObject(bean);
+                viewHolder.editText.addTextChangedListener(dataTextWatch);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
@@ -435,40 +434,40 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 viewHolder.editLL.setVisibility(View.INVISIBLE);
                 viewHolder.unit1.setVisibility(View.VISIBLE);
             }
-            ischange = true;
             viewHolder.editText.setText(countMap.get(String.valueOf(bean.getProductID())) + "");
-            ischange = false;
-            final LinearLayout ll = viewHolder.editLL;
-            final TextView unit1 = viewHolder.unit1;
-            final ViewHolder finalViewHolder = viewHolder;
-            viewHolder.inputMBtn.setOnClickListener(new View.OnClickListener() {
-
+            DataClickListener dataClickListener = new DataClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    ProductData.ListBean listBean = (ProductData.ListBean) mObject;
+                    int currentNum = countMap.get(String.valueOf(listBean.getProductID()));
                     if (currentNum > 0) {
                         --currentNum;
-                        countMap.put(String.valueOf(bean.getProductID()), currentNum);
-                        finalViewHolder.editText.setText(currentNum + "");
-                        if (currentNum == 0) {
-                            unit1.setVisibility(View.VISIBLE);
-                            ll.setVisibility(View.INVISIBLE);
-                        }
+                        countMap.put(String.valueOf(listBean.getProductID()), currentNum);
+                        NoWatchEditText noWatchEditText = (NoWatchEditText) mSecondObject;
+                        noWatchEditText.setText(String.valueOf(currentNum));
+                        refreshTotalCountAndMoney();
                     }
-
                 }
-            });
-            final ViewHolder finalViewHolder1 = viewHolder;
-            viewHolder.inputPBtn.setOnClickListener(new View.OnClickListener() {
+            };
+            dataClickListener.setObject(bean);
+            dataClickListener.setSecondObject(viewHolder.editText);
+            viewHolder.inputMBtn.setOnClickListener(dataClickListener);
 
+            DataClickListener dataClickListener1 = new DataClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    ProductData.ListBean listBean = (ProductData.ListBean) mObject;
+                    int currentNum = countMap.get(String.valueOf(listBean.getProductID()));
                     currentNum++;
-                    countMap.put(String.valueOf(bean.getProductID()), currentNum);
-                    finalViewHolder1.editText.setText(currentNum + "");
+                    countMap.put(String.valueOf(listBean.getProductID()), currentNum);
+                    NoWatchEditText noWatchEditText = (NoWatchEditText) mSecondObject;
+                    noWatchEditText.setText(String.valueOf(currentNum));
+                    refreshTotalCountAndMoney();
                 }
-            });
+            };
+            dataClickListener1.setObject(bean);
+            dataClickListener1.setSecondObject(viewHolder.editText);
+            viewHolder.inputPBtn.setOnClickListener(dataClickListener1);
 
             ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
             if (basicBean != null) {
@@ -512,14 +511,16 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 viewHolder.unit_tag.setVisibility(View.VISIBLE);
                 viewHolder.tv_count.setVisibility(View.VISIBLE);
             }
-            viewHolder.iv_delete.setOnClickListener(new View.OnClickListener() {
+            DataClickListener dataClickListener2 = new DataClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mList.remove(position);
-                    countMap.put(String.valueOf(bean.getProductID()), 0);
-                    notifyDataSetChanged();
+                    ProductData.ListBean listBean = (ProductData.ListBean) mObject;
+                    countMap.put(String.valueOf(listBean.getProductID()), 0);
+                    refreshTotalCountAndMoney();
                 }
-            });
+            };
+            dataClickListener2.setObject(bean);
+            viewHolder.iv_delete.setOnClickListener(dataClickListener2);
             return convertView;
         }
 
