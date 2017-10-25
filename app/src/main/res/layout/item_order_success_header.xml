@@ -36,6 +36,6 @@
         android:textSize="16sp"
         android:textColor="@color/white"
         android:layout_marginTop="10dp"
-        android:background="@drawable/btn_green_gradian"
+        android:background="@drawable/btn_green_gradian_round"
         android:text="上传支付凭证"/>
 </LinearLayout>

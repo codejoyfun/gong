@@ -66,7 +66,7 @@ public class TransferStateActivity extends NetWorkActivity {
                 StringBuilder sbContent = new StringBuilder();
                 stateEntity.setOperateTime(stateTime);
                 stateEntity.setState(state);
-                stateEntity.setOperator(pieces[4]);
+                stateEntity.setOperator(pieces[pieces.length-1]);
                 if(state.contains(TransferEntity.STATE_SUBMITTED)){//已提交
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨单号：").append(mTransferEntity.getPickingName()).append("\n")

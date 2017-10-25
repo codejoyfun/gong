@@ -32,6 +32,7 @@ import java.util.Locale;
  */
 
 public class OrderCommitSuccessActivity extends BaseActivity {
+    private static final int REQ_ACT_UPLOAD = 0x1234;
     public static final String INTENT_KEY_ORDERS = "intent_key_orders";
     public static final String INTENT_KEY_TYPE = "type";
     private OrderAdapter mOrderAdapter;
@@ -114,8 +115,8 @@ public class OrderCommitSuccessActivity extends BaseActivity {
                             Intent uIntent = new Intent(mContext,UploadPayedPicActivity.class);
                             uIntent.putExtra("orderid",bean.getOrderID());
                             uIntent.putExtra("ordername",bean.getName());
-                            uIntent.putExtra("hasattachment",false);
-                            startActivity(uIntent);
+                            uIntent.putExtra("hasattachment",type==0);
+                            startActivityForResult(uIntent,REQ_ACT_UPLOAD);
                         }
                     });
                     return;
@@ -207,6 +208,14 @@ public class OrderCommitSuccessActivity extends BaseActivity {
         }catch (ParseException e){
             e.printStackTrace();
             return str;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQ_ACT_UPLOAD && resultCode==200 && data.getBooleanExtra("upload_success",false)){
+            finish();
         }
     }
 }

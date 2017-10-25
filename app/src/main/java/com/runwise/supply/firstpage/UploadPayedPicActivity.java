@@ -255,6 +255,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     ToastUtil.show(mContext, "上传成功");
                     Intent intent = new Intent();
                     intent.putExtra("has", true);
+                    intent.putExtra("upload_success",true);
                     setResult(200, intent);
                     finish();
                 }
