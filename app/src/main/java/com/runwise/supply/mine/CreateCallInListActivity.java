@@ -281,6 +281,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                             }
                         }
                     }
+
                     mProductAdapter.notifyDataSetChanged();
                     refreshTotalCountAndMoney();
                     break;
@@ -401,31 +402,17 @@ public class CreateCallInListActivity extends NetWorkActivity {
 
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder = null;
+            final ViewHolder viewHolder;
             ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.item_product_call_in, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-                viewHolder.editText.removeTextChangedListener();
-                DataTextWatch dataTextWatch = new DataTextWatch() {
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        ProductData.ListBean listBean = (ProductData.ListBean) mObject;
-                        if (!TextUtils.isEmpty(s.toString())) {
-                            int count = Integer.parseInt(s.toString());
-                            countMap.put(String.valueOf(listBean.getProductID()), count);
-                            refreshTotalCountAndMoney();
-                        }
-
-                    }
-                };
-                dataTextWatch.setObject(bean);
-                viewHolder.editText.addTextChangedListener(dataTextWatch);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+            viewHolder.editText.setTag(position);
             //先根据集合里面对应个数初始化一次
             if (countMap.get(String.valueOf(bean.getProductID())) > 0) {
                 viewHolder.editLL.setVisibility(View.VISIBLE);
@@ -435,6 +422,25 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 viewHolder.unit1.setVisibility(View.VISIBLE);
             }
             viewHolder.editText.setText(countMap.get(String.valueOf(bean.getProductID())) + "");
+            viewHolder.editText.removeTextChangedListener();
+            DataTextWatch dataTextWatch = new DataTextWatch() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if (!isChange()) {
+                        return;
+                    }
+                    int position = (int) viewHolder.editText.getTag();
+                    ProductData.ListBean listBean = (ProductData.ListBean) mList.get(position);
+                    if (!TextUtils.isEmpty(s.toString())) {
+                        int count = Integer.parseInt(s.toString());
+                        countMap.put(String.valueOf(listBean.getProductID()), count);
+                        refreshTotalCountAndMoney();
+                    }
+                }
+            };
+
+            viewHolder.editText.addTextChangedListener(dataTextWatch);
+
             DataClickListener dataClickListener = new DataClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -461,7 +467,11 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     currentNum++;
                     countMap.put(String.valueOf(listBean.getProductID()), currentNum);
                     NoWatchEditText noWatchEditText = (NoWatchEditText) mSecondObject;
+//                    dataTextWatch.setChange(false);
+//                    noWatchEditText.removeTextChangedListener();
                     noWatchEditText.setText(String.valueOf(currentNum));
+//                    dataTextWatch.setChange(true);
+//                    noWatchEditText.addTextChangedListener(dataTextWatch);
                     refreshTotalCountAndMoney();
                 }
             };

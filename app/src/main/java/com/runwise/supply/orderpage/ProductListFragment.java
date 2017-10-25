@@ -146,39 +146,40 @@ public class ProductListFragment extends NetWorkFragment {
 
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder = null;
+            final ViewHolder viewHolder;
             final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.product_layout_item, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-                viewHolder.editText.removeTextChangedListener();
-                viewHolder.editText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                        if (!ischange) {
-                            int changedNum = 0;
-                            if (!TextUtils.isEmpty(s)) {
-                                changedNum = Integer.valueOf(s.toString());
-                            }
-                            countMap.put(String.valueOf(bean.getProductID()), changedNum);
-//                        }
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-
-                    }
-                });
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+            viewHolder.editText.setTag(position);
+            viewHolder.editText.removeTextChangedListener();
+            viewHolder.editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    int position = (int) viewHolder.editText.getTag();
+                    ProductData.ListBean listBean = (ProductData.ListBean) mList.get(position);
+                    int changedNum = 0;
+                    if (!TextUtils.isEmpty(s)) {
+                        changedNum = Integer.valueOf(s.toString());
+                    }
+                    countMap.put(String.valueOf(listBean.getProductID()), changedNum);
+                }
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
             //先根据集合里面对应个数初始化一次
             if (countMap.get(String.valueOf(bean.getProductID())) > 0) {
                 viewHolder.editLL.setVisibility(View.VISIBLE);
@@ -297,7 +298,7 @@ public class ProductListFragment extends NetWorkFragment {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         countMap.clear();
     }
