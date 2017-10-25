@@ -431,6 +431,7 @@
                 android:id="@+id/rl_procurement"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:visibility="gone"
                 android:background="@drawable/white_btn_selector">
 
                 <TextView
@@ -474,6 +475,7 @@
                 android:id="@+id/rl_transfer"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:visibility="gone"
                 android:background="@drawable/white_btn_selector">
 
                 <TextView

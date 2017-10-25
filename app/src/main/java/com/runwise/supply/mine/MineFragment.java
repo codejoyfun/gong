@@ -3,6 +3,7 @@ package com.runwise.supply.mine;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,6 +40,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import io.vov.vitamio.utils.NumberUtil;
 
+import static com.runwise.supply.R.id.rl_procurement;
 import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 
 /**
@@ -100,6 +102,7 @@ public class MineFragment extends NetWorkFragment {
     private TextView titleTextView;
     @ViewInject(R.id.layout_upgrade_notice)
     private SystemUpgradeLayout mLayoutUpgradeNotice;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,6 +209,16 @@ public class MineFragment extends NetWorkFragment {
                 } else {
                     orderRed.setVisibility(View.GONE);
                 }
+                if (!TextUtils.isEmpty(userInfo.getIsZicai())&&userInfo.getIsZicai().equals("true")) {
+                    findViewById(R.id.rl_procurement).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.rl_procurement).setVisibility(View.GONE);
+                }
+                if (!TextUtils.isEmpty(userInfo.getIsShopTransfer())&&userInfo.getIsShopTransfer().equals("true")) {
+                    findViewById(R.id.rl_transfer).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.rl_transfer).setVisibility(View.GONE);
+                }
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
                 break;
             case REQUEST_USERINFO_PROCUMENT:
@@ -254,7 +267,7 @@ public class MineFragment extends NetWorkFragment {
     }
 
     @OnClick({R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_2, R.id.itemLayout_3, R.id.itemLayout_4,
-            R.id.rl_stocktaking_record, R.id.rl_price_list, R.id.rl_bill, R.id.rl_procurement, R.id.ll_cai_gou_e, R.id.rl_transfer})
+            R.id.rl_stocktaking_record, R.id.rl_price_list, R.id.rl_bill, rl_procurement, R.id.ll_cai_gou_e, R.id.rl_transfer})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -358,7 +371,7 @@ public class MineFragment extends NetWorkFragment {
                     }
                 }
                 break;
-            case R.id.rl_procurement:
+            case rl_procurement:
                 refreshProcument();
                 break;
             case R.id.ll_cai_gou_e:
@@ -370,7 +383,7 @@ public class MineFragment extends NetWorkFragment {
                 break;
             case R.id.rl_transfer://门店调拨
                 if (SPUtils.isLogin(getActivity())) {
-                  refreshTransfer();
+                    refreshTransfer();
                 }
         }
 

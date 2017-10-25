@@ -134,7 +134,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onResume() {
         super.onResume();
-        refreshVisibleOrder();
+//        refreshVisibleOrder();
     }
 
     private void getOrder(int orderId) {
