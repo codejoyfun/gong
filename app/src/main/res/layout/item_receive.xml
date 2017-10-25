@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="84dp"
+                android:paddingBottom="15dp"
+                android:paddingLeft="@dimen/padding_left"
+                android:paddingTop="15dp"
+    >
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sdv_image"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        fresco:placeholderImage="@drawable/placeholder"
+        fresco:placeholderImageScaleType="focusCrop"/>
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/sdv_image"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/editLL"
+        android:layout_toRightOf="@id/sdv_image"
+        android:singleLine="false"
+        android:text="黑鱼(大型)"
+        android:textColor="#444444"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_name"
+        android:layout_below="@id/tv_name"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_toLeftOf="@id/editLL"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:singleLine="true"
+        android:text="3305335 2-3斤／条"
+        android:textColor="#999999"
+        android:textSize="11sp"
+        />
+
+    <TextView
+        android:id="@+id/tv_product_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="/26袋"
+        android:textColor="@color/textColorThird"
+        android:textSize="11sp"
+        />
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="27"
+        android:textColor="@color/textColorPrimary"
+        android:layout_toLeftOf="@id/tv_product_count"
+        android:textSize="11sp"
+        />
+
+</RelativeLayout>
