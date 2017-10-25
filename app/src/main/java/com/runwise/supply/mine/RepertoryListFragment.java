@@ -172,7 +172,9 @@ public class RepertoryListFragment extends NetWorkFragment {
                 }
                 viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
+                if (productBean.getImage() !=null){
+                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
+                }
             }
             viewHolder.value.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())));
             viewHolder.uom.setText(bean.getUom());
