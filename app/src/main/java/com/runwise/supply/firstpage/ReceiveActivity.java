@@ -51,7 +51,6 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.fragment.TabFragment;
-import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -78,10 +77,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import io.vov.vitamio.utils.Log;
 
@@ -1027,7 +1024,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             bottomData.setCount(bean.getCount());
 //                bottomData.setTwoUnitValue(settleCount);    //双单位的值
             countMap.put(pId, bottomData);
-            mPopWindow.dismiss();
+//            mPopWindow.dismiss();
+            View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
+            mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             //更新进度条
             updatePbProgress();
             //更新fragment列表内容

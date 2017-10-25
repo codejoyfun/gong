@@ -28,7 +28,7 @@
         android:orientation="horizontal"
         android:visibility="invisible">
 
-        <com.runwise.supply.view.NoWatchEditText
+        <TextView
             android:id="@+id/receivedTv"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
@@ -51,20 +51,10 @@
             android:layout_marginLeft="8dp"
             android:text="/12条"
             android:textColor="#343434"
+            android:drawableRight="@drawable/more_itemlist_grayarrow"
             android:textSize="11sp"
             />
 
-        <ImageButton
-            android:id="@+id/input_add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:background="@null"
-            android:clickable="false"
-            android:focusableInTouchMode="false"
-            android:src="@drawable/btn_add"
-            />
     </LinearLayout>
 
     <LinearLayout
