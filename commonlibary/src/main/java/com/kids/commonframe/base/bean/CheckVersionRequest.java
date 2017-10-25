@@ -8,6 +8,7 @@ public class CheckVersionRequest {
     private String version_name;
     private String version_code;
     private String tag;
+    private String version;
 
     public String getVersion_name() {
         return version_name;
@@ -31,5 +32,13 @@ public class CheckVersionRequest {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

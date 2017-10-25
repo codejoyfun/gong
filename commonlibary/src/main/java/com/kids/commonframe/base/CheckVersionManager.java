@@ -53,7 +53,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
     public void checkVersion(boolean showToast) {
         this.showToast = showToast;
         CheckVersionRequest checkVersionRequest = new CheckVersionRequest();
-        //checkVersionRequest.setVersion_code(CommonUtils.getVersionCode(baseActivity));
+        checkVersionRequest.setVersion(CommonUtils.getVersionCode(baseActivity));
         checkVersionRequest.setTag("Android");
         netWorkHelper.sendConnection("/api/app/release/latest/version",checkVersionRequest,REQUEST_CHECK_VERSION,false,VersionUpdateResponse.class);
         if (showToast) {
