@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -28,6 +29,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.ProductCountChangeEvent;
 import com.kids.commonframe.base.bean.ProductGetEvent;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -272,7 +274,16 @@ public class ProductActivity extends NetWorkActivity {
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
-                finish();
+                dialog.setMessageGravity();
+                dialog.setMessage("还没保存哦,确认取消?");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        finish();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
                 break;
             case R.id.addBtn:
                 //回值给调用的页面

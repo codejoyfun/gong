@@ -1,11 +1,17 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -19,6 +25,7 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.ProductCountChangeEvent;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
@@ -153,21 +160,55 @@ public class ProductListFragment extends NetWorkFragment {
                 convertView = View.inflate(mContext, R.layout.product_layout_item, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-                EditText et = viewHolder.editText;
+                final EditText et = viewHolder.editText;
+
+                et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                        if(actionId == EditorInfo.IME_ACTION_DONE){
+                            checkText(bean.getProductID()+"",(EditText) textView);
+                        }
+                        return false;
+                    }
+                });
+                final LinearLayout ll = viewHolder.editLL;
+
+                //失去焦点的时候要检查edittext中的数字格式
+                et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        //按减号使edittext为0，隐藏Layout，这种情况不用检查数字格式
+                        if(!b && ll.getVisibility()==View.VISIBLE){
+                            checkText(bean.getProductID()+"",(EditText) view);
+                        }
+                    }
+                });
+
                 et.addTextChangedListener(new TextWatcher() {
+                    String mmPreString;
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                        mmPreString = s.toString();
                     }
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (!ischange) {
+                        if (!ischange) {//直接输入
+                            if(!TextUtils.isDigitsOnly(s)){//过滤非数字
+                                et.setText(mmPreString);
+                                return;
+                            }
+
                             int changedNum = 0;
                             if (!TextUtils.isEmpty(s)) {
                                 changedNum = Integer.valueOf(s.toString());
                             }
                             countMap.put(String.valueOf(bean.getProductID()), changedNum);
+
+                        }else{//按加减号
+                            if (!TextUtils.isEmpty(s)){
+                                et.setSelection(s.toString().length());
+                            }
                         }
                     }
 
@@ -199,6 +240,7 @@ public class ProductListFragment extends NetWorkFragment {
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
                     view.setVisibility(View.INVISIBLE);
                     unit1.setVisibility(View.INVISIBLE);
                     ll.setVisibility(View.VISIBLE);
@@ -213,6 +255,7 @@ public class ProductListFragment extends NetWorkFragment {
 
                 @Override
                 public void onClick(View v) {
+                    clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     if (currentNum > 0) {
                         ischange = true;
@@ -232,6 +275,7 @@ public class ProductListFragment extends NetWorkFragment {
 
                 @Override
                 public void onClick(View v) {
+                    clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     ischange = true;
                     editText.setText(++currentNum + "");
@@ -302,5 +346,35 @@ public class ProductListFragment extends NetWorkFragment {
             }
         }
         return 0;
+    }
+
+    /**
+     * 检查edittext中的数字格式是否合法
+     * 去掉开头的0
+     * 为0或空则设为1
+     *
+     * @param beanId
+     * @param editText
+     */
+    private void checkText(String beanId,EditText editText){
+        String tmpStr = editText.getText().toString();
+        if(TextUtils.isEmpty(tmpStr) || Integer.valueOf(tmpStr)==0){
+            ToastUtil.show(getActivity(),"数量超出范围");
+            editText.setText("1");
+            countMap.put(beanId, 1);
+            return;
+        }
+        if(tmpStr.startsWith("0")){
+            editText.setText(String.valueOf(Integer.valueOf(tmpStr)));
+        }
+    }
+
+    private void clearFocus(){
+        View v = getActivity().getCurrentFocus();
+        if(v!=null){
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            v.clearFocus();
+        }
     }
 }

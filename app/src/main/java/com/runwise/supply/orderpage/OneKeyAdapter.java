@@ -104,15 +104,21 @@ public class OneKeyAdapter extends IBaseAdapter {
             convertView.setTag(viewHolder);
             final EditText edittext = viewHolder.editText;
             viewHolder.editText.addTextChangedListener(new TextWatcher() {
+                String mmPrevious;
+
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                    mmPrevious = s.toString();
                 }
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (!ischange) {
                         Integer num;
+                        if(!TextUtils.isDigitsOnly(s)){
+                            edittext.setText(mmPrevious);
+                            return;
+                        }
                         if (TextUtils.isEmpty(s) || Integer.valueOf(s.toString()) == 0){
                             num = 1;
                             ischange = true;
@@ -157,7 +163,7 @@ public class OneKeyAdapter extends IBaseAdapter {
             if (basicBean.getImage() != null)
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL+basicBean.getImage().getImageSmall());
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-            sb.append("  ").append(basicBean.getUnit());
+            sb.append(" | ").append(basicBean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
             DecimalFormat df = new DecimalFormat("#.##");
             if (canSeePrice){
