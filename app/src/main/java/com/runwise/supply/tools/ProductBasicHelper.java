@@ -69,6 +69,8 @@ public class ProductBasicHelper {
         }
     }
 
+    List<ProductBasicList.ListBean> missingProducts;
+
     /**
      * networkHelper的callback
      * 商品信息设置进缓存
@@ -81,7 +83,10 @@ public class ProductBasicHelper {
         //保存进缓存
         missingProductsID.remove(listBean.getProductID());
         ProductBasicUtils.getBasicMap(context).put(listBean.getProductID()+"",listBean);//更新内存缓存
+        if(missingProducts==null)missingProducts = new ArrayList<>();//保存进数据库
+        missingProducts.add(listBean);
         if(missingProductsID.size()==0){//所有都返回了
+            ProductBasicUtils.saveProductInfoAsync(context,missingProducts);
             //刷新页面
             return true;
         }

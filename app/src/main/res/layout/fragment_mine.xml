@@ -62,6 +62,15 @@
 
             </FrameLayout>
 
+            <!--<include-->
+                <!--layout="@layout/layout_system_upgrade_notice"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_width="match_parent"/>-->
+            <com.runwise.supply.view.SystemUpgradeLayout
+                android:id="@+id/layout_upgrade_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

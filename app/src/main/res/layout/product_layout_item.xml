@@ -22,7 +22,6 @@
         android:textSize="12sp"
         android:textColor="#2E2E2E"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/padding_right"
         android:layout_alignParentRight="true"/>
     <ImageButton
         android:id="@+id/addBtn"
@@ -53,8 +52,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/input_bg"
-            android:maxLength="4"
+            android:maxLength="8"
             android:gravity="center"
+            android:imeOptions="actionDone"
             android:inputType="numberDecimal"/>
         <ImageButton
             android:id="@+id/input_add"

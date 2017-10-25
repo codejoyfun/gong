@@ -53,6 +53,7 @@ import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.fragment.SearchListFragment;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -138,6 +139,10 @@ public class ProcurementAddActivity extends NetWorkActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!SystemUpgradeHelper.getInstance(this).check(this)){
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_procurement_add);
         searchET.addTextChangedListener(new TextWatcher() {
             @Override

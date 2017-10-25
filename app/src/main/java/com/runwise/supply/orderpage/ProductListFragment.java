@@ -1,11 +1,13 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -19,6 +21,7 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.ProductCountChangeEvent;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
@@ -198,6 +201,7 @@ public class ProductListFragment extends NetWorkFragment {
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
                     view.setVisibility(View.INVISIBLE);
                     unit1.setVisibility(View.INVISIBLE);
                     ll.setVisibility(View.VISIBLE);
@@ -210,6 +214,7 @@ public class ProductListFragment extends NetWorkFragment {
 
                 @Override
                 public void onClick(View v) {
+                    clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     if (currentNum > 0) {
                         editText.setText(--currentNum + "");
@@ -227,6 +232,7 @@ public class ProductListFragment extends NetWorkFragment {
 
                 @Override
                 public void onClick(View v) {
+                    clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
                     int currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     editText.setText(++currentNum + "");
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
@@ -301,5 +307,35 @@ public class ProductListFragment extends NetWorkFragment {
     public void onDestroy() {
         super.onDestroy();
         countMap.clear();
+    }
+
+    /**
+     * 检查edittext中的数字格式是否合法
+     * 去掉开头的0
+     * 为0或空则设为1
+     *
+     * @param beanId
+     * @param editText
+     */
+    private void checkText(String beanId,EditText editText){
+        String tmpStr = editText.getText().toString();
+        if(TextUtils.isEmpty(tmpStr) || Integer.valueOf(tmpStr)==0){
+            ToastUtil.show(getActivity(),"数量超出范围");
+            editText.setText("1");
+            countMap.put(beanId, 1);
+            return;
+        }
+        if(tmpStr.startsWith("0")){
+            editText.setText(String.valueOf(Integer.valueOf(tmpStr)));
+        }
+    }
+
+    private void clearFocus(){
+        View v = getActivity().getCurrentFocus();
+        if(v!=null){
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            v.clearFocus();
+        }
     }
 }

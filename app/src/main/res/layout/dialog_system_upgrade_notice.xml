@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:background="@drawable/dialog_bg_white"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/iv_update"
+            android:layout_width="300dp"
+            android:layout_height="235dp"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/icon_sys_update"/>
+        <TextView
+            android:id="@+id/update_context"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_update"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:textColor="#666666"
+            android:textSize="20sp"
+            android:text="系统维护通知"
+            />
+        <TextView
+            android:id="@+id/tv_system_upgrade_notice"
+            android:layout_width="250dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/update_context"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="35dp"
+            android:text="后台将于17:00～20:00进行系统更新维护，届时只能查看内容，操作功能暂时无法使用，感谢您的谅解"/>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_noitce_close"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/dialog_sys_update_btn_closed"/>
+
+</LinearLayout>

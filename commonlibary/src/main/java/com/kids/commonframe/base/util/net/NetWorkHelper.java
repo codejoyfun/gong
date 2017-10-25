@@ -165,6 +165,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      */
     public void sendConnection(int method, String url, String[] argsKeys,
                                String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList) {
+
         if (argsKeys.length != argsValues.length) {
             throw new IllegalArgumentException("check your Params key or value length!");
         }
@@ -331,8 +332,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0914";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0927";
 //    public static final String DEFAULT_DATABASE_NAME = "lbz80";
-//    public static final String DEFAULT_DATABASE_NAME = "LBZTest1012";
-    public static final String DEFAULT_DATABASE_NAME = "MF-PreGolive-001";
+    public static final String DEFAULT_DATABASE_NAME = "LBZTest1023";
+//    public static final String DEFAULT_DATABASE_NAME = "MF-PreGolive-001";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "";
     // -------------------------------------------------

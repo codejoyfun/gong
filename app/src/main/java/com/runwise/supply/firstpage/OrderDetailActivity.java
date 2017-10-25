@@ -59,6 +59,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -216,6 +217,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.title_tv_rigth:
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 if (isModifyOrder) {
                     Intent mIntent = new Intent(this, OrderModifyActivity.class);
                     Bundle mBundle = new Bundle();
@@ -232,6 +234,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.rightBtn:
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 Intent intent2;
                 OrderDoAction action = OrderActionUtils.getDoActionByText(rightBtn.getText().toString(), bean);
                 switch (action) {

@@ -77,16 +77,33 @@ public class MainActivity extends NetWorkActivity {
         public void run() {
             DbUtils dbUtils = DbUtils.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
+//            Log.d("haha","total from network:"+basicList.size());
             HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
             dbUtils.configAllowTransaction(true);
-            for (ProductBasicList.ListBean bean : basicList) {
-                map.put(String.valueOf(bean.getProductID()), bean);
+            try{
+                dbUtils.saveOrUpdateAll(basicList);
+            }catch(DbException e){
+                e.printStackTrace();
+            }
+//            for (ProductBasicList.ListBean bean : basicList) {
+//                map.put(String.valueOf(bean.getProductID()), bean);
                 //同时存到dB里面
-                try {
-                    dbUtils.saveOrUpdate(bean);
-                } catch (DbException e) {
-                    e.printStackTrace();
+//                try {
+//                    dbUtils.saveOrUpdate(bean);
+//                } catch (DbException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+            try{
+                //把数据库中原有的数据也提取出来，可能包括协议已删除的商品
+                List<ProductBasicList.ListBean> list = dbUtils.findAll(ProductBasicList.ListBean.class);
+//                Log.d("haha","total in db:"+list.size());
+                for(ProductBasicList.ListBean bean:list){
+                    String keyId = bean.getProductID()+"";
+                    map.put(keyId,bean);
                 }
+            }catch (DbException e){
+                e.printStackTrace();
             }
             ProductBasicUtils.setBasicMap(map);
 

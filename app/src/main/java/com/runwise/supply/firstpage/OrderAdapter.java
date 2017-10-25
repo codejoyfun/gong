@@ -22,6 +22,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
 import java.text.ParseException;
@@ -120,6 +121,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(!SystemUpgradeHelper.getInstance(context).check(context))return;
                     //根据状态进行不同的逻辑处理
                     String doAction = ((TextView) v).getText().toString();
                     OrderDoAction action = OrderActionUtils.getDoActionByText(doAction, bean);

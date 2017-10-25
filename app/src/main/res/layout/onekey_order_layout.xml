@@ -11,7 +11,8 @@
         android:listSelector="#0000"
         ptr:ptrAnimationStyle="flip"
         android:background="#FFFFFF"
-        android:divider="@null"
+        android:divider="#ededed"
+        android:dividerHeight="0.5dp"
         android:paddingBottom="55dp"
         android:layout_below="@+id/title_bar"
         android:layout_alignParentLeft="true"
@@ -122,6 +123,7 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:button="@drawable/product_selector"
+                android:clickable="false"
                 android:layout_centerVertical="true"
                 />
             <TextView

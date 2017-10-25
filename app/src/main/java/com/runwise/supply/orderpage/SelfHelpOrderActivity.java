@@ -161,16 +161,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     intent.putExtra("apbundle", bundle);
                     startActivityForResult(intent, ADD_PRODUCT);
                 } else {
-//                    dialog.setTitle("提示");
-//                    dialog.setMessageGravity();
-//                    dialog.setMessage("确认取消下单？");
-//                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-//                        @Override
-//                        public void doClickButton(Button btn, CustomDialog dialog) {
-                    finish();
-//                        }
-//                    });
-//                    dialog.show();
+                    back();
                 }
                 break;
             case R.id.title_tv_rigth:
@@ -408,10 +399,11 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
 //            }
 //        },2000);
         setTitleEditShow();
+        //xml中设置allCb不可点击，点整个layout设置状态
         allLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isInitiative = false;
+                isInitiative = false;//使onCheckChangedListener不会被调用
                 if (allCb.isChecked()) {
                     allCb.setChecked(false);
                     setDeleteBtnOk(false);
@@ -643,7 +635,24 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         if (editMode) {
             switchEditMode();
         } else {
-            finish();
+            back();
         }
+    }
+
+    private void back(){
+        if(adapter.getCount()>0){
+            dialog.setTitle("提示");
+            dialog.setMessageGravity();
+            dialog.setMessage("确认取消下单？");
+            dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    finish();
+                }
+            });
+            dialog.show();
+            return;
+        }
+        finish();
     }
 }

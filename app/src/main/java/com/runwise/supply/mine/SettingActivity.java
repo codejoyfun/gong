@@ -27,6 +27,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.UrlResult;
 import com.runwise.supply.tools.ScoreUtils;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -99,6 +100,7 @@ public class SettingActivity extends NetWorkActivity {
 //                else {
 //                    ScoreUtils.launchAppDetail(this,this.getPackageName(),"");
 //                }
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 intent = new Intent(mContext,PReceiveMsgActivity.class);
                 startActivity(intent);
                 break;

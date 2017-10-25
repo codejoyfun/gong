@@ -1,10 +1,12 @@
 package com.runwise.supply.firstpage;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -47,10 +50,17 @@ import com.runwise.supply.mine.ProcurementLimitActivity;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.tools.PollingUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import static com.runwise.supply.R.id.lqLL;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
@@ -223,6 +233,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         getProcurement();
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
+        if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
     }
 
     public void getProcurement() {
@@ -627,5 +638,37 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //        SpannableString ssDq = new SpannableString("到期食材"+maturityNum+"件");
 //        ssDq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(maturityNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 //        dqCountTv.setText(ssDq);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSystemUpgradeNotice(SystemUpgradeNoticeEvent receiverLogoutEvent) {
+        if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
+    }
+
+    private void showSystemUpgradeNotice(){
+        final Dialog dialog = new Dialog(getActivity(),R.style.CustomProgressDialog);
+        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_system_upgrade_notice,null,false);
+        dialog.setContentView(rootView);
+        dialog.show();
+        TextView tvNotice = (TextView)rootView.findViewById(R.id.tv_system_upgrade_notice);
+        SystemUpgradeHelper systemUpgradeHelper = SystemUpgradeHelper.getInstance(getContext());
+        rootView.findViewById(R.id.iv_noitce_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SystemUpgradeHelper.getInstance(getContext()).setIsRead(LoginedFirstFragment.class.getName());
+                dialog.dismiss();
+            }
+        });
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(systemUpgradeHelper.getStartTime()*1000);
+        StringBuilder sb = new StringBuilder();
+        sb.append(sdf.format(cal.getTime())).append("~");
+        cal.setTimeInMillis(systemUpgradeHelper.getEndTime()*1000);
+        sb.append(sdf.format(cal.getTime()));
+        tvNotice.setText(Html.fromHtml("<font color=\"#666666\">后台将于" + sb.toString() +
+                "进行系统更新维护，届时只能查看内容，</font>" +
+                "<font color=\"#ff8b00\">操作功能暂时无法使用，</font>" +
+                "<font color=\"#666666\">感谢您的谅解</font>"));
     }
 }

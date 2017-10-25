@@ -99,7 +99,6 @@
         android:textColor="#2E2E2E"
         android:visibility="invisible"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/padding_right"
         android:layout_alignParentRight="true"/>
     <TextView
         android:layout_width="wrap_content"

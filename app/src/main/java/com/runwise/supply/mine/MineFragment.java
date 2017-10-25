@@ -32,6 +32,7 @@ import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.ObservableScrollView;
+import com.runwise.supply.view.SystemUpgradeLayout;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -97,7 +98,8 @@ public class MineFragment extends NetWorkFragment {
     private ImageView rightImageView;
     @ViewInject(R.id.titleTextView)
     private TextView titleTextView;
-
+    @ViewInject(R.id.layout_upgrade_notice)
+    private SystemUpgradeLayout mLayoutUpgradeNotice;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +114,8 @@ public class MineFragment extends NetWorkFragment {
         observableScrollView.setImageViews(leftImageView, rightImageView, titleTextView);
         observableScrollView.initAlphaTitle(mTitleLayout, headView, getResources().getColor(R.color.white), new int[]{226, 229, 232});
         observableScrollView.setSlowlyChange(true);
+
+        mLayoutUpgradeNotice.setPageName("自采商品/门店调拨/修改个人信息功能");
     }
 
     private void setLoginStatus(UserInfo userInfo) {
@@ -364,7 +368,7 @@ public class MineFragment extends NetWorkFragment {
                     startActivity(intent);
                 }
                 break;
-            case R.id.rl_transfer://门店调度
+            case R.id.rl_transfer://门店调拨
                 if (SPUtils.isLogin(getActivity())) {
                   refreshTransfer();
                 }

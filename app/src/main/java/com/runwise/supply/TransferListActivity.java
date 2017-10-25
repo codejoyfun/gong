@@ -17,6 +17,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.fragment.TransferListFragment;
 import com.runwise.supply.mine.CreateCallInListActivity;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import static com.runwise.supply.fragment.TransferListFragment.ARG_KEY_TYPE;
 import static com.runwise.supply.fragment.TransferListFragment.TYPE_IN;
@@ -142,6 +143,7 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
     public void btnClick(View v) {
         switch (v.getId()) {
             case R.id.title_iv_rigth:
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 startActivityForResult(new Intent(getActivityContext(), CreateCallInListActivity.class), REQUEST_CODE_CREATE_CALL_IN_LIST);
                 break;
         }
