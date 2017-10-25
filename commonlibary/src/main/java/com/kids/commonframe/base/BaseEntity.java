@@ -2,6 +2,8 @@ package com.kids.commonframe.base;
 
 import com.alibaba.fastjson.JSONObject;
 
+import org.json.JSONArray;
+
 import java.util.List;
 
 /**
@@ -165,6 +167,7 @@ public class BaseEntity {
         private String error;
         private Object data;
         private JSONObject dataJson;
+        private Object orders;
 
         public String getError() {
             return error;
@@ -198,6 +201,13 @@ public class BaseEntity {
             this.dataJson = dataJson;
         }
 
+        public Object getOrders() {
+            return orders;
+        }
+
+        public void setOrders(Object orders) {
+            this.orders = orders;
+        }
     }
 
     //	private String err_code;//": 0,

@@ -2,6 +2,7 @@ package com.runwise.supply.entity;
 
 import com.runwise.supply.firstpage.entity.OrderResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,13 +14,13 @@ import java.util.List;
  */
 
 public class OrderCommitResponse {
-    private List<OrderResponse.ListBean> orders;
+    private ArrayList<OrderResponse.ListBean> orders;
 
-    public List<OrderResponse.ListBean> getOrders() {
+    public ArrayList<OrderResponse.ListBean> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<OrderResponse.ListBean> orders) {
+    public void setOrders(ArrayList<OrderResponse.ListBean> orders) {
         this.orders = orders;
     }
 }

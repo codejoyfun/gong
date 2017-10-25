@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -25,6 +27,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.OrderChangedEvent;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.OneKeyAdapter;
+import com.runwise.supply.orderpage.OrderCommitSuccessActivity;
 import com.runwise.supply.orderpage.ProductActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
@@ -35,6 +38,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -158,11 +162,24 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
+
         switch (where) {
             case COMMIT_TYPE:
                 ToastUtil.show(mContext, "订单修改成功");
                 EventBus.getDefault().post(new OrderChangedEvent());
                 finish();
+
+                BaseEntity.ResultBean bean = result.getResult();
+                JSONArray jsonArray = (JSONArray)bean.getOrders();
+                ArrayList<OrderResponse.ListBean> list = new ArrayList<>();
+                list.addAll(JSON.parseArray(jsonArray.toString(),OrderResponse.ListBean.class));
+
+                Intent intent = new Intent(this, OrderCommitSuccessActivity.class);
+                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS,list);
+                intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE,0);
+                startActivity(intent);
+
+
                 break;
         }
 

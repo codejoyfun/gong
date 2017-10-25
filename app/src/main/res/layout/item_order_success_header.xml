@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:paddingTop="18dp"
+    android:paddingBottom="26dp"
+    android:background="@drawable/background_bg">
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="152dp"
+        android:layout_height="145dp"
+        android:src="@drawable/default_ico_eidt_successed"/>
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下单成功"
+        android:textColor="#2e2e2e"
+        android:layout_marginTop="14dp"
+        android:textSize="17sp"/>
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="提交成功，我们将尽快确认您的订单"
+        android:textColor="#999999"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp"/>
+
+    <Button
+        android:id="@+id/btn_upload"
+        android:layout_width="135dp"
+        android:layout_height="36dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/btn_green_gradian"
+        android:text="上传支付凭证"/>
+</LinearLayout>

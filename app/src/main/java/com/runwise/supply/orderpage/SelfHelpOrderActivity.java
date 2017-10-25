@@ -184,7 +184,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     cList.add(pBean);
                 }
                 request.setProducts(cList);
-                sendConnection("/gongfu/v2/order/create/", request, COMMIT_TYPE, false, CommitResponse.class);
+                sendConnection("/gongfu/v2/order/create/", request, COMMIT_TYPE, false, OrderCommitResponse.class);
                 mCustomProgressDialog = new CustomProgressDialog(this);
                 mCustomProgressDialog.setMsg("下单中...");
                 mCustomProgressDialog.show();
@@ -503,30 +503,44 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
                 break;
             case COMMIT_TYPE:
-                OrderCommitResponse orderCommitResponse = (OrderCommitResponse) result.getResult().getData();
+                final OrderCommitResponse orderCommitResponse = (OrderCommitResponse) result.getResult().getData();
                 onSuccessCallBack();
                 if (mCustomProgressDialog != null) {
                     mCustomProgressDialog.dismiss();
                 }
-                bgView.setVisibility(View.VISIBLE);
-                orderSuccessIv.setVisibility(View.VISIBLE);
+//                bgView.setVisibility(View.VISIBLE);
+//                orderSuccessIv.setVisibility(View.VISIBLE);
                 AnimatorSet set = new AnimatorSet();
                 set.playTogether(
                         ObjectAnimator.ofFloat(orderSuccessIv, "scaleX", 1, 0.7f),
                         ObjectAnimator.ofFloat(orderSuccessIv, "scaleY", 1, 0.7f)
                 );
                 set.setInterpolator(new AccelerateDecelerateInterpolator());
-                set.setDuration(1000).start();
-                orderSuccessIv.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                        EventBus.getDefault().post(new OrderSuccessEvent());
-                        onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
-                        onekeyBtn.setEnabled(true);
-                        dateTv.setEnabled(true);
-                    }
-                }, 1500);
+
+                finish();
+                EventBus.getDefault().post(new OrderSuccessEvent());
+                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+                onekeyBtn.setEnabled(true);
+                dateTv.setEnabled(true);
+
+                Intent intent = new Intent(SelfHelpOrderActivity.this,OrderCommitSuccessActivity.class);
+                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS,orderCommitResponse.getOrders());
+                startActivity(intent);
+//                set.setDuration(1000).start();
+//                orderSuccessIv.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        finish();
+//                        EventBus.getDefault().post(new OrderSuccessEvent());
+//                        onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+//                        onekeyBtn.setEnabled(true);
+//                        dateTv.setEnabled(true);
+//
+//                        Intent intent = new Intent(SelfHelpOrderActivity.this,OrderCommitSuccessActivity.class);
+//                        intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS,orderCommitResponse.getOrders());
+//                        startActivity(intent);
+//                    }
+//                }, 1500);
                 break;
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
