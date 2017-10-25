@@ -457,6 +457,10 @@
             android:name=".firstpage.OrderModifyActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".orderpage.OrderCommitSuccessActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ProcurementActivity"/>
         <activity android:name=".mine.ProcurementAddActivity"/>
         <activity android:name=".mine.ProcurementLimitActivity"/>
