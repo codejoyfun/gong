@@ -33,6 +33,8 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.OrderCommitResponse;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
@@ -501,6 +503,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
                 break;
             case COMMIT_TYPE:
+                OrderCommitResponse orderCommitResponse = (OrderCommitResponse) result.getResult().getData();
                 onSuccessCallBack();
                 if (mCustomProgressDialog != null) {
                     mCustomProgressDialog.dismiss();
