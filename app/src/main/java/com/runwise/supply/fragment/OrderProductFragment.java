@@ -107,6 +107,7 @@ public class OrderProductFragment extends BaseFragment {
 
     private void setUpBottomView(){
         if (listDatas.size() == 0){
+            mRecyclerView.setVisibility(View.GONE);
             loadingLayout.setVisibility(View.VISIBLE);
         }else{
             findViewById(R.id.orderdetail_bottom_item).setVisibility(View.GONE);

@@ -119,7 +119,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     @ViewInject(R.id.countTv)
     private TextView countTv;
     @ViewInject(R.id.gotoStateBtn)
-    private Button gotoStateBtn;    //查看更多状态
+    private TextView gotoStateBtn;    //查看更多状态
     @ViewInject(R.id.rightBtn2)
     private Button rightBtn2;
     @ViewInject(R.id.rightBtn)

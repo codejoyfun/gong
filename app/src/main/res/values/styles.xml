@@ -69,4 +69,13 @@
         <item name="android:layout_height">10dp</item>
         <item name="android:background">@color/windowBackground</item>
     </style>
+
+    <style name="LoginActivityAnimTheme" parent="Theme.AnimStyle">
+        <item name="android:windowAnimationStyle">@style/LoginActivityAnimStyle</item>
+    </style>
+    <style name="LoginActivityAnimStyle" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_from_bottom</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_close_enter</item>
+    </style>
 </resources>

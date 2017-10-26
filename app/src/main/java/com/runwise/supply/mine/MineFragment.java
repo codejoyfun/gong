@@ -167,7 +167,7 @@ public class MineFragment extends NetWorkFragment {
     private void setLogoutStatus() {
         isLogin = false;
         FrecoFactory.getInstance(mContext).disPlay(mineHead, "");
-        minePhone.setText("登录/注册>");
+        minePhone.setText("登录/注册");
         minePhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

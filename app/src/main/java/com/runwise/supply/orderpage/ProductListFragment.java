@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -162,13 +164,20 @@ public class ProductListFragment extends NetWorkFragment {
             viewHolder.editText.setTag(position);
             viewHolder.editText.removeTextChangedListener();
             viewHolder.editText.addTextChangedListener(new TextWatcher() {
+                String mmStrPrevious;
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                    mmStrPrevious = s.toString();
                 }
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    //检查特殊字符
+                    if(!TextUtils.isDigitsOnly(s)){
+                        viewHolder.editText.setText(mmStrPrevious);
+                        return;
+                    }
+
                     int position = (int) viewHolder.editText.getTag();
                     ProductData.ListBean listBean = (ProductData.ListBean) mList.get(position);
                     int changedNum = 0;
@@ -238,6 +247,37 @@ public class ProductListFragment extends NetWorkFragment {
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
                 }
             });
+
+            viewHolder.editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        String str = viewHolder.editText.getText().toString();
+                        if(TextUtils.isEmpty(str) || Integer.valueOf(str)==0){//输入0或者空的时候，点完成变回初始样式
+                            addBtn.setVisibility(View.VISIBLE);
+                            unit1.setVisibility(View.VISIBLE);
+                            ll.setVisibility(View.INVISIBLE);
+                        }
+                        InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+            viewHolder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    String str = viewHolder.editText.getText().toString();
+                    if(TextUtils.isEmpty(str) || Integer.valueOf(str)==0){//输入0或者空的时候，失去焦点变回初始样式
+                        addBtn.setVisibility(View.VISIBLE);
+                        unit1.setVisibility(View.VISIBLE);
+                        ll.setVisibility(View.INVISIBLE);
+                    }
+                }
+            });
+
             viewHolder.name.setText(bean.getName());
 
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());
