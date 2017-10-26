@@ -985,6 +985,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 mTvContent.setText(sb.toString());
             }
             titleTv.setText(bottomData.getName());
+            edEt.setText(String.valueOf(bottomData.getCount()));
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             //更新进度条
             updatePbProgress();
