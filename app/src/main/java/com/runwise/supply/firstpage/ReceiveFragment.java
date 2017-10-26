@@ -128,6 +128,7 @@ public class ReceiveFragment extends BaseFragment {
 
     }
 
+
     private void startEditBatch(OrderResponse.ListBean.LinesBean bean) {
         Intent intent = new Intent(mContext, EditBatchActivity.class);
         intent.putExtra(EditBatchActivity.INTENT_KEY_PRODUCT, (Parcelable) bean);

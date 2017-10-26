@@ -202,7 +202,27 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }
         } else {
             setTitleText(true, "收货");
+            for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
+                ReceiveBean receiveBean = new ReceiveBean();
+                receiveBean.setProductId(linesBean.getProductID());
+                receiveBean.setCount((int) linesBean.getProductUomQty());
+                final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
+                receiveBean.setTracking(basicBean.getTracking());
+                if (basicBean.getTracking().equals("lot")) {
+                    List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
+                    ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
+                    lotBean.setLot_name("");
+                    lotBean.setHeight((int) linesBean.getProductUomQty());
+                    lotBean.setQty((int) linesBean.getProductUomQty());
+                    lotBean.setProduce_datetime(TimeUtils.getYMD(new Date()));
+                    lot_list.add(lotBean);
+                    receiveBean.setLot_list(lot_list);
+                }
+                countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
+            }
         }
+
+
         setTitleLeftIcon(true, R.drawable.nav_back);
         setTitleRightText(true, "完成");
         if (lbean != null && lbean.getLines() != null) {
@@ -226,21 +246,21 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
 //        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
 //        getReceiveInfoFromDB();
-        productBasicHelper = new ProductBasicHelper(this,netWorkHelper);
-        if(productBasicHelper.check(lbean.getLines())){
+        productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
+        if (productBasicHelper.check(lbean.getLines())) {
             getCategory();
-        }else{
+        } else {
             productBasicHelper.requestDetail(PRODUCT_DETAIL);
         }
     }
 
-    private void getCategory(){
+    private void getCategory() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
     }
 
-    private void getReceiveInfoFromDB(){
+    private void getReceiveInfoFromDB() {
         for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
             List<ReceiveInfo> receiveInfoList = ProductBasicUtils.getReceiveInfo(getActivityContext(), lbean.getOrderID(), linesBean.getProductID());
             if (receiveInfoList != null && receiveInfoList.size() > 0) {
@@ -250,7 +270,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 String countListString = receiveInfo.getCountList();
                 String[] countListArr = null;
                 int count = 0;
-                if (!TextUtils.isEmpty(countListString)){
+                if (!TextUtils.isEmpty(countListString)) {
                     countListArr = countListString.split(SEPARATOR);
                     for (int i = 0; i < countListArr.length; i++) {
                         count += Integer.parseInt(countListArr[i]);
@@ -265,7 +285,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 if (basicBean.getTracking().equals("lot")) {
                     List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
 
-                    for (int i= 0;i<batchNumberListArr.length;i++) {
+                    for (int i = 0; i < batchNumberListArr.length; i++) {
                         ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
                         lotBean.setLot_name(batchNumberListArr[i]);
                         lotBean.setHeight(Integer.parseInt(countListArr[i]));
@@ -524,8 +544,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         dialogView2.findViewById(R.id.iv_cancle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    mPopWindow2.dismiss();
-                }
+                mPopWindow2.dismiss();
+            }
         });
         input_minus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -773,7 +793,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 }
                 receiveInfo.setCountList(countList.toString());
                 receiveInfo.setBatchNumberList(batchNumberList.toString());
-            }else{
+            } else {
                 receiveInfo.setCount(bean.getCount());
             }
             try {
@@ -880,9 +900,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage();
+                ReceiveProEvent receiveProEvent = new ReceiveProEvent();
+                receiveProEvent.setNotifyDataSetChange(true);
+                EventBus.getDefault().post(receiveProEvent);
                 break;
             case PRODUCT_DETAIL:
-                if(productBasicHelper.onSuccess(result)){
+                if (productBasicHelper.onSuccess(result)) {
                     getCategory();
                 }
                 break;

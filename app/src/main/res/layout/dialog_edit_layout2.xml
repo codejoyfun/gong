@@ -14,9 +14,13 @@
                     android:background="@color/windowBackground"
                     android:clickable="true">
         
-        <!--<TextView-->
-            <!--android:layout_width=""-->
-            <!--android:layout_height=""/>-->
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:textColor="@color/second_color"
+           android:textSize="11sp"
+           android:gravity="center"
+           android:text="编辑收货数量"/>
 
         <RelativeLayout
             android:id="@+id/rl_head"
@@ -181,7 +185,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
-            android:padding="8dp"
+            android:padding="10dp"
             android:src="@drawable/dialog_btn_closed"/>
 
     </RelativeLayout>
