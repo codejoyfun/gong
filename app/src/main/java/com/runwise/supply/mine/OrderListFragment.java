@@ -134,7 +134,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onResume() {
         super.onResume();
-        refreshVisibleOrder();
+//        refreshVisibleOrder();
     }
 
     private void getOrder(int orderId) {
@@ -235,8 +235,10 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                         break;
                     }
                 }
-                adapter.getList().set(index,orderDetailResponse.getOrder());
-                adapter.notifyDataSetChanged();
+                if (index <= adapter.getList().size()-1){
+                    adapter.getList().set(index,orderDetailResponse.getOrder());
+                    adapter.notifyDataSetChanged();
+                }
                 break;
         }
     }
