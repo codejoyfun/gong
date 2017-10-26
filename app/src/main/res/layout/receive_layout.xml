@@ -1,63 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="#FFFFFF">
-    <include  layout="@layout/common_title_bar"
-        android:id="@+id/titleBar"/>
+
+    <include
+        android:id="@+id/titleBar"
+        layout="@layout/common_title_bar"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/rl_bottom"
+        android:layout_below="@+id/titleBar"
         android:background="#FFFFFF"
-        android:orientation="vertical"
-        android:layout_below="@+id/titleBar">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:text="扫码枪未连接"
-            android:textColor="#f11835"
-            android:gravity="center_vertical|right"
-            android:paddingRight="15dp"
-            android:textSize="12sp"/>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_height="20dp">
-            <ProgressBar
-                android:id="@+id/pbBar"
-                style="@android:style/Widget.ProgressBar.Horizontal"
-                android:progressDrawable="@drawable/pb_progress_stlye"
-                android:indeterminateDrawable="@drawable/receive_tip_circle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:max="20"
-                android:progress="5"
-                />
-            <TextView
-                android:id="@+id/pbValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="已收0/25件商品"
-                android:textColor="#FFFFFF"
-                android:gravity="center"
-                android:layout_centerInParent="true"
-                android:textSize="12sp"/>
-        </RelativeLayout>
+        android:orientation="vertical">
+
+
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/search_bar"
-            >
+            android:layout_below="@id/search_bar">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="5dp"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:paddingTop="5dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -67,34 +39,87 @@
                         android:id="@+id/indicator"
                         style="@style/MyCustomTabLayout"
                         android:layout_width="match_parent"
-                        android:background="@color/white"
                         android:layout_height="40dp"
-                        app:tabMode="scrollable"
-                        android:layout_marginRight="30dp"/>
+                        android:layout_marginRight="30dp"
+                        android:background="@color/white"
+                        app:tabMode="scrollable"/>
 
                     <ImageView
                         android:id="@+id/iv_open"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
-                        android:src="@drawable/arrow"
-                        android:padding="15dp"
+                        android:layout_alignParentRight="true"
                         android:background="@drawable/tab_shadow"
-                        android:layout_alignParentRight="true"/>
+                        android:padding="15dp"
+                        android:src="@drawable/arrow"/>
 
                 </RelativeLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="#E5E5E5"
                     />
+
                 <com.runwise.supply.view.NoScrollViewPager
                     android:id="@+id/viewPager"
                     android:layout_width="match_parent"
-                    android:background="#F5F5F5"
                     android:layout_height="0dp"
                     android:layout_weight="1"
+                    android:background="#F5F5F5"
                     />
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/tv_receive_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:gravity="center"
+            android:text="已收"
+            android:textColor="@color/second_color"
+            android:textSize="@dimen/third_title"/>
+
+        <TextView
+            android:id="@+id/tv_receive_count"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/tv_receive_tag"
+            android:gravity="center"
+            android:text="285"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/third_title"/>
+
+        <TextView
+            android:id="@+id/tv_receive_count_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/tv_receive_count"
+            android:gravity="center"
+            android:text="/280件"
+            android:textColor="@color/second_color"
+            android:textSize="@dimen/third_title"/>
+
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/btn_green_gradian"
+            android:gravity="center"
+            android:text="确认收货"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+    </RelativeLayout>
 </RelativeLayout>

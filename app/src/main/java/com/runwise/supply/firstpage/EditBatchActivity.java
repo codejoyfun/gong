@@ -258,13 +258,15 @@ public class EditBatchActivity extends NetWorkActivity {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder;
+            final ViewHolder viewHolder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_edit_batch, null);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_edit_batch_new, null);
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
+            }else{
+                viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder.etProductCount.setTag(position);
             viewHolder.ivDelete.setVisibility(position != 0 ? View.VISIBLE : View.GONE);
             viewHolder.ivDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -298,6 +300,7 @@ public class EditBatchActivity extends NetWorkActivity {
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    int position = (int) viewHolder.etProductCount.getTag();
                     mBatchEntities.get(position).setBatchNum(s.toString().trim());
                 }
             });
@@ -320,10 +323,38 @@ public class EditBatchActivity extends NetWorkActivity {
                     mBatchEntities.get(position).setProductCount(s.toString().trim());
                 }
             });
-            if (!TextUtils.isEmpty(mBatchEntities.get(position).getBatchNum())&& mBatchEntities.get(position).getBatchNum().length()>0) {
+
+            viewHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String productCountStr = mBatchEntities.get(position).getProductCount();
+                    if (TextUtils.isEmpty(productCountStr)){
+                        productCountStr = "0";
+                    }
+                    int productCount = Integer.parseInt(productCountStr);
+                    productCount++;
+                    mBatchEntities.get(position).setProductCount(String.valueOf(productCount));
+                    viewHolder.etProductCount.setText(String.valueOf(productCount));
+                }
+            });
+            viewHolder.ivReduce.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String productCountStr = mBatchEntities.get(position).getProductCount();
+                    if (TextUtils.isEmpty(productCountStr)||productCountStr.equals("0")){
+                        return;
+                    }
+                    int productCount = Integer.parseInt(productCountStr);
+                    productCount--;
+                    mBatchEntities.get(position).setProductCount(String.valueOf(productCount));
+                    viewHolder.etProductCount.setText(String.valueOf(productCount));
+                }
+            });
+
+            if (!TextUtils.isEmpty(mBatchEntities.get(position).getBatchNum()) && mBatchEntities.get(position).getBatchNum().length() > 0) {
                 viewHolder.etBatch.setSelection(mBatchEntities.get(position).getBatchNum().length());
             }
-            if (!TextUtils.isEmpty(mBatchEntities.get(position).getProductCount())&&mBatchEntities.get(position).getProductCount().length()>0) {
+            if (!TextUtils.isEmpty(mBatchEntities.get(position).getProductCount()) && mBatchEntities.get(position).getProductCount().length() > 0) {
                 viewHolder.etProductCount.setSelection(mBatchEntities.get(position).getProductCount().length());
             }
             return convertView;
@@ -351,6 +382,10 @@ public class EditBatchActivity extends NetWorkActivity {
         NoWatchEditText etProductCount;
         @BindView(R.id.iv_delete)
         ImageView ivDelete;
+        @BindView(R.id.iv_add)
+        ImageView ivAdd;
+        @BindView(R.id.iv_reduce)
+        ImageView ivReduce;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

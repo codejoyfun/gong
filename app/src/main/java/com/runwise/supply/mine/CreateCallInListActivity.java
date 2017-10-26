@@ -126,6 +126,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
     }
 
 
+
     @OnClick({R.id.title_iv_left, R.id.rl_call_out, tv_edit_or_finish, R.id.tv_submit})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -218,7 +219,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     .setTitleSize(20)//标题文字大小
                     .setTitleColor(Color.BLACK)//标题文字颜色
                     .setSubmitColor(Color.BLACK)//确定按钮文字颜色
-                    .setCancelColor(Color.BLACK)//取消按钮文字颜色
+                    .setCancelColor(Color.BLACK)//取消按钮文字色
                     .setTitleBgColor(Color.parseColor("#FAFDF8"))//标题背景颜色 Night mode
                     .setBgColor(0xFFFFFFFF)//滚轮背景颜色 Night mode
                     .setContentTextSize(18)//滚轮文字大小

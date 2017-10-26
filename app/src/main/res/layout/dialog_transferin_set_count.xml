@@ -13,14 +13,14 @@
         android:paddingTop="15dp">
 
         <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/iv_transfer_in_product"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            fresco:placeholderImage="@drawable/placeholder"
-            fresco:placeholderImageScaleType="focusCrop" />
+                                                   android:id="@+id/iv_transfer_in_product"
+                                                   android:layout_width="54dp"
+                                                   android:layout_height="54dp"
+                                                   android:layout_alignParentLeft="true"
+                                                   android:layout_alignParentStart="true"
+                                                   android:layout_alignParentTop="true"
+                                                   fresco:placeholderImage="@drawable/placeholder"
+                                                   fresco:placeholderImageScaleType="focusCrop"/>
 
 
         <TextView
@@ -33,7 +33,7 @@
             android:layout_toRightOf="@id/iv_transfer_in_product"
             android:text=""
             android:textColor="#444444"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/tv_content"
@@ -43,27 +43,27 @@
             android:layout_below="@id/tv_name"
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
+            android:lineSpacingExtra="5dp"
             android:maxLines="2"
             android:text=""
-            android:lineSpacingExtra="5dp"
             android:textColor="#999999"
-            android:textSize="11sp" />
+            android:textSize="11sp"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_below="@id/iv_transfer_in_product"
             android:layout_marginTop="15dp"
-            android:background="#E5E5E5" />
+            android:background="#E5E5E5"/>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rl_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/msg_context_bg"
         android:layout_below="@+id/rl_head"
         android:layout_margin="15dp"
+        android:background="@drawable/msg_context_bg"
         android:padding="10dp">
 
         <TextView
@@ -75,7 +75,7 @@
             android:gravity="center"
             android:text="发出数量"
             android:textColor="@color/bottom_dialog_textcolor"
-            android:textSize="13sp" />
+            android:textSize="13sp"/>
 
         <TextView
             android:id="@+id/et_deliver_count"
@@ -86,13 +86,13 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/tv_deliver_count"
             android:background="@null"
+            android:cursorVisible="true"
             android:gravity="center|right"
             android:inputType="number"
             android:singleLine="true"
-            android:cursorVisible="true"
             android:textColor="@color/black"
             android:textColorHint="@color/bottom_dialog_divider"
-            android:textSize="13sp" />
+            android:textSize="13sp"/>
 
         <View
             android:id="@+id/v_line1"
@@ -100,7 +100,7 @@
             android:layout_height="1px"
             android:layout_below="@id/tv_deliver_count"
             android:layout_marginTop="5dp"
-            android:background="@color/divider" />
+            android:background="@color/divider"/>
 
         <TextView
             android:id="@+id/tv_product_count"
@@ -111,15 +111,15 @@
             android:gravity="center"
             android:text="入库数量"
             android:textColor="@color/bottom_dialog_textcolor"
-            android:textSize="13sp" />
+            android:textSize="13sp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_alignBottom="@id/tv_product_count"
+            android:layout_alignParentRight="true"
             android:layout_alignTop="@id/tv_product_count"
-            android:gravity="center"
-            android:layout_alignParentRight="true">
+            android:gravity="center">
 
             <Button
                 android:id="@+id/btn_transfer_in_subtract"
@@ -135,14 +135,15 @@
                 android:layout_alignTop="@id/tv_product_count"
                 android:layout_toRightOf="@id/tv_product_count"
                 android:background="@null"
+                android:cursorVisible="true"
                 android:gravity="center"
                 android:inputType="number"
                 android:singleLine="true"
-                android:cursorVisible="true"
-                android:textColor="@color/black"
                 android:text="0"
+                android:textColor="@color/black"
                 android:textColorHint="@color/bottom_dialog_divider"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
+
             <Button
                 android:id="@+id/btn_transfer_in_add"
                 android:layout_width="36dp"
@@ -155,19 +156,19 @@
         android:id="@+id/btn_confirm"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:text="确认"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:textColor="@color/white"
         android:layout_below="@+id/rl_content"
-        android:background="@drawable/btn_green_gradian"/>
+        android:background="@drawable/btn_green_gradian"
+        android:gravity="center"
+        android:text="确认"
+        android:textColor="@color/white"
+        android:textSize="16sp"/>
 
     <ImageView
         android:id="@+id/iv_cancle"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_alignParentRight="true"
         android:padding="8dp"
-        android:src="@drawable/dialog_btn_closed"
-        android:layout_alignParentRight="true"/>
+        android:src="@drawable/dialog_btn_closed"/>
 
 </RelativeLayout>
