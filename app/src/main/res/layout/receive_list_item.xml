@@ -37,6 +37,7 @@
             android:gravity="right|center_vertical"
             android:hint="0"
             android:inputType="number"
+            android:editable="false"
             android:maxLength="9"
             android:textColor="#343434"
             android:textColorHint="#343434"

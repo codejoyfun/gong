@@ -8,7 +8,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
@@ -36,7 +34,9 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -60,7 +60,9 @@ import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.NoScrollViewPager;
+import com.runwise.supply.view.NoWatchEditText;
 import com.socketmobile.capture.Capture;
 import com.socketmobile.capture.client.CaptureClient;
 import com.socketmobile.capture.client.CaptureDeviceClient;
@@ -134,10 +136,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     WheelView wheelView;
 
     private TextView titleTv;
-    private AppCompatEditText edEt;
-    private TextView unitTv;
+    private TextView mTvContent;
+    private NoWatchEditText edEt;
     private EditText unitValueTv;
-    private RelativeLayout twoUnitRL;
 
 
     public Map<String, ReceiveBean> getCountMap() {
@@ -504,14 +505,27 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mPopWindow2.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow2.setFocusable(true);
         mPopWindow2.setOutsideTouchable(true);
-//        fitPopupWindowOverStatusBar(true);  //全屏
-        ImageButton input_minus = (ImageButton) dialogView2.findViewById(R.id.input_minus);
-        ImageButton input_add = (ImageButton) dialogView2.findViewById(R.id.input_add);
-        titleTv = (TextView) dialogView2.findViewById(R.id.title);
-        edEt = (AppCompatEditText) dialogView2.findViewById(R.id.acet);
-        unitTv = (TextView) dialogView2.findViewById(R.id.unitTv);
-        unitValueTv = (EditText) dialogView2.findViewById(R.id.unitValue);
-        twoUnitRL = (RelativeLayout) dialogView2.findViewById(R.id.twoUnitRL);
+        Button input_minus = (Button) dialogView2.findViewById(R.id.input_minus);
+        Button input_add = (Button) dialogView2.findViewById(R.id.input_add);
+        titleTv = (TextView) dialogView2.findViewById(R.id.tv_name);
+        mTvContent = (TextView) dialogView2.findViewById(R.id.tv_content);
+        edEt = (NoWatchEditText) dialogView2.findViewById(R.id.et_product_count);
+        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(bottomData.getProductId()));
+        if (listBean != null) {
+            FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + listBean.getImage().getImageSmall());
+            StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
+            sb.append("  ").append(listBean.getUnit());
+            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if (canSeePrice) {
+                if (listBean.isTwoUnit()) {
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
+                } else {
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
+                }
+            }
+            mTvContent.setText(sb.toString());
+        }
+
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -529,7 +543,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     edEt.setText(String.valueOf(count));
                     edEt.setSelection(String.valueOf(String.valueOf(count)).length());
                 }
-
             }
         });
         input_add.setOnClickListener(new View.OnClickListener() {
@@ -965,66 +978,14 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             mPopWindow2.dismiss();
             return;
         }
-        //单独处理双单位的,不管其它维护的分类
-        if (bean.isTwoUnit() && !lbean.getDeliveryType().equals("fresh_vendor_delivery")) {
-            View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
-            mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
-            titleTv.setText(bottomData.getName());
-            if (countMap.containsKey(String.valueOf(bean.getProductId()))) { //如果countMap里面有，则优先用countMap。
-                ReceiveBean rb = countMap.get(String.valueOf(bean.getProductId()));
-                edEt.setText(String.valueOf(rb.getCount()));
-                edEt.setSelection(String.valueOf(rb.getCount()).length());
-                unitTv.setText(rb.getUnit());
-                if (rb.getTwoUnitValue() == 0) {
-                    unitValueTv.setText("");
-                } else {
-                    unitValueTv.setText(rb.getTwoUnitValue() + "");
-                }
-
-            } else {
-                edEt.setText(bottomData.getCount() + "");
-                edEt.setSelection(String.valueOf(bottomData.getCount()).length());
-                unitTv.setText(bottomData.getUnit());
-//                unitValueTv.setText(bottomData.getTwoUnitValue()+"");
-                unitValueTv.setText("");
-            }
-
-            //双人点货
-            if (isSettle) {
-                twoUnitRL.setVisibility(View.VISIBLE);
-            } else {
-                twoUnitRL.setVisibility(View.GONE);
-            }
-            return;
-        }
         if (lbean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
             Intent intent = new Intent(mContext, EditBatchActivity.class);
             intent.putExtra(INTENT_KEY_PRODUCT, bottomData.getProductId());
             startActivity(intent);
-//                View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
-//                mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
-//                mTvProductName.setText(bottomData.getName());
-//                FrecoFactory.getInstance(mContext).disPlay(productImage, Constant.BASE_URL + bottomData.getImageBean().getImageSmall());
-//                mTvSerialNumber.setText(bottomData.getDefaultCode());
-//                mTvSpecifications.setText(bottomData.getUnit());
-//                mEtBatchNumber.setText(bottomData.getLot_name());
-//
-//                if (countMap.containsKey(String.valueOf(bean.getProductId()))) { //如果countMap里面有，则优先用countMap。
-//                    ReceiveBean receiveBean = countMap.get(String.valueOf(bean.getProductId()));
-//                    mEtProductAmount.setText(String.valueOf(receiveBean.getCount()));
-//                    mEtProductAmount.setSelection(String.valueOf(receiveBean.getCount()).length());
-//
-//                } else {
-//                    mEtProductAmount.setText(bottomData.getCount()+"");
-//                    mEtProductAmount.setSelection(String.valueOf(bottomData.getCount()).length());
-//                }
         } else {
             String pId = String.valueOf(bottomData.getProductId());
-//                double settleCount = TextUtils.isEmpty(unitValueTv.getText().toString()) ? 0 : Double.valueOf(unitValueTv.getText().toString());
             bottomData.setCount(bean.getCount());
-//                bottomData.setTwoUnitValue(settleCount);    //双单位的值
             countMap.put(pId, bottomData);
-//            mPopWindow.dismiss();
             View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             //更新进度条
@@ -1033,15 +994,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
             EventBus.getDefault().post(new ReceiveProEvent(false));
         }
-
-
-//            //双人点货
-//            if (isSettle){
-//                twoUnitRL.setVisibility(View.VISIBLE);
-//            }else{
-//                twoUnitRL.setVisibility(View.GONE);
-//            }
-
     }
 
     @Override
