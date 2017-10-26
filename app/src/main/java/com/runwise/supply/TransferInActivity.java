@@ -188,12 +188,12 @@ public class TransferInActivity extends NetWorkActivity {
 
                     //TODO:测试
 //                    TransferBatchLot lot = new TransferBatchLot();
-//                    lot.setLotID("Z90909090");
+//                    lot.setLotIDID("Z90909090");
 //                    lot.setQuantQty(2);
 //                    List<TransferBatchLot> lotList = new ArrayList<>();
 //                    lotList.add(lot);
 //                    TransferBatchLot lot2 = new TransferBatchLot();
-//                    lot2.setLotID("Z90909091");
+//                    lot2.setLotIDID("Z90909091");
 //                    lot2.setQuantQty(4);
 //                    lotList.add(lot2);
 //                    line.setProductLotInfo(lotList);
