@@ -225,6 +225,7 @@ public class OrderAdapter extends IBaseAdapter {
             //发货单
             viewHolder.returnTv.setVisibility(View.GONE);
             viewHolder.realTv.setVisibility(View.GONE);
+            viewHolder.tvToPay.setVisibility(View.GONE);
             viewHolder.imgIv.setImageResource(R.drawable.more_restaurant_returnrecord);
             viewHolder.titleTv.setText(bean.getName());
             viewHolder.stateTv.setText("退货中");
