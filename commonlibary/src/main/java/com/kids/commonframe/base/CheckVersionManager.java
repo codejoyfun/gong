@@ -64,8 +64,12 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         File remoteFile = new File(remoteUrl);
         localFile = new File(CommonUtils.getCachePath(baseActivity),remoteFile.getName());
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
+
+        String header = (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME);
+        if(!TextUtils.isEmpty(header))downloadTask.addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME));
+
         downloadTask.setPath(localFile.getAbsolutePath())
-                .addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME))
+                //.addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME))
                 .setCallbackProgressMinInterval(1000)
                 .setListener(new FileDownloadListener() {
                     @Override
