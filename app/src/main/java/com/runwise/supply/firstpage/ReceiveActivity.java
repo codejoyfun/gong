@@ -20,7 +20,6 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -105,10 +104,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private NoScrollViewPager viewPager;
-    @ViewInject(R.id.pbBar)
-    private ProgressBar pbBar;
-    @ViewInject(R.id.pbValue)
-    private TextView pbValue;
+    @ViewInject(R.id.tv_receive_count)
+    private TextView mTvReceiveCount;
+    @ViewInject(R.id.tv_receive_count_tag)
+    private TextView mTvReceiveCountTag;
     @ViewInject(R.id.iv_open)
     private ImageView ivOpen;
     private TabPageIndicatorAdapter adapter;
@@ -224,7 +223,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
 
         setTitleLeftIcon(true, R.drawable.nav_back);
-        setTitleRightText(true, "完成");
         if (lbean != null && lbean.getLines() != null) {
             datas.addAll(lbean.getLines());
         }
@@ -590,17 +588,16 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         for (ReceiveBean bean : countMap.values()) {
             pbNum += bean.getCount();
         }
-        pbBar.setProgress(pbNum);
-        pbValue.setText("已收" + pbNum + "/" + totalQty + "件商品");
+        mTvReceiveCount.setText(String.valueOf(pbNum));
+        mTvReceiveCountTag.setText("/"+totalQty+"件");
     }
 
     private void setDefalutProgressBar() {
         for (OrderResponse.ListBean.LinesBean bean : datas) {
             totalQty += bean.getProductUomQty();
         }
-        pbValue.setText("已收0/" + totalQty + "件商品");
-        pbBar.setMax(totalQty);
-        pbBar.setProgress(0);
+        mTvReceiveCount.setText(String.valueOf(totalQty));
+        mTvReceiveCountTag.setText("/"+totalQty+"件");
     }
 
     private PopupWindow mProductTypeWindow;
@@ -657,7 +654,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
-    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth, R.id.iv_open})
+    @OnClick({R.id.title_iv_left, R.id.btn_confirm, R.id.iv_open})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.iv_open:
@@ -687,13 +684,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     finish();
                 }
                 break;
-            case R.id.title_tv_rigth:
+            case R.id.btn_confirm:
                 //如果每样商品数量都匹配，则提示:确认收货与订单数量一致?
                 //如果每样商品数量不一致，则提示:收货数量与订单不一致，是否确认收货?
-                String tip = "确认收货与订单数量一致?";
-                if (!isSameReceiveCount()) {
-                    tip = "收货数量与订单不一致，是否确认收货?";
-                }
+                String tip = "请认真核对商品数量和生产日期,确认收货后无法修改哦!";
                 if (mode == 2) {
                     tip = "确认完成收货?";
                 }

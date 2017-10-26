@@ -126,7 +126,6 @@ public class CreateCallInListActivity extends NetWorkActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick({R.id.title_iv_left, R.id.rl_call_out, tv_edit_or_finish, R.id.tv_submit})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -201,7 +200,6 @@ public class CreateCallInListActivity extends NetWorkActivity {
     OptionsPickerView mPvOptions;
     int selectShopIndex = -1;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void showStoreSelectDialog() {
         if (mPvOptions == null) {
             mPvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
@@ -220,8 +218,8 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     .setTitleSize(20)//标题文字大小
                     .setTitleColor(Color.BLACK)//标题文字颜色
                     .setSubmitColor(Color.BLACK)//确定按钮文字颜色
-                    .setCancelColor(Color.BLACK)//取消按钮文字颜色
-                    .setTitleBgColor(getColor(R.color.bg_titlebar_select))//标题背景颜色 Night mode
+                    .setCancelColor(Color.BLACK)//取消按钮文字色
+                    .setTitleBgColor(Color.parseColor("#FAFDF8"))//标题背景颜色 Night mode
                     .setBgColor(0xFFFFFFFF)//滚轮背景颜色 Night mode
                     .setContentTextSize(18)//滚轮文字大小
                     .setLinkage(false)//设置是否联动，默认true
