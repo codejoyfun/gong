@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
-    android:background="#66000000"
-    android:id="@+id/dialog_main"
-    android:fitsSystemWindows="true"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/dialog_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#66000000"
+                android:fitsSystemWindows="true"
     >
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/windowBackground">
+                    android:background="@color/windowBackground"
+                    android:clickable="true">
+        
+        <!--<TextView-->
+            <!--android:layout_width=""-->
+            <!--android:layout_height=""/>-->
 
         <RelativeLayout
             android:id="@+id/rl_head"
@@ -34,7 +39,7 @@
 
             <TextView
                 android:id="@+id/tv_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/iv_transfer_in_product"
                 android:layout_marginLeft="10dp"
@@ -46,7 +51,7 @@
 
             <TextView
                 android:id="@+id/tv_content"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@id/tv_name"
                 android:layout_below="@id/tv_name"
@@ -57,6 +62,42 @@
                 android:text=""
                 android:textColor="#999999"
                 android:textSize="11sp"/>
+
+            <TextView
+                android:id="@+id/tv_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:lineSpacingExtra="5dp"
+                android:text="条"
+                android:textColor="@color/second_color"
+                android:textSize="@dimen/third_title"/>
+
+            <TextView
+                android:id="@+id/tv_stock_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="3dp"
+                android:layout_toLeftOf="@id/tv_unit"
+                android:lineSpacingExtra="5dp"
+                android:text="12"
+                android:textColor="@color/textColorPrimary"
+                android:textSize="@dimen/second_title"/>
+
+            <TextView
+                android:id="@+id/tv_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/tv_stock_count"
+                android:layout_alignBottom="@id/tv_stock_count"
+                android:text="x"
+                android:textColor="@color/second_color"
+                android:textSize="@dimen/small_title"/>
+
 
             <View
                 android:layout_width="match_parent"

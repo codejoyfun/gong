@@ -12,6 +12,7 @@ public class ReceiveBean {
     private String name;        //货物名称
     private int productId;   //商品id
     private int count;          //商品数量
+    private int productUomQty;          //商品库存数量
     private boolean isTwoUnit;  //是否为双单位
     private String unit;        //是双单位的话，单位是什么
     private double twoUnitValue;//有双单位情况下，用户输入的值
@@ -30,7 +31,13 @@ public class ReceiveBean {
 
     private String defaultCode;
 
+    public int getProductUomQty() {
+        return productUomQty;
+    }
 
+    public void setProductUomQty(int productUomQty) {
+        this.productUomQty = productUomQty;
+    }
 
     List<ReceiveRequest.ProductsBean.LotBean> lot_list;
 

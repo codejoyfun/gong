@@ -328,6 +328,7 @@ public class ReceiveFragment extends BaseFragment {
                 rb.setTracking(basicBean.getTracking());
 //                        rb.setCount((int)bean.getProductUomQty());
                 rb.setCount(count);
+                rb.setProductUomQty((int) bean.getProductUomQty());
                 rb.setProductId(bean.getProductID());
                 rb.setImageBean(basicBean.getImage());
                 rb.setDefaultCode(basicBean.getDefaultCode());

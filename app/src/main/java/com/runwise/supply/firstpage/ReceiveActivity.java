@@ -138,7 +138,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TextView titleTv;
     private TextView mTvContent;
     private NoWatchEditText edEt;
-    private EditText unitValueTv;
+    private TextView mTvUnit;
+    private TextView mTvStockCount;
 
 
     public Map<String, ReceiveBean> getCountMap() {
@@ -509,6 +510,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         Button input_add = (Button) dialogView2.findViewById(R.id.input_add);
         titleTv = (TextView) dialogView2.findViewById(R.id.tv_name);
         mTvContent = (TextView) dialogView2.findViewById(R.id.tv_content);
+        mTvUnit = (TextView) dialogView2.findViewById(R.id.tv_unit);
+        mTvStockCount = (TextView) dialogView2.findViewById(R.id.tv_stock_count);
         edEt = (NoWatchEditText) dialogView2.findViewById(R.id.et_product_count);
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -517,6 +520,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     mPopWindow2.dismiss();
                 }
             }
+        });
+        dialogView2.findViewById(R.id.iv_cancle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    mPopWindow2.dismiss();
+                }
         });
         input_minus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -983,9 +992,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     }
                 }
                 mTvContent.setText(sb.toString());
+                mTvUnit.setText(listBean.getUom());
             }
             titleTv.setText(bottomData.getName());
             edEt.setText(String.valueOf(bottomData.getCount()));
+            mTvStockCount.setText(String.valueOf(bottomData.getProductUomQty()));
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             //更新进度条
             updatePbProgress();
