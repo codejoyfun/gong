@@ -195,7 +195,7 @@ public class ChangeHostActivity extends NetWorkActivity {
 
                         break;
                     case 3:
-                        dialog.setMessage("即将切换到" + DEFAULT_DATABASE_NAME + "数据库");
+                        dialog.setMessage("即将切换到" + datas[3] + "数据库");
                         dialog.setMessageGravity();
                         dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                             @Override
