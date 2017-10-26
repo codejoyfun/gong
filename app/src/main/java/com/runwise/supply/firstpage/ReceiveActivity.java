@@ -510,22 +510,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         titleTv = (TextView) dialogView2.findViewById(R.id.tv_name);
         mTvContent = (TextView) dialogView2.findViewById(R.id.tv_content);
         edEt = (NoWatchEditText) dialogView2.findViewById(R.id.et_product_count);
-        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(bottomData.getProductId()));
-        if (listBean != null) {
-            FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + listBean.getImage().getImageSmall());
-            StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
-            sb.append("  ").append(listBean.getUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-            if (canSeePrice) {
-                if (listBean.isTwoUnit()) {
-                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
-                } else {
-                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
-                }
-            }
-            mTvContent.setText(sb.toString());
-        }
-
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -554,15 +538,13 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 edEt.setSelection(String.valueOf(String.valueOf(count)).length());
             }
         });
-        Button sureBtn = (Button) dialogView2.findViewById(R.id.sureBtn);
+        Button sureBtn = (Button) dialogView2.findViewById(R.id.btn_confirm);
         sureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String pId = String.valueOf(bottomData.getProductId());
                 int count = Integer.valueOf(edEt.getText().toString());
-                double settleCount = TextUtils.isEmpty(unitValueTv.getText().toString()) ? 0 : Double.valueOf(unitValueTv.getText().toString());
                 bottomData.setCount(count);
-                bottomData.setTwoUnitValue(settleCount);    //双单位的值
                 countMap.put(pId, bottomData);
                 mPopWindow2.dismiss();
                 //更新进度条
@@ -987,6 +969,22 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             bottomData.setCount(bean.getCount());
             countMap.put(pId, bottomData);
             View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
+            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(bottomData.getProductId()));
+            if (listBean != null) {
+                FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + listBean.getImage().getImageSmall());
+                StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
+                sb.append("  ").append(listBean.getUnit());
+                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+                if (canSeePrice) {
+                    if (listBean.isTwoUnit()) {
+                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
+                    } else {
+                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
+                    }
+                }
+                mTvContent.setText(sb.toString());
+            }
+            titleTv.setText(bottomData.getName());
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             //更新进度条
             updatePbProgress();
