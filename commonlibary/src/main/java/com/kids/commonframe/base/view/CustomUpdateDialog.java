@@ -83,7 +83,7 @@ public class CustomUpdateDialog extends Dialog {
 		}
 
 		mTvVersion.setText("最新版本（"+bean.getVersionName()+"）");
-		updateContext.setText("发现新版本，更新内容：\n"+bean.getDescription());
+		updateContext.setText("更新内容：\n"+bean.getDescription());
 		cancle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

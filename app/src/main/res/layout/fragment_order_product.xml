@@ -3,20 +3,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF">
+    android:background="#f0f0f0">
 
     <ListView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/orderdetail_bottom_item"
-        android:background="#FFFFFF"/>
+        android:layout_above="@+id/orderdetail_bottom_item"/>
 
     <RelativeLayout
         android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/orderdetail_bottom_item"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#ffffff"
+        android:layout_marginTop="0.5dp"
         android:visibility="gone">
 
         <ImageView
@@ -38,6 +39,7 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@id/iv"
             android:text="该分类下没有商品"
+            android:layout_marginBottom="20dp"
             />
     </RelativeLayout>
 
@@ -46,7 +48,7 @@
         layout="@layout/orderdetail_bottom_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:layout_below="@+id/loadingLayout"/>
 
 
 </RelativeLayout>

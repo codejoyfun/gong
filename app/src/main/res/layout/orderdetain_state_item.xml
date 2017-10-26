@@ -41,7 +41,7 @@
         android:textSize="13sp"
         />
 
-    <Button
+    <TextView
         android:id="@+id/gotoStateBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,6 +49,7 @@
         android:layout_alignParentRight="true"
         android:background="@null"
         android:drawableRight="@drawable/orderdetail_greenarrow"
+        android:drawablePadding="2.5dp"
         android:text="更多状态"
         android:textSize="@dimen/second_title"
         android:textColor="#6BB400"/>
