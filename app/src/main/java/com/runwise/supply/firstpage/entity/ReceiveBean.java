@@ -2,6 +2,11 @@ package com.runwise.supply.firstpage.entity;
 
 import com.runwise.supply.orderpage.entity.ImageBean;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +23,60 @@ public class ReceiveBean {
     private double twoUnitValue;//有双单位情况下，用户输入的值
     private String tracking;
     private ImageBean imageBean;
+    List<ReceiveRequest.ProductsBean.LotBean> lot_list;
+
+
+    public ReceiveBean(String source){
+        try {
+            JSONObject jsonObject = new JSONObject(source);
+            name = jsonObject.optString("name");
+            productId = jsonObject.optInt("productId");
+            count = jsonObject.optInt("count");
+            productUomQty = jsonObject.optInt("productUomQty");
+            isTwoUnit = jsonObject.optBoolean("isTwoUnit");
+            twoUnitValue = jsonObject.optDouble("twoUnitValue");
+            unit = jsonObject.optString("unit");
+            tracking = jsonObject.optString("tracking");
+            JSONArray jsonArray = jsonObject.optJSONArray("lot_list");
+            if(jsonArray !=null){
+                lot_list = new ArrayList<>();
+                for (int i = 0;i<jsonArray.length();i++){
+                    JSONObject jsonObject1 = jsonArray.optJSONObject(i);
+                    ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean(jsonObject1.toString());
+                    lot_list.add(lotBean);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String toString() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("name",name);
+            jsonObject.put("productId",productId);
+            jsonObject.put("count",count);
+            jsonObject.put("productUomQty",productUomQty);
+            jsonObject.put("isTwoUnit",isTwoUnit);
+            jsonObject.put("unit",unit);
+            jsonObject.put("twoUnitValue",twoUnitValue);
+            jsonObject.put("tracking",tracking);
+            JSONArray jsonArray = new JSONArray();
+            if (lot_list != null){
+                for (ReceiveRequest.ProductsBean.LotBean lotBean:lot_list){
+                    JSONObject jsonObject1 = new JSONObject(lotBean.toString());
+                    jsonArray.put(jsonObject1);
+                }
+                jsonObject.put("lot_list",jsonArray);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject.toString();
+    }
 
     public String getStockType() {
         return stockType;
@@ -39,7 +98,7 @@ public class ReceiveBean {
         this.productUomQty = productUomQty;
     }
 
-    List<ReceiveRequest.ProductsBean.LotBean> lot_list;
+
 
     public ReceiveBean() {
     }

@@ -38,6 +38,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -52,6 +53,7 @@ import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.entity.ReceiveBeanList;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
@@ -211,24 +213,33 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 }
             }
         } else {
-            setTitleText(true, "收货");
-            for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
-                ReceiveBean receiveBean = new ReceiveBean();
-                receiveBean.setProductId(linesBean.getProductID());
-                receiveBean.setCount((int) linesBean.getProductUomQty());
-                final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
-                receiveBean.setTracking(basicBean.getTracking());
-                if (basicBean.getTracking().equals("lot")) {
-                    List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
-                    ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
-                    lotBean.setLot_name("");
-                    lotBean.setHeight((int) linesBean.getProductUomQty());
-                    lotBean.setQty((int) linesBean.getProductUomQty());
-                    lotBean.setProduce_datetime(TimeUtils.getYMD(new Date()));
-                    lot_list.add(lotBean);
-                    receiveBean.setLot_list(lot_list);
+           setTitleText(true, "收货");
+            String source = (String) SPUtils.get(getActivityContext(),String.valueOf(lbean.getOrderID()),"");
+            if (!TextUtils.isEmpty(source)){
+                ReceiveBeanList receiveBeanList = new ReceiveBeanList(source);
+                List<ReceiveBean> beanList = receiveBeanList.getList();
+                for (ReceiveBean receiveBean:beanList){
+                    countMap.put(String.valueOf(receiveBean.getProductId()), receiveBean);
                 }
-                countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
+            }else{
+                for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
+                    ReceiveBean receiveBean = new ReceiveBean();
+                    receiveBean.setProductId(linesBean.getProductID());
+                    receiveBean.setCount((int) linesBean.getProductUomQty());
+                    final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
+                    receiveBean.setTracking(basicBean.getTracking());
+                    if (basicBean.getTracking().equals("lot")) {
+                        List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
+                        ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
+                        lotBean.setLot_name("");
+                        lotBean.setHeight((int) linesBean.getProductUomQty());
+                        lotBean.setQty((int) linesBean.getProductUomQty());
+                        lotBean.setProduce_datetime(TimeUtils.getYMD(new Date()));
+                        lot_list.add(lotBean);
+                        receiveBean.setLot_list(lot_list);
+                    }
+                    countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
+                }
             }
         }
 
@@ -704,6 +715,13 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 }
                 break;
             case R.id.title_iv_left:
+                ReceiveBeanList receiveBeanList = new ReceiveBeanList();
+                List<ReceiveBean> list = new ArrayList<>();
+                for (ReceiveBean bean : countMap.values()) {
+                    list.add(bean);
+                }
+                receiveBeanList.setList(list);
+                SPUtils.put(getActivityContext(),String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
                 if (mode == 1) {
                     dialog.setTitle("提示");
                     dialog.setMessage("确认取消点货?");
@@ -1189,6 +1207,13 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     @Override
     public void onBackPressed() {
+        ReceiveBeanList receiveBeanList = new ReceiveBeanList();
+        List<ReceiveBean> list = new ArrayList<>();
+        for (ReceiveBean bean : countMap.values()) {
+            list.add(bean);
+        }
+        receiveBeanList.setList(list);
+        SPUtils.put(getActivityContext(),String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
         if (mode == 1) {
             dialog.setTitle("提示");
             dialog.setMessage("确认取消点货?");

@@ -1,5 +1,8 @@
 package com.runwise.supply.firstpage.entity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -81,6 +84,37 @@ public class ReceiveRequest {
             private String life_datetime;
             private String lot_name;
             private int height;
+            public LotBean(){
+
+            }
+
+            public LotBean(String source){
+                try {
+                    JSONObject jsonObject = new JSONObject(source);
+                    produce_datetime = jsonObject.optString("produce_datetime");
+                    qty = jsonObject.optInt("qty");
+                    height = jsonObject.optInt("height");
+                    life_datetime = jsonObject.optString("life_datetime");
+                    lot_name = jsonObject.optString("lot_name");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public String toString() {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("qty",qty);
+                    jsonObject.put("produce_datetime",produce_datetime);
+                    jsonObject.put("life_datetime",life_datetime);
+                    jsonObject.put("lot_name",lot_name);
+                    jsonObject.put("height",height);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return jsonObject.toString();
+            }
 
             public void setQty(int qty) {
                 this.qty = qty;
