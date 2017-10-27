@@ -63,6 +63,10 @@ public class EditBatchActivity extends NetWorkActivity {
     ListView mLvBatch;
     @BindView(R.id.btn_confirm)
     Button mBtnConfirm;
+    @BindView(R.id.tv_count)
+    TextView mTvCount;
+    @BindView(R.id.unit1)
+    TextView mTvUnit1;
 
     WheelView wheelView;
     TimePickerView pvCustomTime;
@@ -97,6 +101,8 @@ public class EditBatchActivity extends NetWorkActivity {
         mLvBatch.addFooterView(addBatchView);
         mLvBatch.setAdapter(batchListAdapter);
         mBean = getIntent().getParcelableExtra(INTENT_KEY_PRODUCT);
+        mTvCount.setText(String.valueOf((int) mBean.getProductUomQty()));
+        mTvUnit1.setText(mBean.getProductUom());
         String pId = String.valueOf(mBean.getProductID());
         final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
         if (basicBean.getImage() != null) {
@@ -263,7 +269,7 @@ public class EditBatchActivity extends NetWorkActivity {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.item_edit_batch_new, null);
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
-            }else{
+            } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             viewHolder.etProductCount.setTag(position);
@@ -328,7 +334,7 @@ public class EditBatchActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     String productCountStr = mBatchEntities.get(position).getProductCount();
-                    if (TextUtils.isEmpty(productCountStr)){
+                    if (TextUtils.isEmpty(productCountStr)) {
                         productCountStr = "0";
                     }
                     int productCount = Integer.parseInt(productCountStr);
@@ -341,7 +347,7 @@ public class EditBatchActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     String productCountStr = mBatchEntities.get(position).getProductCount();
-                    if (TextUtils.isEmpty(productCountStr)||productCountStr.equals("0")){
+                    if (TextUtils.isEmpty(productCountStr) || productCountStr.equals("0")) {
                         return;
                     }
                     int productCount = Integer.parseInt(productCountStr);

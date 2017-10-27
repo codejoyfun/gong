@@ -4,11 +4,47 @@
                 android:id="@+id/main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
                 android:background="#FFFFFF">
 
     <include
         android:id="@+id/titleBar"
         layout="@layout/common_title_bar"/>
+
+    <LinearLayout
+        android:id="@+id/ll_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingRight="@dimen/padding_right"
+        android:gravity="center"
+        android:visibility="gone"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/et_sou_suo"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:background="#E5E5E5"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:drawableLeft="@drawable/searchbar_ico_search"
+            android:paddingLeft="16dp"
+            android:drawablePadding="7dp"
+            android:layout_gravity="center_vertical"
+            android:hint="商品名称、关键字"/>
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="49dp"
+            android:layout_height="32dp"
+            android:background="#9ACC35"
+            android:text="取消"
+            android:textSize="14sp"
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="7dp"
+            android:layout_gravity="center_vertical"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -75,7 +75,7 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
             @Override
             public void onClick(View v) {
                 int actualQty = transferBatchLot.getUsedQty() - 1;
-                if (actualQty == 0) {
+                if (actualQty < 0) {
                     return;
                 }
                 transferBatchLot.setUsedQty(actualQty);

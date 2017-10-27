@@ -8,7 +8,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,6 +34,7 @@ import com.bigkoo.pickerview.listener.OnDismissListener;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
@@ -110,6 +114,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TextView mTvReceiveCountTag;
     @ViewInject(R.id.iv_open)
     private ImageView ivOpen;
+    @ViewInject(R.id.ll_search_bar)
+    private LinearLayout mLlSearchBar;
+    @ViewInject(R.id.et_sou_suo)
+    private EditText mEtSouSuo;
     private TabPageIndicatorAdapter adapter;
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
     private PopupWindow mPopWindow;     //底部弹出
@@ -165,6 +173,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.receive_layout);
+        setTitleRigthIcon(true, R.drawable.search);
         Bundle bundle = getIntent().getExtras();
         lbean = bundle.getParcelable("order");
         isSettle = lbean.isIsTwoUnit();
@@ -250,6 +259,28 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         } else {
             productBasicHelper.requestDetail(PRODUCT_DETAIL);
         }
+        setUpSearch();
+    }
+
+    private void setUpSearch() {
+        mEtSouSuo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //发送搜索事件
+                ProductQueryEvent event = new ProductQueryEvent(s.toString());
+                EventBus.getDefault().post(event);
+            }
+        });
     }
 
     private void getCategory() {
@@ -589,7 +620,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             pbNum += bean.getCount();
         }
         mTvReceiveCount.setText(String.valueOf(pbNum));
-        mTvReceiveCountTag.setText("/"+totalQty+"件");
+        mTvReceiveCountTag.setText("/" + totalQty + "件");
     }
 
     private void setDefalutProgressBar() {
@@ -597,7 +628,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             totalQty += bean.getProductUomQty();
         }
         mTvReceiveCount.setText(String.valueOf(totalQty));
-        mTvReceiveCountTag.setText("/"+totalQty+"件");
+        mTvReceiveCountTag.setText("/" + totalQty + "件");
     }
 
     private PopupWindow mProductTypeWindow;
@@ -654,7 +685,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
-    @OnClick({R.id.title_iv_left, R.id.btn_confirm, R.id.iv_open})
+    @OnClick({R.id.title_iv_left, R.id.btn_confirm, R.id.iv_open, R.id.btn_cancel, R.id.title_iv_rigth})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.iv_open:
@@ -713,6 +744,21 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     }
                 });
                 dialog.show();
+                break;
+            case R.id.btn_cancel:
+                if (mLlSearchBar.getVisibility() == View.GONE) {
+                    mLlSearchBar.setVisibility(View.VISIBLE);
+                } else {
+                    mLlSearchBar.setVisibility(View.GONE);
+                    mEtSouSuo.setText("");
+                }
+                break;
+            case R.id.title_iv_rigth:
+                if (mLlSearchBar.getVisibility() == View.GONE) {
+                    mLlSearchBar.setVisibility(View.VISIBLE);
+                } else {
+                    mLlSearchBar.setVisibility(View.GONE);
+                }
                 break;
         }
     }

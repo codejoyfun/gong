@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
@@ -44,6 +45,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.runwise.supply.firstpage.ReceiveActivity.REQUEST_CODE_ADD_BATCH;
@@ -128,6 +130,24 @@ public class ReceiveFragment extends BaseFragment {
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDataSynEvent(ProductQueryEvent event) {
+        String word = event.getSearchWord();
+        //只在当前类型下面找名称包括的元素
+        List<OrderResponse.ListBean.LinesBean> findArray = findArrayByWord(word);
+        adapter.setData(findArray);
+    }
+    //返回当前标签下名称包含的
+    private List<OrderResponse.ListBean.LinesBean> findArrayByWord(String word) {
+        List<OrderResponse.ListBean.LinesBean> findList = new ArrayList<>();
+        for (OrderResponse.ListBean.LinesBean bean : datas) {
+            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
+            if (basicBean.getName().contains(word)) {
+                findList.add(bean);
+            }
+        }
+        return findList;
+    }
 
     private void startEditBatch(OrderResponse.ListBean.LinesBean bean) {
         Intent intent = new Intent(mContext, EditBatchActivity.class);
