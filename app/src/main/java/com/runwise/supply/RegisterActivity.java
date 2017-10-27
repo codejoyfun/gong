@@ -46,6 +46,7 @@ public class RegisterActivity extends NetWorkActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+//		overridePendingTransition(R.anim.slide_in_bottom,R.anim.activity_open_exit);
 		setStatusBarEnabled();
 		StatusBarUtil.StatusBarLightMode(this);
 		setContentView(R.layout.activity_register);
@@ -122,6 +123,7 @@ public class RegisterActivity extends NetWorkActivity {
 		switch (view.getId()) {
 			case R.id.closeBtn:
 				this.finish();
+				overridePendingTransition(R.anim.activity_close_enter,R.anim.slide_out_bottom);
 				break;
 			case R.id.gotoLogin:
 				Activity act = BaseManager.getInstance().getActivity("LoginActivity");
@@ -130,6 +132,7 @@ public class RegisterActivity extends NetWorkActivity {
 					startActivity(intent);
 				}
 				finish();
+				overridePendingTransition(R.anim.activity_close_enter,R.anim.slide_out_bottom);
 				break;
 		}
 

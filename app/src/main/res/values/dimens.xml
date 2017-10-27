@@ -30,6 +30,6 @@
     <dimen name="third_title">12sp</dimen>
     <dimen name="small_title">10sp</dimen>
 
-
+    <dimen name="state_green_dot">15dp</dimen>
 
 </resources>

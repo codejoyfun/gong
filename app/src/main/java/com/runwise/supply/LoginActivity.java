@@ -1,5 +1,6 @@
 package com.runwise.supply;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -82,6 +83,7 @@ public class  LoginActivity extends NetWorkActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+//		overridePendingTransition(R.anim.slide_in_bottom,R.anim.activity_open_exit);
 		Intent intent = this.getIntent();
 		setStatusBarEnabled();
 		StatusBarUtil.StatusBarLightMode(this);
@@ -262,6 +264,7 @@ public class  LoginActivity extends NetWorkActivity {
 //					}
 				}
 				this.finish();
+				overridePendingTransition(R.anim.activity_close_enter,R.anim.slide_out_bottom);
 				break;
 			case USER_INFO:
 //				UserInfoResult userInfoResult = (UserInfoResult) result;
@@ -287,6 +290,7 @@ public class  LoginActivity extends NetWorkActivity {
 	@OnClick(R.id.closeBtn)
 	public void doBack(View v) {
 		this.finish();
+		overridePendingTransition(R.anim.activity_close_enter,R.anim.slide_out_bottom);
 	}
 
 	private class TextWatchListener implements TextWatcher{
@@ -329,6 +333,7 @@ public class  LoginActivity extends NetWorkActivity {
 	@Override
 	public void onUserLogin(UserLoginEvent userLoginEvent) {
 		this.finish();
+		overridePendingTransition(R.anim.activity_close_enter,R.anim.slide_out_bottom);
 	}
 
 

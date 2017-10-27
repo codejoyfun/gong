@@ -20,12 +20,12 @@
 
         <TextView
             android:id="@+id/tvDot"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
             android:layout_below="@id/tvTopLine"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="3dp"
             android:background="@drawable/timeline_dot_normal"/>
 
         <TextView
@@ -74,6 +74,7 @@
             android:layout_alignTop="@id/orderStateTv"
             android:text="2017-03-18 21：00：00"
             android:textColor="#999999"
+            android:textSize="13sp"
             />
     </RelativeLayout>
 </LinearLayout>

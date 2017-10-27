@@ -27,6 +27,7 @@ public class StateAdatper extends RecyclerView.Adapter {
     public StateAdatper(Context context, List list) {
         inflater = LayoutInflater.from(context);
         this.traceList = list;
+        this.context = context;
     }
 
     @Override
@@ -43,6 +44,8 @@ public class StateAdatper extends RecyclerView.Adapter {
             // 字体颜色加深
             itemHolder.orderStateTv.setTextColor(0xff6BB400);
             itemHolder.tvDot.setBackgroundResource(R.drawable.restaurant_orderstatus_point_highlight);
+            itemHolder.tvDot.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.state_green_dot);
+            itemHolder.tvDot.getLayoutParams().height = context.getResources().getDimensionPixelSize(R.dimen.state_green_dot);
         } else if (getItemViewType(position) == TYPE_NORMAL) {
             itemHolder.tvTopLine.setVisibility(View.VISIBLE);
             itemHolder.orderStateTv.setTextColor(0xff2E2E2E);

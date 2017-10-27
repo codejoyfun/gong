@@ -635,6 +635,9 @@ public class OrderDetailActivity extends NetWorkActivity {
 
             if (bean.getOrderSettleName().contains("先付款后收货") && bean.getOrderSettleName().contains("单次结算")) {
                 setUpPaymenInstrument();
+                if(bean.getState().equals(OrderState.SALE.getName())){//已确认，不展示上传凭证按钮，可展示查看按钮
+                    uploadBtn.setVisibility(View.GONE);
+                }
             }
 
             //支付凭证在收货流程后，才显示

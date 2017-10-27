@@ -102,7 +102,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
     private void setOrderTracker() {
         Bundle bundle = getIntent().getExtras();
         if (isReturnMode){
-            ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) bundle.getSerializable("order");
+            ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) bundle.getParcelable("order");
             orderBean.setId(bean.getReturnOrderID());
             orderBean.setAmount((int)bean.getAmount());
             orderBean.setState(bean.getState());
@@ -110,8 +110,8 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             orderBean.setDeliveryType(bean.getDeliveryType());
             orderBean.setCreate_date(bean.getCreateDate());
             orderBean.setAmount_total(bean.getAmountTotal());
-//            List<String> trackers = bean.getStateTracker();
-            List<String> trackers = this.getIntent().getStringArrayListExtra("tracker");
+            List<String> trackers = bean.getStateTracker();
+//            List<String> trackers = this.getIntent().getStringArrayListExtra("tracker");
             for (String str : trackers) {
                 OrderStateLine osl = new OrderStateLine();
                 String[] pieces = str.split(" ");

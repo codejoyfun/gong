@@ -116,7 +116,7 @@ public class OrderProductAdapter extends BaseAdapter {
         if (basicBean != null){
             vh.name.setText(basicBean.getName());
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-            sb.append("  ").append(basicBean.getUnit());
+            sb.append(" | ").append(basicBean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
             if (canSeePrice){
                 if (isTwoUnit){

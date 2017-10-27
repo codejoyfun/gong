@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -373,10 +374,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
             case R.id.gotoStateBtn:
                 Intent intent = new Intent(mContext, OrderStateActivity.class);
                 intent.putExtra("mode", true);
-                intent.putStringArrayListExtra("tracker",(ArrayList<String>) bean.getStateTracker());
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("order",bean);
-                intent.putExtras(bundle);
+                //intent.putStringArrayListExtra("tracker",(ArrayList<String>) bean.getStateTracker());
+                intent.putExtra("order",(Parcelable) bean);
                 startActivity(intent);
                 break;
             case R.id.doBtn:
