@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.BaseManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
@@ -33,6 +34,7 @@ import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.AddedProduct;
@@ -537,6 +539,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 dateTv.setEnabled(true);
                 toast("网络错误");
                 progressDialog.dismiss();
+                BaseManager.getInstance().finishAll();
+                startActivity(new Intent(getActivityContext(), MainActivity.class));
                 break;
         }
     }

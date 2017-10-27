@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.BaseManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
@@ -32,12 +33,11 @@ import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OrderCommitResponse;
-import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
-import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -563,6 +563,8 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 dateTv.setEnabled(true);
                 mCustomProgressDialog.dismiss();
                 toast("网络错误");
+                BaseManager.getInstance().finishAll();
+                startActivity(new Intent(getActivityContext(), MainActivity.class));
                 break;
         }
 
