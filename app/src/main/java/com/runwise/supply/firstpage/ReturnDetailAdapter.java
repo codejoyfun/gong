@@ -63,7 +63,7 @@ public class ReturnDetailAdapter extends RecyclerView.Adapter {
             FrecoFactory.getInstance(context).disPlay(viewHolder.sdv, Constant.BASE_URL+imgUrl);
             viewHolder.nameTv.setText(basiclb.getName());
             StringBuffer sb = new StringBuffer(basiclb.getDefaultCode());
-            sb.append("  ").append(basiclb.getUnit());
+            sb.append(" | ").append(basiclb.getUnit());
             if (canSeePrice){
                 DecimalFormat df = new DecimalFormat("#.##");
                 if (basiclb.isTwoUnit()){

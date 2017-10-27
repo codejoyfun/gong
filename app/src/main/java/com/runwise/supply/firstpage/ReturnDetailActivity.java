@@ -295,6 +295,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 int position = tab.getPosition();
                 viewpager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
+                if(dragLayout.getState()== DragTopLayout.PanelState.EXPANDED)dragLayout.toggleTopView();
             }
 
             @Override
@@ -365,7 +366,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
         });
     }
 
-    @OnClick({R.id.title_iv_left, R.id.gotoStateBtn, R.id.doBtn,R.id.uploadBtn,R.id.tv_open})
+    //R.id.top_view设置onclick，防止点击dragview收起
+    @OnClick({R.id.title_iv_left, R.id.gotoStateBtn, R.id.doBtn,R.id.uploadBtn,R.id.tv_open,R.id.top_view})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:

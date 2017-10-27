@@ -424,7 +424,8 @@ public class RepertoryFragment extends NetWorkFragment {
 
                 if(!mProductHelper.checkRepertoryProducts(productList)){
                     mProductHelper.requestDetail(PRODUCT_DETAIL);
-                    return;
+                    //先显示
+//                    return;
                 }
                 setUpDataForViewPage(categoryRespone,repertoryEntity);
 

@@ -45,8 +45,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -79,6 +82,9 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     private View titleLayout;
     @ViewInject(R.id.layout_system_upgrade_notice)
     private SystemUpgradeLayout mLayoutUpgradeNotice;
+
+    private SimpleDateFormat mSdfSysTimeSource = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS", Locale.getDefault());
+    private SimpleDateFormat mSdfSysTimeTarget = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -398,7 +404,12 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                         viewHolder.msgUnRead.setVisibility(View.GONE);
                     }
                     MessageResult.ChannelBean.LastMessageBeanX messageBeanX = channelBean.getLast_message();
-                    viewHolder.msgTime.setText(DateFormateUtil.InfoClassShowdateFormat(messageBeanX.getDate()));
+//                    viewHolder.msgTime.setText(DateFormateUtil.InfoClassShowdateFormat(messageBeanX.getDate()));
+                    try{
+                        viewHolder.msgTime.setText(mSdfSysTimeTarget.format(mSdfSysTimeSource.parse(messageBeanX.getDate())));
+                    }catch (ParseException e){
+                        viewHolder.msgTime.setText(messageBeanX.getDate());
+                    }
                     viewHolder.msgCotext.setText(messageBeanX.getBody());
                     break;
             }

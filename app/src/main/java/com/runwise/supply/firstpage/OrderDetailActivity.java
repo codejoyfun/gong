@@ -70,6 +70,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
+import io.vov.vitamio.utils.Log;
 import me.shaohui.bottomdialog.BottomDialog;
 
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
@@ -191,6 +192,12 @@ public class OrderDetailActivity extends NetWorkActivity {
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
         dragLayout.setOverDrag(false);
+        findViewById(R.id.top_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //点击空白不收起draglayout
+            }
+        });
     }
 
     private void getReturnOrder(String rid) {
@@ -778,6 +785,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 int position = tab.getPosition();
                 viewpager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
+                if(dragLayout.getState()== DragTopLayout.PanelState.EXPANDED)dragLayout.toggleTopView();
             }
 
             @Override
