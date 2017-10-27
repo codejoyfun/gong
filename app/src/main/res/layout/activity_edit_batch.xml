@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/productImage"
             android:layout_marginLeft="10dp"
@@ -41,7 +41,7 @@
 
         <TextView
             android:id="@+id/content"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/name"
             android:layout_below="@id/name"
@@ -52,6 +52,47 @@
             android:lineSpacingExtra="5dp"
             android:textColor="#999999"
             android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/unit1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/productImage"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/productImage"
+            android:layout_marginRight="@dimen/padding_right"
+            android:gravity="center"
+            android:text="袋"
+            android:textColor="@color/textColorSecondary"
+            android:textSize="@dimen/second_title"/>
+
+
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/productImage"
+            android:layout_alignTop="@id/productImage"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/unit1"
+            android:gravity="center"
+            android:text="4"
+            android:textColor="@color/black"
+            android:textSize="@dimen/large_title"/>
+
+        <TextView
+            android:id="@+id/tv_count_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/productImage"
+            android:layout_alignTop="@id/productImage"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/tv_count"
+            android:gravity="center"
+            android:text="X"
+            android:textColor="@color/second_color"
+            android:textSize="@dimen/small_title"/>
 
 
 

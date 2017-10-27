@@ -6,9 +6,9 @@ import java.util.List;
  * Created by mike on 2017/10/16.
  * "products": [{
  * "productID": 651
- * "lotsInfo": [{"lotID":Z170929000001,
+ * "lotsInfo": [{"lotIDID":Z170929000001,
  * "qty": 1},
- * {"lotID":Z170929000002,
+ * {"lotIDID":Z170929000002,
  * "qty": 2}]
  * }]
  */
@@ -56,15 +56,15 @@ public class TransferOutRequest {
     }
 
     public static class Lot {
-        public String getLotID() {
-            return lotID;
+        public String getLotIDID() {
+            return lotIDID;
         }
 
-        public void setLotID(String lotID) {
-            this.lotID = lotID;
+        public void setLotIDID(String lotIDID) {
+            this.lotIDID = lotIDID;
         }
 
-        private String lotID;
+        private String lotIDID;
 
         public String getQty() {
             return qty;

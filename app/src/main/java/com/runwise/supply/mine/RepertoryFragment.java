@@ -18,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.kids.commonframe.base.BaseEntity;
@@ -40,11 +39,10 @@ import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.mine.entity.RefreshPepertoy;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
-import com.runwise.supply.view.SystemUpgradeLayout;
 import com.runwise.supply.tools.ProductBasicHelper;
+import com.runwise.supply.view.SystemUpgradeLayout;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;

@@ -221,14 +221,17 @@ public class TransferOutActivity extends NetWorkActivity {
             List<TransferOutRequest.Lot> lots = new ArrayList<>();
             if (transferBatchLine.getProductLotInfo() != null) {
                 for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
+                    if (transferBatchLot.getUsedQty() == 0){
+                        continue;
+                    }
                     TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
-                    lot.setLotID(transferBatchLot.getLotIDID());
+                    lot.setLotIDID(transferBatchLot.getLotIDID());
                     lot.setQty(String.valueOf(transferBatchLot.getUsedQty()));
                     lots.add(lot);
                 }
             } else {
                 TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
-                lot.setLotID("");
+                lot.setLotIDID("");
                 lot.setQty(String.valueOf(transferBatchLine.getActualQty()));
                 lots.add(lot);
             }

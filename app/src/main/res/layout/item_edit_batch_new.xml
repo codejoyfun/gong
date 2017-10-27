@@ -95,24 +95,50 @@
             android:textColor="@color/bottom_dialog_textcolor"
             android:textSize="13sp" />
 
-        <com.runwise.supply.view.NoWatchEditText
-            android:id="@+id/et_product_count"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/tv_product_count"
             android:layout_alignTop="@id/tv_product_count"
             android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/tv_product_count"
-            android:background="@null"
-            android:gravity="center|right"
-            android:hint="请填写数量"
-            android:inputType="number"
-            android:singleLine="true"
-            android:cursorVisible="true"
-            android:textColor="@color/black"
-            android:textColorHint="@color/bottom_dialog_divider"
-            android:textSize="13sp" />
+            android:layout_toRightOf="@id/tv_product_count">
 
+            <ImageView
+                android:id="@+id/iv_add"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_allocation_btn_count_add"/>
+
+            <com.runwise.supply.view.NoWatchEditText
+                android:id="@+id/et_product_count"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center"
+                android:hint=""
+                android:inputType="number"
+                android:singleLine="true"
+                android:cursorVisible="true"
+                android:textColor="@color/black"
+                android:layout_toLeftOf="@id/iv_add"
+                android:layout_marginRight="5dp"
+                android:maxLength="8"
+                android:textColorHint="@color/bottom_dialog_divider"
+                android:textSize="13sp" />
+
+            <ImageView
+                android:id="@+id/iv_reduce"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@id/et_product_count"
+                android:src="@drawable/ic_allocation_btn_count_reduce"/>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
