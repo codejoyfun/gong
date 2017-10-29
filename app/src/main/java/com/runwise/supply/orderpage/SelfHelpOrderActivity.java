@@ -180,8 +180,15 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
                     pBean.setProduct_id(bean.getProductID());
                     int qty = adapter.getCountMap().get(Integer.valueOf(bean.getProductID()));
+                    if (qty == 0) {
+                        continue;
+                    }
                     pBean.setQty(qty);
                     cList.add(pBean);
+                }
+                if (cList.size() == 0) {
+                    toast("你还没选择任何商品!");
+                    return;
                 }
                 request.setProducts(cList);
                 sendConnection("/gongfu/v2/order/create/", request, COMMIT_TYPE, false, OrderCommitResponse.class);
@@ -202,6 +209,18 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                         adapter.deleteSelectItems();
                         //更新个数
                         countChanged();
+                        if (adapter.getCount() == 0) {
+                            switchEditMode();
+                            bottom_bar.setVisibility(View.INVISIBLE);
+                            setTitleRightText(false, "");
+                            setTitleLeftIcon(true, R.drawable.back_btn);
+
+                            setSelectedColor(1);
+                            selectedDate = mReserveGoodsAdvanceDate;
+                            selectedDateIndex = 1;
+                            bDialog.dismiss();
+                            dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
+                        }
                     }
                 });
                 dialog.show();
@@ -255,6 +274,11 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
         adapter.setEditMode(editMode);
         adapter.notifyDataSetChanged();
+        if (adapter != null && adapter.getCount() == 0) {
+            bottom_bar.setVisibility(View.INVISIBLE);
+            setTitleRightText(false, "");
+            self_help_rl.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setDeleteBtnOk(boolean isOk) {
@@ -478,7 +502,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
     }
 
-    private void onSuccessCallBack(){
+    private void onSuccessCallBack() {
         //停止动画
         handler.removeCallbacks(runnable);
         loadingImg.setVisibility(View.INVISIBLE);
@@ -523,8 +547,8 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 onekeyBtn.setEnabled(true);
                 dateTv.setEnabled(true);
 
-                Intent intent = new Intent(SelfHelpOrderActivity.this,OrderCommitSuccessActivity.class);
-                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS,orderCommitResponse.getOrders());
+                Intent intent = new Intent(SelfHelpOrderActivity.this, OrderCommitSuccessActivity.class);
+                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, orderCommitResponse.getOrders());
                 startActivity(intent);
 //                set.setDuration(1000).start();
 //                orderSuccessIv.postDelayed(new Runnable() {
@@ -620,32 +644,33 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode==RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
-                List<DefaultPBean> newList = new ArrayList<>();
-                if (backList != null) {
-                    for (AddedProduct pro : backList) {
-                        Integer proId = Integer.valueOf(pro.getProductId());
-                        Integer count = pro.getCount();
-                        DefaultPBean bean = new DefaultPBean();
-                        bean.setProductID(proId);
-                        newList.add(bean);
-                        adapter.getCountMap().put(proId, count);
-                    }
-                    adapter.setData(newList);
+        if (resultCode == RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
+            List<DefaultPBean> newList = new ArrayList<>();
+            if (backList != null) {
+                for (AddedProduct pro : backList) {
+                    Integer proId = Integer.valueOf(pro.getProductId());
+                    Integer count = pro.getCount();
+                    DefaultPBean bean = new DefaultPBean();
+                    bean.setProductID(proId);
+                    newList.add(bean);
+                    adapter.getCountMap().put(proId, count);
                 }
-                if (backList != null && backList.size() > 0) {
-                    ToastUtil.show(mContext, "添加成功");
-                    self_help_rl.setVisibility(View.GONE);
-                    bottom_bar.setVisibility(View.VISIBLE);
-                    ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
-                    pullListView.setVisibility(View.VISIBLE);
-                } else {
-                    self_help_rl.setVisibility(View.VISIBLE);
-                    bottom_bar.setVisibility(View.INVISIBLE);
-                }
-                setTitleEditShow();
+                adapter.setData(newList);
+            }
+            if (backList != null && backList.size() > 0) {
+                ToastUtil.show(mContext, "添加成功");
+                self_help_rl.setVisibility(View.GONE);
+                bottom_bar.setVisibility(View.VISIBLE);
+                ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
+                pullListView.setVisibility(View.VISIBLE);
+            } else {
+                self_help_rl.setVisibility(View.VISIBLE);
+                bottom_bar.setVisibility(View.INVISIBLE);
+                select_bar.setVisibility(View.INVISIBLE);
+            }
+            setTitleEditShow();
         }
     }
 
@@ -658,8 +683,8 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
     }
 
-    private void back(){
-        if(adapter.getCount()>0){
+    private void back() {
+        if (adapter.getCount() > 0) {
             dialog.setTitle("提示");
             dialog.setMessageGravity();
             dialog.setMessage("确认取消下单？");
