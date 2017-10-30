@@ -654,9 +654,12 @@ public class OrderDetailActivity extends NetWorkActivity {
                 setTitleRightText(true, "修改");
                 isModifyOrder = true;
             }
-            if (!bean.isUnApplyService()&&(bean.getState().equals("rated") || bean.getState().equals("done"))) {
+            else if (!bean.isUnApplyService()&&(bean.getState().equals("rated") || bean.getState().equals("done"))) {
                 //同时，显示右上角，申请售后
                 setTitleRightText(true, "申请售后");
+            }
+            else{
+                setTitleRightText(false,"");
             }
             //订单信息
             orderNumTv.setText(bean.getName());
