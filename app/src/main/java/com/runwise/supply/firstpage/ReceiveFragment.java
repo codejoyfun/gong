@@ -296,6 +296,11 @@ public class ReceiveFragment extends BaseFragment {
                     }
                 }
             }
+            String str = viewHolder.receivedTv.getText().toString();
+            if (!TextUtils.isEmpty(str)){
+                int count = Integer.parseInt(str);
+                setUpBackground(convertView,count, (int) bean.getProductUomQty());
+            }
             //双单位相关
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
             int paddingLeft = CommonUtils.dip2px(mContext, 15);
@@ -365,6 +370,14 @@ public class ReceiveFragment extends BaseFragment {
                 if (callback != null) {
                     callback.doAction(rb);
                 }
+            }
+        }
+
+        public void setUpBackground(View convertView, int actualCount, int sourceCount){
+            if (actualCount != sourceCount){
+                convertView.setBackgroundColor(getResources().getColor(R.color.receive_differ));
+            }else{
+                convertView.setBackgroundColor(getResources().getColor(R.color.white));
             }
         }
 

@@ -34,4 +34,6 @@
     <!--选择框标题栏背景-->
     <color name="bg_titlebar_select">#FAFDF8</color>
 
+    <color name="receive_differ">#F5FDF0</color>
+
 </resources>
