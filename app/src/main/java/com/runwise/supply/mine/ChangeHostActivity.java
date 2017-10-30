@@ -61,14 +61,15 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.et_host)
     private EditText mEtHost;
     private ArrayAdapter<String> adapter;
-    private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", DEFAULT_DATABASE_NAME, "TestFor...Company数据库", "不设置数据库"};
-    private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", DEFAULT_DATABASE_NAME, "Testfor...Company", ""};
+    private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", "MF-Test", "TestFor...Company数据库", "不设置数据库"};
+    private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", "MF-Test", "Testfor...Company", ""};
     private int which;
     @ViewInject(R.id.et_database)
     private EditText mEtDatabase;
     @ViewInject(R.id.btn_confirm)
     private Button mBtnConfirm;
     private boolean isLogin;
+    String mUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,6 @@ public class ChangeHostActivity extends NetWorkActivity {
         if (android.os.Build.VERSION.SDK_INT <= KITKAT) {
             setTheme(R.style.hostStyle);
         }
-
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.host_layout);
@@ -91,16 +91,24 @@ public class ChangeHostActivity extends NetWorkActivity {
                         mEtHost.setVisibility(View.GONE);
                         mEtDatabase.setVisibility(View.GONE);
                         mBtnConfirm.setVisibility(View.GONE);
-                        Constant.BASE_URL = Constant.RELEASE_URL;
-                        SPUtils.put(mContext, FILE_KEY_HOST, Constant.RELEASE_URL);
+                        if (!isLogin){
+                            Constant.BASE_URL = Constant.RELEASE_URL;
+                            SPUtils.put(mContext, FILE_KEY_HOST, Constant.RELEASE_URL);
+                        }else{
+                            mUrl = Constant.RELEASE_URL;
+                        }
                         listview.setVisibility(View.VISIBLE);
                         break;
                     case R.id.rb_test:
                         mEtHost.setVisibility(View.GONE);
                         mEtDatabase.setVisibility(View.GONE);
                         mBtnConfirm.setVisibility(View.GONE);
-                        Constant.BASE_URL = Constant.DEBUG_URL;
-                        SPUtils.put(mContext, FILE_KEY_HOST, Constant.DEBUG_URL);
+                        if (!isLogin){
+                            Constant.BASE_URL = Constant.DEBUG_URL;
+                            SPUtils.put(mContext, FILE_KEY_HOST, Constant.DEBUG_URL);
+                        }else{
+                            mUrl = Constant.DEBUG_URL;
+                        }
                         listview.setVisibility(View.VISIBLE);
                         break;
                     case R.id.rb_custom:
@@ -280,21 +288,45 @@ public class ChangeHostActivity extends NetWorkActivity {
         EventBus.getDefault().post(new UserLogoutEvent());
         switch (where) {
             case LOGINOUT_HD:
+                if (!TextUtils.isEmpty(mUrl)){
+                    SPUtils.put(mContext, FILE_KEY_HOST, mUrl);
+                    Constant.BASE_URL = mUrl;
+                }
                 switchDBByIndex(0);
                 break;
             case LOGINOUT_LBZ:
+                if (!TextUtils.isEmpty(mUrl)){
+                    SPUtils.put(mContext, FILE_KEY_HOST, mUrl);
+                    Constant.BASE_URL = mUrl;
+                }
                 switchDBByIndex(1);
                 break;
             case LOGINOUT_Golden:
+                if (!TextUtils.isEmpty(mUrl)){
+                    SPUtils.put(mContext, FILE_KEY_HOST, mUrl);
+                    Constant.BASE_URL = mUrl;
+                }
                 switchDBByIndex(2);
                 break;
             case LOGINOUT_Golden2:
+                if (!TextUtils.isEmpty(mUrl)){
+                    SPUtils.put(mContext, FILE_KEY_HOST, mUrl);
+                    Constant.BASE_URL = mUrl;
+                }
                 switchDBByIndex(3);
                 break;
             case LOGINOUT_Test:
+                if (!TextUtils.isEmpty(mUrl)){
+                    SPUtils.put(mContext, FILE_KEY_HOST, mUrl);
+                    Constant.BASE_URL = mUrl;
+                }
                 switchDBByIndex(4);
                 break;
             case LOGINOUT_NONE:
+                if (!TextUtils.isEmpty(mUrl)){
+                    SPUtils.put(mContext, FILE_KEY_HOST, mUrl);
+                    Constant.BASE_URL = mUrl;
+                }
                 switchDBByIndex(5);
                 break;
             case LOGINOUT_CUSTOMER:

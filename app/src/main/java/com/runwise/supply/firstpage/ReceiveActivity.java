@@ -613,6 +613,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         sureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (TextUtils.isEmpty(edEt.getText().toString())){
+                    toast("输入数量不能为空!");
+                    return;
+                }
                 String pId = String.valueOf(bottomData.getProductId());
                 int count = Integer.valueOf(edEt.getText().toString());
                 bottomData.setCount(count);
