@@ -253,12 +253,12 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                },\n" +
                 "                \"barcode\": \"\",\n" +
                 "                \"settlePrice\": 0,\n" +
-                "                \"unit\": \"300g/袋\",\n" +
+                "                \"unit\": \"1000克/袋\",\n" +
                 "                \"productID\": 20,\n" +
                 "                \"tracking\": \"lot\",\n" +
-                "                \"name\": \"一号灌汤包馅料\",\n" +
-                "                \"defaultCode\": \"11012213\",\n" +
-                "                \"category\": \"冻货\",\n" +
+                "                \"name\": \"新鲜柠檬\",\n" +
+                "                \"defaultCode\": \"300001\",\n" +
+                "                \"category\": \"冷藏货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 15.200000000000001,\n" +
                 "                \"uom\": \"包\"\n" +
@@ -283,12 +283,12 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                },\n" +
                 "                \"barcode\": \"\",\n" +
                 "                \"settlePrice\": 0,\n" +
-                "                \"unit\": \"200g/袋\",\n" +
+                "                \"unit\": \"1000克/袋\",\n" +
                 "                \"productID\": 21,\n" +
                 "                \"tracking\": \"none\",\n" +
-                "                \"name\": \"一次性碗 - 直无批\",\n" +
-                "                \"defaultCode\": \"11012214\",\n" +
-                "                \"category\": \"other\",\n" +
+                "                \"name\": \"莴笋\",\n" +
+                "                \"defaultCode\": \"300002\",\n" +
+                "                \"category\": \"冷藏货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 1.11,\n" +
                 "                \"uom\": \"件\"\n" +
@@ -313,12 +313,12 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                },\n" +
                 "                \"barcode\": \"\",\n" +
                 "                \"settlePrice\": 0,\n" +
-                "                \"unit\": \"200g/袋\",\n" +
+                "                \"unit\": \"1000克/袋\",\n" +
                 "                \"productID\": 22,\n" +
                 "                \"tracking\": \"lot\",\n" +
-                "                \"name\": \"中盐牌加碘精制盐\",\n" +
-                "                \"defaultCode\": \"11012215\",\n" +
-                "                \"category\": \"干货\",\n" +
+                "                \"name\": \"新鲜油桃\",\n" +
+                "                \"defaultCode\": \"300003\",\n" +
+                "                \"category\": \"冷藏货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 58.910000000000004,\n" +
                 "                \"uom\": \"包\"\n" +
@@ -343,12 +343,12 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                },\n" +
                 "                \"barcode\": \"\",\n" +
                 "                \"settlePrice\": 0,\n" +
-                "                \"unit\": \"200g/袋\",\n" +
+                "                \"unit\": \"1000克/袋\",\n" +
                 "                \"productID\": 23,\n" +
                 "                \"tracking\": \"lot\",\n" +
-                "                \"name\": \"【五得利】高筋小麦粉\",\n" +
-                "                \"defaultCode\": \"11012216\",\n" +
-                "                \"category\": \"干货\",\n" +
+                "                \"name\": \"新鲜本地番茄\",\n" +
+                "                \"defaultCode\": \"300006\",\n" +
+                "                \"category\": \"冷藏货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 104.48,\n" +
                 "                \"uom\": \"包\"\n" +
@@ -373,17 +373,77 @@ public class RepertoryFragment extends NetWorkFragment {
                 "                },\n" +
                 "                \"barcode\": \"\",\n" +
                 "                \"settlePrice\": 0,\n" +
-                "                \"unit\": \"500g/桶\",\n" +
+                "                \"unit\": \"600克/包\",\n" +
                 "                \"productID\": 24,\n" +
                 "                \"tracking\": \"lot\",\n" +
-                "                \"name\": \"元宝调和油\",\n" +
-                "                \"defaultCode\": \"11012217\",\n" +
-                "                \"category\": \"干货\",\n" +
+                "                \"name\": \"虾皇饺\",\n" +
+                "                \"defaultCode\": \"300007\",\n" +
+                "                \"category\": \"冻货\",\n" +
                 "                \"settleUomId\": \"\",\n" +
                 "                \"price\": 100.04,\n" +
                 "                \"uom\": \"桶\"\n" +
                 "            }\n" +
-                "        }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"code\": \"11012215\",\n" +
+                "            \"inventoryValue\": 75,\n" +
+                "            \"lifeEndDate\": \"2017-09-27 00:00:00\",\n" +
+                "            \"lotID\": 282,\n" +
+                "            \"lotNum\": \"Z170827000004\",\n" +
+                "            \"qty\": 15,\n" +
+                "            \"uom\": \"包\",\n" +
+                "            \"productID\": 27,\n" +
+                "            \"product\": {\n" +
+                "                \"isTwoUnit\": false,\n" +
+                "                \"image\": {\n" +
+                "                    \"imageMedium\": \"/gongfu/image/product/23/image_medium/\",\n" +
+                "                    \"image\": \"/gongfu/image/product/23/image/\",\n" +
+                "                    \"imageSmall\": \"/gongfu/image/product/23/image_small/\",\n" +
+                "                    \"imageID\": 23\n" +
+                "                },\n" +
+                "                \"barcode\": \"\",\n" +
+                "                \"settlePrice\": 0,\n" +
+                "                \"unit\": \"1000克/袋\",\n" +
+                "                \"productID\": 23,\n" +
+                "                \"tracking\": \"lot\",\n" +
+                "                \"name\": \"新鲜本地番茄\",\n" +
+                "                \"defaultCode\": \"300006\",\n" +
+                "                \"category\": \"冷藏货\",\n" +
+                "                \"settleUomId\": \"\",\n" +
+                "                \"price\": 104.48,\n" +
+                "                \"uom\": \"包\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"code\": \"11012215\",\n" +
+                "            \"inventoryValue\": 50,\n" +
+                "            \"lifeEndDate\": \"2017-11-22 17:46:42\",\n" +
+                "            \"lotID\": 1,\n" +
+                "            \"lotNum\": \"Z201708140001\",\n" +
+                "            \"qty\": 1,\n" +
+                "            \"uom\": \"袋\",\n" +
+                "            \"productID\": 29,\n" +
+                "            \"product\": {\n" +
+                "                \"isTwoUnit\": false,\n" +
+                "                \"image\": {\n" +
+                "                    \"imageMedium\": \"/gongfu/image/product/24/image_medium/\",\n" +
+                "                    \"image\": \"/gongfu/image/product/24/image/\",\n" +
+                "                    \"imageSmall\": \"/gongfu/image/product/24/image_small/\",\n" +
+                "                    \"imageID\": 24\n" +
+                "                },\n" +
+                "                \"barcode\": \"\",\n" +
+                "                \"settlePrice\": 0,\n" +
+                "                \"unit\": \"200克/包\",\n" +
+                "                \"productID\": 24,\n" +
+                "                \"tracking\": \"lot\",\n" +
+                "                \"name\": \"香糯汤圆 黑芝麻口味\",\n" +
+                "                \"defaultCode\": \"300008\",\n" +
+                "                \"category\": \"冻货\",\n" +
+                "                \"settleUomId\": \"\",\n" +
+                "                \"price\": 100.04,\n" +
+                "                \"uom\": \"桶\"\n" +
+                "            }\n" +
+                "        }\n"+
                 "    ]\n" +
                 "}";
         mUnLoginCategoryRespone = new CategoryRespone();
@@ -395,6 +455,16 @@ public class RepertoryFragment extends NetWorkFragment {
         layoutParams.setMargins(0,0,0,0);
         smartTabLayout.setLayoutParams(layoutParams);
         mUnLoginCategoryRespone.setCategoryList(categoryList);
+//        RepertoryEntity repertoryEntity = new RepertoryEntity();
+//        List<RepertoryEntity.ListBean> listBeen = new ArrayList<>();
+//        RepertoryEntity.ListBean listBean = new RepertoryEntity.ListBean();
+//        ProductBasicList.ListBean product = new ProductBasicList.ListBean();
+//        product.setProductUom("1000克/袋");
+//        product.setName("新鲜柠檬");
+//        product.setDefaultCode("300001");
+//        listBean.setProduct(product);
+//        listBeen.add(listBean);
+//        repertoryEntity.setList(listBeen);
         RepertoryEntity repertoryEntity =  JSON.parseObject(xmlStr,RepertoryEntity.class);
         setUpDataForViewPage(mUnLoginCategoryRespone,repertoryEntity);
     }

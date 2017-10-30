@@ -177,7 +177,9 @@ public class NetWorkHelper<T extends BaseEntity> {
             queryParam.deleteCharAt(queryParam.length() - 1);
             url += "?" + queryParam.toString();
         }
-        LogUtils.e(url);
+        if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
+            LogUtils.e(url);
+        }
         RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass);
         RequestErrorListener errorLietener = new RequestErrorListener(where);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
@@ -234,7 +236,9 @@ public class NetWorkHelper<T extends BaseEntity> {
         this.setJsonParseType();
         if (params != null) {
             bodyParamStr = JSON.toJSONString(params);
-            LogUtils.e(bodyParamStr);
+            if (!bizName.contains("order/undone_orders/") && !bizName.contains("gongfu/v2/return_order/")) {
+                LogUtils.e(bodyParamStr);
+            }
         } else {
             bodyParamStr = "{}";
         }
@@ -368,13 +372,21 @@ public class NetWorkHelper<T extends BaseEntity> {
             }
             if (parsed.length() > 4000) {
                 for (int i = 0; i < parsed.length(); i += 4000) {
-                    if (i + 4000 < parsed.length())
-                        LogUtils.e(url + " " + parsed.substring(i, i + 4000));
-                    else
-                        LogUtils.e(url + " " + parsed.substring(i, parsed.length()));
+                    if (i + 4000 < parsed.length()){
+                        if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
+                            LogUtils.e(url + " " + parsed.substring(i, i + 4000));
+                        }
+                    }
+                    else{
+                        if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
+                            LogUtils.e(url + " " + parsed.substring(i, parsed.length()));
+                        }
+                    }
                 }
             } else {
-                LogUtils.e(url + " " + parsed);
+                if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
+                    LogUtils.e(url + " " + parsed);
+                }
             }
             T resultObj = null;
             if (newWorkCallBack != null) {
