@@ -48,6 +48,7 @@ import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.event.IntEvent;
+import com.runwise.supply.event.OrderStatusChangeEvent;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
@@ -63,6 +64,7 @@ import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -70,6 +72,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
+import io.vov.vitamio.utils.Log;
 import me.shaohui.bottomdialog.BottomDialog;
 
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
@@ -191,6 +194,12 @@ public class OrderDetailActivity extends NetWorkActivity {
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
         dragLayout.setOverDrag(false);
+        findViewById(R.id.top_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //点击空白不收起draglayout
+            }
+        });
     }
 
     private void getReturnOrder(String rid) {
@@ -635,6 +644,9 @@ public class OrderDetailActivity extends NetWorkActivity {
 
             if (bean.getOrderSettleName().contains("先付款后收货") && bean.getOrderSettleName().contains("单次结算")) {
                 setUpPaymenInstrument();
+                if(bean.getState().equals(OrderState.SALE.getName())){//已确认，不展示上传凭证按钮，可展示查看按钮
+                    uploadBtn.setVisibility(View.GONE);
+                }
             }
 
             //支付凭证在收货流程后，才显示
@@ -779,6 +791,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 int position = tab.getPosition();
                 viewpager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
+                if(dragLayout.getState()== DragTopLayout.PanelState.EXPANDED)dragLayout.toggleTopView();
             }
 
             @Override
@@ -900,5 +913,20 @@ public class OrderDetailActivity extends NetWorkActivity {
             sb.append(missingLinesBean.get(key).getProductID()).append("/");
             sendConnection(sb.toString(), request, PRODUCT_DETAIL, false, ProductOne.class);
         }
+    }
+
+    @Subscribe
+    public void onOrderStatusChanged(OrderStatusChangeEvent orderStatusChangeEvent){
+        if(bean.getOrderID()==orderStatusChangeEvent.orderId){
+            refresh();
+        }
+    }
+
+    private void refresh(){
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+        sb.append(orderId).append("/");
+        sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
+        loadingLayout.setStatusLoading();
     }
 }

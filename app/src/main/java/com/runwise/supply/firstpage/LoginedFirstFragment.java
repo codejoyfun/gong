@@ -514,13 +514,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case R.id.callIcon:
                 if (userInfo != null && !TextUtils.isEmpty(userInfo.getCompanyHotLine())) {
                     number = userInfo.getCompanyHotLine();
-                    dialog.setTitle("致电 " + userInfo.getCompany() + " 客服");
+                    dialog.setTitleGone();
                 } else {
                     dialog.setTitle("致电 供鲜生 客服");
                 }
                 dialog.setModel(CustomDialog.BOTH);
                 dialog.setMessageGravity();
-                dialog.setMessage(number);
+                dialog.setMessage("致电 " + userInfo.getCompany() + " 客服\n"+number);
                 dialog.setLeftBtnListener("取消", null);
                 dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
                     @Override

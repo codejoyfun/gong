@@ -170,4 +170,8 @@ public class CustomDialog extends Dialog {
    public interface DialogListener {
 	   public void doClickButton(Button btn, CustomDialog dialog);
    }
+
+   public void setTitleGone(){
+	   this.title.setVisibility(View.GONE);
+   }
 }

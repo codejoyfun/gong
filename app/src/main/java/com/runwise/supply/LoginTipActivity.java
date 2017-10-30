@@ -35,7 +35,7 @@ public class LoginTipActivity extends BaseActivity {
         mobel = this.getIntent().getStringExtra("mobel");
         username = this.getIntent().getStringExtra("username");
         pwd = this.getIntent().getStringExtra("pwd");
-        if(TextUtils.isEmpty(mobel)) {
+        if(TextUtils.isEmpty(mobel) || !TextUtils.isDigitsOnly(mobel)) {
             finishBtn.setVisibility(View.GONE);
             tipText.setText("该账号已在其他设备登陆\n由于没有绑定手机，请联系客服");
         }

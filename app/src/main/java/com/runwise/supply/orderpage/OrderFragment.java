@@ -1,5 +1,6 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,8 +9,11 @@ import android.support.v7.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -164,6 +168,19 @@ public class OrderFragment extends NetWorkFragment {
             lastBuyTv.setVisibility(View.INVISIBLE);
         }
 
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if(actionId== EditorInfo.IME_ACTION_DONE || actionId==EditorInfo.IME_ACTION_NEXT){
+                    InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+                    showOpv();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -222,5 +239,31 @@ public class OrderFragment extends NetWorkFragment {
     public void getOrderSuccessEvent(OrderSuccessEvent event){
         isBackFirstPage = true;
 
+    }
+
+    private void showOpv(){
+        if (opv == null){
+            opv = new OptionsPickerView.Builder(mContext,new OptionsPickerView.OnOptionsSelectListener(){
+
+                @Override
+                public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                    if (safeArr.size() > options1){
+                        selectedIndex = options1;
+                        String selectStr = safeArr.get(options1);
+                        safeValueTv.setText(selectStr +" %");
+                    }
+                }
+            }).setTitleText("选择安全系数")
+                    .setTitleBgColor(Color.parseColor("#F3F9EF"))
+                    .setTitleSize(16)
+                    .setSubCalSize(14)
+                    .setContentTextSize(23)
+                    .setCancelColor(Color.parseColor("#2E2E2E"))
+                    .setSubmitColor(Color.parseColor("#2E2E2E"))
+                    .build();
+            opv.setPicker(safeArr);
+        }
+        opv.setSelectOptions(selectedIndex);
+        opv.show(true);
     }
 }

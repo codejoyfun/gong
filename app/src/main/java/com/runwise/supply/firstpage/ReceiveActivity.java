@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -659,7 +661,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setFocusable(false);
-        mProductTypeWindow.setOutsideTouchable(true);
+        mProductTypeWindow.setOutsideTouchable(false);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -694,6 +696,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mProductTypeWindow.showAtLocation(getRootView(ReceiveActivity.this), Gravity.NO_GRAVITY, 0, y);
         mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEtProductAmount, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @OnClick({R.id.title_iv_left, R.id.btn_confirm, R.id.iv_open, R.id.btn_cancel, R.id.title_iv_rigth})

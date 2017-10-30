@@ -220,9 +220,9 @@ public class ReturnOrderBean implements Serializable {
             driveMobile = in.readString();
             deliveryType = in.readString();
             hasAttachment = in.readInt();
+            returnThirdPartLog = in.readByte() != 0;
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
-            returnThirdPartLog = in.readByte() != 0;
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {

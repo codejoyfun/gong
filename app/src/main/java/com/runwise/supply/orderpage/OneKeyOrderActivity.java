@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -513,6 +514,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
                 mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+                if(TextUtils.isEmpty(dateTv.getText().toString()))dateTv.setText(cachedDWStr);
                 selectedDate = mReserveGoodsAdvanceDate;
                 selectedDateIndex = 1;
                 break;
@@ -524,14 +526,15 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
             case DEFAULT_TYPE:
-                ToastUtil.show(mContext, errMsg);
+                //ToastUtil.show(mContext, errMsg);
                 //停止动画
                 handler.removeCallbacks(runnable);
                 loadingImg.setVisibility(View.INVISIBLE);
                 loadingTv.setVisibility(View.INVISIBLE);
-                bottom_bar.setVisibility(View.VISIBLE);
-                ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
+                //bottom_bar.setVisibility(View.VISIBLE);
+                //ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
                 pullListView.setVisibility(View.VISIBLE);
+                nopurchaseRL.setVisibility(View.VISIBLE);
                 break;
             case COMMIT_TYPE:
                 onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
@@ -596,6 +599,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
             ArrayList<AddedProduct> backList = bundle.getParcelableArrayList("backap");
             List<DefaultPBean> newList = new ArrayList<>();
             if (backList != null) {
+                bottom_bar.setVisibility(View.VISIBLE);
                 for (AddedProduct pro : backList) {
                     Integer proId = Integer.valueOf(pro.getProductId());
                     Integer count = pro.getCount();

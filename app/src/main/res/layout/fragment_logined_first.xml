@@ -32,7 +32,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:padding="12dp"
-            android:src="@drawable/nav_service_home"
+            android:src="@drawable/ic_custom_service"
             />
 
         <TextView
