@@ -248,8 +248,9 @@ public class ReceiveFragment extends BaseFragment {
                 if (basicBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
+                sb.append(" | ").append(basicBean.getUnit());
                 if (canSeePrice) {
-                    sb.append("  ").append(basicBean.getUnit()).append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                    sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }
                 viewHolder.content.setText(sb.toString());
                 viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + bean.getProductUom());
