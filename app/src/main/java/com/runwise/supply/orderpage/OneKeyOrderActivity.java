@@ -269,8 +269,15 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
                     pBean.setProduct_id(bean.getProductID());
                     int qty = adapter.getCountMap().get(Integer.valueOf(bean.getProductID()));
+                    if (qty == 0) {
+                        continue;
+                    }
                     pBean.setQty(qty);
                     cList.add(pBean);
+                }
+                if (cList.size() == 0) {
+                    toast("你还没选择任何商品!");
+                    return;
                 }
                 request.setProducts(cList);
                 sendConnection("/gongfu/v2/order/create/", request, COMMIT_TYPE, true, CommitResponse.class);
@@ -296,6 +303,20 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                         adapter.deleteSelectItems();
                         //更新个数
                         countChanged();
+                        if (adapter.getCount() == 0) {
+                            switchEditMode();
+                            bottom_bar.setVisibility(View.INVISIBLE);
+                            setTitleRightText(false, "");
+                            setTitleLeftIcon(true, R.drawable.back_btn);
+
+                            setSelectedColor(1);
+                            selectedDate = mReserveGoodsAdvanceDate;
+                            selectedDateIndex = 1;
+                            if (bDialog != null&& bDialog.isVisible()){
+                                bDialog.dismiss();
+                            }
+                            dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
+                        }
                     }
                 });
                 dialog.show();
@@ -332,6 +353,10 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         }
         adapter.setEditMode(editMode);
         adapter.notifyDataSetChanged();
+        if (adapter != null && adapter.getCount() == 0) {
+            bottom_bar.setVisibility(View.INVISIBLE);
+            setTitleRightText(false, "");
+        }
     }
 
     private void setDeleteBtnOk(boolean isOk) {
@@ -436,13 +461,21 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
     //参数从0开始
     private void setSelectedColor(int i) {
         for (TextView tv : wArr) {
-            tv.setTextColor(Color.parseColor("#2E2E2E"));
+            if (tv != null){
+                tv.setTextColor(Color.parseColor("#2E2E2E"));
+            }
         }
         for (TextView tv : dArr) {
-            tv.setTextColor(Color.parseColor("#2E2E2E"));
+            if (tv != null){
+                tv.setTextColor(Color.parseColor("#2E2E2E"));
+            }
         }
-        wArr[i].setTextColor(Color.parseColor("#6BB400"));
-        dArr[i].setTextColor(Color.parseColor("#6BB400"));
+        if (wArr[i] != null){
+            wArr[i].setTextColor(Color.parseColor("#6BB400"));
+        }
+        if (dArr[i] != null){
+            dArr[i].setTextColor(Color.parseColor("#6BB400"));
+        }
     }
 
     private void requestDefalutProduct() {
@@ -483,7 +516,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 if (data != null && data.getList() != null && data.getList().size() == 0) {
                     //显示UI
                     nopurchaseRL.setVisibility(View.VISIBLE);
-
+                    setTitleRightText(false,"");
                 }
                 break;
             case COMMIT_TYPE:
@@ -535,6 +568,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 //ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
                 pullListView.setVisibility(View.VISIBLE);
                 nopurchaseRL.setVisibility(View.VISIBLE);
+                setTitleRightText(false,"");
                 break;
             case COMMIT_TYPE:
                 onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));

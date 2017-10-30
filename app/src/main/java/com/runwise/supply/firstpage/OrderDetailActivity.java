@@ -480,7 +480,7 @@ public class OrderDetailActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        toast(errMsg);
     }
 
     @Override
