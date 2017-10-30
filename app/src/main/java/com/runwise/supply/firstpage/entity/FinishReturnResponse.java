@@ -18,7 +18,7 @@ public class FinishReturnResponse implements Serializable{
         return returnOrder;
     }
 
-    public class ReturnOrder implements Serializable{
+    public static class ReturnOrder implements Serializable{
 
         private double amountTotal;
         private List<String> stateTracker;
