@@ -61,8 +61,8 @@ public class ChangeHostActivity extends NetWorkActivity {
     @ViewInject(R.id.et_host)
     private EditText mEtHost;
     private ArrayAdapter<String> adapter;
-    private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", "MF-PreGolive-001", "TestFor...Company数据库", "不设置数据库"};
-    private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", "MF-PreGolive-001", "Testfor...Company", ""};
+    private String[] datas = {"海大数据库", "老班长数据库", "GoldenClient2017Test数据库", DEFAULT_DATABASE_NAME, "TestFor...Company数据库", "不设置数据库"};
+    private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017Test", DEFAULT_DATABASE_NAME, "Testfor...Company", ""};
     private int which;
     @ViewInject(R.id.et_database)
     private EditText mEtDatabase;

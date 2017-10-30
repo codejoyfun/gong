@@ -136,6 +136,9 @@ public class OneKeyAdapter extends IBaseAdapter {
                             edittext.setText(mmPrevious);
                             return;
                         }
+                        if (TextUtils.isEmpty(s.toString())){
+                            return;
+                        }
                         num = Integer.valueOf(s.toString());
                         countMap.put(bean.getProductID(), num);
 //                notifyDataSetChanged();

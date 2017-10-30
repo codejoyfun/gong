@@ -72,7 +72,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
-import io.vov.vitamio.utils.Log;
 import me.shaohui.bottomdialog.BottomDialog;
 
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
@@ -644,9 +643,6 @@ public class OrderDetailActivity extends NetWorkActivity {
 
             if (bean.getOrderSettleName().contains("先付款后收货") && bean.getOrderSettleName().contains("单次结算")) {
                 setUpPaymenInstrument();
-                if(bean.getState().equals(OrderState.SALE.getName())){//已确认，不展示上传凭证按钮，可展示查看按钮
-                    uploadBtn.setVisibility(View.GONE);
-                }
             }
 
             //支付凭证在收货流程后，才显示
@@ -705,6 +701,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         } else {
             payStateValue.setText("已上传支付凭证");
             uploadBtn.setText("查看凭证");
+            uploadBtn.setVisibility(View.VISIBLE);
             isHasAttachment = true;
         }
         isModifyOrder = false;

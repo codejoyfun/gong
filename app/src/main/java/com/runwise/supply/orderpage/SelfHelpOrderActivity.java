@@ -218,7 +218,9 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                             setSelectedColor(1);
                             selectedDate = mReserveGoodsAdvanceDate;
                             selectedDateIndex = 1;
-                            bDialog.dismiss();
+                            if (bDialog != null&& bDialog.isVisible()){
+                                bDialog.dismiss();
+                            }
                             dateTv.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
                         }
                     }
@@ -383,13 +385,21 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     //参数从0开始
     private void setSelectedColor(int i) {
         for (TextView tv : wArr) {
-            tv.setTextColor(Color.parseColor("#2E2E2E"));
+            if (tv != null){
+                tv.setTextColor(Color.parseColor("#2E2E2E"));
+            }
         }
         for (TextView tv : dArr) {
-            tv.setTextColor(Color.parseColor("#2E2E2E"));
+            if (tv != null){
+                tv.setTextColor(Color.parseColor("#2E2E2E"));
+            }
         }
-        wArr[i].setTextColor(Color.parseColor("#6BB400"));
-        dArr[i].setTextColor(Color.parseColor("#6BB400"));
+        if (wArr[i] != null){
+            wArr[i].setTextColor(Color.parseColor("#6BB400"));
+        }
+        if (dArr[i] != null){
+            dArr[i].setTextColor(Color.parseColor("#6BB400"));
+        }
     }
 
     int mReserveGoodsAdvanceDate;
