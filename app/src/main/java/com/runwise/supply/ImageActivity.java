@@ -2,10 +2,12 @@ package com.runwise.supply;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
+import me.relex.photodraweeview.OnPhotoTapListener;
 import me.relex.photodraweeview.PhotoDraweeView;
 
 /**
@@ -21,5 +23,17 @@ public class ImageActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
         photoDraweeView.setPhotoUri(Uri.parse(getIntent().getStringExtra(INTENT_KEY_IMG_URL)));
+        photoDraweeView.setOnPhotoTapListener(new OnPhotoTapListener() {
+            @Override
+            public void onPhotoTap(View view, float x, float y) {
+                finish();
+            }
+        });
+//        photoDraweeView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                finish();
+//            }
+//        });
     }
 }
