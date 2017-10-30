@@ -10,6 +10,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
 import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
+import com.runwise.supply.event.OrderStatusChangeEvent;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -17,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.jpush.android.api.JPushInterface;
+import io.vov.vitamio.utils.Log;
 
 /**
  * Created by mike on 2017/9/26.
@@ -27,7 +29,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TYPE_LOGOUT = "logout";
     public static final String TYPE_LOGIN_CONFICT = "login_confict";
     public static final String TYPE_SYSTEM_UPGRADE = "update";
-    public static final String TYPE_ORDER = "order";
+    public static final String TYPE_ORDER = "sale.order";
 
     private static final int REQUEST_LOGINOUT = 1 << 0;
     @Override
@@ -48,6 +50,10 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                     }
                     if (type.equals(TYPE_ORDER)){
                         //刷新订单列表
+                        String strId = jsonObject.optString("dataid");
+                        if(!TextUtils.isEmpty(strId) && TextUtils.isDigitsOnly(strId)){
+                            EventBus.getDefault().post(new OrderStatusChangeEvent(Integer.valueOf(strId)));
+                        }
                     }
                     if (TYPE_SYSTEM_UPGRADE.equals(type)){
                         String dataid = jsonObject.optString("dataid");

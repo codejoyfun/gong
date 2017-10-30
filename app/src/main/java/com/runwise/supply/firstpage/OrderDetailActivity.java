@@ -48,6 +48,7 @@ import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.event.IntEvent;
+import com.runwise.supply.event.OrderStatusChangeEvent;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
@@ -63,6 +64,7 @@ import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -907,5 +909,20 @@ public class OrderDetailActivity extends NetWorkActivity {
             sb.append(missingLinesBean.get(key).getProductID()).append("/");
             sendConnection(sb.toString(), request, PRODUCT_DETAIL, false, ProductOne.class);
         }
+    }
+
+    @Subscribe
+    public void onOrderStatusChanged(OrderStatusChangeEvent orderStatusChangeEvent){
+        if(bean.getOrderID()==orderStatusChangeEvent.orderId){
+            refresh();
+        }
+    }
+
+    private void refresh(){
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+        sb.append(orderId).append("/");
+        sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
+        loadingLayout.setStatusLoading();
     }
 }
