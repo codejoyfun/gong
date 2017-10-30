@@ -918,7 +918,12 @@ public class OrderDetailActivity extends NetWorkActivity {
     @Subscribe
     public void onOrderStatusChanged(OrderStatusChangeEvent orderStatusChangeEvent){
         if(bean.getOrderID()==orderStatusChangeEvent.orderId){
-            refresh();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    refresh();
+                }
+            },2000);
         }
     }
 
