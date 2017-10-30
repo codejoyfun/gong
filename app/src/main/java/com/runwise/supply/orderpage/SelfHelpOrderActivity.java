@@ -510,17 +510,17 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
 //                bgView.setVisibility(View.VISIBLE);
 //                orderSuccessIv.setVisibility(View.VISIBLE);
-                AnimatorSet set = new AnimatorSet();
-                set.playTogether(
-                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleX", 1, 0.7f),
-                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleY", 1, 0.7f)
-                );
-                set.setInterpolator(new AccelerateDecelerateInterpolator());
+//                AnimatorSet set = new AnimatorSet();
+//                set.playTogether(
+//                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleX", 1, 0.7f),
+//                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleY", 1, 0.7f)
+//                );
+//                set.setInterpolator(new AccelerateDecelerateInterpolator());
 
                 finish();
                 EventBus.getDefault().post(new OrderSuccessEvent());
                 onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
-                onekeyBtn.setEnabled(true);
+//                onekeyBtn.setEnabled(true);
                 dateTv.setEnabled(true);
 
                 Intent intent = new Intent(SelfHelpOrderActivity.this,OrderCommitSuccessActivity.class);

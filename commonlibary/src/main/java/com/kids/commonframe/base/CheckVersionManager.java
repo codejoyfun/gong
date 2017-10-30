@@ -2,6 +2,8 @@ package com.kids.commonframe.base;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
@@ -40,6 +42,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
     private File localFile;
 
     public static final String downUrl = "http://gdown.baidu.com/data/wisegame/bd47bd249440eb5f/shenmiaotaowang2.apk";
+    private static final String WEB_DOWNLOAD = "https://www.pgyer.com/cAvB";
 
     public CheckVersionManager(BaseActivity baseActivity) {
         this.baseActivity = baseActivity;
@@ -106,7 +109,9 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                     @Override
                     protected void error(BaseDownloadTask task, Throwable e) {
                         deleteNotification();
-                        ToastUtil.show(baseActivity,"下载错误,请重试");
+                        ToastUtil.show(baseActivity,"下载错误,请重试或在网页下载安装");
+                        Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_DOWNLOAD));
+                        baseActivity.startActivity(it);
                     }
 
                     @Override

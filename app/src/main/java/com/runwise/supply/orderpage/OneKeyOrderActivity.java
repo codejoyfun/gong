@@ -38,6 +38,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OneKeyRequest;
+import com.runwise.supply.entity.OrderCommitResponse;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.CommitResponse;
@@ -273,7 +274,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     cList.add(pBean);
                 }
                 request.setProducts(cList);
-                sendConnection("/gongfu/v2/order/create/", request, COMMIT_TYPE, true, CommitResponse.class);
+                sendConnection("/gongfu/v2/order/create/", request, COMMIT_TYPE, true, OrderCommitResponse.class);
 //                progressDialog.setCancelable(false);
 //                backgroundAlpha(0.4f);
 //                progressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -488,25 +489,35 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 break;
             case COMMIT_TYPE:
                 onSuccessCallBack();
-                bgView.setVisibility(View.VISIBLE);
-                orderSuccessIv.setVisibility(View.VISIBLE);
-                AnimatorSet set = new AnimatorSet();
-                set.playTogether(
-                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleX", 1, 0.7f),
-                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleY", 1, 0.7f)
-                );
-                set.setInterpolator(new AccelerateDecelerateInterpolator());
-                set.setDuration(1000).start();
-                orderSuccessIv.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                        onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
-                        onekeyBtn.setEnabled(true);
-                        dateTv.setEnabled(true);
-                        EventBus.getDefault().post(new OrderSuccessEvent());
-                    }
-                }, 1500);
+                finish();
+                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+//                onekeyBtn.setEnabled(true);
+                dateTv.setEnabled(true);
+                EventBus.getDefault().post(new OrderSuccessEvent());
+
+                final OrderCommitResponse orderCommitResponse = (OrderCommitResponse) result.getResult().getData();
+                Intent intent = new Intent(OneKeyOrderActivity.this,OrderCommitSuccessActivity.class);
+                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS,orderCommitResponse.getOrders());
+                startActivity(intent);
+//                bgView.setVisibility(View.VISIBLE);
+//                orderSuccessIv.setVisibility(View.VISIBLE);
+//                AnimatorSet set = new AnimatorSet();
+//                set.playTogether(
+//                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleX", 1, 0.7f),
+//                        ObjectAnimator.ofFloat(orderSuccessIv, "scaleY", 1, 0.7f)
+//                );
+//                set.setInterpolator(new AccelerateDecelerateInterpolator());
+//                set.setDuration(1000).start();
+//                orderSuccessIv.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        finish();
+//                        onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+//                        onekeyBtn.setEnabled(true);
+//                        dateTv.setEnabled(true);
+//                        EventBus.getDefault().post(new OrderSuccessEvent());
+//                    }
+//                }, 1500);
 
                 break;
             case REQUEST_USER_INFO:
