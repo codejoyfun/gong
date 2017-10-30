@@ -448,7 +448,7 @@ public class TimeUtils {
         } else {
             d = 2 - cal.get(Calendar.DAY_OF_WEEK);
         }
-        cal.add(Calendar.DAY_OF_WEEK, 6);
+        cal.add(Calendar.DAY_OF_WEEK, 7);
         //所在周结束日期
         return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
 
