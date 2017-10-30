@@ -37,6 +37,7 @@ import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.ImageActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.AttachmentResponse;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -51,6 +52,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.runwise.supply.ImageActivity.INTENT_KEY_IMG_URL;
 
 /**
  * Created by libin on 2017/7/23.
@@ -392,7 +395,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             ViewHolder itemHolder = (ViewHolder) holder;
-            String content = datas.get(position);
+            final String content = datas.get(position);
             itemHolder.deleteIv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -449,17 +452,37 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                 }
 
                 FrecoFactory.getInstance(mContext).disPlay(itemHolder.sdv, content);
+
+                itemHolder.sdv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(UploadPayedPicActivity.this, ImageActivity.class);
+                        intent.putExtra(INTENT_KEY_IMG_URL,content);
+                        startActivity(intent);
+                    }
+                });
             } else {
                 itemHolder.sdv.setVisibility(View.VISIBLE);
                 itemHolder.addIb.setVisibility(View.INVISIBLE);
                 itemHolder.deleteIv.setVisibility(View.VISIBLE);
-                Uri uri = Uri.fromFile(new File(content));
+                final Uri uri = Uri.fromFile(new File(content));
                 FrecoFactory.getInstance(mContext).disPlay(itemHolder.sdv, uri);
                 //有没有需要提交的，肯定只有adapter知道，自已数据啥样
                 hasUnCommit = true;
                 //只有添加了本地图片，才用上传
                 showUpLoadBtn(true);
+
+                itemHolder.sdv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(UploadPayedPicActivity.this, ImageActivity.class);
+                        intent.putExtra(INTENT_KEY_IMG_URL,uri.toString());
+                        startActivity(intent);
+                    }
+                });
             }
+
+
         }
 
         @Override
