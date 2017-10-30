@@ -29,6 +29,7 @@ public class ElnImageDownloaderFetcher extends HttpUrlConnectionNetworkFetcher {
     private String sign;
     private Context context;
 
+    @Deprecated //sign不要这样传，直接从sp中读最新的
     public ElnImageDownloaderFetcher(String sign, Context context) {
         mExecutorService = Executors.newFixedThreadPool(NUM_NETWORK_THREADS);
         this.sign = sign;
@@ -89,7 +90,7 @@ public class ElnImageDownloaderFetcher extends HttpUrlConnectionNetworkFetcher {
         conn.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
         conn.setReadTimeout(DEFAULT_HTTP_READ_TIMEOUT);
         conn.setRequestProperty("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db", NetWorkHelper.DEFAULT_DATABASE_NAME));
-        conn.setRequestProperty("Cookie", sign);
+        conn.setRequestProperty("Cookie", (String) SPUtils.get(context,"sign",""));
         return conn;
     }
 }

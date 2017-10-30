@@ -6,6 +6,7 @@ import android.support.v4.util.ArrayMap;
 import android.view.View;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -154,6 +155,7 @@ public class SettingActivity extends NetWorkActivity {
                     case 0:
                         File cacheDir = StorageUtils.getCacheDirectory(mContext);
                         CommonUtils.deleteDir(cacheDir);
+                        Fresco.getImagePipeline().clearCaches();
                         ToastUtil.show(mContext,"清除完成");
                         setItemName_4.setText("0M");
                         break;
