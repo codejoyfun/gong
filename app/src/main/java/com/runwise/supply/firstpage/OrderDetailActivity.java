@@ -684,7 +684,11 @@ public class OrderDetailActivity extends NetWorkActivity {
         uploadBtn.setVisibility(View.VISIBLE);
         if (bean.getHasAttachment() == 0) {
             payStateValue.setText("未有支付凭证");
-            uploadBtn.setText("上传凭证");
+            if (!bean.getState().equals(OrderState.DRAFT.getName()) && bean.getOrderSettleName().contains("先付款后收货") && bean.getOrderSettleName().contains("单次结算")) {
+                uploadBtn.setVisibility(View.INVISIBLE);
+            }else{
+                uploadBtn.setText("上传凭证");
+            }
             isHasAttachment = false;
         } else {
             payStateValue.setText("已上传支付凭证");

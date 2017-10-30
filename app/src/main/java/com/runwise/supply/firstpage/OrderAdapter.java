@@ -215,7 +215,7 @@ public class OrderAdapter extends IBaseAdapter {
             } else {
                 viewHolder.realTv.setVisibility(View.GONE);
             }
-            if (bean.getOrderSettleName().contains("单次结算") && bean.getOrderSettleName().contains("先付款后收货") && bean.getState().equals(OrderState.DRAFT.getName())) {
+            if (bean.getHasAttachment() == 0 && bean.getOrderSettleName().contains("单次结算") && bean.getOrderSettleName().contains("先付款后收货") && bean.getState().equals(OrderState.DRAFT.getName())) {
                 viewHolder.tvToPay.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.tvToPay.setVisibility(View.GONE);
