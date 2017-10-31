@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.BaseManager;
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
@@ -586,7 +586,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         //发送取消订单请求
-                        BaseManager.getInstance().finishAll();
+                        ActivityManager.getInstance().finishAll();
                         startActivity(new Intent(getActivityContext(), MainActivity.class));
                     }
                 });

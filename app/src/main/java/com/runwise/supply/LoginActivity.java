@@ -1,6 +1,5 @@
 package com.runwise.supply;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -21,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.LoginData;
@@ -258,6 +258,8 @@ public class  LoginActivity extends NetWorkActivity {
 				else {
 					EventBus.getDefault().post(new UserLoginEvent());
 					SPUtils.setLogin(mContext,true);
+					ActivityManager.getInstance().finishAll();
+					startActivity(new Intent(getActivityContext(),MainActivity.class));
 //					JPushInterface.setAliasAndTags(getApplicationContext(),CommonUtils.getDeviceId(this) , null, null);
 //					if (targerIntent != null) {
 //						startActivity(targerIntent);
@@ -330,11 +332,6 @@ public class  LoginActivity extends NetWorkActivity {
 //		}
 	}
 
-	@Override
-	public void onUserLogin(UserLoginEvent userLoginEvent) {
-		this.finish();
-		overridePendingTransition(R.anim.activity_close_enter,R.anim.slide_out_bottom);
-	}
 
 
 	public class RemListAdapter extends IBaseAdapter<RemUser> {

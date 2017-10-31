@@ -172,7 +172,11 @@ public class RepertoryFragment extends NetWorkFragment {
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(repertoryEntityFragmentList.size());
         smartTabLayout.removeAllTabs();
-        smartTabLayout.setupWithViewPager(viewPager);
+        try{
+            smartTabLayout.setupWithViewPager(viewPager);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -475,10 +479,6 @@ public class RepertoryFragment extends NetWorkFragment {
         requestCategory();
     }
 
-    @Override
-    public void onUserLoginout() {
-        buildData();
-    }
 
     @Override
     protected int createViewByLayoutId() {
@@ -620,17 +620,7 @@ public class RepertoryFragment extends NetWorkFragment {
         }
     }
 
-    @Override
-    public void onEventUserlogin(UserLoginEvent userLoginEvent) {
-        isLogin = true;
-        requestCategory();
-    }
 
-    @Override
-    public void onEventUserlogout(UserLogoutEvent userLogoutEvent) {
-        isLogin = false;
-        buildData();
-    }
 }
 
 

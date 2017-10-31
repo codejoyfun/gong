@@ -17,6 +17,7 @@ import com.android.internal.http.multipart.FilePart;
 import com.android.internal.http.multipart.Part;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
@@ -130,11 +131,11 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 GlobalApplication.getInstance().cleanUesrInfo();
                 JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
                 //退出登录
+                ActivityManager.getInstance().finishAll();
                 EventBus.getDefault().post(new UserLogoutEvent());
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
                 startActivity(intent);
-                finish();
                 break;
             case REQUEST_USERINFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();

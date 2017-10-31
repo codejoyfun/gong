@@ -502,6 +502,7 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".firstpage.EditBatchActivity"
+            android:theme="@android:style/Theme.Dialog"
             android:windowSoftInputMode="adjustPan">
         </activity>
         <activity android:name=".firstpage.EvaluateSuccessActivity">

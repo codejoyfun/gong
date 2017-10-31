@@ -73,7 +73,7 @@ public abstract class BaseActivity extends FragmentActivity {
             GlobalConstant.screenW = metrics.widthPixels;
             GlobalConstant.screenH = metrics.heightPixels;
         }
-        BaseManager.getInstance().addActivity(this);
+        ActivityManager.getInstance().addActivity(this);
         mContext = this;
         dialog = new CustomDialog(mContext);
 //				getWindow().setWindowAnimations(R.style.ActivityAnimation);
@@ -252,7 +252,7 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        BaseManager.getInstance().removeActivity(this);
+        ActivityManager.getInstance().removeActivity(this);
         if (receiverList != null) {
             for (BroadcastReceiver receiver : receiverList) {
                 this.unregisterReceiver(receiver);

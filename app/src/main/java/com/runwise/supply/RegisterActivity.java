@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.BaseManager;
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CheckUtil;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -126,7 +126,7 @@ public class RegisterActivity extends NetWorkActivity {
 				overridePendingTransition(R.anim.activity_close_enter,R.anim.slide_out_bottom);
 				break;
 			case R.id.gotoLogin:
-				Activity act = BaseManager.getInstance().getActivity("LoginActivity");
+				Activity act = ActivityManager.getInstance().getActivity("LoginActivity");
 				if(act == null) {
 					Intent intent = new Intent(mContext,LoginActivity.class);
 					startActivity(intent);
