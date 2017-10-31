@@ -469,13 +469,14 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         if (!canSeePrice) {
             totalMoneyTv.setVisibility(View.GONE);
         }
+        Object paramBean = null;
+        sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Object paramBean = null;
-        sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
+
     }
 
     private void setTitleEditShow() {

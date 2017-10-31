@@ -39,7 +39,6 @@ import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -155,16 +154,33 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
     }
 
     private void setUpDate(int dayDiff) {
+        //送达日期
         long estimatedStamp = TimeUtils.getFormatTime(bean.getEstimatedTime());
-        String estimatedTimeStr = TimeUtils.getMMdd(bean.getEstimatedTime());
-        if ((currentTimeMillis() - estimatedStamp) >= 0) {
-            mDayDiff = dayDiff;
-            long estimatedTime = currentTimeMillis() + mDayDiff * 1000 * 3600 * 24;
-            estimatedTimeStr = TimeUtils.getMMdd(estimatedTime);
+        //下单日期
+        long createTime = TimeUtils.stringToTimeStamp(bean.getCreateDate());
+        String estimatedTimeStr;
+        //最初下单的送达日期最小值
+        long minStamp = createTime + 1000 * 3600 * 24 * (dayDiff - 1);
+        if (TimeUtils.differentDaysByMillisecond(currentTimeMillis(), minStamp) > 0) {
+            mDayDiff = 1;
+            estimatedTimeStr = TimeUtils.getMMdd(currentTimeMillis());
+            cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff);
         } else {
-            mDayDiff = TimeUtils.differentDaysByMillisecond(currentTimeMillis(), estimatedStamp);
+            mDayDiff = TimeUtils.differentDaysByMillisecond(createTime + dayDiff * 1000 * 3600 * 24, currentTimeMillis());
+            if (estimatedStamp == createTime + dayDiff * 1000 * 3600 * 24){
+                estimatedTimeStr = TimeUtils.getMMdd(createTime + dayDiff * 1000 * 3600 * 24);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff);
+            }else if(estimatedStamp > createTime + dayDiff * 1000 * 3600 * 24){
+                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff + 1);
+                selectedDate = 2;
+            }else{
+                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff - 1);
+                selectedDate = 0;
+            }
         }
-        cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff);
+
         dateTv.setText(cachedDWStr);
     }
 
@@ -185,13 +201,13 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 finish();
 
                 BaseEntity.ResultBean bean = result.getResult();
-                JSONArray jsonArray = (JSONArray)bean.getOrders();
+                JSONArray jsonArray = (JSONArray) bean.getOrders();
                 ArrayList<OrderResponse.ListBean> list = new ArrayList<>();
-                list.addAll(JSON.parseArray(jsonArray.toString(),OrderResponse.ListBean.class));
+                list.addAll(JSON.parseArray(jsonArray.toString(), OrderResponse.ListBean.class));
 
                 Intent intent = new Intent(this, OrderCommitSuccessActivity.class);
-                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS,list);
-                intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE,0);
+                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, list);
+                intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE, 0);
                 startActivity(intent);
 
 
@@ -384,7 +400,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
 
     //参数从0开始
     private void setSelectedColor(int i) {
-        if(wArr[0] == null){
+        if (wArr[0] == null) {
             return;
         }
         for (TextView tv : wArr) {
