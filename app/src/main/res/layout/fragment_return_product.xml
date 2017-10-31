@@ -2,27 +2,37 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:layout_height="wrap_content"
+    android:background="#f0f0f0">
 
-    <android.support.v7.widget.RecyclerView
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/recyclerView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#FFFFFF"/>-->
+    <ListView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"/>
+        android:divider="@null"
+        android:layout_above="@+id/orderdetail_bottom_item"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/white"
+        android:layout_marginTop="0.5dp"
         android:visibility="gone">
 
         <ImageView
+            android:id="@+id/iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/deafault_icon_goodsnone_tab"/>
+            android:src="@drawable/deafault_icon_goodsnone_tab"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"/>
 
         <TextView
             android:id="@+id/noDataText"
@@ -32,10 +42,18 @@
             android:layout_marginRight="12dp"
             android:textColor="#909398"
             android:textSize="16sp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/iv"
             android:text="该分类下没有商品"
+            android:layout_marginBottom="20dp"
             />
+    </RelativeLayout>
 
-
-    </LinearLayout>
+    <include
+        android:id="@+id/orderdetail_bottom_item"
+        layout="@layout/orderdetail_bottom_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/loadingLayout"/>
 
 </RelativeLayout>

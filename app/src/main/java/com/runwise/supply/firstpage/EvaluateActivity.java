@@ -350,7 +350,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             case R.id.title_iv_left:
                 dialog.setMessage("评价尚未提交\n您确定要返回吗?");
                 dialog.setMessageGravity();
-                dialog.setLeftBtnListener("返回首页", new CustomDialog.DialogListener() {
+                dialog.setLeftBtnListener("确认返回", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         finish();
@@ -507,11 +507,11 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
             case CHANGE_ORDER:
                 dismissIProgressDialog();
                 EventBus.getDefault().post(new OrderUpdateEvent());
-                ToastUtil.show(mContext, "提交成功");
+                ToastUtil.show(mContext, "评价成功");
                 finish();
-                Intent intent = new Intent(getActivityContext(),EvaluateSuccessActivity.class);
-                intent.putExtra("orderid",orderId);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivityContext(),EvaluateSuccessActivity.class);
+//                intent.putExtra("orderid",orderId);
+//                startActivity(intent);
                 break;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();

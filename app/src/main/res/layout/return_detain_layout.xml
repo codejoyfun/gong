@@ -3,7 +3,8 @@
                 android:id="@+id/rl_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+    android:background="#f0f0f0">
 
     <include
         android:id="@+id/title_bar"
@@ -11,11 +12,13 @@
         />
 
     <RelativeLayout
+        android:layout_marginTop="10dp"
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:layout_alignParentBottom="true"
         android:gravity="center_vertical"
+        android:background="@color/white"
         android:paddingRight="15dp">
 
 
