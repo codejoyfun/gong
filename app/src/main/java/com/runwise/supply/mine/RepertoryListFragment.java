@@ -191,6 +191,9 @@ public class RepertoryListFragment extends NetWorkFragment {
                 viewHolder.dateNumber.setVisibility(View.VISIBLE);
             }
             viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLifeEndDate()));
+            if (bean.getImageId() != 0){
+                viewHolder.sDv.setImageResource(bean.getImageId());
+            }
             return convertView;
         }
 

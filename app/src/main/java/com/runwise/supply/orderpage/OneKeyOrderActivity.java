@@ -9,7 +9,6 @@ import android.os.Parcel;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -31,8 +30,6 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
@@ -41,7 +38,6 @@ import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.entity.OrderCommitResponse;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
-import com.runwise.supply.orderpage.entity.CommitResponse;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.DefaultProductData;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -203,11 +199,6 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
         if (!canSeePrice) {
             totalMoneyTv.setVisibility(View.GONE);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         Object paramBean = null;
         sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
     }

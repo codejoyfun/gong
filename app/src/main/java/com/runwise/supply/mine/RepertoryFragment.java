@@ -19,7 +19,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
-import com.alibaba.fastjson.JSON;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
@@ -30,6 +29,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
@@ -493,7 +493,8 @@ public class RepertoryFragment extends NetWorkFragment {
 //        listBean.setProduct(product);
 //        listBeen.add(listBean);
 //        repertoryEntity.setList(listBeen);
-        RepertoryEntity repertoryEntity =  JSON.parseObject(xmlStr,RepertoryEntity.class);
+        RepertoryEntity repertoryEntity = FictitiousStock.getRepertoryEntity();
+//        RepertoryEntity repertoryEntity =  JSON.parseObject(xmlStr,RepertoryEntity.class);
         setUpDataForViewPage(mUnLoginCategoryRespone,repertoryEntity);
     }
 
@@ -581,7 +582,9 @@ public class RepertoryFragment extends NetWorkFragment {
             map.put(category,new ArrayList<RepertoryEntity.ListBean>());
         }
         for (RepertoryEntity.ListBean listBean : repertoryEntity.getList()) {
-            listBean.setProduct(ProductBasicUtils.getBasicMap(getActivity()).get(listBean.getProductID()+""));
+            if (listBean.getProduct() == null){
+                listBean.setProduct(ProductBasicUtils.getBasicMap(getActivity()).get(listBean.getProductID()+""));
+            }
             if(listBean.getProduct() != null && !TextUtils.isEmpty(listBean.getProduct().getCategory())){
                 ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getCategory());
                 if (listBeen == null) {

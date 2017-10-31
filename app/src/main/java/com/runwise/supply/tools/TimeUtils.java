@@ -164,6 +164,18 @@ public class TimeUtils {
         return sdf.format(new Date(time));
     }
 
+    public static long stringToTimeStamp(String date){
+        if (TextUtils.isEmpty(date)) {
+            return 0;
+        }
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sDate = ft.parse(date);
+            return sDate.getTime();
+        } catch (ParseException e) {
+            return 0;
+        }
+    }
 
     public static String getTimeStamps3(String date) {
         if (TextUtils.isEmpty(date)) {
@@ -381,7 +393,7 @@ public class TimeUtils {
         try {
             Date date1 = sdf.parse(getYMD(new Date(dateTimeStamp1)));
             Date date2 = sdf.parse(getYMD(new Date(dateTimeStamp2)));
-            long diff = date2.getTime() - date1.getTime();
+            long diff = date1.getTime() - date2.getTime();
             days = (int) (diff / (1000 * 3600 * 24));
         } catch (ParseException e) {
             e.printStackTrace();

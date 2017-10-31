@@ -41,7 +41,16 @@ public class RepertoryEntity implements Serializable{
         private double qty;
         private String uom;
         private int productID;
+        int  ImageId;
         private ProductBasicList.ListBean product;
+
+        public int getImageId() {
+            return ImageId;
+        }
+
+        public void setImageId(int imageId) {
+            ImageId = imageId;
+        }
 
         public ProductBasicList.ListBean getProduct() {
             return product;
