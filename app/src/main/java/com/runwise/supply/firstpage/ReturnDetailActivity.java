@@ -322,6 +322,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
         ReturnProductFragment returnProductFragment = new ReturnProductFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(returnProductFragment.BUNDLE_KEY_LIST, value);
+        bundle.putParcelable(returnProductFragment.BUNDLE_KEY_BEAN,bean);
         returnProductFragment.setArguments(bundle);
         return returnProductFragment;
     }

@@ -20,7 +20,7 @@
             android:layout_height="31dp"
             android:layout_alignParentRight="true"
             android:background="@drawable/firstpage_do_circle"
-            android:text="评价"
+            android:text=""
             android:textColor="#333333"
             android:textSize="14sp"/>
 

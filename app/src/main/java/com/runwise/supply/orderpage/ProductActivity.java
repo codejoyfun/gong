@@ -43,6 +43,7 @@ import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.view.ProductTypePopup;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -73,6 +74,7 @@ public class ProductActivity extends NetWorkActivity {
     private TabPageIndicatorAdapter adapter;
     private ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
     private ArrayList<ProductData.ListBean> dataList = new ArrayList<>();//全部的商品信息
+    private ProductTypePopup mTypeWindow;//商品类型弹出框
 
     public static final String INTENT_KEY_BACKAP = "backap";
 
@@ -184,44 +186,52 @@ public class ProductActivity extends NetWorkActivity {
     }
 
 
-    private PopupWindow mProductTypeWindow;
-    ProductTypeAdapter mProductTypeAdapter;
+//    private PopupWindow mProductTypeWindow;
+//    ProductTypeAdapter mProductTypeAdapter;
 
     private void initPopWindow(ArrayList<String> typeList) {
-        View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
-        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
-        mProductTypeAdapter = new ProductTypeAdapter(typeList);
-        gridView.setAdapter(mProductTypeAdapter);
         final int[] location = new int[2];
         smartTabLayout.getLocationOnScreen(location);
         int y = (int) (location[1] + smartTabLayout.getHeight());
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
-        mProductTypeWindow.setContentView(dialog);
-        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
-        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
-        mProductTypeWindow.setFocusable(false);
-        mProductTypeWindow.setOutsideTouchable(false);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mProductTypeWindow.dismiss();
-                viewPager.setCurrentItem(position);
-                smartTabLayout.getTabAt(position).select();
-                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
-                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
-                }
-                mProductTypeAdapter.selectList.set(position, new Boolean(true));
-                mProductTypeAdapter.notifyDataSetChanged();
-            }
-        });
-        dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mProductTypeWindow.dismiss();
-            }
-        });
-        mProductTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+        mTypeWindow = new ProductTypePopup(this,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                DensityUtil.getScreenH(getActivityContext()) - y,
+                typeList,0);
+        mTypeWindow.setViewPager(viewPager);
+//        View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
+//        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
+//        mProductTypeAdapter = new ProductTypeAdapter(typeList);
+//        gridView.setAdapter(mProductTypeAdapter);
+//        final int[] location = new int[2];
+//        smartTabLayout.getLocationOnScreen(location);
+//        int y = (int) (location[1] + smartTabLayout.getHeight());
+//        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
+//        mProductTypeWindow.setContentView(dialog);
+//        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
+//        mProductTypeWindow.setFocusable(false);
+//        mProductTypeWindow.setOutsideTouchable(false);
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                mProductTypeWindow.dismiss();
+//                viewPager.setCurrentItem(position);
+//                smartTabLayout.getTabAt(position).select();
+//                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
+//                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
+//                }
+//                mProductTypeAdapter.selectList.set(position, new Boolean(true));
+//                mProductTypeAdapter.notifyDataSetChanged();
+//            }
+//        });
+//        dialog.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mProductTypeWindow.dismiss();
+//            }
+//        });
+        mTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 ivOpen.setImageResource(R.drawable.arrow);
@@ -233,8 +243,10 @@ public class ProductActivity extends NetWorkActivity {
         final int[] location = new int[2];
         smartTabLayout.getLocationOnScreen(location);
         int y = (int) (location[1] + smartTabLayout.getHeight());
-        mProductTypeWindow.showAtLocation(getRootView(ProductActivity.this), Gravity.NO_GRAVITY, 0, y);
-        mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
+//        mProductTypeWindow.showAtLocation(getRootView(ProductActivity.this), Gravity.NO_GRAVITY, 0, y);
+//        mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
+        mTypeWindow.showAtLocation(getRootView(ProductActivity.this), Gravity.NO_GRAVITY, 0, y);
+        mTypeWindow.setSelect(viewPager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
@@ -248,7 +260,8 @@ public class ProductActivity extends NetWorkActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
                 viewPager.setCurrentItem(position);
-                mProductTypeWindow.dismiss();
+//                mProductTypeWindow.dismiss();
+                mTypeWindow.dismiss();
             }
 
             @Override
@@ -311,13 +324,21 @@ public class ProductActivity extends NetWorkActivity {
                 finish();
                 break;
             case R.id.iv_open:
-                if (mProductTypeWindow == null) {
+//                if (mProductTypeWindow == null) {
+//                    return;
+//                }
+//                if (!mProductTypeWindow.isShowing()) {
+//                    showPopWindow();
+//                } else {
+//                    mProductTypeWindow.dismiss();
+//                }
+                if (mTypeWindow == null) {
                     return;
                 }
-                if (!mProductTypeWindow.isShowing()) {
+                if (!mTypeWindow.isShowing()) {
                     showPopWindow();
                 } else {
-                    mProductTypeWindow.dismiss();
+                    mTypeWindow.dismiss();
                 }
                 break;
             default:

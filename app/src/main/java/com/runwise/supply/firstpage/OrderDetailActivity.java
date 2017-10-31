@@ -2,7 +2,6 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,14 +15,10 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.SparseArray;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -43,7 +38,6 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
-import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.OrderDetailResponse;
@@ -62,6 +56,7 @@ import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.view.ProductTypePopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -364,8 +359,10 @@ public class OrderDetailActivity extends NetWorkActivity {
                     dragLayout.toggleTopView();
                     canShow = true;
                 } else {
-                    if (mProductTypeWindow.isShowing()) {
-                        mProductTypeWindow.dismiss();
+//                    if (mProductTypeWindow.isShowing()) {
+//                        mProductTypeWindow.dismiss();
+                    if (mTypeWindow.isShowing()) {
+                        mTypeWindow.dismiss();
                     } else {
                         showPopWindow();
                     }
@@ -379,7 +376,8 @@ public class OrderDetailActivity extends NetWorkActivity {
                                 canShow = false;
                             }
                         } else {
-                            mProductTypeWindow.dismiss();
+                            //mProductTypeWindow.dismiss();//
+                            mTypeWindow.dismiss();
                         }
                     }
 
@@ -407,8 +405,10 @@ public class OrderDetailActivity extends NetWorkActivity {
 
     private void showPopWindow() {
         int y = findViewById(R.id.title_bar).getHeight() + tablayout.getHeight();
-        mProductTypeWindow.showAtLocation(getRootView(OrderDetailActivity.this), Gravity.NO_GRAVITY, 0, y);
-        mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
+//        mProductTypeWindow.showAtLocation(getRootView(OrderDetailActivity.this), Gravity.NO_GRAVITY, 0, y);
+//        mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
+        mTypeWindow.setSelect(viewpager.getCurrentItem());
+        mTypeWindow.showAtLocation(getRootView(OrderDetailActivity.this), Gravity.NO_GRAVITY, 0, y);
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
@@ -790,7 +790,8 @@ public class OrderDetailActivity extends NetWorkActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
                 viewpager.setCurrentItem(position);
-                mProductTypeWindow.dismiss();
+//                mProductTypeWindow.dismiss();
+                mTypeWindow.dismiss();
                 if(dragLayout.getState()== DragTopLayout.PanelState.EXPANDED)dragLayout.toggleTopView();
             }
 
@@ -862,41 +863,50 @@ public class OrderDetailActivity extends NetWorkActivity {
 
     }
 
-    private PopupWindow mProductTypeWindow;
-    ProductTypeAdapter mProductTypeAdapter;
+//    private PopupWindow mProductTypeWindow;
+//    ProductTypeAdapter mProductTypeAdapter;
+
+    private ProductTypePopup mTypeWindow;
 
     private void initPopWindow(ArrayList<String> typeList) {
-        View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
-        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
-        mProductTypeAdapter = new ProductTypeAdapter(typeList);
-        gridView.setAdapter(mProductTypeAdapter);
-        mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()), true);
-        mProductTypeWindow.setContentView(dialog);
-        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
-        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
-        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        mProductTypeWindow.setFocusable(false);
-        mProductTypeWindow.setOutsideTouchable(false);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mProductTypeWindow.dismiss();
-                viewpager.setCurrentItem(position);
-                tablayout.getTabAt(position).select();
-                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
-                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
-                }
-                mProductTypeAdapter.selectList.set(position, new Boolean(true));
-                mProductTypeAdapter.notifyDataSetChanged();
-            }
-        });
-        dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mProductTypeWindow.dismiss();
-            }
-        });
-        mProductTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
+        mTypeWindow = new ProductTypePopup(this,
+                DensityUtil.getScreenW(getActivityContext()),
+                DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()),
+                typeList,0);
+        mTypeWindow.setViewPager(viewpager);
+//        mProductTypeWindow = new PopupWindow(this);
+//        View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
+//        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
+//        mProductTypeAdapter = new ProductTypeAdapter(typeList);
+//        gridView.setAdapter(mProductTypeAdapter);
+//        mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()), true);
+//        mProductTypeWindow.setContentView(dialog);
+//        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
+//        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//        mProductTypeWindow.setFocusable(false);
+//        mProductTypeWindow.setOutsideTouchable(false);
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                mProductTypeWindow.dismiss();
+//                viewpager.setCurrentItem(position);
+//                tablayout.getTabAt(position).select();
+//                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
+//                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
+//                }
+//                mProductTypeAdapter.selectList.set(position, new Boolean(true));
+//                mProductTypeAdapter.notifyDataSetChanged();
+//            }
+//        });
+//        dialog.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mProductTypeWindow.dismiss();
+//            }
+//        });
+        mTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 ivOpen.setImageResource(R.drawable.arrow);

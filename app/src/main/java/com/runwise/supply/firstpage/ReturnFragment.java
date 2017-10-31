@@ -89,7 +89,7 @@ public class ReturnFragment extends BaseFragment {
                 if (basicBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append("  ").append(basicBean.getUnit());
+                sb.append(" | ").append(basicBean.getUnit());
                 if (canSeePrice) {
                     sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }

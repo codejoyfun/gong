@@ -8,8 +8,8 @@
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/headSdv"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -68,7 +68,7 @@
         android:id="@+id/rb_delivery_service"
         style="@style/RatingBarStyle2"
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/v_line"
         android:layout_gravity="center_vertical"
         android:layout_marginBottom="10dp"
