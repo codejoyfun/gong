@@ -304,7 +304,7 @@ public class ReceiveFragment extends BaseFragment {
             }
             //双单位相关
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
-            int paddingLeft = CommonUtils.dip2px(mContext, 15);
+            int margin = CommonUtils.dip2px(mContext, 15);
             if (isSettle) {
                 //显示双单位信息，加号按钮隐藏
                 StringBuffer receiveStr = new StringBuffer();
@@ -337,12 +337,12 @@ public class ReceiveFragment extends BaseFragment {
                 viewHolder.weightTv.setText(weightStr.toString());
                 viewHolder.countLL.setVisibility(View.GONE);
                 viewHolder.settleLL.setVisibility(View.VISIBLE);
-                params.setMargins(paddingLeft, CommonUtils.dip2px(mContext, 42), 0, 0);
+                params.setMargins(0, CommonUtils.dip2px(mContext, 42), margin, 0);
 
             } else {
                 viewHolder.countLL.setVisibility(View.VISIBLE);
                 viewHolder.settleLL.setVisibility(View.GONE);
-                params.setMargins(paddingLeft, paddingLeft, 0, 0);
+                params.setMargins(0, margin, margin, 0);
 
             }
             return convertView;

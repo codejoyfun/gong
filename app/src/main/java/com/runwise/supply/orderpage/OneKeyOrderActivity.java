@@ -570,7 +570,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 //ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
                 pullListView.setVisibility(View.VISIBLE);
                 nopurchaseRL.setVisibility(View.VISIBLE);
-                setTitleRightText(false,"");
+                setTitleRightText(true, "编辑");
                 break;
             case COMMIT_TYPE:
                 onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));

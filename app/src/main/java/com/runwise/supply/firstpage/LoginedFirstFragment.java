@@ -614,7 +614,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (canSeePrice) {
             DecimalFormat df = new DecimalFormat("#.##");
-            lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()));
+            lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()/10000));//万元单位
             double adventNum = dbResponse.getAdventValue();
             double maturityNum = dbResponse.getMaturityValue();
             double adventValue = dbResponse.getAdventValue();
