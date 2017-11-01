@@ -164,7 +164,8 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         if (TimeUtils.differentDaysByMillisecond(currentTimeMillis(), minStamp) > 0) {
             mDayDiff = 1;
             estimatedTimeStr = TimeUtils.getMMdd(currentTimeMillis());
-            cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mDayDiff);
+            cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(0);
+            selectedDate = 0;
         } else {
             mDayDiff = TimeUtils.differentDaysByMillisecond(createTime + dayDiff * 1000 * 3600 * 24, currentTimeMillis());
             if (estimatedStamp == createTime + dayDiff * 1000 * 3600 * 24){

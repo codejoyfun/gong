@@ -297,8 +297,6 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 			case PRODUCT_GET:
 				EditRepertoryResult repertoryResult = (EditRepertoryResult)result.getResult();
 				List<EditRepertoryResult.InventoryBean.ListBean> list = repertoryResult.getInventory().getList();
-
-
 				break;
 			case PRODUCT_COMMIT:
 				ToastUtil.show(mContext,"盘点成功");
