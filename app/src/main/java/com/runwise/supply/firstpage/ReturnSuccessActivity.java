@@ -90,7 +90,7 @@ public class ReturnSuccessActivity extends BaseActivity {
                 break;
             case R.id.uploadBtn:
                 Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
-                uIntent.putExtra("orderid", finishReturnResponse.getReturnOrder().getOrderID());
+                uIntent.putExtra("orderid", finishReturnResponse.getReturnOrder().getReturnOrderID());
                 uIntent.putExtra("ordername", finishReturnResponse.getReturnOrder().getName());
                 startActivityForResult(uIntent, REQUEST_CODE_UPLOAD);
                 break;
