@@ -8,8 +8,7 @@
     >
     <include
         android:id="@+id/titleLayout"
-        layout="@layout/common_title_bar"
-        />
+        layout="@layout/common_title_bar"/>
     <include
         android:id="@+id/tipLayout"
         layout="@layout/login_tip_layout"></include>
