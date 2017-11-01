@@ -54,10 +54,10 @@ public class SystemUpgradeLayout extends FrameLayout {
 
     /**
      * 在onCreate调用
-     * @param pageName
+     * @param pageName 页面名称，用于显示跑马灯，以及记录跑马灯是否已经关闭
      */
     public void setPageName(String pageName){
-        mPageName = pageName;//是否系统更新
+        mPageName = pageName;
     }
 
     private void check(){
