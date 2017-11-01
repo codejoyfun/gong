@@ -40,7 +40,7 @@
                     android:layout_height="1dp"/>
                 <include
                     android:id="@+id/ic_bar"
-                    layout="@layout/tab_viewpage_wrap"
+                    layout="@layout/tab_viewpage_wrap_evaluate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>

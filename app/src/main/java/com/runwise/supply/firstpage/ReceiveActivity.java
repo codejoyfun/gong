@@ -70,6 +70,7 @@ import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.NoScrollViewPager;
 import com.runwise.supply.view.NoWatchEditText;
+import com.runwise.supply.view.ProductTypePopup;
 import com.socketmobile.capture.Capture;
 import com.socketmobile.capture.client.CaptureClient;
 import com.socketmobile.capture.client.CaptureDeviceClient;
@@ -384,7 +385,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
                 viewPager.setCurrentItem(position);
-                mProductTypeWindow.dismiss();
+                mTypeWindow.dismiss();
             }
 
             @Override
@@ -568,6 +569,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mPopWindow2.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow2.setFocusable(true);
         mPopWindow2.setOutsideTouchable(true);
+//        mPopWindow2.setAnimationStyle(R.style.BottomDialog_AnimationStyle);
         Button input_minus = (Button) dialogView2.findViewById(R.id.input_minus);
         Button input_add = (Button) dialogView2.findViewById(R.id.input_add);
         titleTv = (TextView) dialogView2.findViewById(R.id.tv_name);
@@ -648,74 +650,86 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mTvReceiveCountTag.setText("/" + totalQty + "件");
     }
 
-    private PopupWindow mProductTypeWindow;
-    ProductTypeAdapter mProductTypeAdapter;
+//    private PopupWindow mProductTypeWindow;
+//    ProductTypeAdapter mProductTypeAdapter;
+    private ProductTypePopup mTypeWindow;
 
     private void initPopWindow(ArrayList<String> typeList) {
-        View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
-        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
-        mProductTypeAdapter = new ProductTypeAdapter(typeList);
-        gridView.setAdapter(mProductTypeAdapter);
         final int[] location = new int[2];
         smartTabLayout.getLocationOnScreen(location);
         int y = (int) (location[1] + smartTabLayout.getHeight());
-        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
-        mProductTypeWindow.setContentView(dialog);
-        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
-        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
-        mProductTypeWindow.setFocusable(false);
-        mProductTypeWindow.setOutsideTouchable(false);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mProductTypeWindow.dismiss();
-                viewPager.setCurrentItem(position);
-                smartTabLayout.getTabAt(position).select();
-                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
-                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
-                }
-                mProductTypeAdapter.selectList.set(position, new Boolean(true));
-                mProductTypeAdapter.notifyDataSetChanged();
-            }
-        });
-        dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mProductTypeWindow.dismiss();
-            }
-        });
-        mProductTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+        mTypeWindow = new ProductTypePopup(this,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                DensityUtil.getScreenH(getActivityContext()) - y,
+                typeList,0);
+        mTypeWindow.setViewPager(viewPager);
+        mTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 ivOpen.setImageResource(R.drawable.arrow);
             }
         });
+//        View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
+//        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
+//        mProductTypeAdapter = new ProductTypeAdapter(typeList);
+//        gridView.setAdapter(mProductTypeAdapter);
+//        final int[] location = new int[2];
+//        smartTabLayout.getLocationOnScreen(location);
+//        int y = (int) (location[1] + smartTabLayout.getHeight());
+//        mProductTypeWindow = new PopupWindow(gridView, ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.getScreenH(getActivityContext()) - y, true);
+//        mProductTypeWindow.setContentView(dialog);
+//        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
+//        mProductTypeWindow.setFocusable(false);
+//        mProductTypeWindow.setOutsideTouchable(false);
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                mProductTypeWindow.dismiss();
+//                viewPager.setCurrentItem(position);
+//                smartTabLayout.getTabAt(position).select();
+//                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
+//                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
+//                }
+//                mProductTypeAdapter.selectList.set(position, new Boolean(true));
+//                mProductTypeAdapter.notifyDataSetChanged();
+//            }
+//        });
+//        dialog.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mProductTypeWindow.dismiss();
+//            }
+//        });
+//        mProductTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//            @Override
+//            public void onDismiss() {
+//                ivOpen.setImageResource(R.drawable.arrow);
+//            }
+//        });
     }
 
     private void showPopWindow() {
         final int[] location = new int[2];
         smartTabLayout.getLocationOnScreen(location);
         int y = (int) (location[1] + smartTabLayout.getHeight());
-        mProductTypeWindow.showAtLocation(getRootView(ReceiveActivity.this), Gravity.NO_GRAVITY, 0, y);
-        mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
+        mTypeWindow.showAtLocation(getRootView(ReceiveActivity.this), Gravity.NO_GRAVITY, 0, y);
+        mTypeWindow.setSelect(viewPager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEtProductAmount, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @OnClick({R.id.title_iv_left, R.id.btn_confirm, R.id.iv_open, R.id.btn_cancel, R.id.title_iv_rigth})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.iv_open:
-                if (mProductTypeWindow == null) {
+                if (mTypeWindow == null) {
                     return;
                 }
-                if (!mProductTypeWindow.isShowing()) {
+                if (!mTypeWindow.isShowing()) {
                     showPopWindow();
                 } else {
-                    mProductTypeWindow.dismiss();
+                    mTypeWindow.dismiss();
                 }
                 break;
             case R.id.title_iv_left:
@@ -1088,6 +1102,14 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             edEt.setText(String.valueOf(bottomData.getCount()));
             mTvStockCount.setText(String.valueOf(bottomData.getProductUomQty()));
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
+            edEt.requestFocus();
+            edEt.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager inputMethodManager=(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            },200);
             //更新进度条
             updatePbProgress();
             //更新fragment列表内容

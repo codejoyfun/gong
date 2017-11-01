@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:listSelector="#0000"
         ptr:ptrAnimationStyle="flip"
-        android:background="#FFFFFF"
+        android:background="#F5F5F5"
         android:divider="#ededed"
         android:dividerHeight="0.5dp"
         android:paddingBottom="55dp"
