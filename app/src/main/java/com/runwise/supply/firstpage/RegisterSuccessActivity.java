@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.kids.commonframe.base.BaseActivity;
-import com.kids.commonframe.base.BaseManager;
+import com.kids.commonframe.base.ActivityManager;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 
@@ -22,7 +22,7 @@ public class RegisterSuccessActivity extends BaseActivity {
 
     @OnClick(R.id.orderBtn)
     public void onViewClicked() {
-        BaseManager.getInstance().finishAll();
+        ActivityManager.getInstance().finishAll();
         startActivity(new Intent(getActivityContext(), MainActivity.class));
     }
 }

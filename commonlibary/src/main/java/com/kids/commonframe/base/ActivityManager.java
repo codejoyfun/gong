@@ -8,20 +8,20 @@ import java.util.Set;
 /**
  * Created by myChaoFile on 16/3/21.
  */
-public class BaseManager {
+public class ActivityManager {
     private Set<Activity> activityList;
 
-    private BaseManager() {
+    private ActivityManager() {
         activityList = new LinkedHashSet<Activity>();
     }
 
-    private static BaseManager instance;
+    private static ActivityManager instance;
 
-    public static BaseManager getInstance() {
+    public static ActivityManager getInstance() {
         if (instance == null) {
-            synchronized (BaseManager.class) {
+            synchronized (ActivityManager.class) {
                 if (instance == null) {
-                    instance = new BaseManager();
+                    instance = new ActivityManager();
                 }
             }
         }

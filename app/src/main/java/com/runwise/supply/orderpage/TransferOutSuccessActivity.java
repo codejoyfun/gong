@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.BaseManager;
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
@@ -71,7 +71,7 @@ public class TransferOutSuccessActivity extends NetWorkActivity {
                 finish();
                 break;
             case R.id.tv_home_page:
-                BaseManager.getInstance().returnHomePage(MainActivity.class);
+                ActivityManager.getInstance().returnHomePage(MainActivity.class);
                 break;
             case R.id.title_iv_left:
                 finish();

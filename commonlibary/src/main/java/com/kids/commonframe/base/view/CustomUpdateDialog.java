@@ -3,7 +3,6 @@ package com.kids.commonframe.base.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.R;
-import com.kids.commonframe.base.BaseManager;
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.VersionUpdateResponse;
 import com.kids.commonframe.config.Constant;
@@ -68,7 +67,7 @@ public class CustomUpdateDialog extends Dialog {
 			this.setOnDismissListener(new OnDismissListener() {
 				@Override
 				public void onDismiss(DialogInterface dialog) {
-					BaseManager.getInstance().finishAll();
+					ActivityManager.getInstance().finishAll();
 				}
 			});
 			mBtnMandatory.setVisibility(View.VISIBLE);

@@ -5,11 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.kids.commonframe.base.BaseActivity;
-import com.kids.commonframe.base.BaseManager;
+import com.kids.commonframe.base.ActivityManager;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.firstpage.EvaluateActivity;
-import com.runwise.supply.firstpage.UploadPayedPicActivity;
-import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
@@ -49,7 +46,7 @@ public class TransferSuccessActivity extends BaseActivity {
                 startActivity(intent2);
                 break;
             case R.id.tv_to_main://回到首页
-                BaseManager.getInstance().finishAll();
+                ActivityManager.getInstance().finishAll();
                 startActivity(new Intent(getActivityContext(), MainActivity.class));
                 break;
         }
