@@ -2,7 +2,6 @@ package com.runwise.supply.firstpage;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -18,10 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -49,7 +46,6 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
-import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
@@ -182,6 +178,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         Bundle bundle = getIntent().getExtras();
         lbean = bundle.getParcelable("order");
         isSettle = lbean.isIsTwoUnit();
+        setTitleLeftIcon(true, R.drawable.nav_back);
+        if (lbean != null && lbean.getLines() != null) {
+            datas.addAll(lbean.getLines());
+        }
         mode = bundle.getInt("mode");
         if (mode == 1) {
             setTitleText(true, "点货");
@@ -222,6 +222,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 for (ReceiveBean receiveBean:beanList){
                     countMap.put(String.valueOf(receiveBean.getProductId()), receiveBean);
                 }
+                for (OrderResponse.ListBean.LinesBean bean : datas) {
+                    totalQty += bean.getProductUomQty();
+                }
+                updatePbProgress();
             }else{
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
@@ -241,15 +245,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     }
                     countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
                 }
+                setDefalutProgressBar();
             }
         }
 
 
-        setTitleLeftIcon(true, R.drawable.nav_back);
-        if (lbean != null && lbean.getLines() != null) {
-            datas.addAll(lbean.getLines());
-        }
-        setDefalutProgressBar();
+
         initPopWindow();
         initPopWindow2();       //单独初始化一下双单位的popview
         Capture.init(getApplicationContext());
