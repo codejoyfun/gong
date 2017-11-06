@@ -78,7 +78,7 @@
         android:stepSize="1"/>
 
     <com.runwise.supply.view.AutoLinefeedLayout
-        android:id="@+id/alfl_tag_negative"
+        android:id="@+id/alfl_tag_one"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rb_delivery_service"
@@ -87,123 +87,55 @@
         android:paddingRight="15dp"
         android:visibility="visible">
 
-        <CheckBox
-            android:id="@+id/cb1"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:text="配送超时"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
-
-        <CheckBox
-            android:id="@+id/cb2"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginLeft="9dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:text="服务状态差"
-             android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
-
-        <CheckBox
-            android:id="@+id/cb3"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginLeft="9dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:text="货物损坏"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
-
-        <CheckBox
-            android:id="@+id/cb4"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginLeft="9dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:text="送错货"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
     </com.runwise.supply.view.AutoLinefeedLayout>
 
     <com.runwise.supply.view.AutoLinefeedLayout
-        android:id="@+id/alfl_tag_positive"
+        android:id="@+id/alfl_tag_two"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/alfl_tag_negative"
+        android:layout_below="@id/alfl_tag_one"
         android:orientation="horizontal"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:visibility="visible">
 
-        <CheckBox
-            android:id="@+id/cb5"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:text="准时送达"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
-
-        <CheckBox
-            android:id="@+id/cb6"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginLeft="9dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:text="服务态度好"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
-
-        <CheckBox
-            android:id="@+id/cb7"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginLeft="9dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:text="货物保存完好"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
-
-        <CheckBox
-            android:id="@+id/cb8"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginLeft="9dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:text="速度"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
-
-        <CheckBox
-            android:id="@+id/cb9"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginLeft="9dp"
-            android:background="@drawable/evaluate_star_selector"
-            android:button="@null"
-            android:text="主动联系"
-            android:textColor="@color/selector_evaluate_text"
-            android:textSize="12sp"/>
     </com.runwise.supply.view.AutoLinefeedLayout>
+
+    <com.runwise.supply.view.AutoLinefeedLayout
+        android:id="@+id/alfl_tag_three"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alfl_tag_two"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:visibility="visible"/>
+
+    <com.runwise.supply.view.AutoLinefeedLayout
+        android:id="@+id/alfl_tag_four"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alfl_tag_three"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:visibility="visible"/>
+
+    <com.runwise.supply.view.AutoLinefeedLayout
+        android:id="@+id/alfl_tag_five"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alfl_tag_four"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:visibility="visible"/>
+
 
     <View
         android:id="@+id/v_line1"
         style="@style/divider_horizontal"
-        android:layout_below="@id/alfl_tag_positive"
+        android:layout_below="@id/alfl_tag_five"
         android:visibility="visible"
         android:layout_marginTop="15dp"/>
 

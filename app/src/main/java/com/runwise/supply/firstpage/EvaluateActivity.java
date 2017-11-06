@@ -1,6 +1,5 @@
 package com.runwise.supply.firstpage;
 
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -38,6 +37,7 @@ import com.runwise.supply.firstpage.entity.ChangeOrderRequest;
 import com.runwise.supply.firstpage.entity.EvaluateLineRequest;
 import com.runwise.supply.firstpage.entity.EvaluateRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.TagResponse;
 import com.runwise.supply.fragment.EvaluateProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -59,7 +59,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import github.chenupt.dragtoplayout.DragTopLayout;
 
 import static com.runwise.supply.R.id.cb1;
 import static com.runwise.supply.R.id.cb2;
@@ -73,7 +72,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
  * Created by libin on 2017/7/20.
  */
 
-public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter.RatingBarClickCallback {
+public class EvaluateActivity extends NetWorkActivity {
 
     @BindView(R.id.title_iv_left)
     ImageView mTitleIvLeft;
@@ -107,28 +106,6 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     TextView mTvEvaluateProduct;
     @BindView(R.id.rb_delivery_service)
     RatingBar mRbDeliveryService;
-    @BindView(cb1)
-    CheckBox mCb1;
-    @BindView(cb2)
-    CheckBox mCb2;
-    @BindView(cb3)
-    CheckBox mCb3;
-    @BindView(R.id.cb4)
-    CheckBox mCb4;
-    @BindView(R.id.alfl_tag_negative)
-    AutoLinefeedLayout mAlflTagNegative;
-    @BindView(R.id.cb5)
-    CheckBox mCb5;
-    @BindView(R.id.cb6)
-    CheckBox mCb6;
-    @BindView(R.id.cb7)
-    CheckBox mCb7;
-    @BindView(R.id.cb8)
-    CheckBox mCb8;
-    @BindView(R.id.cb9)
-    CheckBox mCb9;
-    @BindView(R.id.alfl_tag_positive)
-    AutoLinefeedLayout mAlflTagPositive;
     @BindView(R.id.v_line1_product)
     View mVLine1Product;
     @BindView(R.id.et_product)
@@ -143,34 +120,6 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     TextView mTvDeliveryman;
     @BindView(R.id.rb_product_service)
     RatingBar mRbProductService;
-    @BindView(R.id.cb10)
-    CheckBox mCb10;
-    @BindView(R.id.cb11)
-    CheckBox mCb11;
-    @BindView(R.id.cb12)
-    CheckBox mCb12;
-    @BindView(R.id.cb13)
-    CheckBox mCb13;
-    @BindView(R.id.cb14)
-    CheckBox mCb14;
-    @BindView(R.id.cb15)
-    CheckBox mCb15;
-    @BindView(R.id.alfl_tag_product_negative)
-    AutoLinefeedLayout mAlflTagProductNegative;
-    @BindView(R.id.cb16)
-    CheckBox mCb16;
-    @BindView(R.id.cb17)
-    CheckBox mCb17;
-    @BindView(R.id.cb18)
-    CheckBox mCb18;
-    @BindView(R.id.cb19)
-    CheckBox mCb19;
-    @BindView(R.id.cb20)
-    CheckBox mCb20;
-    @BindView(R.id.cb21)
-    CheckBox mCb21;
-    @BindView(R.id.alfl_tag_product_positive)
-    AutoLinefeedLayout mAlflTagProductPositive;
     @BindView(R.id.v_line1)
     View mVLine1;
     @BindView(R.id.et_delivery)
@@ -183,12 +132,32 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     TabLayout mTablayout;
     @BindView(R.id.viewpager)
     YourScrollableViewPager mViewpager;
-//    @BindView(R.id.drag_content_view)
+    //    @BindView(R.id.drag_content_view)
 //    LinearLayout mDragContentView;
 //    @BindView(R.id.drag_layout)
 //    DragTopLayout mDragLayout;
     @BindView(R.id.tv_submit)
     TextView mTvSubmit;
+    @BindView(R.id.alfl_tag_one)
+    AutoLinefeedLayout mAlflTagOne;
+    @BindView(R.id.alfl_tag_two)
+    AutoLinefeedLayout mAlflTagTwo;
+    @BindView(R.id.alfl_tag_three)
+    AutoLinefeedLayout mAlflTagThree;
+    @BindView(R.id.alfl_tag_four)
+    AutoLinefeedLayout mAlflTagFour;
+    @BindView(R.id.alfl_tag_five)
+    AutoLinefeedLayout mAlflTagFive;
+    @BindView(R.id.alfl_tag_product_one)
+    AutoLinefeedLayout mAlflTagProductOne;
+    @BindView(R.id.alfl_tag_product_two)
+    AutoLinefeedLayout mAlflTagProductTwo;
+    @BindView(R.id.alfl_tag_product_three)
+    AutoLinefeedLayout mAlflTagProductThree;
+    @BindView(R.id.alfl_tag_product_four)
+    AutoLinefeedLayout mAlflTagProductFour;
+    @BindView(R.id.alfl_tag_product_five)
+    AutoLinefeedLayout mAlflTagProductFive;
     private OrderResponse.ListBean bean;
     //维护星星分数的集合,LineId -----> 星星分数
     public Map<Integer, Integer> mRateMap = new HashMap<>();
@@ -198,6 +167,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     private static final int ORDERREQUST = 1;
     private static final int LINEREQUEST = 2;
     private static final int CHANGE_ORDER = 3;
+    public static final int REQUEST_GET_TAG = 4;
 
     float mDeliveryRating;
     float mProductRating;
@@ -225,8 +195,15 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
     }
 
+    private void getTags() {
+        Object o = null;
+        sendConnection("/gongfu/assess/tag/list", o, REQUEST_GET_TAG, false, TagResponse.class);
+
+    }
+
     private void setDefaultDatas() {
         getCategory();
+        getTags();
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("order");
         if (bean != null) {
@@ -235,8 +212,8 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 mRateMap.put(Integer.valueOf(lb.getSaleOrderProductID()), Integer.valueOf(0));
             }
 
-            if (bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)|| bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
-                    || bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
+            if (bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY) || bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+                    || bean.getDeliveryType().equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)) {
 //                findViewById(R.id.ic_evaluate_deliveryman).setVisibility(View.GONE);
 
             }
@@ -265,72 +242,63 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
         }
         mVLine1.setVisibility(View.GONE);
         mEtDelivery.setVisibility(View.GONE);
-        mAlflTagNegative.setVisibility(View.GONE);
-        mAlflTagPositive.setVisibility(View.GONE);
+
+        mAlflTagOne.setVisibility(View.GONE);
+        mAlflTagTwo.setVisibility(View.GONE);
+        mAlflTagThree.setVisibility(View.GONE);
+        mAlflTagFour.setVisibility(View.GONE);
+        mAlflTagFive.setVisibility(View.GONE);
+
         mRbDeliveryService.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 mDeliveryRating = rating;
-                if (rating >0){
+                if (rating > 0) {
                     mTvSubmit.setBackgroundResource(R.color.colorAccent);
-                }else{
+                    mVLine1.setVisibility(View.VISIBLE);
+                    mEtDelivery.setVisibility(View.VISIBLE);
+                } else {
                     mVLine1.setVisibility(View.GONE);
                     mEtDelivery.setVisibility(View.GONE);
-                    mAlflTagNegative.setVisibility(View.GONE);
-                    mAlflTagPositive.setVisibility(View.GONE);
-                    if (mProductRating < 1){
+                    if (mProductRating < 1) {
                         mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
                     }
                     return;
                 }
-                if (rating <= 2) {
-                    mVLine1.setVisibility(View.VISIBLE);
-                    mEtDelivery.setVisibility(View.VISIBLE);
-                    mAlflTagNegative.setVisibility(View.VISIBLE);
-                    mAlflTagPositive.setVisibility(View.GONE);
-                } else {
-                    mVLine1.setVisibility(View.VISIBLE);
-                    mEtDelivery.setVisibility(View.VISIBLE);
-                    mAlflTagNegative.setVisibility(View.GONE);
-                    mAlflTagPositive.setVisibility(View.VISIBLE);
-                }
+
+                setDeliveryTagLayout((int) rating);
             }
         });
         mVLine1Product.setVisibility(View.GONE);
         mEtProduct.setVisibility(View.GONE);
         findViewById(R.id.ic_bar).setVisibility(View.GONE);
-        mAlflTagProductNegative.setVisibility(View.GONE);
-        mAlflTagProductPositive.setVisibility(View.GONE);
+
+        mAlflTagProductOne.setVisibility(View.GONE);
+        mAlflTagProductTwo.setVisibility(View.GONE);
+        mAlflTagProductThree.setVisibility(View.GONE);
+        mAlflTagProductFour.setVisibility(View.GONE);
+        mAlflTagProductFive.setVisibility(View.GONE);
+
         mRbProductService.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 mProductRating = rating;
-                if (rating >0){
+                if (rating > 0) {
                     mTvSubmit.setBackgroundResource(R.color.colorAccent);
-                }else{
+                } else {
                     mVLine1Product.setVisibility(View.GONE);
                     mEtProduct.setVisibility(View.GONE);
                     findViewById(R.id.ic_bar).setVisibility(View.GONE);
-                    mAlflTagProductNegative.setVisibility(View.GONE);
-                    mAlflTagProductPositive.setVisibility(View.GONE);
-                    if (mDeliveryRating < 1){
+                    if (mDeliveryRating < 1) {
                         mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
                     }
                     return;
                 }
-                if (rating <= 2) {
-                    mVLine1Product.setVisibility(View.VISIBLE);
-                    mEtProduct.setVisibility(View.VISIBLE);
-                    findViewById(R.id.ic_bar).setVisibility(View.VISIBLE);
-                    mAlflTagProductNegative.setVisibility(View.VISIBLE);
-                    mAlflTagProductPositive.setVisibility(View.GONE);
-                } else {
-                    mVLine1Product.setVisibility(View.VISIBLE);
-                    mEtProduct.setVisibility(View.VISIBLE);
-                    findViewById(R.id.ic_bar).setVisibility(View.VISIBLE);
-                    mAlflTagProductNegative.setVisibility(View.GONE);
-                    mAlflTagProductPositive.setVisibility(View.VISIBLE);
-                }
+                mVLine1Product.setVisibility(View.VISIBLE);
+                mEtProduct.setVisibility(View.VISIBLE);
+                findViewById(R.id.ic_bar).setVisibility(View.VISIBLE);
+
+                setProductTagLayout((int) rating);
                 for (OrderResponse.ListBean.LinesBean linesBean : bean.getLines()) {
                     mRateMap.put(linesBean.getSaleOrderProductID(), (int) rating);
                 }
@@ -341,7 +309,22 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 }
             }
         });
+    }
 
+    private void setDeliveryTagLayout(int rate) {
+        mAlflTagOne.setVisibility(rate == 1 ? View.VISIBLE : View.GONE);
+        mAlflTagTwo.setVisibility(rate == 2 ? View.VISIBLE : View.GONE);
+        mAlflTagThree.setVisibility(rate == 3 ? View.VISIBLE : View.GONE);
+        mAlflTagFour.setVisibility(rate == 4 ? View.VISIBLE : View.GONE);
+        mAlflTagFive.setVisibility(rate == 5 ? View.VISIBLE : View.GONE);
+    }
+
+    private void setProductTagLayout(int rate) {
+        mAlflTagProductOne.setVisibility(rate == 1 ? View.VISIBLE : View.GONE);
+        mAlflTagProductTwo.setVisibility(rate == 2 ? View.VISIBLE : View.GONE);
+        mAlflTagProductThree.setVisibility(rate == 3 ? View.VISIBLE : View.GONE);
+        mAlflTagProductFour.setVisibility(rate == 4 ? View.VISIBLE : View.GONE);
+        mAlflTagProductFive.setVisibility(rate == 5 ? View.VISIBLE : View.GONE);
     }
 
     @OnClick({R.id.title_iv_left, R.id.tv_submit})
@@ -365,7 +348,7 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 dialog.show();
                 break;
             case R.id.tv_submit:
-                if (mDeliveryRating<1&&mProductRating<1){
+                if (mDeliveryRating < 1 && mProductRating < 1) {
                     return;
                 }
                 dialog.setTitle("提示");
@@ -383,82 +366,47 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
     }
 
     List<String> getService_tags() {
-        List<String> service_tags = new ArrayList<>();
-        if (mDeliveryRating <= 2) {
-            if (mCb1.isChecked()) {
-                service_tags.add(mCb1.getText().toString());
-            }
-            if (mCb2.isChecked()) {
-                service_tags.add(mCb2.getText().toString());
-            }
-            if (mCb3.isChecked()) {
-                service_tags.add(mCb3.getText().toString());
-            }
-            if (mCb4.isChecked()) {
-                service_tags.add(mCb4.getText().toString());
-            }
-        } else {
-            if (mCb5.isChecked()) {
-                service_tags.add(mCb5.getText().toString());
-            }
-            if (mCb6.isChecked()) {
-                service_tags.add(mCb6.getText().toString());
-            }
-            if (mCb7.isChecked()) {
-                service_tags.add(mCb7.getText().toString());
-            }
-            if (mCb8.isChecked()) {
-                service_tags.add(mCb8.getText().toString());
-            }
-            if (mCb9.isChecked()) {
-                service_tags.add(mCb9.getText().toString());
+        switch ((int) mDeliveryRating) {
+            case 1:
+                return getTags(mAlflTagOne);
+            case 2:
+                return getTags(mAlflTagTwo);
+            case 3:
+                return getTags(mAlflTagThree);
+            case 4:
+                return getTags(mAlflTagFour);
+            case 5:
+                return getTags(mAlflTagFive);
+        }
+        return new ArrayList<>();
+    }
+
+    private List<String> getTags(AutoLinefeedLayout autoLinefeedLayout){
+        List<String> tags = new ArrayList<>();
+        int childCount = autoLinefeedLayout.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            CheckBox checkBox = (CheckBox) autoLinefeedLayout.getChildAt(i);
+            if (checkBox.isChecked()){
+                tags.add(checkBox.getText().toString());
             }
         }
-        return service_tags;
+        return tags;
     }
 
     List<String> getProductTags() {
-        List<String> product_tags = new ArrayList<>();
-        if (mProductRating <= 2) {
-            if (mCb10.isChecked()) {
-                product_tags.add(mCb10.getText().toString());
-            }
-            if (mCb11.isChecked()) {
-                product_tags.add(mCb11.getText().toString());
-            }
-            if (mCb12.isChecked()) {
-                product_tags.add(mCb12.getText().toString());
-            }
-            if (mCb13.isChecked()) {
-                product_tags.add(mCb13.getText().toString());
-            }
-            if (mCb14.isChecked()) {
-                product_tags.add(mCb14.getText().toString());
-            }
-            if (mCb15.isChecked()) {
-                product_tags.add(mCb15.getText().toString());
-            }
-        } else {
-            if (mCb16.isChecked()) {
-                product_tags.add(mCb16.getText().toString());
-            }
-            if (mCb17.isChecked()) {
-                product_tags.add(mCb17.getText().toString());
-            }
-            if (mCb18.isChecked()) {
-                product_tags.add(mCb18.getText().toString());
-            }
-            if (mCb19.isChecked()) {
-                product_tags.add(mCb19.getText().toString());
-            }
-            if (mCb20.isChecked()) {
-                product_tags.add(mCb20.getText().toString());
-            }
-            if (mCb21.isChecked()) {
-                product_tags.add(mCb21.getText().toString());
-            }
+        switch ((int) mProductRating) {
+            case 1:
+                return getTags(mAlflTagProductOne);
+            case 2:
+                return getTags(mAlflTagProductTwo);
+            case 3:
+                return getTags(mAlflTagProductThree);
+            case 4:
+                return getTags(mAlflTagProductFour);
+            case 5:
+                return getTags(mAlflTagProductFive);
         }
-        return product_tags;
+        return new ArrayList<>();
     }
 
     private void sendEvaluateRequest() {
@@ -518,12 +466,40 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage();
                 break;
-
+            case REQUEST_GET_TAG:
+                TagResponse tagResponse = (TagResponse) result.getResult().getData();
+                setUpTag(tagResponse);
+                break;
         }
         if (flag >= 2) {
             ChangeOrderRequest changeOrderRequest = new ChangeOrderRequest();
             changeOrderRequest.setState("rated");
             sendConnection("/gongfu/order/" + bean.getOrderID() + "/state", changeOrderRequest, CHANGE_ORDER, false, null);
+        }
+    }
+
+    private void setUpTag(TagResponse tagResponse) {
+        HashMap<String, List<String>> service_tags = tagResponse.getService_tags();
+        addTags(mAlflTagOne, service_tags.get("1"));
+        addTags(mAlflTagTwo, service_tags.get("2"));
+        addTags(mAlflTagThree, service_tags.get("3"));
+        addTags(mAlflTagFour, service_tags.get("4"));
+        addTags(mAlflTagFive, service_tags.get("5"));
+
+        HashMap<String, List<String>> quantity_tags = tagResponse.getQuantity_tags();
+        addTags(mAlflTagProductOne, quantity_tags.get("1"));
+        addTags(mAlflTagProductTwo, quantity_tags.get("2"));
+        addTags(mAlflTagProductThree, quantity_tags.get("3"));
+        addTags(mAlflTagProductFour, quantity_tags.get("4"));
+        addTags(mAlflTagProductFive, quantity_tags.get("5"));
+
+    }
+
+    private void addTags(AutoLinefeedLayout autoLinefeedLayout, List<String> tags) {
+        for (String tag : tags) {
+            CheckBox checkBox = (CheckBox) LayoutInflater.from(getActivityContext()).inflate(R.layout.checkbox_evaluate_tag, null);
+            checkBox.setText(tag);
+            autoLinefeedLayout.addView(checkBox);
         }
     }
 
@@ -603,101 +579,6 @@ public class EvaluateActivity extends NetWorkActivity implements EvaluateAdapter
 
     }
 
-    @Override
-    public void rateChanged(Integer lineId, Integer rateScore) {
-
-//        rateMap.put(lineId,rateScore);
-//        if (searchPart.getVisibility() == View.VISIBLE){
-//            adapter.notifyDataSetChanged();
-//        }
-    }
-
-
-    /**
-     * 1到4：配送服务差评
-     * 5到9：配送服务好评
-     * 10到15:商品差评
-     * 16到21:商品好评
-     *
-     * @param view
-     */
-    @OnClick({cb1, cb2, cb3, R.id.cb4, R.id.cb5, R.id.cb6, R.id.cb7, R.id.cb8, R.id.cb9, R.id.cb10,
-            R.id.cb11, R.id.cb12, R.id.cb13, R.id.cb14, R.id.cb15, R.id.cb16, R.id.cb17, R.id.cb18,
-            R.id.cb19, R.id.cb20, R.id.cb21, R.id.tv_open})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            ///////////////配送服务差评////////////////////////
-            case cb1:
-            case cb2:
-            case cb3:
-            case R.id.cb4:
-                mVLine1.setVisibility(View.VISIBLE);
-                mEtDelivery.setVisibility(View.VISIBLE);
-                mAlflTagNegative.setVisibility(View.VISIBLE);
-                break;
-            ///////////////配送服务好评////////////////////////
-            case R.id.cb5:
-            case R.id.cb6:
-            case R.id.cb7:
-            case R.id.cb8:
-            case R.id.cb9:
-                mVLine1.setVisibility(View.VISIBLE);
-                mEtDelivery.setVisibility(View.VISIBLE);
-                mAlflTagPositive.setVisibility(View.VISIBLE);
-                break;
-            ///////////////商品差评////////////////////////
-            case R.id.cb10:
-            case R.id.cb11:
-            case R.id.cb12:
-            case R.id.cb13:
-            case R.id.cb14:
-            case R.id.cb15:
-                break;
-            ///////////////商品好评////////////////////////
-            case R.id.cb16:
-            case R.id.cb17:
-            case R.id.cb18:
-            case R.id.cb19:
-            case R.id.cb20:
-            case R.id.cb21:
-                break;
-//            case R.id.tv_open:
-//                if (mDragLayout.getState() == DragTopLayout.PanelState.EXPANDED) {
-//                    mDragLayout.toggleTopView();
-//                    canShow = true;
-//                } else {
-//                    if (mProductTypeWindow.isShowing()) {
-//                        mProductTypeWindow.dismiss();
-//                    } else {
-//                        showPopWindow();
-//                    }
-//                }
-//                mDragLayout.listener(new DragTopLayout.PanelListener() {
-//                    @Override
-//                    public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
-//                        if (panelState == DragTopLayout.PanelState.COLLAPSED) {
-//                            if (canShow) {
-//                                showPopWindow();
-//                                canShow = false;
-//                            }
-//                        } else {
-//                            mProductTypeWindow.dismiss();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onSliding(float ratio) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onRefresh() {
-//
-//                    }
-//                });
-//                break;
-        }
-    }
 
     private void showPopWindow() {
         int y = findViewById(R.id.title_bar).getHeight() + mTablayout.getHeight();

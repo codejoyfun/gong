@@ -18,6 +18,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.DbUtils;
@@ -25,6 +26,7 @@ import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.entity.UnReadData;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
+import com.runwise.supply.firstpage.entity.VersionRequest;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
@@ -51,6 +53,7 @@ public class MainActivity extends NetWorkActivity {
     //缓存全部商品列表的标识
     private static final int QUERY_ALL = 1;
     private final int REQUEST_UNREAD = 2;
+    private final int REQUEST_UPLOAD_VERSION = 3;
 
     //    private int devicesConnected = -1;
     private long mExitTime;
@@ -153,6 +156,7 @@ public class MainActivity extends NetWorkActivity {
         isLogin = SPUtils.isLogin(mContext);
         if (isLogin) {
             queryProductList();
+            upLoadVersion();
         }
         String tab1 = getString(R.string.tab_1);
         String tab2 = getString(R.string.tab_2);
@@ -381,6 +385,12 @@ public class MainActivity extends NetWorkActivity {
     private void print(String message) {
         ToastUtil.show(mContext, message);
 //        ((TextView) findViewById(R.id.hello_scan)).append("\n" + message);
+    }
+
+    private void upLoadVersion(){
+        VersionRequest versionRequest = new VersionRequest();
+        versionRequest.setVersion_name("安卓" + CommonUtils.getVersionName(this));
+        sendConnection("/gongfu/v2/product/list/", versionRequest, REQUEST_UPLOAD_VERSION, false, null);
     }
 
     private void queryProductList() {
