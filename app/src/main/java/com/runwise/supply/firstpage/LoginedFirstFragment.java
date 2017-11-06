@@ -367,7 +367,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        ToastUtil.show(getActivity(),errMsg);
+//        ToastUtil.show(getActivity(),errMsg);
     }
 
     @Override

@@ -49,6 +49,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -134,8 +135,8 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         if (getIntent().getBooleanExtra(INTENT_KEY_CANN_NO_EDIT, false)) {
             setTitleRightText(false, "修改");
             showUpLoadBtn(false);
-            if (!hasAttachment){
-                mLoadingLayout.onSuccess(0,"没有支付凭证");
+            if (!hasAttachment) {
+                mLoadingLayout.onSuccess(0, "没有支付凭证");
             }
         }
     }
@@ -258,7 +259,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     ToastUtil.show(mContext, "上传成功");
                     Intent intent = new Intent();
                     intent.putExtra("has", true);
-                    intent.putExtra("upload_success",true);
+                    intent.putExtra("upload_success", true);
                     setResult(200, intent);
                     finish();
                 }
@@ -457,7 +458,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(UploadPayedPicActivity.this, ImageActivity.class);
-                        intent.putExtra(INTENT_KEY_IMG_URL,content);
+                        intent.putExtra(INTENT_KEY_IMG_URL, content);
                         startActivity(intent);
                     }
                 });
@@ -476,7 +477,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(UploadPayedPicActivity.this, ImageActivity.class);
-                        intent.putExtra(INTENT_KEY_IMG_URL,uri.toString());
+                        intent.putExtra(INTENT_KEY_IMG_URL, uri.toString());
                         startActivity(intent);
                     }
                 });
@@ -536,7 +537,12 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                     String path1Scaled = ImageUtils.getScaledImage(this, updateImgUri.getPath());
                     try {
                         indexInt = indexInt + 1;
-                        File localFile = new File(mContext.getFilesDir().getPath(), "支付凭证(" + indexInt + ").jpg");
+
+
+                        String fileName = "支付凭证(" + indexInt + ").jpg";
+                        String strUTF = new String(fileName.getBytes(), "utf-8");
+
+                        File localFile = new File(mContext.getFilesDir().getPath(), strUTF);
                         InputStream in = new FileInputStream(path1Scaled);
                         ImageUtils.writeToFile(localFile, in);
                         path1Scaled = localFile.getAbsolutePath();

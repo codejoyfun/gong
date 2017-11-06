@@ -1109,6 +1109,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             titleTv.setText(bottomData.getName());
             edEt.setText(String.valueOf(bottomData.getCount()));
             mTvStockCount.setText(String.valueOf(bottomData.getProductUomQty()));
+            edEt.setSelectAllOnFocus(true);
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             edEt.requestFocus();
             edEt.postDelayed(new Runnable() {
