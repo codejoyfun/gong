@@ -185,6 +185,39 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mode = bundle.getInt("mode");
         if (mode == 1) {
             setTitleText(true, "点货");
+        } else {
+           setTitleText(true, "收货");
+        }
+        initPopWindow();
+        initPopWindow2();       //单独初始化一下双单位的popview
+        Capture.init(getApplicationContext());
+//        mClient = new CaptureClient();
+//        mClient.setListener(this);
+//        mClient.connect();
+        if (mode == 1) {
+            //开始点货
+            String userName = GlobalApplication.getInstance().getUserName();
+            if (TextUtils.isEmpty(userName) || !userName.equals(lbean.getTallyingUserName())) {
+                startOrEndTally(true);
+            }
+        }
+//        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+//        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+//        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+//        getReceiveInfoFromDB();
+        productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
+        if (productBasicHelper.check(lbean.getLines())) {
+            getCategory();
+            updateUI();
+        } else {
+            productBasicHelper.requestDetail(PRODUCT_DETAIL);
+        }
+        setUpSearch();
+    }
+
+    private void updateUI(){
+        if (mode == 1) {
+            setTitleText(true, "点货");
             String tallyingUserName = lbean.getTallyingUserName();
             if (!TextUtils.isEmpty(tallyingUserName)) {
                 if (!tallyingUserName.equals(GlobalApplication.getInstance().getUserName())) {
@@ -214,7 +247,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 }
             }
         } else {
-           setTitleText(true, "收货");
+            setTitleText(true, "收货");
             String source = (String) SPUtils.get(getActivityContext(),String.valueOf(lbean.getOrderID()),"");
             if (!TextUtils.isEmpty(source)){
                 ReceiveBeanList receiveBeanList = new ReceiveBeanList(source);
@@ -248,33 +281,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 setDefalutProgressBar();
             }
         }
-
-
-
-        initPopWindow();
-        initPopWindow2();       //单独初始化一下双单位的popview
-        Capture.init(getApplicationContext());
-//        mClient = new CaptureClient();
-//        mClient.setListener(this);
-//        mClient.connect();
-        if (mode == 1) {
-            //开始点货
-            String userName = GlobalApplication.getInstance().getUserName();
-            if (TextUtils.isEmpty(userName) || !userName.equals(lbean.getTallyingUserName())) {
-                startOrEndTally(true);
-            }
-        }
-//        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-//        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
-//        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-//        getReceiveInfoFromDB();
-        productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
-        if (productBasicHelper.check(lbean.getLines())) {
-            getCategory();
-        } else {
-            productBasicHelper.requestDetail(PRODUCT_DETAIL);
-        }
-        setUpSearch();
     }
 
     private void setUpSearch() {
@@ -988,6 +994,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 break;
             case PRODUCT_DETAIL:
                 if (productBasicHelper.onSuccess(result)) {
+                    updateUI();
                     getCategory();
                 }
                 break;
@@ -1102,6 +1109,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             titleTv.setText(bottomData.getName());
             edEt.setText(String.valueOf(bottomData.getCount()));
             mTvStockCount.setText(String.valueOf(bottomData.getProductUomQty()));
+            edEt.setSelectAllOnFocus(true);
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             edEt.requestFocus();
             edEt.postDelayed(new Runnable() {

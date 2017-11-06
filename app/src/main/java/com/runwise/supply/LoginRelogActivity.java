@@ -1,5 +1,6 @@
 package com.runwise.supply;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -10,11 +11,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.ReLoginData;
 import com.kids.commonframe.base.UserInfo;
-import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -25,8 +26,6 @@ import com.runwise.supply.entity.GetCodeRequest;
 import com.runwise.supply.entity.ReLoginRequest;
 import com.runwise.supply.entity.RegistrationRequest;
 import com.runwise.supply.tools.StatusBarUtil;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
 
@@ -126,8 +125,9 @@ public class LoginRelogActivity extends NetWorkActivity {
                 JPushInterface.setAliasAndTags(getApplicationContext(), CommonUtils.getDeviceId(this), null, null);
                 SPUtils.setLogin(mContext, true);
                 ToastUtil.show(mContext, "登录成功");
-                EventBus.getDefault().post(new UserLoginEvent());
-                this.finish();
+                ActivityManager.getInstance().finishAll();
+                Intent intent = new Intent(getActivityContext(),MainActivity.class);
+                startActivity(intent);
                 break;
         }
     }

@@ -165,6 +165,7 @@ public class ProductListFragment extends NetWorkFragment {
             viewHolder.editText.removeTextChangedListener();
             viewHolder.editText.addTextChangedListener(new TextWatcher() {
                 String mmStrPrevious;
+
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                     mmStrPrevious = s.toString();
@@ -173,7 +174,7 @@ public class ProductListFragment extends NetWorkFragment {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     //检查特殊字符
-                    if(!TextUtils.isDigitsOnly(s)){
+                    if (!TextUtils.isDigitsOnly(s)) {
                         viewHolder.editText.setText(mmStrPrevious);
                         return;
                     }
@@ -186,6 +187,7 @@ public class ProductListFragment extends NetWorkFragment {
                     }
                     countMap.put(String.valueOf(listBean.getProductID()), changedNum);
                 }
+
                 @Override
                 public void afterTextChanged(Editable s) {
 
@@ -253,12 +255,12 @@ public class ProductListFragment extends NetWorkFragment {
                 public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         String str = viewHolder.editText.getText().toString();
-                        if(TextUtils.isEmpty(str) || Integer.valueOf(str)==0){//输入0或者空的时候，点完成变回初始样式
+                        if (TextUtils.isEmpty(str) || Integer.valueOf(str) == 0) {//输入0或者空的时候，点完成变回初始样式
                             addBtn.setVisibility(View.VISIBLE);
                             unit1.setVisibility(View.VISIBLE);
                             ll.setVisibility(View.INVISIBLE);
                         }
-                        InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
                         return true;
                     }
@@ -266,17 +268,20 @@ public class ProductListFragment extends NetWorkFragment {
                 }
             });
 
-            viewHolder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    String str = viewHolder.editText.getText().toString();
-                    if(TextUtils.isEmpty(str) || Integer.valueOf(str)==0){//输入0或者空的时候，失去焦点变回初始样式
-                        addBtn.setVisibility(View.VISIBLE);
-                        unit1.setVisibility(View.VISIBLE);
-                        ll.setVisibility(View.INVISIBLE);
-                    }
-                }
-            });
+//            viewHolder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//                @Override
+//                public void onFocusChange(View view, boolean b) {
+//                    if (!b) {
+//                        String str = viewHolder.editText.getText().toString();
+//                        if (TextUtils.isEmpty(str) || Integer.valueOf(str) == 0) {//输入0或者空的时候，失去焦点变回初始样式
+//                            addBtn.setVisibility(View.VISIBLE);
+//                            unit1.setVisibility(View.VISIBLE);
+//                            ll.setVisibility(View.INVISIBLE);
+//                        }
+//                    }
+//
+//                }
+//            });
 
             viewHolder.name.setText(bean.getName());
 
@@ -357,23 +362,23 @@ public class ProductListFragment extends NetWorkFragment {
      * @param beanId
      * @param editText
      */
-    private void checkText(String beanId,EditText editText){
+    private void checkText(String beanId, EditText editText) {
         String tmpStr = editText.getText().toString();
-        if(TextUtils.isEmpty(tmpStr) || Integer.valueOf(tmpStr)==0){
-            ToastUtil.show(getActivity(),"数量超出范围");
+        if (TextUtils.isEmpty(tmpStr) || Integer.valueOf(tmpStr) == 0) {
+            ToastUtil.show(getActivity(), "数量超出范围");
             editText.setText("1");
             countMap.put(beanId, 1);
             return;
         }
-        if(tmpStr.startsWith("0")){
+        if (tmpStr.startsWith("0")) {
             editText.setText(String.valueOf(Integer.valueOf(tmpStr)));
         }
     }
 
-    private void clearFocus(){
+    private void clearFocus() {
         View v = getActivity().getCurrentFocus();
-        if(v!=null){
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             v.clearFocus();
         }

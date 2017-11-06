@@ -594,9 +594,19 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 onekeyBtn.setEnabled(true);
                 dateTv.setEnabled(true);
                 mCustomProgressDialog.dismiss();
-                toast("网络错误");
-                ActivityManager.getInstance().finishAll();
-                startActivity(new Intent(getActivityContext(), MainActivity.class));
+                dialog.setTitle("提示");
+                dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
+                dialog.setMessageGravity();
+                dialog.setCancelable(false);
+                dialog.setRightBtnListener("我知道啦", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //发送取消订单请求
+                        ActivityManager.getInstance().finishAll();
+                        startActivity(new Intent(getActivityContext(), MainActivity.class));
+                    }
+                });
+                dialog.show();
                 break;
         }
 
