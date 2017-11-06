@@ -58,7 +58,7 @@ public class DealerSearchActivity extends BaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dealer_search_layout);
         FragmentManager manager = this.getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.contextLayout,new RepertoryFragment(),"repertoryList").commitAllowingStateLoss();
+        manager.beginTransaction().replace(R.id.contextLayout,new StockFragment(),"repertoryList").commitAllowingStateLoss();
 
         searchET.addTextChangedListener(new TextWatcher() {
             @Override

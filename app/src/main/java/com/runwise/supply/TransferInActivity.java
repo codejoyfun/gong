@@ -223,7 +223,7 @@ public class TransferInActivity extends NetWorkActivity {
                 }
 
                 //商品信息不全，还要在查
-                if(!productBasicHelper.check(mTransferDetailResponse.getLines())){
+                if(!productBasicHelper.checkTransfer(mTransferDetailResponse.getLines())){
                     productBasicHelper.requestDetail(REQUEST_PRODUCT_INFO);
                     return;
                 }else{
@@ -375,13 +375,13 @@ public class TransferInActivity extends NetWorkActivity {
             isTwoUnit = twoUnit;
         }
 
-        private List<OrderResponse.ListBean.LinesBean> productList = new ArrayList();
+        private List<TransferDetailResponse.LinesBean> productList = new ArrayList();
 
         public TransferInProductAdapter(Context context) {
             this.context = context;
         }
 
-        public void setProductList(List<? extends OrderResponse.ListBean.LinesBean> productList) {
+        public void setProductList(List<TransferDetailResponse.LinesBean> productList) {
             this.productList.clear();
             if (productList != null && productList.size() > 0){
                 this.productList.addAll(productList);
@@ -398,7 +398,7 @@ public class TransferInActivity extends NetWorkActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final OrderResponse.ListBean.LinesBean bean = productList.get(position);
+            final TransferDetailResponse.LinesBean bean = productList.get(position);
             final int pId = bean.getProductID();
             ViewHolder vh = holder;
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
@@ -409,7 +409,7 @@ public class TransferInActivity extends NetWorkActivity {
             if (basicBean != null){
                 vh.name.setText(basicBean.getName());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append("  ").append(basicBean.getUnit()).append("\n")
+                sb.append(" | ").append(basicBean.getUnit()).append("\n")
                         .append("¥").append(basicBean.getPrice()).append("/").append(bean.getProductUom());
                 vh.content.setText(sb.toString());
 

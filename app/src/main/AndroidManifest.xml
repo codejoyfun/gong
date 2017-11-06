@@ -436,6 +436,10 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
         <activity
+            android:name=".ReturnRequestSuccessActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".firstpage.EvaluateActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"

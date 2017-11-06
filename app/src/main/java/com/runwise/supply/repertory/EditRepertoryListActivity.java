@@ -38,6 +38,7 @@ import com.runwise.supply.repertory.entity.EditRepertoryResult;
 import com.runwise.supply.repertory.entity.EditRequest;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.view.NoScrollViewPager;
 
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import static com.runwise.supply.repertory.EditRepertoryListFragment.ILLEGAL_VAL
 public class EditRepertoryListActivity extends NetWorkActivity{
 	private final int PRODUCT_GET = 1;
 	private final int PRODUCT_COMMIT = 2;
+	private final int PRODUCT_INFO = 3;
 
 	private List<Fragment> fragments = new ArrayList<Fragment>();
 	@ViewInject(R.id.tablayout)
@@ -67,10 +69,12 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 	@ViewInject(R.id.textView2)
 	private TextView textView2;
 
-
 	private PandianResult pandianResult;
 	private int inventoryID;
 	List<PandianResult.InventoryBean.LinesBean> linesBeanList;
+
+	CategoryRespone categoryRespone;
+	private ProductBasicHelper mProductBasicHelper;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -89,6 +93,30 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 			inventoryID = checkBean.getInventoryID();
 			linesBeanList = checkBean.getLines();
 		}
+
+//		for(PandianResult.InventoryBean.LinesBean bean : linesBeanList) {
+//			ProductBasicList.ListBean product = getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
+//			if( product == null) {
+//				product = new ProductBasicList.ListBean();
+//				product.setStockType("gege");
+//			}
+//			bean.setProduct(product);
+//		}
+//
+//		GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+//		getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+//		sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+//		sendConnection("/gongfu/shop/inventory/"+this.getIntent().getStringExtra("id")+"/list",param,PRODUCT_GET,true, EditRepertoryResult.class);
+
+		mProductBasicHelper = new ProductBasicHelper(this,netWorkHelper);
+		if(mProductBasicHelper.checkInventory(linesBeanList)){
+			init();
+		}else{
+			mProductBasicHelper.requestDetail(PRODUCT_INFO);
+		}
+	}
+
+	private void init(){
 		for(PandianResult.InventoryBean.LinesBean bean : linesBeanList) {
 			ProductBasicList.ListBean product = getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
 			if( product == null) {
@@ -98,15 +126,10 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 			bean.setProduct(product);
 		}
 
-
 		GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
 		getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
 		sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-//		sendConnection("/gongfu/shop/inventory/"+this.getIntent().getStringExtra("id")+"/list",param,PRODUCT_GET,true, EditRepertoryResult.class);
 	}
-
-	CategoryRespone categoryRespone;
-
 
 	List<Fragment> orderProductFragmentList;
 	private void setUpDataForViewPage() {
@@ -308,6 +331,11 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 				BaseEntity.ResultBean resultBean1 = result.getResult();
 				categoryRespone = (CategoryRespone) resultBean1.getData();
 				setUpDataForViewPage();
+				break;
+			case PRODUCT_INFO:
+				if(mProductBasicHelper.onSuccess(result)){
+					init();
+				}
 				break;
 		}
 	}

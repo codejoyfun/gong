@@ -430,4 +430,31 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 			mFooterLoadingView.setFooterComplete("没有更多内容啦~~");
 		}
 	}
+
+    /**
+     *  底部刷新结束,底部刷新完成后调用该方法
+     */
+    public void onFooterRefreshComplete (int addedCount, int limit, int totalCount) {
+        int adapterSize = listAdapter.getCount() ;
+//		LogUtils.e("==============="+adapterSize);
+        if (adapterSize >= MIN_DATA_SEIZE && adapterSize < totalCount) {
+            if ( currentMode != getMode()) {
+                this.setMode(currentMode);
+                mFooterLoadingView.reset();
+            }
+            addFooterView();
+        }
+        else if (adapterSize < MIN_DATA_SEIZE && mLvFooterLoadingFrame != null) {
+            if ( mAddedLvFooter ) {
+                mRefreshableView.removeFooterView(mLvFooterLoadingFrame);
+                mAddedLvFooter = false;
+                setPullListViewModel();
+            }
+        }
+        onRefreshComplete();
+        if ( addedCount<limit) {
+            setPullListViewModel();
+            mFooterLoadingView.setFooterComplete("没有更多内容啦~~");
+        }
+    }
 }

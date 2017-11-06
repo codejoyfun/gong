@@ -33,9 +33,19 @@ public class TransferDetailResponse {
         this.info = info;
     }
 
-    public static class LinesBean extends OrderResponse.ListBean.LinesBean implements Parcelable{
+    public static class LinesBean implements Parcelable{
         public static final String TRACKING_LOT = "lot";
+        private int productID;
+        private int priceUnit;
+        private int actualOutputNum;
+        private String productName;
+        private String productCode;
+        private String productImage;
+        private int productQtyDone;
         private String productTracking;
+        private String productUnit;
+        private String productUom;
+        private int productUomQty;
         private List<TransferBatchLot> productLotInfo;
 
         public List<TransferBatchLot> getProductLotInfo() {
@@ -54,6 +64,90 @@ public class TransferDetailResponse {
             this.productTracking = productTracking;
         }
 
+        public int getProductID() {
+            return productID;
+        }
+
+        public int getPriceUnit() {
+            return priceUnit;
+        }
+
+        public int getActualOutputNum() {
+            return actualOutputNum;
+        }
+
+        public String getProductName() {
+            return productName;
+        }
+
+        public String getProductCode() {
+            return productCode;
+        }
+
+        public String getProductImage() {
+            return productImage;
+        }
+
+        public int getProductQtyDone() {
+            return productQtyDone;
+        }
+
+        public String getProductUnit() {
+            return productUnit;
+        }
+
+        public String getProductUom() {
+            return productUom;
+        }
+
+        public int getProductUomQty() {
+            return productUomQty;
+        }
+
+        public void setProductID(int productID) {
+            this.productID = productID;
+        }
+
+        public void setPriceUnit(int priceUnit) {
+            this.priceUnit = priceUnit;
+        }
+
+        public void setActualOutputNum(int actualOutputNum) {
+            this.actualOutputNum = actualOutputNum;
+        }
+
+        public void setProductName(String productName) {
+            this.productName = productName;
+        }
+
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
+
+        public void setProductImage(String productImage) {
+            this.productImage = productImage;
+        }
+
+        public void setProductQtyDone(int productQtyDone) {
+            this.productQtyDone = productQtyDone;
+        }
+
+        public void setProductUnit(String productUnit) {
+            this.productUnit = productUnit;
+        }
+
+        public void setProductUom(String productUom) {
+            this.productUom = productUom;
+        }
+
+        public void setProductUomQty(int productUomQty) {
+            this.productUomQty = productUomQty;
+        }
+
+        public boolean isLotTracking(){
+            return TRACKING_LOT.equals(productTracking);
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -61,18 +155,36 @@ public class TransferDetailResponse {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
+            dest.writeInt(this.productID);
+            dest.writeInt(this.priceUnit);
+            dest.writeInt(this.actualOutputNum);
+            dest.writeString(this.productName);
+            dest.writeString(this.productCode);
+            dest.writeString(this.productImage);
+            dest.writeInt(this.productQtyDone);
+            dest.writeString(this.productTracking);
+            dest.writeString(this.productUnit);
+            dest.writeString(this.productUom);
+            dest.writeInt(this.productUomQty);
             dest.writeTypedList(this.productLotInfo);
-            dest.writeString(productTracking);
         }
 
         public LinesBean() {
         }
 
         protected LinesBean(Parcel in) {
-            super(in);
-            this.productLotInfo = in.createTypedArrayList(TransferBatchLot.CREATOR);
+            this.productID = in.readInt();
+            this.priceUnit = in.readInt();
+            this.actualOutputNum = in.readInt();
+            this.productName = in.readString();
+            this.productCode = in.readString();
+            this.productImage = in.readString();
+            this.productQtyDone = in.readInt();
             this.productTracking = in.readString();
+            this.productUnit = in.readString();
+            this.productUom = in.readString();
+            this.productUomQty = in.readInt();
+            this.productLotInfo = in.createTypedArrayList(TransferBatchLot.CREATOR);
         }
 
         public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {
@@ -86,9 +198,5 @@ public class TransferDetailResponse {
                 return new LinesBean[size];
             }
         };
-
-        public boolean isLotTracking(){
-            return TRACKING_LOT.equals(productTracking);
-        }
     }
 }
