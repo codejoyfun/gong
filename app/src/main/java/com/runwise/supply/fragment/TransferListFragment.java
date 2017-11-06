@@ -73,7 +73,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         super.onCreate(savedInstanceState);
         mPullListView.setPullToRefreshOverScrollEnabled(false);
         mPullListView.setScrollingWhileRefreshingEnabled(true);
-        mPullListView.setMode(PullToRefreshBase.Mode.BOTH);
+        mPullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         mPullListView.setOnItemClickListener(this);
         mTransferListAdapter = new TransferListAdapter();
         mPullListView.setAdapter(mTransferListAdapter);

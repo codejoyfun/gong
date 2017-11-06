@@ -37,6 +37,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
         this.setTitleLeftIcon(true, R.drawable.searchbar_ico_search);
         setTitleRightText(true,"盘点");
         FragmentManager manager = this.getActivity().getSupportFragmentManager();
+//        manager.beginTransaction().replace(R.id.contextLayout,new StockFragment()).commitAllowingStateLoss();
         manager.beginTransaction().replace(R.id.contextLayout,new RepertoryFragment()).commitAllowingStateLoss();
         manager.beginTransaction().addToBackStack(null);//add the transaction to the back stack so the user can navigate back
 // Commit the transaction

@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -20,12 +21,14 @@ import com.runwise.supply.firstpage.OrderDetailActivity;
 import com.runwise.supply.firstpage.UploadPayedPicActivity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
+import com.runwise.supply.view.PullToRefreshRecyclerView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import io.vov.vitamio.utils.Log;
 import io.vov.vitamio.utils.NumberUtil;
 
 /**
@@ -40,6 +43,7 @@ public class OrderCommitSuccessActivity extends BaseActivity {
     public static final String INTENT_KEY_TYPE = "type";
     private OrderAdapter mOrderAdapter;
     @ViewInject(R.id.rv_order_commit_sucess)
+    private PullToRefreshRecyclerView test;
     private RecyclerView mRvOrders;
     private List<OrderResponse.ListBean> mListOrders;
     LayoutInflater inflater;
@@ -52,6 +56,21 @@ public class OrderCommitSuccessActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_commit_success);
         setTitleLeftIcon(true,R.drawable.nav_closed);
+        test.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        test.setPullToRefreshOverScrollEnabled(false);
+        test.setScrollingWhileRefreshingEnabled(true);
+        test.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<RecyclerView> refreshView) {
+                Log.d("haha","test");
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<RecyclerView> refreshView) {
+                Log.d("haha","test2");
+            }
+        });
+        mRvOrders = test.getRefreshableView();
         type = getIntent().getIntExtra(INTENT_KEY_TYPE,-1);
         setTitleText(true,type==0?"修改成功":"下单成功");
         mOrderAdapter = new OrderAdapter();
@@ -61,14 +80,14 @@ public class OrderCommitSuccessActivity extends BaseActivity {
         inflater = LayoutInflater.from(this);
 
         bean = mListOrders.get(0);
-        if (bean.getOrderSettleName().contains("单次结算")){
-            showUploadButton = true;
-        }else{
-            showUploadButton = false;
-        }
-        if (bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
-            showUploadButton = true;
-        }
+//        if (bean.getOrderSettleName().contains("单次结算")){
+//            showUploadButton = true;
+//        }else{
+//            showUploadButton = false;
+//        }
+//        if (bean.getOrderSettleName().contains("先付款后收货")&&bean.getOrderSettleName().contains("单次结算")){
+//            showUploadButton = true;
+//        }
     }
 
     @OnClick(R.id.title_iv_left)
@@ -137,11 +156,11 @@ public class OrderCommitSuccessActivity extends BaseActivity {
                     //预计时间
                     StringBuffer etSb = new StringBuffer();
                     if (order.getState().equals(OrderState.DRAFT.getName()) || order.getState().equals(OrderState.SALE.getName())) {
-                        etSb.append("预计").append(formatTimeStr(order.getEstimatedDate())).append("送达");
+                        //etSb.append("预计").append(formatTimeStr(order.getEstimatedDate())).append("送达");
                     } else if (order.getState().equals(OrderState.PEISONG.getName())) {
-                        etSb.append("预计").append(formatTimeStr(order.getEstimatedDate())).append("送达");
+                        //etSb.append("预计").append(formatTimeStr(order.getEstimatedDate())).append("送达");
                     } else {
-                        etSb.append(order.getDoneDatetime()).append("已送达");
+                       // etSb.append(order.getDoneDatetime()).append("已送达");
                     }
                     holder.tvTitle.setText(etSb.toString());
                     holder.tvOrderState.setText(OrderState.getValueByName(order.getState()));

@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -38,11 +39,13 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.ReturnRequestSuccessActivity;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.event.IntEvent;
+import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnBean;
 import com.runwise.supply.firstpage.entity.ReturnRequest;
@@ -181,7 +184,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         rr.setProducts(list);
         StringBuffer sb = new StringBuffer("/gongfu//v2/order/");
         sb.append(lbean.getOrderID()).append("/return/");
-        sendConnection(sb.toString(), rr, RETURN, true, BaseEntity.ResultBean.class);
+        sendConnection(sb.toString(), rr, RETURN, true, FinishReturnResponse.class);
     }
 
     private void initPopWindow() {
@@ -346,8 +349,11 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case RETURN:
-                ToastUtil.show(mContext, "退货成功");
-                finish();
+//                ToastUtil.show(mContext, "退货成功");
+//                finish();
+                FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
+                FinishReturnResponse.ReturnOrder returnOrder = finishReturnResponse.getReturnOrder();
+                ReturnRequestSuccessActivity.start(this,returnOrder);
                 break;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();

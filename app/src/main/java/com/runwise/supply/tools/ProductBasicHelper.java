@@ -5,12 +5,14 @@ import android.os.Handler;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
+import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.entity.PandianResult;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,6 +40,36 @@ public class ProductBasicHelper {
      */
     public boolean check(List<? extends OrderResponse.ListBean.LinesBean> listToCheck){
         for(OrderResponse.ListBean.LinesBean linesBean:listToCheck){
+            if(ProductBasicUtils.getBasicMap(context).get(linesBean.getProductID()+"")==null){
+                missingProductsID.add(linesBean.getProductID());
+            }
+        }
+        if(missingProductsID.size()==0)return true;
+        return false;
+    }
+
+    /**
+     * 检查本地数据库是否有商品信息
+     * @param listToCheck
+     * @return 本地数据库齐全true
+     */
+    public boolean checkTransfer(List<TransferDetailResponse.LinesBean> listToCheck){
+        for(TransferDetailResponse.LinesBean linesBean:listToCheck){
+            if(ProductBasicUtils.getBasicMap(context).get(linesBean.getProductID()+"")==null){
+                missingProductsID.add(linesBean.getProductID());
+            }
+        }
+        if(missingProductsID.size()==0)return true;
+        return false;
+    }
+
+    /**
+     *
+     * @param listToCheck
+     * @return
+     */
+    public boolean checkInventory(List<PandianResult.InventoryBean.LinesBean> listToCheck){
+        for(PandianResult.InventoryBean.LinesBean linesBean:listToCheck){
             if(ProductBasicUtils.getBasicMap(context).get(linesBean.getProductID()+"")==null){
                 missingProductsID.add(linesBean.getProductID());
             }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <include
+        android:id="@+id/title_bar"
+        layout="@layout/common_title_bar" />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_below="@id/title_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="71dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_receivedsuccess" />
+
+    <TextView
+        android:id="@+id/receiveTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/icon"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="售后订单申请成功"
+        android:textColor="#2E2E2E"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/tv_return_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/receiveTv"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="订单编号：\n申请类型：退货"
+        android:textColor="#333333"
+        android:lineSpacingExtra="5dp"
+        android:textSize="17sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_return_desc"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_order"
+            android:layout_width="110dp"
+            android:layout_height="35dp"
+            android:background="@drawable/upload_btn_circle"
+            android:gravity="center"
+            android:text="查看订单"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="110dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/upload_btn_circle"
+            android:gravity="center"
+            android:text="回到首页"
+            android:textColor="#333333" />
+    </LinearLayout>
+
+</RelativeLayout>

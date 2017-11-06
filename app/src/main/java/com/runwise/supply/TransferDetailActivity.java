@@ -281,7 +281,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mTransferEntity.setStateTracker(mTransferDetail.getInfo().getStateTracker());
                 showUI();
                 //检查信息是否齐全
-                if(productBasicHelper.check(mTransferDetail.getLines())){//商品信息OK，显示
+                if(productBasicHelper.checkTransfer(mTransferDetail.getLines())){//商品信息OK，显示
                     mTransferProductAdapter.setProductList(mTransferDetail.getLines());
                 }
                 else {//不齐全，查接口
@@ -381,13 +381,13 @@ public class TransferDetailActivity extends NetWorkActivity {
             isTwoUnit = twoUnit;
         }
 
-        private List<OrderResponse.ListBean.LinesBean> productList = new ArrayList();
+        private List<TransferDetailResponse.LinesBean> productList = new ArrayList();
 
         public TransferProductAdapter(Context context) {
             this.context = context;
         }
 
-        public void setProductList(List<? extends OrderResponse.ListBean.LinesBean> productList) {
+        public void setProductList(List<TransferDetailResponse.LinesBean> productList) {
             this.productList.clear();
             if (productList != null && productList.size() > 0){
                 this.productList.addAll(productList);
@@ -435,48 +435,76 @@ public class TransferDetailActivity extends NetWorkActivity {
                 holder.mmTvNum.setText(mTransferEntity.getTotalNum()+"件");
                 return;
             }
-            final OrderResponse.ListBean.LinesBean bean = productList.get(position);
+            final TransferDetailResponse.LinesBean bean = productList.get(position);
             int pId = bean.getProductID();
             ViewHolder vh = holder;
-            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
-            if (basicBean != null && basicBean.getImage() != null){
-                FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
-            }
+//            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
+//            if (basicBean != null && basicBean.getImage() != null){
+//                FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+//            }
+            ProductBasicList.ListBean basicBean = null;
+            if(isTwoUnit) basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));//双单位才需要查数据库
+
+            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+bean.getProductImage());
             int puq = (int)bean.getProductUomQty();
-            int dq = (int)bean.getDeliveredQty();
-            if((Constant.ORDER_STATE_DONE.equals(status)||Constant.ORDER_STATE_RATED.equals(status)) && bean.getDeliveredQty() != bean.getProductUomQty()) {
-                vh.oldPriceTv.setText("x"+puq);
-                vh.nowPriceTv.setText("x"+dq);
-                vh.oldPriceTv.setVisibility(View.VISIBLE);
+
+            //根据调入方，调出方，调拨单状态设置
+            if(isDestLocation){//接收方
+                //已完成情况下，入库数量和单据数量不一样,显示有删除线的订单数量
+                if(TransferEntity.STATE_COMPLETE.equals(mTransferEntity.getPickingState())
+                        && bean.getProductQtyDone()!= bean.getProductUomQty()){
+                    //显示实际出库，和订单数量
+                    vh.oldPriceTv.setText("x"+bean.getProductUomQty());//订单数量
+                    vh.oldPriceTv.setVisibility(View.VISIBLE);
+                    vh.nowPriceTv.setText("x"+bean.getProductQtyDone());//实际出库
+                }
+                else{
+                    vh.nowPriceTv.setText("x"+bean.getProductUomQty());//显示订单数量
+                    vh.oldPriceTv.setVisibility(View.GONE);
+                }
             }
-            else{
-                vh.oldPriceTv.setVisibility(View.GONE);
-                vh.nowPriceTv.setText("x"+puq);
+            else{//发出方
+                //已完成或已出库情况下，出库数量和单据数量不一样,显示有删除线的订单数量
+                if((TransferEntity.STATE_COMPLETE.equals(mTransferEntity.getPickingState())
+                        ||TransferEntity.STATE_DELIVER2.equals(mTransferEntity.getPickingState()))
+                        && bean.getActualOutputNum()!= bean.getProductUomQty()){
+                    //显示实际出库，和订单数量
+                    vh.oldPriceTv.setText("x"+bean.getProductUomQty());//订单数量
+                    vh.oldPriceTv.setVisibility(View.VISIBLE);
+                    vh.nowPriceTv.setText("x"+bean.getActualOutputNum());//实际出库
+                }
+                else{
+                    vh.nowPriceTv.setText("x"+bean.getProductUomQty());//显示订单数量
+                    vh.oldPriceTv.setVisibility(View.GONE);
+                }
             }
 
-            if (basicBean != null){
-                vh.name.setText(basicBean.getName());
-                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append("  ").append(basicBean.getUnit());
-                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-                if (canSeePrice){
-                    if (isTwoUnit){
-                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getSettlePrice()))).append("元/").append(basicBean.getSettleUomId());
-                    }else{
-                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getPrice()))).append("元/").append(bean.getProductUom());
-                    }
-                }
-                vh.unit1.setText(bean.getProductUom());
-                vh.content.setText(sb.toString());
-                if (isTwoUnit){
-                    vh.weightTv.setText(bean.getSettleAmount()+basicBean.getSettleUomId());
-                    vh.weightTv.setVisibility(View.VISIBLE);
+//            if((Constant.ORDER_STATE_DONE.equals(status)||Constant.ORDER_STATE_RATED.equals(status))) {
+//                vh.oldPriceTv.setText("x"+puq);
+//                //vh.nowPriceTv.setText("x"+dq);
+//                vh.oldPriceTv.setVisibility(View.VISIBLE);
+//            }
+//            else{
+//                vh.oldPriceTv.setVisibility(View.GONE);
+//                vh.nowPriceTv.setText("x"+puq);
+//            }
+
+            vh.name.setText(bean.getProductName());
+            StringBuffer sb = new StringBuffer(bean.getProductCode());
+            sb.append(" | ").append(bean.getProductUnit());
+            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if (canSeePrice){
+                if (isTwoUnit && basicBean!=null){
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getSettlePrice()))).append("元/").append(basicBean.getSettleUomId());
                 }else{
-                    vh.weightTv.setVisibility(View.INVISIBLE);
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getPrice()))).append("元/").append(bean.getProductUom());
                 }
-            }else{
-                vh.name.setText("");
             }
+            vh.unit1.setText(bean.getProductUom());
+            vh.content.setText(sb.toString());
+            vh.weightTv.setVisibility(View.INVISIBLE);
+
+
             //发货状态订单
 //        if("peisong".equals(status)) {
 //            vh.rootView.setOnClickListener(new View.OnClickListener() {
