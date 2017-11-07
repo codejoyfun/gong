@@ -253,6 +253,7 @@ public class EvaluateActivity extends NetWorkActivity {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 mDeliveryRating = rating;
+                setDeliveryTagLayout((int) rating);
                 if (rating > 0) {
                     mTvSubmit.setBackgroundResource(R.color.colorAccent);
                     mVLine1.setVisibility(View.VISIBLE);
@@ -266,7 +267,6 @@ public class EvaluateActivity extends NetWorkActivity {
                     return;
                 }
 
-                setDeliveryTagLayout((int) rating);
             }
         });
         mVLine1Product.setVisibility(View.GONE);
@@ -283,6 +283,7 @@ public class EvaluateActivity extends NetWorkActivity {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 mProductRating = rating;
+                setProductTagLayout((int) rating);
                 if (rating > 0) {
                     mTvSubmit.setBackgroundResource(R.color.colorAccent);
                 } else {
@@ -298,7 +299,6 @@ public class EvaluateActivity extends NetWorkActivity {
                 mEtProduct.setVisibility(View.VISIBLE);
                 findViewById(R.id.ic_bar).setVisibility(View.VISIBLE);
 
-                setProductTagLayout((int) rating);
                 for (OrderResponse.ListBean.LinesBean linesBean : bean.getLines()) {
                     mRateMap.put(linesBean.getSaleOrderProductID(), (int) rating);
                 }

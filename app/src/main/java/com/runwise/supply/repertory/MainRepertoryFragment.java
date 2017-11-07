@@ -13,6 +13,7 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.mine.RepertoryFragment;
@@ -72,7 +73,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
             sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
         }
         else{
-            Intent intent = new Intent(mContext, RegisterActivity.class);
+            Intent intent = new Intent(mContext, LoginActivity.class);
             startActivity(intent);
         }
     }

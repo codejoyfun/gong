@@ -14,7 +14,6 @@ import com.runwise.supply.tools.DensityUtil;
 public class AutoLinefeedLayout extends ViewGroup {
 
 
-
     public AutoLinefeedLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -33,7 +32,7 @@ public class AutoLinefeedLayout extends ViewGroup {
     }
 
     private void layoutHorizontal() {
-        int space = DensityUtil.dip2px(getContext(),10);
+        int space = DensityUtil.dip2px(getContext(), 10);
         final int count = getChildCount();
         final int lineWidth = getMeasuredWidth() - getPaddingLeft()
                 - getPaddingRight();
@@ -59,8 +58,8 @@ public class AutoLinefeedLayout extends ViewGroup {
                     maxLineHight = 0;
                 }
                 childTop = paddingTop;
-                setChildFrame(child, childLeft, childTop, childWidth-space,
-                        childHeight-space);
+                setChildFrame(child, childLeft, childTop, childWidth - space,
+                        childHeight - space);
                 childLeft += childWidth;
                 availableLineWidth = availableLineWidth - childWidth;
                 maxLineHight = Math.max(maxLineHight, childHeight);
@@ -90,6 +89,7 @@ public class AutoLinefeedLayout extends ViewGroup {
     }
 
     private int getDesiredHeight(int width) {
+        int space = DensityUtil.dip2px(getContext(), 10);
         boolean lineFeed = false;
         final int lineWidth = width - getPaddingLeft() - getPaddingRight();
         int availableLineWidth = lineWidth;
@@ -97,23 +97,17 @@ public class AutoLinefeedLayout extends ViewGroup {
         int lineHeight = 0;
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            final int childWidth = child.getMeasuredWidth();
-            final int childHeight = child.getMeasuredHeight();
+            final int childWidth = child.getMeasuredWidth() + space;
+            final int childHeight = child.getMeasuredHeight() + space;
             if (availableLineWidth < childWidth) {
                 availableLineWidth = lineWidth;
                 totalHeight = totalHeight + lineHeight;
                 lineHeight = 0;
-                lineFeed = true;
             }
             availableLineWidth = availableLineWidth - childWidth;
             lineHeight = Math.max(childHeight, lineHeight);
         }
-        int space = DensityUtil.dip2px(getContext(),10);
-        if (lineFeed){
-            totalHeight = totalHeight + lineHeight + space;
-        }else{
-            totalHeight = totalHeight + lineHeight;
-        }
+        totalHeight = totalHeight + lineHeight - space;
         return totalHeight;
     }
 
