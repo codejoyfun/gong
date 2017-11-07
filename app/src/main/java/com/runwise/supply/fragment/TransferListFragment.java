@@ -30,14 +30,7 @@ import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
-import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ENTITY;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
-import static com.runwise.supply.entity.TransferEntity.STATE_CANCEL;
-import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER;
-import static com.runwise.supply.entity.TransferEntity.STATE_DELIVER2;
-import static com.runwise.supply.entity.TransferEntity.STATE_INSUFFICIENT;
-import static com.runwise.supply.entity.TransferEntity.STATE_PENDING_DELIVER;
-import static com.runwise.supply.entity.TransferEntity.STATE_SUBMITTED;
 
 /**
  * 调入调出fragment
@@ -201,65 +194,151 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
             viewHolder.mmTvStatus.setText(transferEntity.getPickingState());
-            if (STATE_SUBMITTED.equals(transferEntity.getPickingState()) ||
-                    STATE_INSUFFICIENT.equals(transferEntity.getPickingState())) {//已提交
-                viewHolder.mmTvAction.setText("取消");
-                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //取消
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                        dialog.setTitle("提示");
-                        dialog.setMessage("确认取消订单?");
-                        dialog.setMessageGravity();
-                        dialog.setModel(CustomDialog.BOTH);
-                        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-                            @Override
-                            public void doClickButton(Button btn, CustomDialog dialog) {
-                                //发送取消订单请求
-                                requestCancel(transferEntity);
-                            }
-                        });
-                        dialog.show();
-                    }
-                });
-            }else if(STATE_DELIVER.equals(transferEntity.getPickingState()) ||
-                    STATE_DELIVER2.equals(transferEntity.getPickingState())){//已发出
-                if(mType==TYPE_IN)viewHolder.mmTvAction.setText("入库");
-                else viewHolder.mmTvAction.setVisibility(View.GONE);
-                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                        Intent intent = new Intent(getActivity(), TransferInActivity.class);
-                        intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
-                        startActivity(intent);
-                    }
-                });
-            }else if(STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())){//待出库
-                if(mType==TYPE_OUT)viewHolder.mmTvAction.setText("出库");
-                else viewHolder.mmTvAction.setVisibility(View.GONE);
-                //防止错位
-                viewHolder.mmTvAction.setTag(position);
-                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                        int realPosition = (int) view.getTag();
-                        if (realPosition == position) {
-                            //变成可用状态
-                            requestOutputConfirm(transferEntity);
-                        }
-                    }
-                });
-            }else if(STATE_CANCEL.equals(transferEntity.getPickingState())){
-                viewHolder.mmTvAction.setVisibility(View.GONE);
+
+            if(mType==TYPE_IN){//入库方
+                setTransferInViewHolder(viewHolder,transferEntity);
             }
-            else{
-                viewHolder.mmTvAction.setVisibility(View.GONE);
+            else if(mType==TYPE_OUT){//出库方
+                setTransferOutViewHolder(viewHolder,transferEntity,position);
             }
 
+//            if (STATE_SUBMITTED.equals(transferEntity.getPickingState()) ||
+//                    STATE_INSUFFICIENT.equals(transferEntity.getPickingState())) {//已提交
+//                viewHolder.mmTvAction.setText("取消");
+//                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        //取消
+//                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+//                        dialog.setTitle("提示");
+//                        dialog.setMessage("确认取消订单?");
+//                        dialog.setMessageGravity();
+//                        dialog.setModel(CustomDialog.BOTH);
+//                        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+//                            @Override
+//                            public void doClickButton(Button btn, CustomDialog dialog) {
+//                                //发送取消订单请求
+//                                requestCancel(transferEntity);
+//                            }
+//                        });
+//                        dialog.show();
+//                    }
+//                });
+//            }else if(STATE_DELIVER.equals(transferEntity.getPickingState()) ||
+//                    STATE_DELIVER2.equals(transferEntity.getPickingState())){//已发出
+//                if(mType==TYPE_IN)viewHolder.mmTvAction.setText("入库");
+//                else viewHolder.mmTvAction.setVisibility(View.GONE);
+//                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+//                        Intent intent = new Intent(getActivity(), TransferInActivity.class);
+//                        intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
+//                        startActivity(intent);
+//                    }
+//                });
+//            }else if(STATE_PENDING_DELIVER.equals(transferEntity.getPickingState())){//待出库
+//                if(mType==TYPE_OUT)viewHolder.mmTvAction.setText("出库");
+//                else viewHolder.mmTvAction.setVisibility(View.GONE);
+//                //防止错位
+//                viewHolder.mmTvAction.setTag(position);
+//                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+//                        int realPosition = (int) view.getTag();
+//                        if (realPosition == position) {
+//                            //变成可用状态
+//                            requestOutputConfirm(transferEntity);
+//                        }
+//                    }
+//                });
+//            }else if(STATE_CANCEL.equals(transferEntity.getPickingState())){
+//                viewHolder.mmTvAction.setVisibility(View.GONE);
+//            }
+//            else{
+//                viewHolder.mmTvAction.setVisibility(View.GONE);
+//            }
+
             return convertView;
+        }
+
+        /**
+         * 入库方的列表项
+         * @param viewHolder
+         * @param transferEntity
+         */
+        void setTransferInViewHolder(ViewHolder viewHolder,final TransferEntity transferEntity){
+            switch (transferEntity.getPicking_state_num()){
+                case TransferEntity.STATE_SUBMIT://已提交，可取消
+                    viewHolder.mmTvAction.setVisibility(View.VISIBLE);
+                    viewHolder.mmTvAction.setText("取消");
+                    viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //取消
+                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            dialog.setTitle("提示");
+                            dialog.setMessage("确认取消订单?");
+                            dialog.setMessageGravity();
+                            dialog.setModel(CustomDialog.BOTH);
+                            dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                                @Override
+                                public void doClickButton(Button btn, CustomDialog dialog) {
+                                    //发送取消订单请求
+                                    requestCancel(transferEntity);
+                                }
+                            });
+                            dialog.show();
+                        }
+                    });
+                    break;
+                case TransferEntity.STATE_OUT:
+                    viewHolder.mmTvAction.setVisibility(View.VISIBLE);
+                    viewHolder.mmTvAction.setText("入库");
+                    viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            Intent intent = new Intent(getActivity(), TransferInActivity.class);
+                            intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
+                            startActivity(intent);
+                        }
+                    });
+                    break;
+                default:
+                    viewHolder.mmTvAction.setVisibility(View.GONE);
+            }
+        }
+
+        /**
+         * 出库方列表项
+         * @param viewHolder
+         * @param transferEntity
+         * @param position
+         */
+        void setTransferOutViewHolder(ViewHolder viewHolder,final TransferEntity transferEntity,final int position){
+            switch (transferEntity.getPicking_state_num()){
+                case TransferEntity.STATE_SUBMIT://已提交，可出库
+                    viewHolder.mmTvAction.setVisibility(View.VISIBLE);
+                    viewHolder.mmTvAction.setText("接单");
+                    //防止错位
+                    viewHolder.mmTvAction.setTag(position);
+                    viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            int realPosition = (int) view.getTag();
+                            if (realPosition == position) {
+                                //变成可用状态
+                                requestOutputConfirm(transferEntity);
+                            }
+                        }
+                    });
+                    break;
+                default:
+                    viewHolder.mmTvAction.setVisibility(View.GONE);
+            }
         }
 
         class ViewHolder {

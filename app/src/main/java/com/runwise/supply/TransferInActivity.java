@@ -123,14 +123,16 @@ public class TransferInActivity extends NetWorkActivity {
         request.setPickingID(mTransferEntity.getPickingID());
 
         //商品数量
-        List<TransferInRequest.ProductData> reqProductDataList = new ArrayList<>();
+        List<TransferInRequest.IProductData> reqProductDataList = new ArrayList<>();
+        request.setProducts(reqProductDataList);
+        //遍历每件商品
         for(TransferDetailResponse.LinesBean linesBean:mTransferDetailResponse.getLines()){
-            TransferInRequest.ProductData reqProductData = new TransferInRequest.ProductData();
-            reqProductData.setProductID(linesBean.getProductID());
-            List<TransferInRequest.ProductLotData> reqLotDataList = new ArrayList<>();
             //批次
             if(linesBean.isLotTracking()){
-                //实际数据放在map中
+                TransferInRequest.ProductData reqProductData = new TransferInRequest.ProductData();
+                reqProductData.setProductID(linesBean.getProductID());
+                List<TransferInRequest.ProductLotData> reqLotDataList = new ArrayList<>();
+                //实际数据在map中
                 TransferDetailResponse.LinesBean batchLine = mBatchDataMap.get(linesBean.getProductID()+"");
                 if(batchLine!=null){
                     for(TransferBatchLot lot:batchLine.getProductLotInfo()){
@@ -139,18 +141,20 @@ public class TransferInActivity extends NetWorkActivity {
                         reqLotData.setLotID(lot.getLotIDID());
                         reqLotDataList.add(reqLotData);
                     }
+                    reqProductData.setLotsInfo(reqLotDataList);//批次lotsInfo为数组
                 }
+                reqProductDataList.add(reqProductData);
             }else{//非批次
                 int qty = mTransferCountMap.get(linesBean.getProductID()+"");
                 if(qty<=0)continue;
+                TransferInRequest.ProductDataNoLot reqProductData = new TransferInRequest.ProductDataNoLot();
+                reqProductData.setProductID(linesBean.getProductID());
                 TransferInRequest.ProductLotData reqLotData = new TransferInRequest.ProductLotData();
                 reqLotData.setQtyDone(qty);
-                reqLotDataList.add(reqLotData);
+                reqProductData.setLotsInfo(reqLotData);//批次lotsInfo为单个对象
+                reqProductDataList.add(reqProductData);
             }
-            reqProductData.setLotsInfo(reqLotDataList);
-            reqProductDataList.add(reqProductData);
         }
-        request.setProducts(reqProductDataList);
 
         sendConnection("/gongfu/shop/transfer/receive",request, REQUEST_TRANSFER_IN_ACTION,true,null);
     }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -47,8 +48,8 @@ public class ReturnRequestSuccessActivity extends BaseActivity {
 
     @OnClick({R.id.tv_back,R.id.title_iv_left})
     public void backToHome(View v){
+        ActivityManager.getInstance().finishAll();
         Intent intent = new Intent(this,MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 

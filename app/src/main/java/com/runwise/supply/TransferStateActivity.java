@@ -67,20 +67,20 @@ public class TransferStateActivity extends NetWorkActivity {
                 stateEntity.setOperateTime(stateTime);
                 stateEntity.setState(state);
                 stateEntity.setOperator(pieces[pieces.length-1]);
-                if(state.contains(TransferEntity.STATE_SUBMITTED)){//已提交
+                if(state.contains("提交")){//已提交
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨单号：").append(mTransferEntity.getPickingName()).append("\n")
                             .append("调拨商品：").append(pieces[3]);
                 }
-                else if(state.contains(TransferEntity.STATE_MODIFIED)){//已修改
+                else if(state.contains("修改")){//已修改
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨商品：").append(pieces[3]);
                 }
-                else if(state.contains(TransferEntity.STATE_DELIVER)){//已发出
+                else if(state.contains("发出")){//已发出
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨路径：").append(mTransferEntity.getLocationName()).append("\u2192")
                             .append(mTransferEntity.getLocationDestName());
-                }else if(state.contains(TransferEntity.STATE_COMPLETE)){//已完成
+                }else if(state.contains("完成")){//已完成
                     sbContent.append("入库人：").append(stateEntity.getOperator()).append("\n")
                             .append("收货商品：").append(pieces[3]);
                 }else{

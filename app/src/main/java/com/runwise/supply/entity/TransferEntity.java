@@ -3,8 +3,6 @@ package com.runwise.supply.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.runwise.supply.firstpage.entity.OrderResponse;
-
 import java.util.List;
 
 /**
@@ -15,19 +13,23 @@ import java.util.List;
 
 public class TransferEntity implements Parcelable{
 
+    public static final int STATE_SUBMIT = 0;//提交状态
+    public static final int STATE_OUT = 1;//发出状态
+    public static final int STATE_FINISH = 2;//完成状态
+
     //调拨单状态
-    public static final String STATE_SUBMITTED = "已提交";//已提交
-    public static final String STATE_PENDING_DELIVER = "待出库";//待出库
-
-    public static final String STATE_MODIFIED = "已修改";
-
-    public static final String STATE_DELIVER = "已发出";//已发出
-    public static final String STATE_DELIVER2 = "已出库";//已出库
-
-    public static final String STATE_COMPLETE = "已完成";//完成
-    public static final String STATE_CANCEL = "已取消";
-
-    public static final String STATE_INSUFFICIENT = "库存不足";
+//    public static final String STATE_SUBMITTED = "已提交";//已提交
+//    public static final String STATE_PENDING_DELIVER = "待出库";//待出库
+//
+//    public static final String STATE_MODIFIED = "已修改";
+//
+//    public static final String STATE_DELIVER = "已发出";//已发出
+//    public static final String STATE_DELIVER2 = "已出库";//已出库
+//
+//    public static final String STATE_COMPLETE = "已完成";//完成
+//    public static final String STATE_CANCEL = "已取消";
+//
+//    public static final String STATE_INSUFFICIENT = "库存不足";
 
 
     private String pickingID;
@@ -40,6 +42,15 @@ public class TransferEntity implements Parcelable{
     private List<String> stateTracker;
     private float totalPrice;
     private int totalNum;
+    private int picking_state_num;
+
+    public int getPicking_state_num() {
+        return picking_state_num;
+    }
+
+    public void setPicking_state_num(int picking_state_num) {
+        this.picking_state_num = picking_state_num;
+    }
 
     public String getPickingID() {
         return pickingID;

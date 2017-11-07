@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ModifyTransferRequest {
     private String pickingID;
+    private String menDianID;
     private List<Product> products;
 
     public String getPickingID() {
@@ -26,6 +27,14 @@ public class ModifyTransferRequest {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public String getMenDianID() {
+        return menDianID;
+    }
+
+    public void setMenDianID(String menDianID) {
+        this.menDianID = menDianID;
     }
 
     public static class Product{

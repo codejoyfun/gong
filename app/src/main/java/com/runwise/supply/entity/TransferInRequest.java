@@ -10,13 +10,13 @@ import java.util.List;
 
 public class TransferInRequest {
     private String pickingID;
-    private List<ProductData> products;
+    private List<IProductData> products;
 
     public String getPickingID() {
         return pickingID;
     }
 
-    public List<ProductData> getProducts() {
+    public List<IProductData> getProducts() {
         return products;
     }
 
@@ -24,11 +24,13 @@ public class TransferInRequest {
         this.pickingID = pickingID;
     }
 
-    public void setProducts(List<ProductData> products) {
+    public void setProducts(List<IProductData> products) {
         this.products = products;
     }
 
-    public static class ProductData {
+    public interface IProductData{};
+
+    public static class ProductData implements IProductData{
         private int productID;
         private List<ProductLotData> lotsInfo;
 
@@ -49,9 +51,25 @@ public class TransferInRequest {
         }
     }
 
-    public static class ProductDataNoLot extends ProductData{
+    public static class ProductDataNoLot implements IProductData{
+        private int productID;
         private ProductLotData lotsInfo;
 
+        public void setProductID(int productID) {
+            this.productID = productID;
+        }
+
+        public void setLotsInfo(ProductLotData lotsInfo) {
+            this.lotsInfo = lotsInfo;
+        }
+
+        public int getProductID() {
+            return productID;
+        }
+
+        public ProductLotData getLotsInfo() {
+            return lotsInfo;
+        }
     }
 
     public static class ProductLotData{

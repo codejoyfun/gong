@@ -170,18 +170,18 @@ public class TransferInModifyActivity extends NetWorkActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick({R.id.title_iv_left, /*R.id.rl_call_out,*/ tv_edit_or_finish, R.id.tv_submit})
+    @OnClick({R.id.title_iv_left, R.id.rl_call_out, tv_edit_or_finish, R.id.tv_submit})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-//            case R.id.rl_call_out:
-//                //选择门店
-//                if (mStoreResponse == null) {
-//                    Object param = null;
-//                    sendConnection("/gongfu/shop/list", param, REQUEST_CODE_GET_STORE_LIST, true, StoreResponse.class);
-//                } else {
-//                    showStoreSelectDialog();
-//                }
-//                break;
+            case R.id.rl_call_out:
+                //选择门店
+                if (mStoreResponse == null) {
+                    Object param = null;
+                    sendConnection("/gongfu/shop/list", param, REQUEST_CODE_GET_STORE_LIST, true, StoreResponse.class);
+                } else {
+                    showStoreSelectDialog();
+                }
+                break;
             case tv_edit_or_finish:
                 //编辑或完成商品
                 mEditMode = !mEditMode;
@@ -198,6 +198,9 @@ public class TransferInModifyActivity extends NetWorkActivity {
                     return;
                 }
                 ModifyTransferRequest modifyTransferRequest = new ModifyTransferRequest();
+                if(selectShopIndex!=-1 && mStoreResponse!=null){
+                    modifyTransferRequest.setMenDianID(String.valueOf(mStoreResponse.getList().get(selectShopIndex).getShopID()));
+                }
                 modifyTransferRequest.setPickingID(mTransferEntity.getPickingID());
                 List<ModifyTransferRequest.Product> products = new ArrayList<>();
                 for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
