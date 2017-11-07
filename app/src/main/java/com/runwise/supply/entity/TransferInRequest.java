@@ -49,6 +49,11 @@ public class TransferInRequest {
         }
     }
 
+    public static class ProductDataNoLot extends ProductData{
+        private ProductLotData lotsInfo;
+
+    }
+
     public static class ProductLotData{
         private int lotID;
         private int qtyDone;

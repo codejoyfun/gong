@@ -442,8 +442,7 @@ public class TransferDetailActivity extends NetWorkActivity {
 //            if (basicBean != null && basicBean.getImage() != null){
 //                FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
 //            }
-            ProductBasicList.ListBean basicBean = null;
-            if(isTwoUnit) basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));//双单位才需要查数据库
+            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
 
             FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+bean.getProductImage());
             int puq = (int)bean.getProductUomQty();
