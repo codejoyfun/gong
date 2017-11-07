@@ -34,7 +34,9 @@
                 <View
                     style="@style/space_horizontal"/>
 
-                <include layout="@layout/evaluate_product"/>
+                <include
+                    android:id="@+id/ic_evaluate_product"
+                    layout="@layout/evaluate_product"/>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"/>
@@ -43,7 +45,7 @@
                     layout="@layout/tab_viewpage_wrap_evaluate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"/>
+                    android:visibility="visible"/>
             </LinearLayout>
 
             <!--<LinearLayout-->

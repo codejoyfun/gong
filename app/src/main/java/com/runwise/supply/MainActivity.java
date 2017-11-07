@@ -390,7 +390,7 @@ public class MainActivity extends NetWorkActivity {
     private void upLoadVersion(){
         VersionRequest versionRequest = new VersionRequest();
         versionRequest.setVersion_name("安卓" + CommonUtils.getVersionName(this));
-        sendConnection("/gongfu/v2/product/list/", versionRequest, REQUEST_UPLOAD_VERSION, false, null);
+        sendConnection("/gongfu/v2/user/app/version/", versionRequest, REQUEST_UPLOAD_VERSION, false, null);
     }
 
     private void queryProductList() {

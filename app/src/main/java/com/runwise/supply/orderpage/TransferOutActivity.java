@@ -219,7 +219,7 @@ public class TransferOutActivity extends NetWorkActivity {
             TransferOutRequest.Product product = new TransferOutRequest.Product();
             product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
             List<TransferOutRequest.Lot> lots = new ArrayList<>();
-            if (transferBatchLine.getProductLotInfo() != null) {
+            if (transferBatchLine.getProductLotInfo() != null && transferBatchLine.getProductLotInfo().size() > 0 ) {
                 for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
                     if (transferBatchLot.getUsedQty() == 0){
                         continue;
@@ -232,7 +232,7 @@ public class TransferOutActivity extends NetWorkActivity {
             } else {
                 TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
                 lot.setLotIDID("");
-                lot.setQty(String.valueOf(transferBatchLine.getActualQty()));
+                lot.setQtyDone(transferBatchLine.getActualQty());
                 lots.add(lot);
             }
             product.setLotsInfo(lots);

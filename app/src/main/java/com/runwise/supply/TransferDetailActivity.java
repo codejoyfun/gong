@@ -290,8 +290,8 @@ public class TransferDetailActivity extends NetWorkActivity {
                 break;
             case PRODUCT_DETAIL:
                 if(productBasicHelper.onSuccess(result)){
-                    mTransferProductAdapter.setProductList(mTransferDetail.getLines());
-                }
+                mTransferProductAdapter.setProductList(mTransferDetail.getLines());
+            }
                 break;
         }
     }

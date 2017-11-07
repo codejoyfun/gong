@@ -30,6 +30,7 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
@@ -104,7 +105,7 @@ public class OrderFragment extends NetWorkFragment {
             case R.id.sureBtn:
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if(!SPUtils.isLogin(getActivity())){
-                    startActivity(new Intent(getActivity(), RegisterActivity.class));
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
                     return;
                 }
                 //跳转到智能下单页面
@@ -119,7 +120,7 @@ public class OrderFragment extends NetWorkFragment {
                     Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
                     startActivity(intent2);
                 }else{
-                    startActivity(new Intent(getActivity(), RegisterActivity.class));
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
                 }
                 break;
             case R.id.safeValueTv:

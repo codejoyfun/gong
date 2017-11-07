@@ -30,7 +30,7 @@ public class UserUtils {
         if (!isLogin) {
             LoginActivity.targerIntent = targerIntent;
 //            Intent loginIntent = new Intent(mContext, LoginActivity.class);
-            Intent loginIntent = new Intent(mContext, RegisterActivity.class);
+            Intent loginIntent = new Intent(mContext, LoginActivity.class);
             mContext.startActivity(loginIntent);
             return false;
         }

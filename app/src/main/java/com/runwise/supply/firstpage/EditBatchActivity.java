@@ -7,10 +7,12 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -21,6 +23,7 @@ import com.bigkoo.pickerview.adapter.ArrayWheelAdapter;
 import com.bigkoo.pickerview.lib.WheelView;
 import com.bigkoo.pickerview.listener.CustomListener;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.googlecode.mp4parser.authoring.Edit;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -327,6 +330,18 @@ public class EditBatchActivity extends NetWorkActivity {
                 @Override
                 public void afterTextChanged(Editable s) {
                     mBatchEntities.get(position).setProductCount(s.toString().trim());
+                }
+            });
+
+            viewHolder.etProductCount.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        view.setFocusableInTouchMode(true);
+                        view.requestFocus();
+                        ((EditText) view).selectAll();
+                    }
+                    return false;
                 }
             });
 
