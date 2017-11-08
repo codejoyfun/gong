@@ -22,19 +22,20 @@ public class TransferOutRequest {
         this.pickingID = pickingID;
     }
 
-    public List<Product> getProducts() {
+    public List<IProduct> getProducts() {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(List<IProduct> products) {
         this.products = products;
     }
 
     private String pickingID;
-    private List<Product> products;
+    private List<IProduct> products;
 
+    public interface IProduct{};
 
-    public static class Product {
+    public static class Product implements IProduct{
         public int getProductID() {
             return productID;
         }
@@ -53,6 +54,27 @@ public class TransferOutRequest {
 
         private int productID;
         private List<Lot> lotsInfo;
+    }
+
+    public static class ProductNoLot implements IProduct{
+        public int getProductID() {
+            return productID;
+        }
+
+        public void setProductID(int productID) {
+            this.productID = productID;
+        }
+
+        public Lot getLotsInfo() {
+            return lotsInfo;
+        }
+
+        public void setLotsInfo(Lot lotsInfo) {
+            this.lotsInfo = lotsInfo;
+        }
+
+        private int productID;
+        private Lot lotsInfo;
     }
 
     public static class Lot {

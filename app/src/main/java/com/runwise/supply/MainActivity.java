@@ -50,6 +50,7 @@ import io.vov.vitamio.utils.Log;
 //import com.socketmobile.capture.types.DecodedData;
 
 public class MainActivity extends NetWorkActivity {
+    public static final String INTENT_KEY_TAB = "tab";
     //缓存全部商品列表的标识
     private static final int QUERY_ALL = 1;
     private final int REQUEST_UNREAD = 2;
@@ -317,6 +318,8 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        int tabIndex = intent.getIntExtra(INTENT_KEY_TAB,-1);
+        if(tabIndex!=-1)gotoTabByIndex(tabIndex);
     }
 
     @Override

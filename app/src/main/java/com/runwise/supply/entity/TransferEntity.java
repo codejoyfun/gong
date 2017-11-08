@@ -42,14 +42,14 @@ public class TransferEntity implements Parcelable{
     private List<String> stateTracker;
     private float totalPrice;
     private int totalNum;
-    private int picking_state_num;
+    private int pickingStateNum;
 
-    public int getPicking_state_num() {
-        return picking_state_num;
+    public int getPickingStateNum() {
+        return pickingStateNum;
     }
 
-    public void setPicking_state_num(int picking_state_num) {
-        this.picking_state_num = picking_state_num;
+    public void setPickingStateNum(int pickingStateNum) {
+        this.pickingStateNum = pickingStateNum;
     }
 
     public String getPickingID() {

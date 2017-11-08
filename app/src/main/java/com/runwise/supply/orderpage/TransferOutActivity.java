@@ -213,13 +213,14 @@ public class TransferOutActivity extends NetWorkActivity {
     private void submit() {
         TransferOutRequest transferOutRequest = new TransferOutRequest();
         transferOutRequest.setPickingID(mTransferEntity.getPickingID());
-        List<TransferOutRequest.Product> products = new ArrayList<>();
+        List<TransferOutRequest.IProduct> products = new ArrayList<>();
         for (int i = 0; i < mProductAdapter.getList().size(); i++) {
             TransferOutDetailResponse.TransferBatchLine transferBatchLine = (TransferOutDetailResponse.TransferBatchLine) mProductAdapter.getList().get(i);
-            TransferOutRequest.Product product = new TransferOutRequest.Product();
-            product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
-            List<TransferOutRequest.Lot> lots = new ArrayList<>();
+
             if (transferBatchLine.getProductLotInfo() != null && transferBatchLine.getProductLotInfo().size() > 0 ) {
+                TransferOutRequest.Product product = new TransferOutRequest.Product();
+                product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
+                List<TransferOutRequest.Lot> lots = new ArrayList<>();
                 for (TransferOutDetailResponse.TransferBatchLot transferBatchLot : transferBatchLine.getProductLotInfo()) {
                     if (transferBatchLot.getUsedQty() == 0){
                         continue;
@@ -228,15 +229,18 @@ public class TransferOutActivity extends NetWorkActivity {
                     lot.setLotIDID(transferBatchLot.getLotIDID());
                     lot.setQty(String.valueOf(transferBatchLot.getUsedQty()));
                     lots.add(lot);
+                    product.setLotsInfo(lots);
                 }
+                products.add(product);
             } else {
+                TransferOutRequest.ProductNoLot product = new TransferOutRequest.ProductNoLot();
+                product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
                 TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
                 lot.setLotIDID("");
                 lot.setQtyDone(transferBatchLine.getActualQty());
-                lots.add(lot);
+                product.setLotsInfo(lot);
+                products.add(product);
             }
-            product.setLotsInfo(lots);
-            products.add(product);
         }
         transferOutRequest.setProducts(products);
         sendConnection("/gongfu/shop/transfer/confirm/" + mTransferEntity.getPickingID(), transferOutRequest, REQUEST_TRANSFEROUT, true, null);

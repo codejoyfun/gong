@@ -269,7 +269,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
          * @param transferEntity
          */
         void setTransferInViewHolder(ViewHolder viewHolder,final TransferEntity transferEntity){
-            switch (transferEntity.getPicking_state_num()){
+            switch (transferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_SUBMIT://已提交，可取消
                     viewHolder.mmTvAction.setVisibility(View.VISIBLE);
                     viewHolder.mmTvAction.setText("取消");
@@ -318,7 +318,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
          * @param position
          */
         void setTransferOutViewHolder(ViewHolder viewHolder,final TransferEntity transferEntity,final int position){
-            switch (transferEntity.getPicking_state_num()){
+            switch (transferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_SUBMIT://已提交，可出库
                     viewHolder.mmTvAction.setVisibility(View.VISIBLE);
                     viewHolder.mmTvAction.setText("接单");

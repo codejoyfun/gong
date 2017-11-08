@@ -127,7 +127,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         mTvEstimateMoney.setText("¥"+decimalFormat.format(mTransferEntity.getTotalPrice()));
         mTvTransferId.setText(mTransferEntity.getPickingName());
         //调入方-》提交，待出库，已修改-》可以修改
-        if(isDestLocation && mTransferEntity.getPicking_state_num()!=TransferEntity.STATE_FINISH){
+        if(isDestLocation && mTransferEntity.getPickingStateNum()!=TransferEntity.STATE_FINISH){
             setTitleRightText(true,"修改");
         }
         initBottomBar();
@@ -136,7 +136,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     //根据单据状态设置底部按钮
     protected void initBottomBar(){
         //取消按钮
-        if(!isDestLocation || mTransferEntity.getPicking_state_num()==TransferEntity.STATE_FINISH){
+        if(!isDestLocation || mTransferEntity.getPickingStateNum()==TransferEntity.STATE_FINISH){
             //出库方或已完成状态不可取消
             mBtnDoAction2.setVisibility(View.GONE);
         }else{
@@ -149,7 +149,7 @@ public class TransferDetailActivity extends NetWorkActivity {
             });
         }
 
-        switch(mTransferEntity.getPicking_state_num()){
+        switch(mTransferEntity.getPickingStateNum()){
             case TransferEntity.STATE_OUT://已发出
                 if(isDestLocation){//接收门店，可以取消和入库
                     mBtnDoAction.setText("入库");
@@ -174,8 +174,10 @@ public class TransferDetailActivity extends NetWorkActivity {
                     mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(!SystemUpgradeHelper.getInstance(TransferDetailActivity.this).check(TransferDetailActivity.this))return;
-                            requestOutputConfirm(mTransferEntity);
+//                            if(!SystemUpgradeHelper.getInstance(TransferDetailActivity.this).check(TransferDetailActivity.this))return;
+//                            requestOutputConfirm(mTransferEntity);
+                            mSelectTransferEntity = mTransferEntity;
+                            startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mSelectTransferEntity));
                         }
                     });
                 }else{//接收方
@@ -441,7 +443,7 @@ public class TransferDetailActivity extends NetWorkActivity {
 
             //根据调入方，调出方，调拨单状态设置
             //已完成情况下，入库数量和单据数量不一样,显示有删除线的订单数量
-            switch (mTransferEntity.getPicking_state_num()){
+            switch (mTransferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_OUT:
                     //已出库情况下，出库与订单不一样, 展示删除的订单数量，和实际出库数量
                     if(bean.getProductQtyDone()!= bean.getProductUomQty()){
