@@ -539,7 +539,7 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                         indexInt = indexInt + 1;
 
 
-                        String fileName = "支付凭证(" + indexInt + ").jpg";
+                        String fileName = "payment(" + indexInt + ").jpg";
                         String strUTF = new String(fileName.getBytes(), "utf-8");
 
                         File localFile = new File(mContext.getFilesDir().getPath(), strUTF);
