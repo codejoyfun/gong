@@ -15,6 +15,8 @@ import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.StatusBarUtil;
 
+import static com.runwise.supply.MainActivity.INTENT_KEY_TAB;
+
 /**
  * 申请退货中间成功页（注意不是退货成功页）
  *
@@ -50,6 +52,8 @@ public class ReturnRequestSuccessActivity extends BaseActivity {
     public void backToHome(View v){
         ActivityManager.getInstance().finishAll();
         Intent intent = new Intent(this,MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.putExtra(INTENT_KEY_TAB,0);
         startActivity(intent);
     }
 

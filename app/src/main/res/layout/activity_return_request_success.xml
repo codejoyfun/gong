@@ -16,7 +16,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="71dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/default_receivedsuccess" />
+        android:src="@drawable/ic_return_request_suc" />
 
     <TextView
         android:id="@+id/receiveTv"
