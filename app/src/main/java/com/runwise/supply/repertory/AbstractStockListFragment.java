@@ -2,6 +2,7 @@ package com.runwise.supply.repertory;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -18,12 +19,14 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.util.DateFormateUtil;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.entity.StockListRequest;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -43,6 +46,7 @@ import io.vov.vitamio.utils.NumberUtil;
 
 public abstract class AbstractStockListFragment extends NetWorkFragment {
     public static final String ARG_CATEGORY = "arg_category";
+    public static final String ARG_CURRENT = "arg_current";
     private static final int PAGE_LIMIT = 500;
     private static final int REQ_STOCK = 0;
     private static final int REQ_STOCK_MORE = 1;
@@ -119,7 +123,18 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
         requestData(REQ_STOCK_MORE);
     }
 
-    private void requestData(int where){
+    private void requestData(final int where){
+        boolean isLogin = SPUtils.isLogin(mContext);
+        if(!isLogin) {
+            //示例数据少，不会有加载更多出现
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onSuccess(FictitiousStock.mockStockData(mCategory,mKeyword),where);
+                }
+            },500);
+            return;
+        }
         sendConnection("/api/v2/stock/list",new StockListRequest(limit,mPz,mKeyword,mCategory),where,false,RepertoryEntity.class);
     }
 
@@ -220,4 +235,13 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
 }

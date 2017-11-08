@@ -44,7 +44,7 @@ public class StockListFragment extends AbstractStockListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments().getBoolean("arg_current",false)){
+        if(getArguments().getBoolean(ARG_CURRENT,false)){
             isFirstLoaded = true;
             refresh(true);
         }
