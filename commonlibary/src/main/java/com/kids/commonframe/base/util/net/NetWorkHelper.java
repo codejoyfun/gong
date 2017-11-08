@@ -52,8 +52,9 @@ public class NetWorkHelper<T extends BaseEntity> {
 
     /**
      * The default number of retries
+     * 不要retry，防止重复下单等操作
      */
-    public static final int DEFAULT_MAX_RETRIES = 1;
+    public static final int DEFAULT_MAX_RETRIES = 0;
 
     /**
      * The default backoff multiplier
