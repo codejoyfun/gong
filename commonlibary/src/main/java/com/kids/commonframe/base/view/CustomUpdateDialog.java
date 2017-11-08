@@ -3,10 +3,15 @@ package com.kids.commonframe.base.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.kids.commonframe.R;
@@ -81,8 +86,24 @@ public class CustomUpdateDialog extends Dialog {
 			});
 		}
 
+		//超过最大宽度则使用scrollview
+//		updateContext.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                int maxHeight = context.getResources().getDimensionPixelSize(R.dimen.update_dialog_text_max_height);
+//                if(updateContext.getMeasuredHeight()>maxHeight){
+//                    ScrollView sv = (ScrollView)findViewById(R.id.sv);
+//                    sv.getLayoutParams().height = maxHeight;
+//                    sv.requestLayout();
+//                }
+//            }
+//        });
+
 		mTvVersion.setText("最新版本（"+bean.getVersionName()+"）");
-		updateContext.setText("更新内容：\n"+bean.getDescription());
+		StringBuilder sbContent = new StringBuilder("更新内容：\n");
+		sbContent.append(bean.getDescription())
+				.append("\n如有任何问题与建议，欢迎通过“用户反馈”告诉我们，我们会尽快回复");
+		updateContext.setText(sbContent.toString());
 		cancle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
