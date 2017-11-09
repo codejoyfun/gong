@@ -174,10 +174,10 @@ public class TransferDetailActivity extends NetWorkActivity {
                     mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-//                            if(!SystemUpgradeHelper.getInstance(TransferDetailActivity.this).check(TransferDetailActivity.this))return;
-//                            requestOutputConfirm(mTransferEntity);
-                            mSelectTransferEntity = mTransferEntity;
-                            startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mSelectTransferEntity));
+                            if(!SystemUpgradeHelper.getInstance(TransferDetailActivity.this).check(TransferDetailActivity.this))return;
+                            requestOutputConfirm(mTransferEntity);
+//                            mSelectTransferEntity = mTransferEntity;
+//                            startActivity(TransferOutActivity.getStartIntent(getActivityContext(),mSelectTransferEntity));
                         }
                     });
                 }else{//接收方
@@ -446,13 +446,13 @@ public class TransferDetailActivity extends NetWorkActivity {
             switch (mTransferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_OUT:
                     //已出库情况下，出库与订单不一样, 展示删除的订单数量，和实际出库数量
-                    if(bean.getProductQtyDone()!= bean.getProductUomQty()){
+                    if(bean.getActualOutputNum()!= bean.getProductUomQty()){
                         vh.oldPriceTv.setText("x"+bean.getProductUomQty());//订单数量
                         vh.oldPriceTv.setVisibility(View.VISIBLE);
                         vh.nowPriceTv.setText("x"+bean.getActualOutputNum());//实际出库
                     }else{
                         vh.oldPriceTv.setVisibility(View.GONE);
-                        vh.nowPriceTv.setText("x"+bean.getProductQtyDone());
+                        vh.nowPriceTv.setText("x"+bean.getActualOutputNum());
                     }
                     break;
                 case TransferEntity.STATE_FINISH:

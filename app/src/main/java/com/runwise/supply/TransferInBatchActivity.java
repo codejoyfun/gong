@@ -38,7 +38,7 @@ import butterknife.ButterKnife;
 public class TransferInBatchActivity extends NetWorkActivity {
 
     public static final String INTENT_KEY_TRANSFER_BATCH = "transfer_batch";
-    public static final String INTENT_KEY_PRODUCT = "lines_bean";
+    //public static final String INTENT_KEY_PRODUCT = "lines_bean";
     @ViewInject(R.id.lv_batch)
     private ListView mLvBatch;
     @ViewInject(R.id.iv_transfer_in_product)
@@ -48,7 +48,7 @@ public class TransferInBatchActivity extends NetWorkActivity {
     @ViewInject(R.id.tv_content)
     private TextView mTvProductContent;
 
-    private OrderResponse.ListBean.LinesBean mLinesBean;//商品基本信息
+    //private OrderResponse.ListBean.LinesBean mLinesBean;//商品基本信息
     private TransferDetailResponse.LinesBean mTransferBatchLine;//批次信息
     private BatchListAdapter mBatchListAdapter;
 
@@ -57,17 +57,16 @@ public class TransferInBatchActivity extends NetWorkActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer_in_batch);
         mTransferBatchLine = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER_BATCH);
-        mLinesBean = getIntent().getParcelableExtra(INTENT_KEY_PRODUCT);
+        //mLinesBean = getIntent().getParcelableExtra(INTENT_KEY_PRODUCT);
         mBatchListAdapter = new BatchListAdapter();
         mLvBatch.setAdapter(mBatchListAdapter);
         initViews();
     }
 
     private void initViews(){
-        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(this).get(mLinesBean.getProductID()+"");
-        FrecoFactory.getInstance(this).disPlay(mSdvProductImg, Constant.BASE_URL+listBean.getImage().getImageSmall());
-        mTvProductName.setText(listBean.getName());
-        mTvProductContent.setText(listBean.getDefaultCode()+" "+listBean.getUnit());
+        FrecoFactory.getInstance(this).disPlay(mSdvProductImg, Constant.BASE_URL+mTransferBatchLine.getProductImage());
+        mTvProductName.setText(mTransferBatchLine.getProductName());
+        mTvProductContent.setText(mTransferBatchLine.getProductCode()+" "+mTransferBatchLine.getProductUnit());
     }
 
     @Override

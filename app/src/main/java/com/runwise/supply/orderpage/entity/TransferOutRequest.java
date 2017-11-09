@@ -98,15 +98,6 @@ public class TransferOutRequest {
 
         private String qty;
 
-        public int getQtyDone() {
-            return qtyDone;
-        }
-
-        public void setQtyDone(int qtyDone) {
-            this.qtyDone = qtyDone;
-        }
-
-        int qtyDone;
     }
 
 }

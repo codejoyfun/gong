@@ -73,19 +73,19 @@ public class TransferInRequest {
     }
 
     public static class ProductLotData{
-        private int lotID;
+        private int lotIDID;
         private int qtyDone;
 
-        public int getLotID() {
-            return lotID;
+        public int getLotIDID() {
+            return lotIDID;
         }
 
         public int getQtyDone() {
             return qtyDone;
         }
 
-        public void setLotID(int lotID) {
-            this.lotID = lotID;
+        public void setLotIDID(int lotIDID) {
+            this.lotIDID = lotIDID;
         }
 
         public void setQtyDone(int qtyDone) {

@@ -26,7 +26,6 @@ import com.runwise.supply.entity.TransferBatchLot;
 import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferInRequest;
-import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.ProductBasicHelper;
@@ -138,7 +137,7 @@ public class TransferInActivity extends NetWorkActivity {
                     for(TransferBatchLot lot:batchLine.getProductLotInfo()){
                         TransferInRequest.ProductLotData reqLotData = new TransferInRequest.ProductLotData();
                         reqLotData.setQtyDone(lot.getActualQty());
-                        reqLotData.setLotID(lot.getLotIDID());
+                        reqLotData.setLotIDID(lot.getLotIDID());
                         reqLotDataList.add(reqLotData);
                     }
                     reqProductData.setLotsInfo(reqLotDataList);//批次lotsInfo为数组
@@ -293,22 +292,22 @@ public class TransferInActivity extends NetWorkActivity {
         View vSubtract = dialogView.findViewById(R.id.btn_transfer_in_subtract);
         final TextView tvActual = (TextView) dialogView.findViewById(R.id.et_product_count);
         View vSubmit = dialogView.findViewById(R.id.btn_confirm);
+        FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + linesBean.getProductImage());
+        name.setText(linesBean.getProductName());
+        StringBuffer sb = new StringBuffer(linesBean.getProductCode());
+        sb.append("  ").append(linesBean.getProductUnit());
+
+        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(linesBean.getProductID()+"");
-        if (listBean != null) {
-            FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + listBean.getImage().getImageSmall());
-            name.setText(listBean.getName());
-            StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
-            sb.append("  ").append(listBean.getUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-            if (canSeePrice) {
-                if (listBean.isTwoUnit()) {
-                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
-                } else {
-                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
-                }
+        if (listBean != null && canSeePrice) {
+            if (listBean.isTwoUnit()) {
+                sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
+            } else {
+                sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
             }
-            content.setText(sb.toString());
         }
+        content.setText(sb.toString());
+
         tvCount.setText(String.valueOf((int)linesBean.getProductUomQty()));
         tvActual.setText(String.valueOf(mTransferCountMap.get(linesBean.getProductID()+"")));
 
@@ -406,14 +405,12 @@ public class TransferInActivity extends NetWorkActivity {
             final int pId = bean.getProductID();
             ViewHolder vh = holder;
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
-            if (basicBean != null && basicBean.getImage() != null){
-                FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
-            }
+            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+bean.getProductImage());
 
             if (basicBean != null){
-                vh.name.setText(basicBean.getName());
-                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append(" | ").append(basicBean.getUnit()).append("\n")
+                vh.name.setText(bean.getProductName());
+                StringBuffer sb = new StringBuffer(bean.getProductCode());
+                sb.append(" | ").append(bean.getProductUnit()).append("\n")
                         .append("¥").append(basicBean.getPrice()).append("/").append(bean.getProductUom());
                 vh.content.setText(sb.toString());
 
@@ -427,13 +424,13 @@ public class TransferInActivity extends NetWorkActivity {
                             return;
                         }
                         TransferDetailResponse.LinesBean transferBatchLine = mBatchDataMap.get(pId+"");
-                        if(!transferBatchLine.isLotTracking()){
+                        if(!bean.isLotTracking()){
                             //无批次信息，输入数量
-                            showPopWindow(transferBatchLine);
+                            showPopWindow(bean);
                             return;
                         }
                         Intent intent = new Intent(TransferInActivity.this, TransferInBatchActivity.class);
-                        intent.putExtra(TransferInBatchActivity.INTENT_KEY_PRODUCT,(Parcelable)bean);//传商品信息
+                        //intent.putExtra(TransferInBatchActivity.INTENT_KEY_PRODUCT,(Parcelable)bean);//传商品信息
                         intent.putExtra(TransferInBatchActivity.INTENT_KEY_TRANSFER_BATCH,(Parcelable) transferBatchLine);//传批次信息
                         startActivityForResult(intent,ACT_REQ_TRANSFER_IN_BATCH);
                     }
