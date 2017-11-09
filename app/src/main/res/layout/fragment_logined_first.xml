@@ -56,4 +56,12 @@
             />
     </RelativeLayout>
 
+    <ImageView
+        android:id="@+id/iv_call"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:padding="12dp"
+        android:src="@drawable/nav_service_home" />
+
 </RelativeLayout>

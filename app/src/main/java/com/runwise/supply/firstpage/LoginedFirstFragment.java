@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -89,6 +90,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.rl_title)
     private RelativeLayout rl_title;
+    @ViewInject(R.id.iv_call)
+    private ImageView mIvCallBtn;
 
     private LayoutInflater layoutInflater;
     private ConvenientBanner banner;
@@ -179,6 +182,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 if (firstVisibleItem > 1) {
                     rl_title.setBackgroundResource(R.color.white);
                     rl_title.setAlpha(1);
+                    mIvCallBtn.setAlpha(0f);
                     return;
                 }
                 if (top < 0) {
@@ -186,13 +190,16 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     if (top >= headView.getHeight() / 3) {
                         rl_title.setBackgroundResource(R.color.white);
                         rl_title.setAlpha(1);
+                        mIvCallBtn.setAlpha(0f);
                         return;
                     }
                     float ratio = top / (float) headView.getHeight() * 3;
                     rl_title.setBackgroundResource(R.color.white);
                     rl_title.setAlpha(ratio);
+                    mIvCallBtn.setAlpha(1-ratio);
                 } else {
                     rl_title.setAlpha(0);
+                    mIvCallBtn.setAlpha(1f);
                 }
             }
         });

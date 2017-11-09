@@ -18,6 +18,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
@@ -94,7 +95,13 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        loadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        loadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
+            @Override
+            public void retryOnClick(View view) {
+                refresh(true);
+            }
+        });
     }
 
     /**
