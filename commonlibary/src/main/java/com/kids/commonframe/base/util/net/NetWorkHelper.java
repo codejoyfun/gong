@@ -342,8 +342,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "MF-PreGolive-001";
 //    public static final String DEFAULT_DATABASE_NAME = "";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
-//    public static final String DEFAULT_DATABASE_NAME = "ZY-PreGolive-001";
-    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
+    public static final String DEFAULT_DATABASE_NAME = "ZY-PreGolive-001";
+//    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {
         private Class<?> targerClass;
