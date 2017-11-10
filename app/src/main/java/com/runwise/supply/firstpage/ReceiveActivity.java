@@ -776,7 +776,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         break;
                     }
                 }
-                String tip = "请认真核对商品数量和生产日期,确认收货后无法修改哦!";
+                String tip = hasLotTracking?"请认真核对商品数量和生产日期,确认收货后无法修改哦！":"请认真核对商品数量，确认收货无法修改哦！";
                 if (mode == 2) {
                     tip = "确认完成收货?";
                 }
