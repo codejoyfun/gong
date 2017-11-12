@@ -582,6 +582,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
                 dialog.setMessageGravity();
                 dialog.setCancelable(false);
+                dialog.setModel(CustomDialog.RIGHT);
                 dialog.setRightBtnListener("我知道啦", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
