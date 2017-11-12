@@ -285,6 +285,7 @@ public class TransferOutActivity extends NetWorkActivity {
             TransferOutDetailResponse.TransferBatchLot copyTransferBatchLot = new TransferOutDetailResponse.TransferBatchLot();
             copyTransferBatchLot.setQuantQty(transferBatchLot.getQuantQty());
             copyTransferBatchLot.setLotID(transferBatchLot.getLotID());
+            copyTransferBatchLot.setLotIDID(transferBatchLot.getLotIDID());
             copyTransferBatchLot.setUsedQty(transferBatchLot.getUsedQty());
             transferBatchLots.add(copyTransferBatchLot);
         }

@@ -143,5 +143,16 @@
             android:textSize="12sp"
             android:gravity="center"
             android:text="¥"/>
+        <!-- 不可显示价格时显示这个layout -->
+        <TextView
+            android:id="@+id/tv_no_price_count"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:visibility="gone"
+            android:text="4件"
+            android:gravity="center_vertical|right"
+            android:textSize="16sp"
+            android:layout_toLeftOf="@+id/tv_do_transfer_in"/>
     </RelativeLayout>
 </RelativeLayout>

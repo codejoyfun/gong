@@ -22,6 +22,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.TransferInActivity;
@@ -55,6 +56,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     private TransferListAdapter mTransferListAdapter;
     private int page = 1;
     int mType;
+    boolean canSeePrice = false;
 
     @Override
     protected int createViewByLayoutId() {
@@ -72,6 +74,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         mPullListView.setAdapter(mTransferListAdapter);
         mPullListView.setOnRefreshListener(new PullToRefreshListener());
         //requestData(true, REQUEST_REFRESH, page, 10);
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
     }
 
     public void refresh() {
@@ -189,7 +192,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
             viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
             viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-            viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice() + "元，" + transferEntity.getTotalNum() + "件商品");
+            if(canSeePrice)viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice() + "元，" + transferEntity.getTotalNum() + "件商品");
+            else viewHolder.mmTvPrice.setText(transferEntity.getTotalNum() + "件商品");
             viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
             viewHolder.mmTvStatus.setText(transferEntity.getPickingState());

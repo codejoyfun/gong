@@ -88,6 +88,8 @@ public class TransferInModifyActivity extends NetWorkActivity {
     TextView mTvTotalMoney;
     @BindView(R.id.rl_bottom_bar)
     RelativeLayout mRlBottomBar;
+    @BindView(R.id.tv_no_price_count)
+    TextView mTvNoPrice;
 
     public static final String INTENT_KEY_TRANSFER = "extra_products";
     public static final int REQUEST_CODE_GET_PRODUCT = 1 << 0;
@@ -365,6 +367,11 @@ public class TransferInModifyActivity extends NetWorkActivity {
             mTvEditOrFinish.setVisibility(View.INVISIBLE);
         } else {
             mTvEditOrFinish.setVisibility(View.VISIBLE);
+        }
+
+        if(!canSeePrice){
+            mTvNoPrice.setVisibility(View.VISIBLE);
+            mTvNoPrice.setText(totalCount + " 件");
         }
     }
 

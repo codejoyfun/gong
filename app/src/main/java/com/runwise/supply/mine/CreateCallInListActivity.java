@@ -54,6 +54,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
 
+import static com.runwise.supply.R.id.mTv;
 import static com.runwise.supply.R.id.tv_edit_or_finish;
 import static com.runwise.supply.orderpage.ProductActivity.INTENT_KEY_BACKAP;
 
@@ -87,6 +88,8 @@ public class CreateCallInListActivity extends NetWorkActivity {
     TextView mTvTotalMoney;
     @BindView(R.id.rl_bottom_bar)
     RelativeLayout mRlBottomBar;
+    @BindView(R.id.tv_no_price_count)
+    TextView mTvNoPrice;
 
     public static final int REQUEST_CODE_GET_PRODUCT = 1 << 0;
     private boolean canSeePrice = true;             //默认价格中可见
@@ -333,6 +336,10 @@ public class CreateCallInListActivity extends NetWorkActivity {
             mTvEditOrFinish.setVisibility(View.VISIBLE);
         }
 
+        if(!canSeePrice){
+            mTvNoPrice.setVisibility(View.VISIBLE);
+            mTvNoPrice.setText(totalCount + " 件");
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
