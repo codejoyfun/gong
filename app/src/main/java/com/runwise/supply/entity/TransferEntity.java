@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Dong on 2017/10/10.
  */
 
-public class TransferEntity implements Parcelable{
+public class TransferEntity extends FirstPageOrder implements Parcelable{
 
     public static final int STATE_SUBMIT = 0;//提交状态
     public static final int STATE_OUT = 1;//发出状态
@@ -178,4 +178,9 @@ public class TransferEntity implements Parcelable{
             return new TransferEntity[size];
         }
     };
+
+    @Override
+    public String getCreateDate() {
+        return date;
+    }
 }

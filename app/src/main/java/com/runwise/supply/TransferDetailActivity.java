@@ -135,7 +135,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         }
         mTvTransferId.setText(mTransferEntity.getPickingName());
         //调入方-》提交，待出库，已修改-》可以修改
-        if(isDestLocation && mTransferEntity.getPickingStateNum()!=TransferEntity.STATE_FINISH){
+        if(isDestLocation && mTransferEntity.getPickingStateNum()==TransferEntity.STATE_SUBMIT){
             setTitleRightText(true,"修改");
         }
         initBottomBar();

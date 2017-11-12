@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -401,7 +402,10 @@ public class CreateCallInListActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        if(errMsg!=null){
+            Toast.makeText(this,errMsg,Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     public class ProductAdapter extends IBaseAdapter {
