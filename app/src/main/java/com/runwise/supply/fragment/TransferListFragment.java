@@ -99,10 +99,9 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 TransferListResponse response = (TransferListResponse) result.getResult().getData();
                 mTransferListAdapter.setData(response.getList());
                 if (mTransferListAdapter.getCount() == 0 && mPullListView.getRefreshableView().getHeaderViewsCount() == 1) {
-                    mLoadingLayout.onSuccess(0, "暂无在途订单", R.drawable.default_icon_ordernone);
-                    mPullListView.getRefreshableView().addHeaderView(mLoadingLayout);
+                    mLoadingLayout.onSuccess(0, "哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 } else {
-                    mLoadingLayout.onSuccess(mTransferListAdapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
+                    mLoadingLayout.onSuccess(mTransferListAdapter.getCount(), "哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 }
                 mPullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
