@@ -85,12 +85,15 @@ public class TransferDetailActivity extends NetWorkActivity {
     private View mLayoutBottomBar;
     @ViewInject(R.id.tv_transfer_state_date)
     private TextView mTvStateDate;
+    @ViewInject(R.id.ll_price)
+    private ViewGroup mVGPrice;
 
     private TransferEntity mTransferEntity;
     private TransferDetailResponse mTransferDetail;
     private TransferProductAdapter mTransferProductAdapter;
     private boolean isDestLocation;//是否是收货门店
     private ProductBasicHelper productBasicHelper;//用于检查商品信息
+    private boolean canSeePrice = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +108,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         mTransferProductAdapter = new TransferProductAdapter(this);
         mRvProducts.setAdapter(mTransferProductAdapter);
         productBasicHelper = new ProductBasicHelper(this,netWorkHelper);
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         showUI();
         requestData();
     }
@@ -123,8 +127,12 @@ public class TransferDetailActivity extends NetWorkActivity {
         mTvTransferLocations.setText(mTransferEntity.getLocationName()+"\u2192"+mTransferEntity.getLocationDestName());
         mTvCreateTime.setText(mTransferEntity.getDate());
         mTvCount.setText(mTransferEntity.getTotalNum()+"件");
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        mTvEstimateMoney.setText("¥"+decimalFormat.format(mTransferEntity.getTotalPrice()));
+        if(canSeePrice){
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            mTvEstimateMoney.setText("¥"+decimalFormat.format(mTransferEntity.getTotalPrice()));
+        }else{
+            mVGPrice.setVisibility(View.GONE);
+        }
         mTvTransferId.setText(mTransferEntity.getPickingName());
         //调入方-》提交，待出库，已修改-》可以修改
         if(isDestLocation && mTransferEntity.getPickingStateNum()!=TransferEntity.STATE_FINISH){
@@ -426,8 +434,12 @@ public class TransferDetailActivity extends NetWorkActivity {
                 //商品数量/预估金额
                 if(mTransferEntity==null)return;
                 DecimalFormat df = new DecimalFormat("#.##");
-                holder.mmTvMoney.setText("¥" + df.format(mTransferEntity.getTotalPrice()));
                 holder.mmTvNum.setText(mTransferEntity.getTotalNum()+"件");
+                if(canSeePrice){
+                    holder.mmTvMoney.setText("¥" + df.format(mTransferEntity.getTotalPrice()));
+                }else {
+                    holder.mmVgPrice.setVisibility(View.GONE);
+                }
                 return;
             }
             final TransferDetailResponse.LinesBean bean = productList.get(position);
@@ -543,6 +555,7 @@ public class TransferDetailActivity extends NetWorkActivity {
 
             public TextView mmTvNum;
             public TextView mmTvMoney;
+            public ViewGroup mmVgPrice;
             public ViewHolder(View itemView) {
                 super(itemView);
                 rootView = itemView;
@@ -556,6 +569,7 @@ public class TransferDetailActivity extends NetWorkActivity {
 
                 mmTvNum = (TextView)itemView.findViewById(R.id.tv_count);
                 mmTvMoney = (TextView)itemView.findViewById(R.id.tv_estimate_money);
+                mmVgPrice = (ViewGroup)itemView.findViewById(R.id.ll_price);
             }
         }
     }

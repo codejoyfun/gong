@@ -94,7 +94,7 @@
             android:textColor="@color/bottom_dialog_textcolor"
             android:textSize="13sp" />
 
-        <com.runwise.supply.view.NoWatchEditText
+        <TextView
             android:id="@+id/et_deliver_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

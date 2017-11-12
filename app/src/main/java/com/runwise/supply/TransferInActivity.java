@@ -63,6 +63,8 @@ public class TransferInActivity extends NetWorkActivity {
     private TextView mTvTransferInCount;//入库商品
     @ViewInject(R.id.tv_transfer_in_money)
     private TextView mTvTransferInMoney;//价格
+    @ViewInject(R.id.tv_no_price_count)
+    private TextView mTvNoPriceCount;
     private TransferInProductAdapter mProductAdapter;
 
     private TransferEntity mTransferEntity;
@@ -73,6 +75,7 @@ public class TransferInActivity extends NetWorkActivity {
     private View dialogView;
     private PopupWindow mPopWindow;
     private TransferDetailResponse mTransferDetailResponse;
+    private boolean canSeePrice = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,7 @@ public class TransferInActivity extends NetWorkActivity {
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_transfer_in);
         setTitleText(true,"入库");
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         showBackBtn();
         initPopWindow();
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER_ENTITY);
@@ -175,6 +179,10 @@ public class TransferInActivity extends NetWorkActivity {
         }
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         mTvTransferInMoney.setText(decimalFormat.format(totalMoney));
+        if(!canSeePrice){//简单粗暴直接盖着价格
+            mTvNoPriceCount.setText(total+"件");
+            mTvNoPriceCount.setVisibility(View.VISIBLE);
+        }
     }
 
     ProductBasicHelper productBasicHelper;
@@ -203,7 +211,7 @@ public class TransferInActivity extends NetWorkActivity {
 
                     if(!line.isLotTracking()){
                         //不是批次商品
-                        mTransferCountMap.put(line.getProductID()+"",(int)line.getProductUomQty());
+                        mTransferCountMap.put(line.getProductID()+"",(int)line.getActualOutputNum());
                         continue;
                     }
 
@@ -308,7 +316,7 @@ public class TransferInActivity extends NetWorkActivity {
         }
         content.setText(sb.toString());
 
-        tvCount.setText(String.valueOf((int)linesBean.getProductUomQty()));
+        tvCount.setText(String.valueOf((int)linesBean.getActualOutputNum()));
         tvActual.setText(String.valueOf(mTransferCountMap.get(linesBean.getProductID()+"")));
 
         vSubmit.setOnClickListener(new View.OnClickListener() {
@@ -325,7 +333,7 @@ public class TransferInActivity extends NetWorkActivity {
             @Override
             public void onClick(View view) {
                 int current = Integer.valueOf(tvActual.getText().toString());
-                if(current + 1 > linesBean.getProductUomQty()){
+                if(current + 1 > linesBean.getActualOutputNum()){
                     Toast.makeText(TransferInActivity.this,"不能超过发货数量",Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -410,12 +418,12 @@ public class TransferInActivity extends NetWorkActivity {
             if (basicBean != null){
                 vh.name.setText(bean.getProductName());
                 StringBuffer sb = new StringBuffer(bean.getProductCode());
-                sb.append(" | ").append(bean.getProductUnit()).append("\n")
-                        .append("¥").append(basicBean.getPrice()).append("/").append(bean.getProductUom());
+                sb.append(" | ").append(bean.getProductUnit()).append("\n");
+                if(canSeePrice) sb.append("¥").append(basicBean.getPrice()).append("/").append(bean.getProductUom());
                 vh.content.setText(sb.toString());
 
                 vh.actualTransferIn.setText(""+ mTransferCountMap.get(bean.getProductID()+""));
-                vh.heightTransferIn.setText("/"+(int)bean.getProductUomQty()+bean.getProductUom());
+                vh.heightTransferIn.setText("/"+(int)bean.getActualOutputNum()+bean.getProductUom());
                 vh.rootView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

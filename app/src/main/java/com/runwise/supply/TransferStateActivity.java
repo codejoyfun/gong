@@ -37,6 +37,7 @@ public class TransferStateActivity extends NetWorkActivity {
     @ViewInject(R.id.rv_transfer_state)
     private RecyclerView mRvStates;
     private StateAdapter mStateAdapter;
+    private boolean canSeePrice = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class TransferStateActivity extends NetWorkActivity {
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER);
         mRvStates.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         mRvStates.setAdapter(mStateAdapter);
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         //requestStates();
         initStates();
     }
@@ -67,14 +69,22 @@ public class TransferStateActivity extends NetWorkActivity {
                 stateEntity.setOperateTime(stateTime);
                 stateEntity.setState(state);
                 stateEntity.setOperator(pieces[pieces.length-1]);
+                String productDetail;
+                if(canSeePrice){
+                   productDetail = pieces[3];
+                }else{
+                    String details[] = pieces[3].split(",");
+                    productDetail = details[0];
+                }
+
                 if(state.contains("提交")){//已提交
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨单号：").append(mTransferEntity.getPickingName()).append("\n")
-                            .append("调拨商品：").append(pieces[3]);
+                            .append("调拨商品：").append(productDetail);
                 }
                 else if(state.contains("修改")){//已修改
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
-                            .append("调拨商品：").append(pieces[3]);
+                            .append("调拨商品：").append(productDetail);
                 }
                 else if(state.contains("发出")){//已发出
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
@@ -82,11 +92,11 @@ public class TransferStateActivity extends NetWorkActivity {
                             .append(mTransferEntity.getLocationDestName());
                 }else if(state.contains("完成")){//已完成
                     sbContent.append("入库人：").append(stateEntity.getOperator()).append("\n")
-                            .append("收货商品：").append(pieces[3]);
+                            .append("收货商品：").append(productDetail);
                 }else{
                     sbContent.append("操作人：").append(stateEntity.getOperator()).append("\n")
                             .append("调拨单号：").append(mTransferEntity.getPickingName()).append("\n")
-                            .append("调拨商品：").append(pieces[3]);
+                            .append("调拨商品：").append(productDetail);
                 }
                 stateEntity.setContent(sbContent.toString());
                 mStateList.add(stateEntity);

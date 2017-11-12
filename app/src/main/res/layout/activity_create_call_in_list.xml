@@ -173,7 +173,17 @@
             android:textColor="@color/textColorRed"
             android:textSize="@dimen/third_title"/>
 
-
+        <!-- 不可显示价格时显示这个layout -->
+        <TextView
+            android:id="@+id/tv_no_price_count"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:text="4件"
+            android:gravity="center_vertical|right"
+            android:textSize="16sp"
+            android:visibility="gone"
+            android:layout_toLeftOf="@+id/tv_submit"/>
     </RelativeLayout>
 
 </RelativeLayout>
