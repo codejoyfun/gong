@@ -204,6 +204,7 @@ public class MineFragment extends NetWorkFragment {
         switch (where) {
             case REQUEST_USERINFO:
                 userInfo = (UserInfo) result.getResult().getData();
+                GlobalApplication.getInstance().saveUserInfo(userInfo);//更新全局数据
                 if (userInfo.isHasNewInvoice()) {
                     orderRed.setVisibility(View.VISIBLE);
                 } else {

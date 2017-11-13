@@ -15,7 +15,7 @@ public class PollingUtil {
     /**
      * 默认两秒间隔
      */
-    public static long defaultInterval = 2 * 1000;
+    public static long defaultInterval = 5 * 1000;
 
     private static class Polling {
         static PollingUtil mPollingUtil = new PollingUtil();

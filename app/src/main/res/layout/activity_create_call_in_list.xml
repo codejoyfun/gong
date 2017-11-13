@@ -123,7 +123,7 @@
         android:layout_above="@+id/rl_bottom_bar"
         android:divider="#ededed"
         android:dividerHeight="0.5dp"
-        android:background="@color/white"
+        android:background="#f5f5f5"
         android:fadingEdge="none"
         android:fadingEdgeLength="0dp"
         android:listSelector="#0000"/>

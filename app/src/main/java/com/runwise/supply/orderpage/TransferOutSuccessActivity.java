@@ -13,6 +13,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
+import com.runwise.supply.TransferListActivity;
 import com.runwise.supply.entity.TransferEntity;
 
 import butterknife.BindView;
@@ -61,6 +62,18 @@ public class TransferOutSuccessActivity extends NetWorkActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(ActivityManager.getInstance().has(TransferListActivity.class)){
+            Intent intent2 = new Intent(getActivityContext(), TransferListActivity.class);
+            intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent2);
+            return;
+        }
+        ActivityManager.getInstance().returnHomePage(MainActivity.class);
+    }
+
     @OnClick({R.id.title_iv_left,R.id.orderBtn, R.id.tv_home_page})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -71,6 +84,12 @@ public class TransferOutSuccessActivity extends NetWorkActivity {
                 finish();
                 break;
             case R.id.tv_home_page:
+                if(ActivityManager.getInstance().has(TransferListActivity.class)){
+                    Intent intent2 = new Intent(getActivityContext(), TransferListActivity.class);
+                    intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent2);
+                    return;
+                }
                 ActivityManager.getInstance().returnHomePage(MainActivity.class);
                 break;
             case R.id.title_iv_left:

@@ -590,9 +590,9 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
             case COMMIT_TYPE:
-                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
-                onekeyBtn.setEnabled(true);
-                dateTv.setEnabled(true);
+//                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+//                onekeyBtn.setEnabled(true);
+//                dateTv.setEnabled(true);
                 mCustomProgressDialog.dismiss();
                 dialog.setTitle("提示");
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
@@ -600,6 +600,14 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 dialog.setModel(CustomDialog.RIGHT);
                 dialog.setCancelable(false);
                 dialog.setRightBtnListener("我知道啦", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //发送取消订单请求
+                        ActivityManager.getInstance().finishAll();
+                        startActivity(new Intent(getActivityContext(), MainActivity.class));
+                    }
+                });
+                dialog.setLeftBtnListener("取消", new CustomDialog.DialogListener(){
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         //发送取消订单请求

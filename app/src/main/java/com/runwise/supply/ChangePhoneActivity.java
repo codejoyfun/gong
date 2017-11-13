@@ -22,6 +22,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.FindPwdRequest;
 import com.runwise.supply.entity.GetCodeRequest;
+import com.runwise.supply.entity.NewMobileCaptchaRequest;
 import com.runwise.supply.entity.RequestPhone;
 import com.runwise.supply.tools.StatusBarUtil;
 
@@ -157,8 +158,8 @@ public class ChangePhoneActivity extends NetWorkActivity {
 			dialog.show();
 			return;
 		}
-		GetCodeRequest paramBean = new GetCodeRequest(phonNumber);
-		this.sendConnection("/gongfu/get_captcha",paramBean ,GET_CODE, true, null);
+		NewMobileCaptchaRequest paramBean = new NewMobileCaptchaRequest(phonNumber);
+		this.sendConnection("/gongfu/mobile/captcha",paramBean ,GET_CODE, true, null);
 	}
 
 	@Override

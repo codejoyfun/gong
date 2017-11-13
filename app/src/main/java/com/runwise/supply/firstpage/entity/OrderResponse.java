@@ -3,6 +3,8 @@ package com.runwise.supply.firstpage.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.runwise.supply.entity.FirstPageOrder;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class OrderResponse {
         this.list = list;
     }
 
-    public static class ListBean implements Parcelable{
+    public static class ListBean extends FirstPageOrder implements Parcelable{
         /**
          * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,
          * "deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,

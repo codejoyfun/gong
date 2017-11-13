@@ -117,7 +117,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:layout_alignParentBottom="true"
-            android:text="出 库"
+            android:text="确认出库"
             android:textColor="@color/white"
             android:textSize="@dimen/second_title"/>
 

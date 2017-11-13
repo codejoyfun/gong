@@ -23,6 +23,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.TransferInActivity;
@@ -125,7 +126,22 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         switch(where){
             case REQUEST_OUTPUT_CONFIRM:
                 mInTheRequest = false;
-                ToastUtil.show(getActivity(),errMsg);
+                if(errMsg.contains("库存不足")){
+                    dialog.setMessage("当前调拨商品库存不足，请重新盘点更新库存");
+                    dialog.setMessageGravity();
+                    dialog.setModel(CustomDialog.BOTH);
+                    dialog.setRightBtnListener("查看库存", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            //发送取消订单请求
+                            Intent intent = new Intent(getActivity(),MainActivity.class);
+                            intent.putExtra(MainActivity.INTENT_KEY_TAB,2);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    });
+                    dialog.show();
+                }
                 return;
         }
         mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
@@ -274,9 +290,45 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         void setTransferInViewHolder(ViewHolder viewHolder,final TransferEntity transferEntity){
             switch (transferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_SUBMIT://已提交，可取消
+                    viewHolder.mmTvCancel.setVisibility(View.VISIBLE);
+                    viewHolder.mmTvAction.setVisibility(View.GONE);
+                    viewHolder.mmTvCancel.setText("取消");
+                    viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //取消
+                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            dialog.setTitleGone();
+                            dialog.setMessage("确认取消订单?");
+                            dialog.setMessageGravity();
+                            dialog.setModel(CustomDialog.BOTH);
+                            dialog.setRightBtnListener("取消订单", new CustomDialog.DialogListener() {
+                                @Override
+                                public void doClickButton(Button btn, CustomDialog dialog) {
+                                    //发送取消订单请求
+                                    requestCancel(transferEntity);
+                                }
+                            });
+                            dialog.setLeftBtnListener("我再想想",null);
+                            dialog.show();
+                        }
+                    });
+                    break;
+                case TransferEntity.STATE_OUT://已发出，可入库，可取消
                     viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                    viewHolder.mmTvAction.setText("取消");
+                    viewHolder.mmTvCancel.setVisibility(View.VISIBLE);
+                    viewHolder.mmTvAction.setText("入库");
                     viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            Intent intent = new Intent(getActivity(), TransferInActivity.class);
+                            intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
+                            startActivity(intent);
+                        }
+                    });
+                    viewHolder.mmTvCancel.setText("取消");
+                    viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             //取消
@@ -296,19 +348,6 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                         }
                     });
                     break;
-                case TransferEntity.STATE_OUT:
-                    viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                    viewHolder.mmTvAction.setText("入库");
-                    viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                            Intent intent = new Intent(getActivity(), TransferInActivity.class);
-                            intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
-                            startActivity(intent);
-                        }
-                    });
-                    break;
                 default:
                     viewHolder.mmTvAction.setVisibility(View.GONE);
             }
@@ -324,7 +363,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             switch (transferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_SUBMIT://已提交，可出库
                     viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                    viewHolder.mmTvAction.setText("接单");
+                    viewHolder.mmTvAction.setText("出库");
                     //防止错位
                     viewHolder.mmTvAction.setTag(position);
                     viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
@@ -353,6 +392,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             TextView mmTvStatus;
             @ViewInject(R.id.tv_item_transfer_action)
             TextView mmTvAction;
+            @ViewInject(R.id.tv_item_transfer_cancel)
+            TextView mmTvCancel;
             @ViewInject(R.id.tv_item_transfer_locations)
             TextView mmTvLocations;
             @ViewInject(R.id.tv_item_transfer_price)
