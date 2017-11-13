@@ -105,7 +105,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 
     }
 
-    private void setResponseTime(long responseTime) {
+    public static void setResponseTime(long responseTime) {
             if (RESPONSE_TIME == 0) {
                 RESPONSE_TIME = responseTime;
                 RESPONSE_CURRENT_TIME = SystemClock.elapsedRealtime();
@@ -368,7 +368,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "ZY-PreGolive-001";
-    public static final String DEFAULT_DATABASE_NAME = "MFTest1025";
+    public static final String DEFAULT_DATABASE_NAME = "MFtest1025";
 //    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
 
     // -------------------------------------------------
@@ -396,8 +396,6 @@ public class NetWorkHelper<T extends BaseEntity> {
         @Override
         protected Response<T> parseNetworkResponse(NetworkResponse response) {
             String parsed;
-            //服务器时间校准
-            setResponseTime(response.networkTimeMs);
             setRequestTimestamp();
             try {
                 parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));

@@ -71,6 +71,7 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestTimestamp();
         if (GlobalConstant.screenW == 0) {
             DisplayMetrics metrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -102,7 +103,6 @@ public abstract class BaseActivity extends FragmentActivity {
             dialog.setCancelable(false);
             dialog.show();
         }
-        setRequestTimestamp();
     }
 
 
