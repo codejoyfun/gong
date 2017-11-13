@@ -17,6 +17,7 @@ import com.kids.commonframe.R;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
+import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.ViewUtils;
@@ -86,6 +87,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		NetWorkHelper.REQUEST_TIMESTAMP = System.currentTimeMillis();
 		LogUtil.e("login", "onResume----" + BaseFragment.this.getClass().getSimpleName());
 		if (logout) {
 			onUserLoginout();

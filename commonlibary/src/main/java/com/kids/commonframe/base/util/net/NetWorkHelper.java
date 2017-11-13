@@ -88,6 +88,10 @@ public class NetWorkHelper<T extends BaseEntity> {
         initHelper(context, baseActivity, newWorkCallBack);
     }
 
+    //请求附带时间戳
+    public static long REQUEST_TIMESTAMP = 0;
+
+
     /**
      * 设置回调函数
      */
@@ -243,8 +247,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         } else {
             bodyParamStr = "{}";
         }
-       String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
-        if (!TextUtils.isEmpty(url)){
+        String url = (String) SPUtils.get(context, FILE_KEY_HOST, "");
+        if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
@@ -253,8 +257,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 
     public void sendConnection(String bizName, int where, boolean showDialog, Class<?> targerClass) {
         this.setJsonParseType();
-        String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
-        if (!TextUtils.isEmpty(url)){
+        String url = (String) SPUtils.get(context, FILE_KEY_HOST, "");
+        if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
@@ -263,8 +267,8 @@ public class NetWorkHelper<T extends BaseEntity> {
     public void sendConnection(String bizName, Map<String, String> paramMap, int where, boolean showDialog, Class<?> targerClass) {
         this.setJsonParseType();
         bodyParams = paramMap;
-        String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
-        if (!TextUtils.isEmpty(url)){
+        String url = (String) SPUtils.get(context, FILE_KEY_HOST, "");
+        if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
@@ -281,8 +285,8 @@ public class NetWorkHelper<T extends BaseEntity> {
      */
     public void sendConnection(String bizName, List<Part> partList, int where, boolean showDialog, Class<?> targerClass) {
         this.setJsonParseType();
-        String url = (String)SPUtils.get(context,FILE_KEY_HOST,"");
-        if (!TextUtils.isEmpty(url)){
+        String url = (String) SPUtils.get(context, FILE_KEY_HOST, "");
+        if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
         sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList);
@@ -333,7 +337,8 @@ public class NetWorkHelper<T extends BaseEntity> {
             paseInterface = new IXmlParseImp();
         }
     }
-//    public static final String DEFAULT_DATABASE_NAME = "LBZTest0922";
+
+    //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0922";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0914";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZTest0927";
 //    public static final String DEFAULT_DATABASE_NAME = "lbz80";
@@ -344,6 +349,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "ZY-PreGolive-001";
     public static final String DEFAULT_DATABASE_NAME = "MF-Test";
+
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {
         private Class<?> targerClass;
@@ -369,6 +375,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         @Override
         protected Response<T> parseNetworkResponse(NetworkResponse response) {
             String parsed;
+            NetWorkHelper.REQUEST_TIMESTAMP = System.currentTimeMillis();
             try {
                 parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
             } catch (UnsupportedEncodingException e) {
@@ -376,12 +383,11 @@ public class NetWorkHelper<T extends BaseEntity> {
             }
             if (parsed.length() > 4000) {
                 for (int i = 0; i < parsed.length(); i += 4000) {
-                    if (i + 4000 < parsed.length()){
+                    if (i + 4000 < parsed.length()) {
                         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
                             LogUtils.e(url + " " + parsed.substring(i, i + 4000));
                         }
-                    }
-                    else{
+                    } else {
                         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
                             LogUtils.e(url + " " + parsed.substring(i, parsed.length()));
                         }
@@ -471,7 +477,6 @@ public class NetWorkHelper<T extends BaseEntity> {
         }
 
 
-
         @Override
         public Map<String, String> getHeaders() throws AuthFailureError {
 //			String appSecret = "6d73a17134d1b211c656e58135c19504";
@@ -480,6 +485,7 @@ public class NetWorkHelper<T extends BaseEntity> {
             Map<String, String> headerMap = new HashMap<String, String>();
             String userToken = (String) SPUtils.get(context, "sign", "");
             headerMap.put("Cookie", userToken);
+            headerMap.put("timeStamp", String.valueOf(REQUEST_TIMESTAMP));
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));

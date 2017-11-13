@@ -25,6 +25,7 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.config.Constant;
@@ -62,6 +63,7 @@ public abstract class BaseActivity extends FragmentActivity {
     private UserLoginEvent userLoginEvent;
     private boolean isResume;
     public static boolean isClickLogout = true;
+    protected long mRequestTimeStamp = 0;
 
 
     @Override
@@ -234,6 +236,7 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        NetWorkHelper.REQUEST_TIMESTAMP = System.currentTimeMillis();
         LogUtil.e("login", "onResume----" + BaseActivity.this.getClass().getSimpleName());
         //友盟数据统计
         MobclickAgent.onResume(this);
