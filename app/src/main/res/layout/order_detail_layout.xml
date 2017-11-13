@@ -7,7 +7,7 @@
 
 
     <RelativeLayout
-        android:id="@+id/bottom_bar"
+        android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:layout_alignParentBottom="true"
@@ -15,7 +15,7 @@
         android:paddingRight="15dp">
 
         <Button
-            android:id="@+id/rightBtn"
+            android:id="@+id/btn_right"
             android:layout_width="86dp"
             android:layout_height="31dp"
             android:layout_alignParentRight="true"
@@ -25,11 +25,11 @@
             android:textSize="14sp"/>
 
         <Button
-            android:id="@+id/rightBtn2"
+            android:id="@+id/btn_right2"
             android:layout_width="86dp"
             android:layout_height="31dp"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/rightBtn"
+            android:layout_toLeftOf="@id/btn_right"
             android:background="@drawable/firstpage_do_circle"
             android:text="售后订单"
             android:textColor="#333333"
@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="#F0F0F0"
-        android:layout_above="@id/bottom_bar"
+        android:layout_above="@id/rl_bottom"
         android:visibility="visible"/>
     <!--汇总信息-->
     <include

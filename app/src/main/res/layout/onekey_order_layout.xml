@@ -35,7 +35,7 @@
         android:layout_marginTop="15dp"
         android:layout_below="@id/loadingImg"/>
     <LinearLayout
-        android:id="@+id/bottom_bar"
+        android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:orientation="horizontal"

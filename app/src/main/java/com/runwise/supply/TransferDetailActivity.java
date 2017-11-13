@@ -81,7 +81,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     private Button mBtnDoAction2;
     @ViewInject(R.id.tv_transfer_detail_id)
     private TextView mTvTransferId;
-    @ViewInject(R.id.bottom_bar)
+    @ViewInject(R.id.rl_bottom)
     private View mLayoutBottomBar;
     @ViewInject(R.id.tv_transfer_state_date)
     private TextView mTvStateDate;

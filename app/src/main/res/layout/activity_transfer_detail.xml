@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="#F0F0F0"
-        android:layout_above="@+id/bottom_bar"
+        android:layout_above="@+id/rl_bottom"
         android:visibility="visible"/>
     <!--汇总信息-->
     <include
@@ -94,7 +94,7 @@
         />
 
     <LinearLayout
-        android:id="@+id/bottom_bar"
+        android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:gravity="center_vertical|right"

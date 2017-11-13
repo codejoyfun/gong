@@ -63,7 +63,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
     int[] loadingImgs = new int[31];
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
-    @ViewInject(R.id.bottom_bar)
+    @ViewInject(R.id.rl_bottom)
     private LinearLayout bottom_bar;
     @ViewInject(R.id.countTv)
     private TextView totalNumTv;

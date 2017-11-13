@@ -190,7 +190,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      */
     public void sendConnection(int method, String url, String[] argsKeys,
                                String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList) {
-
+        setRequestTimestamp();
         if (argsKeys.length != argsValues.length) {
             throw new IllegalArgumentException("check your Params key or value length!");
         }

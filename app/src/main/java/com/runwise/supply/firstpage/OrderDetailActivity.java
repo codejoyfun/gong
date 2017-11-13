@@ -117,16 +117,16 @@ public class OrderDetailActivity extends NetWorkActivity {
     private TextView countTv;
     @ViewInject(R.id.gotoStateBtn)
     private TextView gotoStateBtn;    //查看更多状态
-    @ViewInject(R.id.rightBtn2)
+    @ViewInject(R.id.btn_right2)
     private Button rightBtn2;
-    @ViewInject(R.id.rightBtn)
+    @ViewInject(R.id.btn_right)
     private Button rightBtn;
     @ViewInject(R.id.returnLL)
     private View returnLL;
 
     @ViewInject(R.id.returnContainer)
     private LinearLayout returnContainer;
-    @ViewInject(R.id.bottom_bar)
+    @ViewInject(R.id.rl_bottom)
     private RelativeLayout bottom_bar;
     private boolean isHasAttachment;        //默认无凭证
     @ViewInject(R.id.priceLL)
@@ -204,7 +204,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         sendConnection(sb.toString(), request, RETURN_DETAIL, false, ReturnDetailResponse.class);
     }
 
-    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth, R.id.uploadBtn, R.id.gotoStateBtn, R.id.rightBtn, R.id.rightBtn2, R.id.tv_open})
+    @OnClick({R.id.title_iv_left, R.id.title_tv_rigth, R.id.uploadBtn, R.id.gotoStateBtn, R.id.btn_right, R.id.btn_right2, R.id.tv_open})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
@@ -236,7 +236,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                     }
                 }
                 break;
-            case R.id.rightBtn:
+            case R.id.btn_right:
                 if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 Intent intent2;
                 OrderDoAction action = OrderActionUtils.getDoActionByText(rightBtn.getText().toString(), bean);

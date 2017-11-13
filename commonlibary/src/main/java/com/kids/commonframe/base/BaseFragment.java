@@ -42,7 +42,6 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRequestTimestamp();
 		mContext = this.getActivity();
 		if( GlobalConstant.screenH == 0 ) {
 			DisplayMetrics metrics = new DisplayMetrics();
