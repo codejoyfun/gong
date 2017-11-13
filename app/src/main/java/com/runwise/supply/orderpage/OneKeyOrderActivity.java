@@ -573,9 +573,9 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 setTitleRightText(true, "编辑");
                 break;
             case COMMIT_TYPE:
-                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
-                onekeyBtn.setEnabled(true);
-                dateTv.setEnabled(true);
+//                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+//                onekeyBtn.setEnabled(true);
+//                dateTv.setEnabled(true);
                 progressDialog.dismiss();
 
                 dialog.setTitle("提示");
@@ -584,6 +584,14 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 dialog.setCancelable(false);
                 dialog.setModel(CustomDialog.RIGHT);
                 dialog.setRightBtnListener("我知道啦", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //发送取消订单请求
+                        ActivityManager.getInstance().finishAll();
+                        startActivity(new Intent(getActivityContext(), MainActivity.class));
+                    }
+                });
+                dialog.setLeftBtnListener("取消", new CustomDialog.DialogListener(){
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         //发送取消订单请求
