@@ -458,9 +458,10 @@ public class OrderAdapter extends IBaseAdapter {
     private void setTransferInViewHolder(TransferViewHolder viewHolder,final TransferEntity transferEntity){
         switch (transferEntity.getPickingStateNum()){
             case TransferEntity.STATE_SUBMIT://已提交，可取消
-                viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                viewHolder.mmTvAction.setText("取消");
-                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                viewHolder.mmTvAction.setVisibility(View.GONE);
+                viewHolder.mmTvCancel.setVisibility(View.VISIBLE);
+                viewHolder.mmTvCancel.setText("取消");
+                viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (callback!=null)callback.doTransferAction(TRANS_ACTION_CANCEL,transferEntity);
@@ -468,6 +469,7 @@ public class OrderAdapter extends IBaseAdapter {
                 });
                 break;
             case TransferEntity.STATE_OUT:
+                viewHolder.mmTvCancel.setVisibility(View.VISIBLE);
                 viewHolder.mmTvAction.setVisibility(View.VISIBLE);
                 viewHolder.mmTvAction.setText("入库");
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
@@ -479,8 +481,16 @@ public class OrderAdapter extends IBaseAdapter {
                         context.startActivity(intent);
                     }
                 });
+                viewHolder.mmTvCancel.setText("取消");
+                viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (callback!=null)callback.doTransferAction(TRANS_ACTION_CANCEL,transferEntity);
+                    }
+                });
                 break;
             default:
+                viewHolder.mmTvCancel.setVisibility(View.GONE);
                 viewHolder.mmTvAction.setVisibility(View.GONE);
         }
     }
@@ -494,6 +504,7 @@ public class OrderAdapter extends IBaseAdapter {
     private void setTransferOutViewHolder(TransferViewHolder viewHolder,final TransferEntity transferEntity,final int position){
         switch (transferEntity.getPickingStateNum()){
             case TransferEntity.STATE_SUBMIT://已提交，可出库
+                viewHolder.mmTvCancel.setVisibility(View.GONE);
                 viewHolder.mmTvAction.setVisibility(View.VISIBLE);
                 viewHolder.mmTvAction.setText("出库");
                 //防止错位
@@ -514,6 +525,7 @@ public class OrderAdapter extends IBaseAdapter {
                 });
                 break;
             default:
+                viewHolder.mmTvCancel.setVisibility(View.GONE);
                 viewHolder.mmTvAction.setVisibility(View.GONE);
         }
     }
@@ -533,6 +545,8 @@ public class OrderAdapter extends IBaseAdapter {
         TextView mmTvPrice;
         @ViewInject(R.id.tv_item_transfer_date)
         TextView mmTvCreateTime;
+        @ViewInject(R.id.tv_item_transfer_cancel)
+        TextView mmTvCancel;
     }
 
 }

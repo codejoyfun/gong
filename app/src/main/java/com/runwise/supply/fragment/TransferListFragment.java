@@ -290,9 +290,45 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         void setTransferInViewHolder(ViewHolder viewHolder,final TransferEntity transferEntity){
             switch (transferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_SUBMIT://已提交，可取消
+                    viewHolder.mmTvCancel.setVisibility(View.VISIBLE);
+                    viewHolder.mmTvAction.setVisibility(View.GONE);
+                    viewHolder.mmTvCancel.setText("取消");
+                    viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //取消
+                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            dialog.setTitleGone();
+                            dialog.setMessage("确认取消订单?");
+                            dialog.setMessageGravity();
+                            dialog.setModel(CustomDialog.BOTH);
+                            dialog.setRightBtnListener("取消订单", new CustomDialog.DialogListener() {
+                                @Override
+                                public void doClickButton(Button btn, CustomDialog dialog) {
+                                    //发送取消订单请求
+                                    requestCancel(transferEntity);
+                                }
+                            });
+                            dialog.setLeftBtnListener("我再想想",null);
+                            dialog.show();
+                        }
+                    });
+                    break;
+                case TransferEntity.STATE_OUT://已发出，可入库，可取消
                     viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                    viewHolder.mmTvAction.setText("取消");
+                    viewHolder.mmTvCancel.setVisibility(View.VISIBLE);
+                    viewHolder.mmTvAction.setText("入库");
                     viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            Intent intent = new Intent(getActivity(), TransferInActivity.class);
+                            intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
+                            startActivity(intent);
+                        }
+                    });
+                    viewHolder.mmTvCancel.setText("取消");
+                    viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             //取消
@@ -309,19 +345,6 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                                 }
                             });
                             dialog.show();
-                        }
-                    });
-                    break;
-                case TransferEntity.STATE_OUT:
-                    viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                    viewHolder.mmTvAction.setText("入库");
-                    viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                            Intent intent = new Intent(getActivity(), TransferInActivity.class);
-                            intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
-                            startActivity(intent);
                         }
                     });
                     break;
@@ -369,6 +392,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             TextView mmTvStatus;
             @ViewInject(R.id.tv_item_transfer_action)
             TextView mmTvAction;
+            @ViewInject(R.id.tv_item_transfer_cancel)
+            TextView mmTvCancel;
             @ViewInject(R.id.tv_item_transfer_locations)
             TextView mmTvLocations;
             @ViewInject(R.id.tv_item_transfer_price)

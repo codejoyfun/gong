@@ -454,8 +454,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_OUTPUT_CONFIRM:
                 if(errMsg.contains("库存不足")){
+                    mInTheRequest = false;
                     dialog.setMessage("当前调拨商品库存不足，请重新盘点更新库存");
                     dialog.setMessageGravity();
+                    dialog.setTitleGone();
                     dialog.setModel(CustomDialog.BOTH);
                     dialog.setRightBtnListener("查看库存", new CustomDialog.DialogListener() {
                         @Override
@@ -594,11 +596,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case TRANS_ACTION_CANCEL:
                 //取消
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                dialog.setTitle("提示");
+                dialog.setTitleGone();
                 dialog.setMessage("确认取消订单?");
                 dialog.setMessageGravity();
                 dialog.setModel(CustomDialog.BOTH);
-                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                dialog.setRightBtnListener("取消订单", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         //发送取消订单请求
@@ -606,6 +608,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                         requestCancel(transferEntity);
                     }
                 });
+                dialog.setLeftBtnListener("我再想想",null);
                 dialog.show();
                 break;
             case TRANS_ACTION_OUTPUT_CONFIRM:
