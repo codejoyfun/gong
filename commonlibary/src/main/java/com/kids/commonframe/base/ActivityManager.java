@@ -102,4 +102,17 @@ public class ActivityManager {
             }
         }
     }
+
+    public boolean has(Class classInstance) {
+        synchronized (this) {
+            if (activityList != null && activityList.size() > 0) {
+                for (Activity a : activityList) {
+                    if (classInstance.isInstance(a)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
 }

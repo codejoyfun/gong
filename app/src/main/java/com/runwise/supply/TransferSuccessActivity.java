@@ -36,6 +36,7 @@ public class TransferSuccessActivity extends BaseActivity {
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.title_iv_left:
+                backToEntrance();
                 break;
             case R.id.tv_to_transfer_list:
                 Intent intent = new Intent(this,TransferListActivity.class);
@@ -52,4 +53,22 @@ public class TransferSuccessActivity extends BaseActivity {
         }
         finish();
     }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        backToEntrance();
+    }
+
+    public void backToEntrance(){
+        if(ActivityManager.getInstance().has(TransferListActivity.class)){
+            Intent intent2 = new Intent(getActivityContext(), TransferListActivity.class);
+            intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent2);
+            return;
+        }
+        ActivityManager.getInstance().returnHomePage(MainActivity.class);
+    }
+
 }

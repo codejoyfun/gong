@@ -38,8 +38,12 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
+import com.runwise.supply.entity.FirstPageOrder;
+import com.runwise.supply.entity.TransferEntity;
+import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.DashBoardResponse;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
@@ -50,6 +54,7 @@ import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.mine.ProcurementLimitActivity;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.tools.PollingUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
@@ -60,10 +65,15 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import static com.runwise.supply.R.id.lqLL;
+import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
+import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_CANCEL;
+import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_OUTPUT_CONFIRM;
+import static com.runwise.supply.firstpage.OrderAdapter.TYPE_TRANSFER;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 
@@ -79,6 +89,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int FROMRETURN = 4;
     private static final int FINISHRETURN = 5;
     private static final int REQUEST_SUM = 6;
+    private static final int REQUEST_TRANSFER_IN = 7;
+    private static final int REQUEST_TRANSFER_OUT = 8;
+    private static final int REQUEST_CANCEL_TRANSFER = 9;
+    private static final int REQUEST_OUTPUT_CONFIRM = 10;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -108,6 +122,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private String number = "02037574563";
     private UserInfo userInfo;
     private boolean isFirst = true;
+    private List<FirstPageOrder> mTransferAndOrderList = new ArrayList<>();//缓存调拨和一般订单，用于排序
 
     public LoginedFirstFragment() {
     }
@@ -221,6 +236,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) adapter.getList().get(realPosition);
                     intent.putExtra("rid", bean.getReturnOrderID() + "");
                     startActivity(intent);
+                } else if(adapter.getItemViewType(realPosition) == TYPE_TRANSFER){
+                    TransferEntity transferEntity = (TransferEntity) adapter.getList().get(realPosition);
+                    Intent intent = new Intent(getActivity(), TransferDetailActivity.class);
+                    intent.putExtra(EXTRA_TRANSFER_ID, transferEntity.getPickingID());
+                    startActivity(intent);
                 }
             }
         });
@@ -283,6 +303,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     LoadingLayout loadingLayout;
     SumMoneyData mSumMoneyData;
+    //一次刷新要连续查多个接口的数据，要标记当前查询是否在进行，是的话不可刷新
+    boolean inProgress = false;
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -290,6 +312,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FROMORDER:
                 BaseEntity.ResultBean resultBean = result.getResult();
                 OrderResponse response = (OrderResponse) resultBean.getData();
+                //有调拨权限，请求调拨单
+                userInfo = GlobalApplication.getInstance().loadUserInfo();
+                if(!TextUtils.isEmpty(userInfo.getIsShopTransfer())&&userInfo.getIsShopTransfer().equals("true")){
+                    //暂存一般订单
+                    mTransferAndOrderList.addAll(response.getList());
+                    requestTransferIn();
+                    return;
+                }
+                //原有流程，适用于没有调拨权限的流程
                 int addIndex = orderList.size();
                 orderList.addAll(addIndex, response.getList());
                 adapter.setReturnCount(addIndex);
@@ -306,6 +337,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 } else {
                     loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
                 }
+                inProgress = false;
 //                LogUtils.e("onSuccessTime FROMORDER "+String.valueOf(System.currentTimeMillis() - mTimeStartFROMORDER));
                 break;
             case FROMLB:
@@ -324,10 +356,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 requestReturnList();
                 break;
             case FROMRETURN:
+                if(inProgress)return;
+                inProgress = true;
                 BaseEntity.ResultBean resultBean4 = result.getResult();
                 ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
                 //加入轮询判断，不定时刷新，只有都拉到数据，才一起更新列表
                 orderList.clear();
+                mTransferAndOrderList.clear();
                 orderList.addAll(rob.getList());
                 if (adapter.getCount() == 0) {
                     //首次
@@ -352,6 +387,42 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 mSumMoneyData = (SumMoneyData) result.getResult().getData();
 //                LogUtils.e("onSuccessTime REQUEST_SUM "+(System.currentTimeMillis() - mTimeStartREQUEST_SUM));
                 break;
+            case REQUEST_TRANSFER_IN:
+                TransferListResponse transferInResponse = (TransferListResponse) result.getResult().getData();
+                mTransferAndOrderList.addAll(filter(transferInResponse.getList()));
+                requestTransferOut();
+                break;
+            case REQUEST_TRANSFER_OUT:
+                TransferListResponse transferOutResponse = (TransferListResponse) result.getResult().getData();
+                mTransferAndOrderList.addAll(filter(transferOutResponse.getList()));
+                //按照创建时间排序
+                Collections.sort(mTransferAndOrderList);
+
+                int addedIndex = orderList.size();
+                orderList.addAll(addedIndex, mTransferAndOrderList);
+                adapter.setReturnCount(addedIndex);
+                adapter.setData(orderList);
+                pullListView.onRefreshComplete();
+//                if (!isFirst){
+//                    ToastUtil.show(mContext,"订单已刷新");
+//                }
+                isFirst = false;
+                if (adapter.getCount() == 0 && pullListView.getRefreshableView().getHeaderViewsCount() == 1) {
+                    loadingLayout.onSuccess(0, "暂无在途订单", R.drawable.default_icon_ordernone);
+                    pullListView.getRefreshableView().addHeaderView(loadingLayout);
+                } else {
+                    loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
+                }
+                inProgress = false;
+                break;
+            case REQUEST_CANCEL_TRANSFER:
+                ToastUtil.show(mContext, "取消成功");
+                requestReturnList();
+                break;
+            case REQUEST_OUTPUT_CONFIRM:
+                startActivity(TransferOutActivity.getStartIntent(getActivity(),mSelectTransferEntity));
+                mInTheRequest = false;
+                break;
         }
     }
 
@@ -374,7 +445,32 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-//        ToastUtil.show(getActivity(),errMsg);
+        switch (where){
+            case REQUEST_TRANSFER_IN:
+            case REQUEST_TRANSFER_OUT:
+            case FROMRETURN:
+            case FROMORDER:
+                inProgress = false;
+                break;
+            case REQUEST_OUTPUT_CONFIRM:
+                if(errMsg.contains("库存不足")){
+                    dialog.setMessage("当前调拨商品库存不足，请重新盘点更新库存");
+                    dialog.setMessageGravity();
+                    dialog.setModel(CustomDialog.BOTH);
+                    dialog.setRightBtnListener("查看库存", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            //发送取消订单请求
+                            Intent intent = new Intent(getActivity(),MainActivity.class);
+                            intent.putExtra(MainActivity.INTENT_KEY_TAB,2);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    });
+                    dialog.show();
+                }
+                return;
+        }
     }
 
     @Override
@@ -492,6 +588,32 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         }
     }
 
+    @Override
+    public void doTransferAction(int type, final TransferEntity transferEntity) {
+        switch (type){
+            case TRANS_ACTION_CANCEL:
+                //取消
+                if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                dialog.setTitle("提示");
+                dialog.setMessage("确认取消订单?");
+                dialog.setMessageGravity();
+                dialog.setModel(CustomDialog.BOTH);
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //发送取消订单请求
+                        //发送取消订单请求
+                        requestCancel(transferEntity);
+                    }
+                });
+                dialog.show();
+                break;
+            case TRANS_ACTION_OUTPUT_CONFIRM:
+                requestOutputConfirm(transferEntity);
+                break;
+        }
+    }
+
     ReturnOrderBean.ListBean mSelectBean;
 
     @Override
@@ -547,6 +669,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     //一次性加载全部，无分页,先加载退货单，然后跟着正常订单
     private void requestReturnList() {
+        if(inProgress)return;
         Object request = null;
         sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, false, ReturnOrderBean.class);
     }
@@ -652,6 +775,16 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
     }
 
+    private void requestTransferIn(){
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/input_list", request, REQUEST_TRANSFER_IN, false, TransferListResponse.class);
+    }
+
+    private void requestTransferOut(){
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/output_list", request, REQUEST_TRANSFER_OUT, false, TransferListResponse.class);
+    }
+
     private void showSystemUpgradeNotice(){
         final Dialog dialog = new Dialog(getActivity(),R.style.CustomProgressDialog);
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_system_upgrade_notice,null,false);
@@ -677,5 +810,39 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 "进行系统更新维护，届时只能查看内容，</font>" +
                 "<font color=\"#ff8b00\">操作功能暂时无法使用，</font>" +
                 "<font color=\"#666666\">感谢您的谅解</font>"));
+    }
+
+    /**
+     * 取消调拨单
+     */
+    private void requestCancel(TransferEntity transferEntity) {
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/cancel/" + transferEntity.getPickingID(), request, REQUEST_CANCEL_TRANSFER, true, null);
+    }
+
+    /**
+     * 出库
+     */
+    TransferEntity mSelectTransferEntity;
+    boolean mInTheRequest  = false;
+    private void requestOutputConfirm(TransferEntity transferEntity) {
+        if(mInTheRequest){
+            return;
+        }
+        mInTheRequest = true;
+        mSelectTransferEntity = transferEntity;
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
+    }
+
+    /**
+     * 过滤掉已完成的
+     */
+    private List<TransferEntity> filter(List<TransferEntity> list){
+        if(list==null)return null;
+        for(int i=list.size()-1;i>=0;i--){
+            if(list.get(i).getPickingStateNum()==TransferEntity.STATE_FINISH)list.remove(i);
+        }
+        return list;
     }
 }

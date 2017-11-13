@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Dong on 2017/10/10.
  */
 
-public class TransferEntity implements Parcelable{
+public class TransferEntity extends FirstPageOrder implements Parcelable{
 
     public static final int STATE_SUBMIT = 0;//提交状态
     public static final int STATE_OUT = 1;//发出状态
@@ -43,6 +43,7 @@ public class TransferEntity implements Parcelable{
     private float totalPrice;
     private int totalNum;
     private int pickingStateNum;
+    private boolean isConfirmed;
 
     public int getPickingStateNum() {
         return pickingStateNum;
@@ -132,6 +133,14 @@ public class TransferEntity implements Parcelable{
         this.stateTracker = stateTracker;
     }
 
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setIsConfirmed(boolean confirmed) {
+        isConfirmed = confirmed;
+    }
+
     public TransferEntity() {
     }
 
@@ -152,6 +161,7 @@ public class TransferEntity implements Parcelable{
         dest.writeStringList(this.stateTracker);
         dest.writeFloat(this.totalPrice);
         dest.writeInt(this.totalNum);
+        dest.writeInt(isConfirmed?1:0);
     }
 
     protected TransferEntity(Parcel in) {
@@ -165,6 +175,7 @@ public class TransferEntity implements Parcelable{
         this.stateTracker = in.createStringArrayList();
         this.totalPrice = in.readFloat();
         this.totalNum = in.readInt();
+        this.isConfirmed = in.readInt()==1;
     }
 
     public static final Creator<TransferEntity> CREATOR = new Creator<TransferEntity>() {
@@ -178,4 +189,9 @@ public class TransferEntity implements Parcelable{
             return new TransferEntity[size];
         }
     };
+
+    @Override
+    public String getCreateDate() {
+        return date;
+    }
 }

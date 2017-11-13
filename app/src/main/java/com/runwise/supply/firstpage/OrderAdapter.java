@@ -1,6 +1,7 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,16 +10,20 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.TransferInActivity;
+import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
@@ -43,10 +48,14 @@ import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VE
 public class OrderAdapter extends IBaseAdapter {
     protected static final int TYPE_ORDER = 0;        //正常订单
     protected static final int TYPE_RETURN = 1;       //退货单
+    static final int TYPE_TRANSFER = 2;                 //调拨单
+
+    public static final int TRANS_ACTION_CANCEL = 0;
+    public static final int TRANS_ACTION_OUTPUT_CONFIRM = 1;
 
     public interface DoActionInterface {
         void doAction(OrderDoAction action, int postion);
-
+        void doTransferAction(int type,TransferEntity transferEntity);
         void call(String phone);
     }
 
@@ -78,6 +87,7 @@ public class OrderAdapter extends IBaseAdapter {
     @Override
     protected View getExView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
+        if(getItemViewType(position)==TYPE_TRANSFER)return getTransferView(position,convertView,parent);
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
@@ -379,13 +389,15 @@ public class OrderAdapter extends IBaseAdapter {
         Object object = mList.get(position);
         if (object instanceof OrderResponse.ListBean) {
             return TYPE_ORDER;
+        }else if(object instanceof TransferEntity){
+            return TYPE_TRANSFER;
         }
         return TYPE_RETURN;
     }
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return 3;
     }
 
     SimpleDateFormat sdfSource = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -398,4 +410,129 @@ public class OrderAdapter extends IBaseAdapter {
             return str;
         }
     }
+
+    /**
+     * 调拨item
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
+    private View getTransferView(final int position, View convertView, ViewGroup parent){
+        TransferViewHolder viewHolder = null;
+        if (convertView == null) {
+            convertView = View.inflate(context, R.layout.firstpage_transfer_item, null);
+            viewHolder = new TransferViewHolder();
+            ViewUtils.inject(viewHolder, convertView);
+            convertView.setTag(viewHolder);
+            } else {
+            viewHolder = (TransferViewHolder) convertView.getTag();
+        }
+        final TransferEntity transferEntity = (TransferEntity) mList.get(position);
+        boolean isDest = GlobalApplication.getInstance().loadUserInfo().getMendian().equals(transferEntity.getLocationDestName());
+        viewHolder.mmIvIcon.setImageResource(isDest?R.drawable.state_delivery_8_callin:R.drawable.state_delivery_8_callout);
+
+        viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
+        viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
+        viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
+        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice() + "元，" + transferEntity.getTotalNum() + "件商品");
+        else viewHolder.mmTvPrice.setText(transferEntity.getTotalNum() + "件商品");
+        viewHolder.mmTvAction.setVisibility(View.VISIBLE);
+
+        viewHolder.mmTvStatus.setText(transferEntity.getPickingState());
+
+        if(isDest){//入库方
+            setTransferInViewHolder(viewHolder,transferEntity);
+        }
+        else{//出库方
+            setTransferOutViewHolder(viewHolder,transferEntity,position);
+        }
+        return convertView;
+    }
+
+    /**
+     * 入库方的列表项
+     * @param viewHolder
+     * @param transferEntity
+     */
+    private void setTransferInViewHolder(TransferViewHolder viewHolder,final TransferEntity transferEntity){
+        switch (transferEntity.getPickingStateNum()){
+            case TransferEntity.STATE_SUBMIT://已提交，可取消
+                viewHolder.mmTvAction.setVisibility(View.VISIBLE);
+                viewHolder.mmTvAction.setText("取消");
+                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (callback!=null)callback.doTransferAction(TRANS_ACTION_CANCEL,transferEntity);
+                    }
+                });
+                break;
+            case TransferEntity.STATE_OUT:
+                viewHolder.mmTvAction.setVisibility(View.VISIBLE);
+                viewHolder.mmTvAction.setText("入库");
+                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(context).check(context))return;
+                        Intent intent = new Intent(context, TransferInActivity.class);
+                        intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
+                        context.startActivity(intent);
+                    }
+                });
+                break;
+            default:
+                viewHolder.mmTvAction.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 出库方列表项
+     * @param viewHolder
+     * @param transferEntity
+     * @param position
+     */
+    private void setTransferOutViewHolder(TransferViewHolder viewHolder,final TransferEntity transferEntity,final int position){
+        switch (transferEntity.getPickingStateNum()){
+            case TransferEntity.STATE_SUBMIT://已提交，可出库
+                viewHolder.mmTvAction.setVisibility(View.VISIBLE);
+                viewHolder.mmTvAction.setText("出库");
+                //防止错位
+                viewHolder.mmTvAction.setTag(position);
+                viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(context).check(context))return;
+                        int realPosition = (int) view.getTag();
+                        if (realPosition == position) {
+                            if(callback!=null){
+                                callback.doTransferAction(TRANS_ACTION_OUTPUT_CONFIRM,transferEntity);
+                            }
+                            //变成可用状态
+//                            requestOutputConfirm(transferEntity);
+                        }
+                    }
+                });
+                break;
+            default:
+                viewHolder.mmTvAction.setVisibility(View.GONE);
+        }
+    }
+
+    private class TransferViewHolder {
+        @ViewInject(R.id.iv_transfer_status)
+        ImageView mmIvIcon;
+        @ViewInject(R.id.item_transfer_title_tv)
+        TextView mmTvTitle;
+        @ViewInject(R.id.tv_item_transfer_status)
+        TextView mmTvStatus;
+        @ViewInject(R.id.tv_item_transfer_action)
+        TextView mmTvAction;
+        @ViewInject(R.id.tv_item_transfer_locations)
+        TextView mmTvLocations;
+        @ViewInject(R.id.tv_item_transfer_price)
+        TextView mmTvPrice;
+        @ViewInject(R.id.tv_item_transfer_date)
+        TextView mmTvCreateTime;
+    }
+
 }

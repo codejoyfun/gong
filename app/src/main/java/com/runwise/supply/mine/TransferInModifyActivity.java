@@ -215,7 +215,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 sendConnection("/gongfu/shop/transfer/change/"+mTransferEntity.getPickingID(), modifyTransferRequest, REQUEST_CODE_MODIFY, true, null);
                 break;
             case R.id.title_iv_left:
-                if (mProductAdapter.getList().isEmpty()) {
+                if (!mProductAdapter.getList().isEmpty()) {
                     dialog.setMessage("单据还没保存,确定退出?");
                     dialog.setModel(CustomDialog.BOTH);
                     dialog.setMessageGravity();
@@ -402,7 +402,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 showStoreSelectDialog();
                 break;
             case REQUEST_CODE_MODIFY:
-                toast("提交成功");
+                toast("修改成功");
                 Intent intent = new Intent(this, TransferListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
