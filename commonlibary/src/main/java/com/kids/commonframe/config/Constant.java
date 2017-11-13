@@ -9,8 +9,8 @@ public class Constant {
 //   public final static String RELEASE_URL = "http://test.runwise.cn";
 //   public final static String RELEASE_URL = "http://192.168.0.126:8069";
 
-    public static final String DEBUG_URL = "http://erp2.runwise.cn";
-//    public static final String DEBUG_URL = "http://develop.runwise.cn";
+//    public static final String DEBUG_URL = "http://erp2.runwise.cn";
+    public static final String DEBUG_URL = "http://develop.runwise.cn";
 
     public static boolean test = true;
 

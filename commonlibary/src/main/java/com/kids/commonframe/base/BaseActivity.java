@@ -42,6 +42,8 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 
+import static com.kids.commonframe.base.util.net.NetWorkHelper.setRequestTimestamp;
+
 
 /**
  * 基类activity 每一个acitivty都要继承该类
@@ -100,6 +102,7 @@ public abstract class BaseActivity extends FragmentActivity {
             dialog.setCancelable(false);
             dialog.show();
         }
+        setRequestTimestamp();
     }
 
 
@@ -236,7 +239,6 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        NetWorkHelper.REQUEST_TIMESTAMP = System.currentTimeMillis();
         LogUtil.e("login", "onResume----" + BaseActivity.this.getClass().getSimpleName());
         //友盟数据统计
         MobclickAgent.onResume(this);

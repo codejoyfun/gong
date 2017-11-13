@@ -2,6 +2,7 @@ package com.kids.commonframe.base.util.net;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -28,6 +29,8 @@ import com.kids.commonframe.base.ReLoginData;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
+
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -90,7 +93,24 @@ public class NetWorkHelper<T extends BaseEntity> {
 
     //请求附带时间戳
     public static long REQUEST_TIMESTAMP = 0;
+    public static long RESPONSE_TIME = 0;
+    public static long RESPONSE_CURRENT_TIME;
 
+    public static void setRequestTimestamp() {
+        if (RESPONSE_TIME != 0){
+            REQUEST_TIMESTAMP = RESPONSE_TIME + SystemClock.elapsedRealtime()-RESPONSE_CURRENT_TIME;
+        }else{
+            REQUEST_TIMESTAMP = System.currentTimeMillis();
+        }
+
+    }
+
+    private void setResponseTime(long responseTime) {
+            if (RESPONSE_TIME == 0) {
+                RESPONSE_TIME = responseTime;
+                RESPONSE_CURRENT_TIME = SystemClock.elapsedRealtime();
+            }
+    }
 
     /**
      * 设置回调函数
@@ -348,7 +368,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "";
 //    public static final String DEFAULT_DATABASE_NAME = "LBZ-Golive-01Test";
 //    public static final String DEFAULT_DATABASE_NAME = "ZY-PreGolive-001";
-    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
+    public static final String DEFAULT_DATABASE_NAME = "MFTest1025";
+//    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
 
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {
@@ -375,7 +396,9 @@ public class NetWorkHelper<T extends BaseEntity> {
         @Override
         protected Response<T> parseNetworkResponse(NetworkResponse response) {
             String parsed;
-            NetWorkHelper.REQUEST_TIMESTAMP = System.currentTimeMillis();
+            //服务器时间校准
+            setResponseTime(response.networkTimeMs);
+            setRequestTimestamp();
             try {
                 parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
             } catch (UnsupportedEncodingException e) {

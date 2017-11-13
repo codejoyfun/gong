@@ -6,9 +6,13 @@ import android.os.Handler;
 import android.widget.ImageView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.googlecode.mp4parser.util.Logger;
 import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+
+import java.net.URL;
+import java.net.URLConnection;
 
 public class LauncherActivity extends BaseActivity {
     @ViewInject(R.id.launcher_bg)

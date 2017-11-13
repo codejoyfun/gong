@@ -26,6 +26,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import static com.kids.commonframe.base.util.net.NetWorkHelper.setRequestTimestamp;
+
 /**
  * 每一个fragment都继承该类
  *
@@ -40,6 +42,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRequestTimestamp();
 		mContext = this.getActivity();
 		if( GlobalConstant.screenH == 0 ) {
 			DisplayMetrics metrics = new DisplayMetrics();
@@ -87,7 +90,6 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		NetWorkHelper.REQUEST_TIMESTAMP = System.currentTimeMillis();
 		LogUtil.e("login", "onResume----" + BaseFragment.this.getClass().getSimpleName());
 		if (logout) {
 			onUserLoginout();
