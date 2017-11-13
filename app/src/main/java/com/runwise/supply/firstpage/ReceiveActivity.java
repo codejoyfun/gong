@@ -92,6 +92,7 @@ import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_EN
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 import static com.runwise.supply.orderpage.entity.ReceiveInfo.SEPARATOR;
 
 /**
@@ -776,7 +777,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         break;
                     }
                 }
-                String tip = hasLotTracking?"请认真核对商品数量和生产日期,确认收货后无法修改哦！":"请认真核对商品数量，确认收货无法修改哦！";
+                String tip = hasLotTracking && TYPE_VENDOR_DELIVERY.equals(lbean.getDeliveryType()) ?
+                        "请认真核对商品数量和生产日期,确认收货后无法修改哦！":"请认真核对商品数量，确认收货无法修改哦！";
                 if (mode == 2) {
                     tip = "确认完成收货?";
                 }
