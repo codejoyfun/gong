@@ -17,6 +17,7 @@ import com.kids.commonframe.R;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
+import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.ViewUtils;
@@ -24,6 +25,8 @@ import com.lidroid.xutils.ViewUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import static com.kids.commonframe.base.util.net.NetWorkHelper.setRequestTimestamp;
 
 /**
  * 每一个fragment都继承该类
@@ -39,6 +42,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRequestTimestamp();
 		mContext = this.getActivity();
 		if( GlobalConstant.screenH == 0 ) {
 			DisplayMetrics metrics = new DisplayMetrics();

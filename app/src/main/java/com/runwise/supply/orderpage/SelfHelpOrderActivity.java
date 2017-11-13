@@ -597,6 +597,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 dialog.setTitle("提示");
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
                 dialog.setMessageGravity();
+                dialog.setModel(CustomDialog.RIGHT);
                 dialog.setCancelable(false);
                 dialog.setRightBtnListener("我知道啦", new CustomDialog.DialogListener() {
                     @Override

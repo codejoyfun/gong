@@ -25,6 +25,7 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.config.Constant;
@@ -40,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
+
+import static com.kids.commonframe.base.util.net.NetWorkHelper.setRequestTimestamp;
 
 
 /**
@@ -62,11 +65,13 @@ public abstract class BaseActivity extends FragmentActivity {
     private UserLoginEvent userLoginEvent;
     private boolean isResume;
     public static boolean isClickLogout = true;
+    protected long mRequestTimeStamp = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestTimestamp();
         if (GlobalConstant.screenW == 0) {
             DisplayMetrics metrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(metrics);
