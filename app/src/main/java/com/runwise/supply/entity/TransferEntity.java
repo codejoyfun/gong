@@ -43,6 +43,7 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
     private float totalPrice;
     private int totalNum;
     private int pickingStateNum;
+    private boolean isConfirmed;
 
     public int getPickingStateNum() {
         return pickingStateNum;
@@ -132,6 +133,14 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
         this.stateTracker = stateTracker;
     }
 
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setIsConfirmed(boolean confirmed) {
+        isConfirmed = confirmed;
+    }
+
     public TransferEntity() {
     }
 
@@ -152,6 +161,7 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
         dest.writeStringList(this.stateTracker);
         dest.writeFloat(this.totalPrice);
         dest.writeInt(this.totalNum);
+        dest.writeInt(isConfirmed?1:0);
     }
 
     protected TransferEntity(Parcel in) {
@@ -165,6 +175,7 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
         this.stateTracker = in.createStringArrayList();
         this.totalPrice = in.readFloat();
         this.totalNum = in.readInt();
+        this.isConfirmed = in.readInt()==1;
     }
 
     public static final Creator<TransferEntity> CREATOR = new Creator<TransferEntity>() {

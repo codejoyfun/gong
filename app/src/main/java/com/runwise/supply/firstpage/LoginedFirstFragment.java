@@ -303,6 +303,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     LoadingLayout loadingLayout;
     SumMoneyData mSumMoneyData;
+    //一次刷新要连续查多个接口的数据，要标记当前查询是否在进行，是的话不可刷新
+    boolean inProgress = false;
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -335,6 +337,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 } else {
                     loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
                 }
+                inProgress = false;
 //                LogUtils.e("onSuccessTime FROMORDER "+String.valueOf(System.currentTimeMillis() - mTimeStartFROMORDER));
                 break;
             case FROMLB:
@@ -353,6 +356,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 requestReturnList();
                 break;
             case FROMRETURN:
+                if(inProgress)return;
+                inProgress = true;
                 BaseEntity.ResultBean resultBean4 = result.getResult();
                 ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
                 //加入轮询判断，不定时刷新，只有都拉到数据，才一起更新列表
@@ -408,6 +413,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 } else {
                     loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
                 }
+                inProgress = false;
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 ToastUtil.show(mContext, "取消成功");
@@ -439,7 +445,32 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-//        ToastUtil.show(getActivity(),errMsg);
+        switch (where){
+            case REQUEST_TRANSFER_IN:
+            case REQUEST_TRANSFER_OUT:
+            case FROMRETURN:
+            case FROMORDER:
+                inProgress = false;
+                break;
+            case REQUEST_OUTPUT_CONFIRM:
+                if(errMsg.contains("库存不足")){
+                    dialog.setMessage("当前调拨商品库存不足，请重新盘点更新库存");
+                    dialog.setMessageGravity();
+                    dialog.setModel(CustomDialog.BOTH);
+                    dialog.setRightBtnListener("查看库存", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            //发送取消订单请求
+                            Intent intent = new Intent(getActivity(),MainActivity.class);
+                            intent.putExtra(MainActivity.INTENT_KEY_TAB,2);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    });
+                    dialog.show();
+                }
+                return;
+        }
     }
 
     @Override
@@ -638,6 +669,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     //一次性加载全部，无分页,先加载退货单，然后跟着正常订单
     private void requestReturnList() {
+        if(inProgress)return;
         Object request = null;
         sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, false, ReturnOrderBean.class);
     }

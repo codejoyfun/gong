@@ -127,6 +127,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
         if (mUserInfo != null) {
             mTvCallInStore.setText(mUserInfo.getMendian());
         }
+        refreshTotalCountAndMoney();
     }
 
 
@@ -171,7 +172,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 sendConnection("/gongfu/shop/transfer/create", createCallInListRequest, REQUEST_CODE_CREATE_CALL_IN_LIST, true, null);
                 break;
             case R.id.title_iv_left:
-                if (mProductAdapter.getList().isEmpty()) {
+                if (!mProductAdapter.getList().isEmpty()) {
                     dialog.setMessage("单据还没保存,确定退出?");
                     dialog.setModel(CustomDialog.BOTH);
                     dialog.setMessageGravity();

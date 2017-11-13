@@ -23,6 +23,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.TransferInActivity;
@@ -125,7 +126,22 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         switch(where){
             case REQUEST_OUTPUT_CONFIRM:
                 mInTheRequest = false;
-                ToastUtil.show(getActivity(),errMsg);
+                if(errMsg.contains("库存不足")){
+                    dialog.setMessage("当前调拨商品库存不足，请重新盘点更新库存");
+                    dialog.setMessageGravity();
+                    dialog.setModel(CustomDialog.BOTH);
+                    dialog.setRightBtnListener("查看库存", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            //发送取消订单请求
+                            Intent intent = new Intent(getActivity(),MainActivity.class);
+                            intent.putExtra(MainActivity.INTENT_KEY_TAB,2);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    });
+                    dialog.show();
+                }
                 return;
         }
         mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
@@ -324,7 +340,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             switch (transferEntity.getPickingStateNum()){
                 case TransferEntity.STATE_SUBMIT://已提交，可出库
                     viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                    viewHolder.mmTvAction.setText("接单");
+                    viewHolder.mmTvAction.setText("出库");
                     //防止错位
                     viewHolder.mmTvAction.setTag(position);
                     viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {

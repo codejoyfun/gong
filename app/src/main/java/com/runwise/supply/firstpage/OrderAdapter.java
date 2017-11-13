@@ -495,7 +495,7 @@ public class OrderAdapter extends IBaseAdapter {
         switch (transferEntity.getPickingStateNum()){
             case TransferEntity.STATE_SUBMIT://已提交，可出库
                 viewHolder.mmTvAction.setVisibility(View.VISIBLE);
-                viewHolder.mmTvAction.setText("接单");
+                viewHolder.mmTvAction.setText("出库");
                 //防止错位
                 viewHolder.mmTvAction.setTag(position);
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {

@@ -134,8 +134,9 @@ public class TransferDetailActivity extends NetWorkActivity {
             mVGPrice.setVisibility(View.GONE);
         }
         mTvTransferId.setText(mTransferEntity.getPickingName());
-        //调入方-》提交，待出库，已修改-》可以修改
-        if(isDestLocation && mTransferEntity.getPickingStateNum()==TransferEntity.STATE_SUBMIT){
+        //调入方-》提交，待出库，已修改, 未confirm-》可以修改
+        if(isDestLocation && mTransferEntity.getPickingStateNum()==TransferEntity.STATE_SUBMIT &&
+                !mTransferEntity.isConfirmed()){
             setTitleRightText(true,"修改");
         }
         initBottomBar();
@@ -308,7 +309,27 @@ public class TransferDetailActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        Toast.makeText(this,errMsg,Toast.LENGTH_LONG).show();
+        switch (where){
+            case REQUEST_OUTPUT_CONFIRM:
+                if(errMsg.contains("库存不足")){
+                        dialog.setMessage("当前调拨商品库存不足，请重新盘点更新库存");
+                        dialog.setMessageGravity();
+                        dialog.setModel(CustomDialog.BOTH);
+                        dialog.setRightBtnListener("查看库存", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                //发送取消订单请求
+                                Intent intent = new Intent(TransferDetailActivity.this,MainActivity.class);
+                                intent.putExtra(MainActivity.INTENT_KEY_TAB,2);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
+                        });
+                        dialog.show();
+                }
+                return;
+        }
+//        Toast.makeText(this,errMsg,Toast.LENGTH_LONG).show();
     }
 
     /**
