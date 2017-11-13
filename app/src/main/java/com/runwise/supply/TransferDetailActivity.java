@@ -179,7 +179,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                 break;
             case TransferEntity.STATE_SUBMIT://已提交
                 if(!isDestLocation){//发出方
-                    mBtnDoAction.setText("接单");
+                    mBtnDoAction.setText("出库");
                     mBtnDoAction.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
