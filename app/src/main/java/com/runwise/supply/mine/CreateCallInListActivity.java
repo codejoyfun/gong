@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -37,6 +38,7 @@ import com.runwise.supply.orderpage.ProductActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
+import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.orderpage.entity.StoreResponse;
@@ -120,7 +122,21 @@ public class CreateCallInListActivity extends NetWorkActivity {
         footView.findViewById(R.id.tv_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getActivityContext(), ProductActivity.class), REQUEST_CODE_GET_PRODUCT);
+                Bundle bundle = new Bundle();
+                int size = mProductAdapter.getList().size();
+                ArrayList<AddedProduct> addedList = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    ProductData.ListBean bean = (ProductData.ListBean) mProductAdapter.getList().get(i);
+                    AddedProduct ap = new AddedProduct();
+                    ap.setProductId(String.valueOf(bean.getProductID()));
+                    int count = countMap.get(bean.getProductID()+"");
+                    ap.setCount(count);
+                    addedList.add(ap);
+                }
+                Intent intent = new Intent(getActivityContext(), ProductActivity.class);
+                bundle.putParcelableArrayList("ap", addedList);
+                intent.putExtra("apbundle", bundle);
+                startActivityForResult(intent, REQUEST_CODE_GET_PRODUCT);
             }
         });
         mUserInfo = GlobalApplication.getInstance().loadUserInfo();
@@ -253,9 +269,9 @@ public class CreateCallInListActivity extends NetWorkActivity {
                         for (Object object : mProductAdapter.getList()) {
                             ProductData.ListBean listBean = (ProductData.ListBean) object;
                             if (addedProduct.getProductId().equals(String.valueOf(listBean.getProductID()))) {
-                                int count = countMap.get(String.valueOf(listBean.getProductID()));
-                                count += addedProduct.getCount();
-                                countMap.put(String.valueOf(listBean.getProductID()), count);
+//                                int count = countMap.get(String.valueOf(listBean.getProductID()));
+//                                count += addedProduct.getCount();
+                                countMap.put(String.valueOf(listBean.getProductID()), addedProduct.getCount());
                                 findIt = true;
                                 break;
                             }

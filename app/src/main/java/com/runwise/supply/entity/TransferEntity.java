@@ -6,44 +6,28 @@ import android.os.Parcelable;
 import java.util.List;
 
 /**
- * 调度单
+ * 调拨单
  *
  * Created by Dong on 2017/10/10.
  */
 
-public class TransferEntity extends FirstPageOrder implements Parcelable{
-
+public class TransferEntity implements Parcelable{
     public static final int STATE_SUBMIT = 0;//提交状态
     public static final int STATE_OUT = 1;//发出状态
     public static final int STATE_FINISH = 2;//完成状态
-
-    //调拨单状态
-//    public static final String STATE_SUBMITTED = "已提交";//已提交
-//    public static final String STATE_PENDING_DELIVER = "待出库";//待出库
-//
-//    public static final String STATE_MODIFIED = "已修改";
-//
-//    public static final String STATE_DELIVER = "已发出";//已发出
-//    public static final String STATE_DELIVER2 = "已出库";//已出库
-//
-//    public static final String STATE_COMPLETE = "已完成";//完成
-//    public static final String STATE_CANCEL = "已取消";
-//
-//    public static final String STATE_INSUFFICIENT = "库存不足";
-
 
     private String pickingID;
     private String pickingName;
     private String date;
     private String pickingState;
+    private String pickingStateFull;
     private String locationName;
     private String locationDestName;
-    //private List<TransferDetailResponse.LinesBean> lines;
     private List<String> stateTracker;
-    private float totalPrice;
-    private int totalNum;
+    private float totalPrice;//根据当前状态的数量，如提交则是订单数，已出库则是出库数，已入库则是实际完成数
+    private int totalNum;//same as totalPrice
     private int pickingStateNum;
-    private boolean isConfirmed;
+    private boolean isConfirmed;//调出方是否已经点过“出库按钮”，即后台confirm接口是否已经被调用
 
     public int getPickingStateNum() {
         return pickingStateNum;
@@ -141,6 +125,14 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
         isConfirmed = confirmed;
     }
 
+    public String getPickingStateFull() {
+        return pickingStateFull;
+    }
+
+    public void setPickingStateFull(String pickingStateFull) {
+        this.pickingStateFull = pickingStateFull;
+    }
+
     public TransferEntity() {
     }
 
@@ -162,6 +154,7 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
         dest.writeFloat(this.totalPrice);
         dest.writeInt(this.totalNum);
         dest.writeInt(isConfirmed?1:0);
+        dest.writeString(this.pickingStateFull);
     }
 
     protected TransferEntity(Parcel in) {
@@ -176,6 +169,7 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
         this.totalPrice = in.readFloat();
         this.totalNum = in.readInt();
         this.isConfirmed = in.readInt()==1;
+        this.pickingStateFull = in.readString();
     }
 
     public static final Creator<TransferEntity> CREATOR = new Creator<TransferEntity>() {
@@ -189,9 +183,4 @@ public class TransferEntity extends FirstPageOrder implements Parcelable{
             return new TransferEntity[size];
         }
     };
-
-    @Override
-    public String getCreateDate() {
-        return date;
-    }
 }

@@ -123,7 +123,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     }
 
     protected void initViews(){
-        mTvTransferState.setText(mTransferEntity.getPickingState());
+        mTvTransferState.setText("调拨单"+mTransferEntity.getPickingState());
         mTvTransferLocations.setText(mTransferEntity.getLocationName()+"\u2192"+mTransferEntity.getLocationDestName());
         mTvCreateTime.setText(mTransferEntity.getDate());
         mTvCount.setText(mTransferEntity.getTotalNum()+"件");
@@ -343,15 +343,22 @@ public class TransferDetailActivity extends NetWorkActivity {
             String[] pieces = latestState.split(" ");
             String state = pieces[2];
             StringBuilder sbContent = new StringBuilder();
+            String productDetail;
+            if(canSeePrice){
+                productDetail = pieces[3];
+            }else{
+                String details[] = pieces[3].split(",");
+                productDetail = details[0];
+            }
             mTvStateDate.setText(pieces[0]);
             if(state.contains("提交")){//已提交
                 sbContent.append("操作人：").append(pieces[4]).append("；")
                         .append("调拨单号：").append(mTransferEntity.getPickingName()).append("；")
-                        .append("调拨商品：").append(pieces[3]);
+                        .append("调拨商品：").append(productDetail);
             }
             else if(state.contains("修改")){//已修改
                 sbContent.append("操作人：").append(pieces[4]).append("；")
-                        .append("调拨商品：").append(pieces[3]);
+                        .append("调拨商品：").append(productDetail);
             }
             else if(state.contains("发出")){//已发出
                 sbContent.append("操作人：").append(pieces[4]).append("；")
@@ -359,11 +366,11 @@ public class TransferDetailActivity extends NetWorkActivity {
                         .append(mTransferEntity.getLocationDestName());
             }else if(state.contains("完成")){//已完成
                 sbContent.append("入库人：").append(pieces[4]).append("；")
-                        .append("收货商品：").append(pieces[3]);
+                        .append("收货商品：").append(productDetail);
             }else{
                 sbContent.append("操作人：").append(pieces[4]).append("；")
                         .append("调拨单号：").append(mTransferEntity.getPickingName()).append("；")
-                        .append("调拨商品：").append(pieces[3]);
+                        .append("调拨商品：").append(productDetail);
             }
             mTvTransferStateTip.setText(sbContent.toString());
         }

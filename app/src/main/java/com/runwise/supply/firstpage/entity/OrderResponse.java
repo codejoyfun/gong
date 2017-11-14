@@ -3,7 +3,7 @@ package com.runwise.supply.firstpage.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.runwise.supply.entity.FirstPageOrder;
+import com.runwise.supply.entity.TransferEntity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,7 +24,10 @@ public class OrderResponse {
         this.list = list;
     }
 
-    public static class ListBean extends FirstPageOrder implements Parcelable{
+    /**
+     * 由于首页需要混合显示SO单和调拨单，所以接口的列表返回两种对象，这里继承TransferEntity用于获取调拨单
+     */
+    public static class ListBean extends TransferEntity implements Parcelable{
         /**
          * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,
          * "deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,
@@ -106,7 +109,8 @@ public class OrderResponse {
         public static final String TYPE_FRESH = "fresh";//鲜活订单
         public static final String TYPE_FRESH_VENDOR_DELIVERY = "fresh_vendor_delivery";// 鲜活直运订单
         public static final String TYPE_FRESH_THIRD_PART_DELIVERY = "fresh_third_part_delivery";// 鲜活第三方物流订单
-
+        public static final String TYPE_TRANSFER_IN = "transferIn";//调入单
+        public static final String TYPE_TRANSFER_OUT = "transferOut";//调出单
 
         public String getDeliveryType() {
             return deliveryType;
@@ -122,6 +126,7 @@ public class OrderResponse {
         }
 
         protected ListBean(Parcel in) {
+            super(in);
             amountTotal = in.readDouble();
             endUnloadDatetime = in.readString();
             driver = in.readString();
@@ -434,6 +439,13 @@ public class OrderResponse {
             this.returnOrders = returnOrders;
         }
 
+        /**
+         * 是否是调拨单
+         * @return
+         */
+        public boolean isTransfer(){
+            return getPickingName()!=null&&getPickingName().trim().length()>0;
+        }
 
         public boolean isUnApplyService() {
             return unApplyService;
@@ -449,6 +461,7 @@ public class OrderResponse {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest,flags);
             dest.writeDouble(amountTotal);
             dest.writeString(driver);
             dest.writeString(endUnloadDatetime);

@@ -1,9 +1,13 @@
 package com.runwise.supply.tools;
 
+import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 
 /**
  * Created by mike on 2017/9/27.
@@ -32,4 +36,31 @@ public class Utility {
         //params.height最后得到整个ListView完整显示需要的高度
         listView.setLayoutParams(params);
     }
+
+    /**
+     * https://stackoverflow.com/questions/35874001/dim-the-background-using-popupwindow-in-android
+     * @param popupWindow
+     */
+//    public static void dim(PopupWindow popupWindow, float alpha) {
+//        View container;
+//        if (popupWindow.getBackground() == null) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+//                container = (View) popupWindow.getContentView().getParent();
+//            } else {
+//                container = popupWindow.getContentView();
+//            }
+//        } else {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                container = (View) popupWindow.getContentView().getParent().getParent();
+//            } else {
+//                container = (View) popupWindow.getContentView().getParent();
+//            }
+//        }
+//        Context context = popupWindow.getContentView().getContext();
+//        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+//        WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
+//        p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+//        p.dimAmount = alpha;
+//        wm.updateViewLayout(container, p);
+//    }
 }

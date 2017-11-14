@@ -32,6 +32,8 @@ import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
+import java.text.DecimalFormat;
+
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 
 /**
@@ -191,7 +193,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
      * 列表adapter
      */
     private class TransferListAdapter extends IBaseAdapter<TransferEntity> {
-
+        DecimalFormat df = new DecimalFormat("#.##");
         @Override
         protected View getExView(final int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -208,7 +210,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
             viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
             viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-            if(canSeePrice)viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice() + "元，" + transferEntity.getTotalNum() + "件商品");
+            if(canSeePrice)viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + transferEntity.getTotalNum() + "件商品");
             else viewHolder.mmTvPrice.setText(transferEntity.getTotalNum() + "件商品");
             viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
@@ -350,6 +352,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     break;
                 default:
                     viewHolder.mmTvAction.setVisibility(View.GONE);
+                    viewHolder.mmTvCancel.setVisibility(View.GONE);
             }
         }
 
@@ -380,6 +383,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                     break;
                 default:
                     viewHolder.mmTvAction.setVisibility(View.GONE);
+                    viewHolder.mmTvCancel.setVisibility(View.GONE);
             }
         }
 

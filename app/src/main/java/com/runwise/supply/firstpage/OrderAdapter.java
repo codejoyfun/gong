@@ -30,6 +30,7 @@ import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ public class OrderAdapter extends IBaseAdapter {
     private Context context;
     private int returnCount;            //退货单数量
     private int orderCount;             //正常订单数量
+    private DecimalFormat df = new DecimalFormat("#.##");
 
     public void setReturnCount(int returnCount) {
         this.returnCount = returnCount;
@@ -388,10 +390,12 @@ public class OrderAdapter extends IBaseAdapter {
     public int getItemViewType(int position) {
         Object object = mList.get(position);
         if (object instanceof OrderResponse.ListBean) {
+            if(((OrderResponse.ListBean) object).isTransfer())return TYPE_TRANSFER;
             return TYPE_ORDER;
-        }else if(object instanceof TransferEntity){
-            return TYPE_TRANSFER;
         }
+//        else if(object instanceof TransferEntity){
+//            return TYPE_TRANSFER;
+//        }
         return TYPE_RETURN;
     }
 
@@ -435,7 +439,7 @@ public class OrderAdapter extends IBaseAdapter {
         viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
         viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
         viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(transferEntity.getTotalPrice() + "元，" + transferEntity.getTotalNum() + "件商品");
+        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + transferEntity.getTotalNum() + "件商品");
         else viewHolder.mmTvPrice.setText(transferEntity.getTotalNum() + "件商品");
         viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 

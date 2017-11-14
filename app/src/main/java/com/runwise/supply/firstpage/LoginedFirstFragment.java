@@ -41,7 +41,6 @@ import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
-import com.runwise.supply.entity.FirstPageOrder;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.firstpage.entity.CancleRequest;
@@ -65,7 +64,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -122,7 +120,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private String number = "02037574563";
     private UserInfo userInfo;
     private boolean isFirst = true;
-    private List<FirstPageOrder> mTransferAndOrderList = new ArrayList<>();//缓存调拨和一般订单，用于排序
+//    private List<FirstPageOrder> mTransferAndOrderList = new ArrayList<>();//缓存调拨和一般订单，用于排序
 
     public LoginedFirstFragment() {
     }
@@ -312,14 +310,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FROMORDER:
                 BaseEntity.ResultBean resultBean = result.getResult();
                 OrderResponse response = (OrderResponse) resultBean.getData();
-                //有调拨权限，请求调拨单
-                userInfo = GlobalApplication.getInstance().loadUserInfo();
-                if(!TextUtils.isEmpty(userInfo.getIsShopTransfer())&&userInfo.getIsShopTransfer().equals("true")){
-                    //暂存一般订单
-                    mTransferAndOrderList.addAll(response.getList());
-                    requestTransferIn();
-                    return;
-                }
+//                //有调拨权限，请求调拨单
+//                userInfo = GlobalApplication.getInstance().loadUserInfo();
+//                if(!TextUtils.isEmpty(userInfo.getIsShopTransfer())&&userInfo.getIsShopTransfer().equals("true")){
+//                    //暂存一般订单
+//                    mTransferAndOrderList.addAll(response.getList());
+//                    requestTransferIn();
+//                    return;
+//                }
                 //原有流程，适用于没有调拨权限的流程
                 int addIndex = orderList.size();
                 orderList.addAll(addIndex, response.getList());
@@ -362,7 +360,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
                 //加入轮询判断，不定时刷新，只有都拉到数据，才一起更新列表
                 orderList.clear();
-                mTransferAndOrderList.clear();
+//                mTransferAndOrderList.clear();
                 orderList.addAll(rob.getList());
                 if (adapter.getCount() == 0) {
                     //首次
@@ -387,34 +385,34 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 mSumMoneyData = (SumMoneyData) result.getResult().getData();
 //                LogUtils.e("onSuccessTime REQUEST_SUM "+(System.currentTimeMillis() - mTimeStartREQUEST_SUM));
                 break;
-            case REQUEST_TRANSFER_IN:
-                TransferListResponse transferInResponse = (TransferListResponse) result.getResult().getData();
-                mTransferAndOrderList.addAll(filter(transferInResponse.getList()));
-                requestTransferOut();
-                break;
-            case REQUEST_TRANSFER_OUT:
-                TransferListResponse transferOutResponse = (TransferListResponse) result.getResult().getData();
-                mTransferAndOrderList.addAll(filter(transferOutResponse.getList()));
-                //按照创建时间排序
-                Collections.sort(mTransferAndOrderList);
-
-                int addedIndex = orderList.size();
-                orderList.addAll(addedIndex, mTransferAndOrderList);
-                adapter.setReturnCount(addedIndex);
-                adapter.setData(orderList);
-                pullListView.onRefreshComplete();
-//                if (!isFirst){
-//                    ToastUtil.show(mContext,"订单已刷新");
+//            case REQUEST_TRANSFER_IN:
+//                TransferListResponse transferInResponse = (TransferListResponse) result.getResult().getData();
+//                mTransferAndOrderList.addAll(filter(transferInResponse.getList()));
+//                requestTransferOut();
+//                break;
+//            case REQUEST_TRANSFER_OUT:
+//                TransferListResponse transferOutResponse = (TransferListResponse) result.getResult().getData();
+//                mTransferAndOrderList.addAll(filter(transferOutResponse.getList()));
+//                //按照创建时间排序
+//                Collections.sort(mTransferAndOrderList);
+//
+//                int addedIndex = orderList.size();
+//                orderList.addAll(addedIndex, mTransferAndOrderList);
+//                adapter.setReturnCount(addedIndex);
+//                adapter.setData(orderList);
+//                pullListView.onRefreshComplete();
+////                if (!isFirst){
+////                    ToastUtil.show(mContext,"订单已刷新");
+////                }
+//                isFirst = false;
+//                if (adapter.getCount() == 0 && pullListView.getRefreshableView().getHeaderViewsCount() == 1) {
+//                    loadingLayout.onSuccess(0, "暂无在途订单", R.drawable.default_icon_ordernone);
+//                    pullListView.getRefreshableView().addHeaderView(loadingLayout);
+//                } else {
+//                    loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
 //                }
-                isFirst = false;
-                if (adapter.getCount() == 0 && pullListView.getRefreshableView().getHeaderViewsCount() == 1) {
-                    loadingLayout.onSuccess(0, "暂无在途订单", R.drawable.default_icon_ordernone);
-                    pullListView.getRefreshableView().addHeaderView(loadingLayout);
-                } else {
-                    loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
-                }
-                inProgress = false;
-                break;
+//                inProgress = false;
+//                break;
             case REQUEST_CANCEL_TRANSFER:
                 ToastUtil.show(mContext, "取消成功");
                 requestReturnList();
@@ -836,16 +834,5 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         mSelectTransferEntity = transferEntity;
         Object request = null;
         sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
-    }
-
-    /**
-     * 过滤掉已完成的
-     */
-    private List<TransferEntity> filter(List<TransferEntity> list){
-        if(list==null)return null;
-        for(int i=list.size()-1;i>=0;i--){
-            if(list.get(i).getPickingStateNum()==TransferEntity.STATE_FINISH)list.remove(i);
-        }
-        return list;
     }
 }
