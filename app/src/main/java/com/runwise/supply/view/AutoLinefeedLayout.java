@@ -81,8 +81,12 @@ public class AutoLinefeedLayout extends ViewGroup {
         }
         if (heightMode == MeasureSpec.AT_MOST || heightMode == MeasureSpec.UNSPECIFIED) {
             final int width = MeasureSpec.getSize(widthMeasureSpec);
+            int realHeight = getDesiredHeight(width);
+            if (realHeight <= 0){
+                realHeight = 0;
+            }
             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
-                    getDesiredHeight(width), MeasureSpec.EXACTLY));
+                    realHeight, MeasureSpec.EXACTLY));
         } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
