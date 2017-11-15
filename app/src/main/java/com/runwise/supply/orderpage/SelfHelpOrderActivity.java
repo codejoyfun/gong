@@ -588,11 +588,18 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        if (mCustomProgressDialog != null) {
+            mCustomProgressDialog.dismiss();
+        }
         switch (where) {
             case COMMIT_TYPE:
-//                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
-//                onekeyBtn.setEnabled(true);
-//                dateTv.setEnabled(true);
+                if(result.getResult()!=null && "A1001".equals(result.getResult().getState())){
+                    ToastUtil.show(this,"订单操作频率过高，请稍后再试！");
+                    onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+                    onekeyBtn.setEnabled(true);
+                    dateTv.setEnabled(true);
+                    return;
+                }
                 mCustomProgressDialog.dismiss();
                 dialog.setTitle("提示");
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
