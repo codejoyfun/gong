@@ -573,9 +573,13 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 setTitleRightText(true, "编辑");
                 break;
             case COMMIT_TYPE:
-//                onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
-//                onekeyBtn.setEnabled(true);
-//                dateTv.setEnabled(true);
+                if(result.getResult()!=null && "A1001".equals(result.getResult().getState())){
+                    ToastUtil.show(this,"订单操作频率过高，请稍后再试！");
+                    onekeyBtn.setBackgroundColor(Color.parseColor("#9ACC35"));
+                    onekeyBtn.setEnabled(true);
+                    dateTv.setEnabled(true);
+                    return;
+                }
                 progressDialog.dismiss();
 
                 dialog.setTitle("提示");
