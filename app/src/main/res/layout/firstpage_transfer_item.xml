@@ -13,12 +13,6 @@
         card_view:cardCornerRadius="5dp"
         android:background="@color/white"
         >
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ffff"
-            >
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -164,13 +158,5 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#e9e9e9"
-                android:layout_marginLeft="12dp"
-                />
-        </LinearLayout>
     </android.support.v7.widget.CardView>
 </FrameLayout>
