@@ -237,7 +237,7 @@ public class LoginActivity extends NetWorkActivity {
     public void onFind(View v) {
         this.startActivity(new Intent(this, FindPasswordActivity.class));
     }
-
+    HostResponse mHostResponse;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -304,13 +304,13 @@ public class LoginActivity extends NetWorkActivity {
 //				this.finish();
                 break;
             case GET_HOST:
-                HostResponse hostResponse = (HostResponse) result.getResult().getData();
-                if (TextUtils.isEmpty(hostResponse.getPort())) {
-                   SPUtils.put(getActivityContext(),FILE_KEY_HOST,hostResponse.getHost());
+                mHostResponse = (HostResponse) result.getResult().getData();
+                if (TextUtils.isEmpty(mHostResponse.getPort())) {
+                   SPUtils.put(getActivityContext(),FILE_KEY_HOST,mHostResponse.getHost());
                 } else {
-                    SPUtils.put(getActivityContext(),FILE_KEY_HOST,hostResponse.getHost() + ":" + hostResponse.getPort());
+                    SPUtils.put(getActivityContext(),FILE_KEY_HOST,mHostResponse.getHost() + ":" + mHostResponse.getPort());
                 }
-                SPUtils.put(getActivityContext(),FILE_KEY_DB_NAME,hostResponse.getDbName());
+                SPUtils.put(getActivityContext(),FILE_KEY_DB_NAME,mHostResponse.getDbName());
                 login();
                 break;
         }

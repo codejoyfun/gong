@@ -20,7 +20,7 @@ public class SPUtils {
      */
     public static final String FILE_NAME = "sharefile_data";
     public static final String FILE_KEY_HOST = "file_key_host";
-    public static final String FILE_KEY_DB_NAME = "file_key_db_name";
+    public static final String FILE_KEY_DB_NAME = "X-Odoo-Db";
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法

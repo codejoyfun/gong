@@ -4,29 +4,18 @@ package com.kids.commonframe.config;
  * 项目地址 3.0+
  */
 public class Constant {
+    public static final String RELEASE_URL = "";
+    public static final String DEBUG_URL = "";
     //正式环境地址
-//   public final static String RELEASE_URL = "http://develop.runwise.cn";
-//   public final static String RELEASE_URL = "http://test.runwise.cn";
-//   public final static String RELEASE_URL = "http://192.168.0.126:8069";
-
-//    public static final String DEBUG_URL = "http://erp2.runwise.cn";
-    public static final String DEBUG_URL = "http://develop.runwise.cn";
-//    public static final String DEBUG_URL = "http://192.168.10.61:8069";
-
-    public static boolean test = false;
-
-    public static String RELEASE_URL = "http://erp.runwise.cn";
 
     public static String UNLOGIN_URL = "http://erp.runwise.cn";
-
-
 
     //测试环境地址
     public static String TEST_URL = "http://114.215.40.244:8083/";
     //七牛Url
     public static String QINIU_URL = "http://ofwp5weyr.bkt.clouddn.com/";
     //用于请求的URL
-    public static String BASE_URL = test ? DEBUG_URL : RELEASE_URL;
+    public static String BASE_URL;
 
 
     //相册相关

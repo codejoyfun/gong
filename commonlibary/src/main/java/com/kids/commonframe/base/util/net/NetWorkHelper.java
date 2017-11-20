@@ -546,12 +546,12 @@ public class NetWorkHelper<T extends BaseEntity> {
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
             if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")){
-                headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, "X-Odoo-Db", SPUtils.get(context, FILE_KEY_DB_NAME,"")));
+                headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
             }else{
                 if(url.contains("/api/get/host")){
-                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, "X-Odoo-Db", "MFTest1117"));
+                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME, "MFTest1117"));
                 }else{
-                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, "X-Odoo-Db", "LBZ-Golive-01"));
+                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME, "LBZ-Golive-01"));
                 }
             }
 
