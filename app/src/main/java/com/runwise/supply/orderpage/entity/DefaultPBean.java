@@ -1,10 +1,12 @@
 package com.runwise.supply.orderpage.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by libin on 2017/7/10.
  */
 
-public class DefaultPBean {
+public class DefaultPBean implements Serializable{
         /**
          * actualQty : 19
          * presetQty : 19

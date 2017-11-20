@@ -549,9 +549,9 @@ public class NetWorkHelper<T extends BaseEntity> {
                 headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
             }else{
                 if(url.contains("/api/get/host")){
-                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME, "MFTest1117"));
+                    headerMap.put("X-Odoo-Db", "MFTest1117");
                 }else{
-                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME, "LBZ-Golive-01"));
+                    headerMap.put("X-Odoo-Db", "LBZ-Golive-01");
                 }
             }
 
