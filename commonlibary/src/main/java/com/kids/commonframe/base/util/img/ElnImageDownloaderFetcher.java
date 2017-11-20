@@ -89,7 +89,7 @@ public class ElnImageDownloaderFetcher extends HttpUrlConnectionNetworkFetcher {
         HttpURLConnection conn = (HttpURLConnection)(new URL(encodedUrl)).openConnection();
         conn.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
         conn.setReadTimeout(DEFAULT_HTTP_READ_TIMEOUT);
-        conn.setRequestProperty("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db", NetWorkHelper.DEFAULT_DATABASE_NAME));
+        conn.setRequestProperty("X-Odoo-Db", (String)SPUtils.get(context,SPUtils.FILE_KEY_DB_NAME, ""));
         conn.setRequestProperty("Cookie", (String) SPUtils.get(context,"sign",""));
         return conn;
     }

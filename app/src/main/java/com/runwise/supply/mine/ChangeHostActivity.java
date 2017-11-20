@@ -31,8 +31,8 @@ import com.runwise.supply.tools.StatusBarUtil;
 import org.greenrobot.eventbus.EventBus;
 
 import static android.os.Build.VERSION_CODES.KITKAT;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
-import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
 
 /**
  * Created by libin on 2017/8/11.
@@ -144,7 +144,7 @@ private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, datas);
         listview.setAdapter(adapter);
         ToastUtil.show(mContext, "请选择你要切换的数据库");
-        String dbStr = (String) SPUtils.get(mContext, "X-Odoo-Db", DEFAULT_DATABASE_NAME);
+        String dbStr = (String) SPUtils.get(mContext, FILE_KEY_DB_NAME, "");
         tipTv.setText("当前所在数据库：" + dbStr + "\n切换数据库将会重新登录");
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
