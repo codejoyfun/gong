@@ -13,7 +13,7 @@ public class Constant {
     public static final String DEBUG_URL = "http://develop.runwise.cn";
 //    public static final String DEBUG_URL = "http://192.168.10.61:8069";
 
-    public static boolean test = false;
+    public static boolean test = true;
 
     public static String RELEASE_URL = "http://erp.runwise.cn";
 

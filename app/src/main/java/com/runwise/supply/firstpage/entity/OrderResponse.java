@@ -102,6 +102,7 @@ public class OrderResponse {
         private List<LinesBean> lines;
         private List<String> stateTracker;
         private List<String> returnOrders;
+        private boolean isNewType;//订单信息是否包含所有的商品信息
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -161,6 +162,7 @@ public class OrderResponse {
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
             returnOrders = in.createStringArrayList();
+            isNewType = in.readByte() != 0;
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -454,6 +456,15 @@ public class OrderResponse {
         public void setUnApplyService(boolean unApplyService) {
             this.unApplyService = unApplyService;
         }
+
+        public boolean isNewType() {
+            return isNewType;
+        }
+
+        public void setIsNewType(boolean newType) {
+            isNewType = newType;
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -496,6 +507,7 @@ public class OrderResponse {
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
             dest.writeStringList(returnOrders);
+            dest.writeByte((byte)(isNewType ? 1:0));
         }
 
         public static class StoreBean {
@@ -785,6 +797,11 @@ public class OrderResponse {
             }
         }
 
+        /**
+         * 订单的商品信息
+         * 如果订单是isNewType,则包含详细的下单时保存的商品信息
+         * 否则则需要按商品ID查当前的商品信息
+         */
         public static class LinesBean implements Parcelable,Serializable {
             /**
              * productUom : 条
@@ -818,6 +835,18 @@ public class OrderResponse {
             private double productUomQty;
             private List<String> lotIDs;
             private List<LotListBean> lotList;
+            //详细商品信息
+            private String barcode;
+            private String defaultCode;
+            private String imageMedium;
+            private boolean isTwoUnit;
+            private String name;
+            private double productPrice;
+            private double productSettlePrice;
+            private int settleUomId;
+            private String tracking;
+            private String unit;
+            private int unloadAmount;
 
             //自定义字段
             private boolean isChanged;
@@ -950,7 +979,97 @@ public class OrderResponse {
                 this.lotList = lotList;
             }
 
+            public String getBarcode() {
+                return barcode;
+            }
 
+            public String getDefaultCode() {
+                return defaultCode;
+            }
+
+            public String getImageMedium() {
+                return imageMedium;
+            }
+
+            public boolean isTwoUnit() {
+                return isTwoUnit;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public double getProductPrice() {
+                return productPrice;
+            }
+
+            public double getProductSettlePrice() {
+                return productSettlePrice;
+            }
+
+            public int getSettleUomId() {
+                return settleUomId;
+            }
+
+            public String getUnit() {
+                return unit;
+            }
+
+            public int getUnloadAmount() {
+                return unloadAmount;
+            }
+
+            public void setBarcode(String barcode) {
+                this.barcode = barcode;
+            }
+
+            public void setDefaultCode(String defaultCode) {
+                this.defaultCode = defaultCode;
+            }
+
+            public void setImageMedium(String imageMedium) {
+                this.imageMedium = imageMedium;
+            }
+
+            public void setIsTwoUnit(boolean twoUnit) {
+                isTwoUnit = twoUnit;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public void setProductPrice(double productPrice) {
+                this.productPrice = productPrice;
+            }
+
+            public void setProductSettlePrice(double productSettlePrice) {
+                this.productSettlePrice = productSettlePrice;
+            }
+
+            public void setSettleUomId(int settleUomId) {
+                this.settleUomId = settleUomId;
+            }
+
+            public void setUnit(String unit) {
+                this.unit = unit;
+            }
+
+            public void setUnloadAmount(int unloadAmount) {
+                this.unloadAmount = unloadAmount;
+            }
+
+            public String getTracking() {
+                return tracking;
+            }
+
+            public void setTwoUnit(boolean twoUnit) {
+                isTwoUnit = twoUnit;
+            }
+
+            public void setTracking(String tracking) {
+                this.tracking = tracking;
+            }
 
             public static class LotListBean implements Parcelable {
                 /**
@@ -1092,6 +1211,18 @@ public class OrderResponse {
                 dest.writeStringList(this.lotIDs);
                 dest.writeTypedList(this.lotList);
                 dest.writeByte(this.isChanged ? (byte) 1 : (byte) 0);
+
+                dest.writeString(barcode);;
+                dest.writeString(defaultCode);;
+                dest.writeString(imageMedium);;
+                dest.writeByte((byte)(isTwoUnit?1:0));
+                dest.writeString(name);;
+                dest.writeDouble(productPrice);;
+                dest.writeDouble(productSettlePrice);;
+                dest.writeInt(settleUomId);;
+                dest.writeString(tracking);
+                dest.writeString(unit);;
+                dest.writeInt(unloadAmount);;
             }
 
             public LinesBean() {
@@ -1114,6 +1245,18 @@ public class OrderResponse {
                 this.lotIDs = in.createStringArrayList();
                 this.lotList = in.createTypedArrayList(LotListBean.CREATOR);
                 this.isChanged = in.readByte() != 0;
+
+                this.barcode = in.readString();
+                defaultCode = in.readString();
+                imageMedium = in.readString();
+                isTwoUnit = in.readByte()!=0;
+                name = in.readString();
+                productPrice = in.readDouble();
+                productSettlePrice = in.readDouble();
+                settleUomId = in.readInt();
+                tracking = in.readString();
+                unit = in.readString();
+                unloadAmount = in.readInt();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

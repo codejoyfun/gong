@@ -194,5 +194,20 @@ public class ProductData implements Serializable{
         public void setUom(String uom) {
             this.uom = uom;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ListBean listBean = (ListBean) o;
+
+            return productID == listBean.productID;
+        }
+
+        @Override
+        public int hashCode() {
+            return productID;
+        }
     }
 }

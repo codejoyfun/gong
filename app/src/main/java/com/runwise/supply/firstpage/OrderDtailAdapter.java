@@ -80,6 +80,11 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if(mListBean.isNewType()){//新版订单信息
+            bindNewType(holder,position);
+            return;
+        }
+        //旧版订单信息
         final OrderResponse.ListBean.LinesBean bean = productList.get(position);
         int pId = bean.getProductID();
         ViewHolder vh = (ViewHolder)holder;
@@ -177,5 +182,75 @@ public class OrderDtailAdapter extends RecyclerView.Adapter{
             weightTv = (TextView)itemView.findViewById(R.id.weightTv);
             unit1 = (TextView)itemView.findViewById(R.id.unit1);
         }
+    }
+
+    /**
+     * 新版的订单不用另外查商品信息，直接在订单接口返回下单时保存的商品信息
+     * @param holder
+     * @param position
+     */
+    private void bindNewType(RecyclerView.ViewHolder holder, int position){
+        final OrderResponse.ListBean.LinesBean bean = productList.get(position);
+        ViewHolder vh = (ViewHolder)holder;
+        FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+bean.getImageMedium());
+
+        int puq = (int)bean.getProductUomQty();
+        int dq = (int)bean.getDeliveredQty();
+        if((Constant.ORDER_STATE_DONE.equals(status)||Constant.ORDER_STATE_RATED.equals(status)) && bean.getDeliveredQty() != bean.getProductUomQty()) {
+            vh.oldPriceTv.setText("x"+puq);
+            vh.nowPriceTv.setText("x"+dq);
+            vh.oldPriceTv.setVisibility(View.VISIBLE);
+        }
+        else{
+            vh.oldPriceTv.setVisibility(View.GONE);
+            vh.nowPriceTv.setText("x"+puq);
+        }
+
+        vh.name.setText(bean.getName());
+            StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+            sb.append("  ").append(bean.getUnit());
+            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            if (canSeePrice){
+                if (isTwoUnit){
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(bean.getProductSettlePrice()))).append("元/").append(bean.getSettleUomId());
+                }else{
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(bean.getProductPrice()))).append("元/").append(bean.getProductUom());
+                }
+            }
+            vh.unit1.setText(bean.getProductUom());
+            vh.content.setText(sb.toString());
+            if (isTwoUnit){
+                vh.weightTv.setText(bean.getSettleAmount()+ " " +bean.getSettleUomId());
+                vh.weightTv.setVisibility(View.VISIBLE);
+            }else{
+                vh.weightTv.setVisibility(View.INVISIBLE);
+            }
+
+        //发货状态订单
+        vh.rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String deliveryType = mListBean.getDeliveryType();
+                if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)||deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+                        ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH)||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
+                    if(!status.equals("peisong")&&!status.equals("done")&&!status.equals("rated")){
+                        return;
+                    }
+                }
+                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)){
+                    if((status.equals("done")||status.equals("rated"))&&(bean.getLotList()!=null&&bean.getLotList().size() == 0)) {
+                        ToastUtil.show(v.getContext(), "该产品无批次追踪");
+                        return;
+                    }
+                    if (status.equals(ORDER_STATE_PEISONG)||status.equals(ORDER_STATE_DRAFT)||status.equals(ORDER_STATE_SALE)){
+                        return;
+                    }
+                }
+                Intent intent = new Intent(context, LotListActivity.class);
+                intent.putExtra("title",bean.getName());
+                intent.putExtra("bean", (Parcelable) bean);
+                context.startActivity(intent);
+            }
+        });
     }
 }
