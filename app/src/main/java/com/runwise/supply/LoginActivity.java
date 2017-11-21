@@ -42,6 +42,7 @@ import com.runwise.supply.entity.GetHostRequest;
 import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
+import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -52,6 +53,7 @@ import cn.jpush.android.api.JPushInterface;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
+import static com.runwise.supply.FindPasswordActivity.INTENT_KEY_COMPANY_NAME;
 
 
 public class LoginActivity extends NetWorkActivity {
@@ -127,17 +129,22 @@ public class LoginActivity extends NetWorkActivity {
                 RemUser user = (RemUser) parent.getAdapter().getItem(position);
                 mPhone.setText(user.getUserName());
                 mPassword.setText(user.getPassword());
+                mCetCompany.setText(user.getCompany());
                 loginPopUtil.hidePop();
             }
         });
+        showFirstUserFromDB();
+    }
 
-        mDb = DbUtils.create(this);
+    public void showFirstUserFromDB(){
+        mDb = MyDbUtil.create(this);
         try {
             List<RemUser> userList = mDb.findAll(Selector.from(RemUser.class).orderBy("id", true));
             if (userList != null && !userList.isEmpty()) {
                 RemUser rem = userList.get(0);
                 mPhone.setText(rem.getUserName());
                 mPassword.setText(rem.getPassword());
+                mCetCompany.setText(rem.getCompany());
             }
 
             if (userList == null || userList.size() <= 1) {
@@ -154,7 +161,7 @@ public class LoginActivity extends NetWorkActivity {
     private void getHost(String companyName) {
         GetHostRequest getHostRequest = new GetHostRequest();
         getHostRequest.setCompanyName(companyName);
-        sendConnection("http://develop.runwise.cn","/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
+        sendConnection("http://develop.runwise.cn", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
     }
 
     @OnClick(R.id.root_layout)
@@ -168,7 +175,7 @@ public class LoginActivity extends NetWorkActivity {
 
     @OnClick(R.id.login_pop_btn)
     public void doLoginPopBtn(View view) {
-        DbUtils mDb = DbUtils.create(this);
+        DbUtils mDb = MyDbUtil.create(this);
         try {
             //没多个历史帐号时，不需要有下拉箭头
             List<RemUser> userList = mDb.findAll(Selector.from(RemUser.class).orderBy("id", true));
@@ -235,9 +242,17 @@ public class LoginActivity extends NetWorkActivity {
      */
     @OnClick(R.id.login_find)
     public void onFind(View v) {
-        this.startActivity(new Intent(this, FindPasswordActivity.class));
+        if (TextUtils.isEmpty(mCetCompany.getText().toString())){
+            Toast.makeText(this, "公司名不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, FindPasswordActivity.class);
+        intent.putExtra(INTENT_KEY_COMPANY_NAME,mCetCompany.getText().toString());
+        this.startActivity(intent);
     }
+
     HostResponse mHostResponse;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -253,8 +268,7 @@ public class LoginActivity extends NetWorkActivity {
                     startActivity(intent);
                     return;
                 }
-                if (remPassword.isChecked()) {
-                    mDb = DbUtils.create(this);
+                    mDb = MyDbUtil.create(this);
                     try {
                         RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", loginRequest.getLogin())));
                         if (rem != null) {
@@ -262,13 +276,17 @@ public class LoginActivity extends NetWorkActivity {
                         }
                         RemUser newRem = new RemUser();
                         newRem.setUserName(loginRequest.getLogin());
-                        newRem.setPassword(loginRequest.getPassword());
+                        if (remPassword.isChecked()){
+                            newRem.setPassword(loginRequest.getPassword());
+                        }else{
+                            newRem.setPassword("");
+                        }
+                        newRem.setCompany(mCetCompany.getText().toString());
                         mDb.save(newRem);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     mDb.close();
-                }
                 GlobalApplication.getInstance().saveUserInfo(userInfoData);
 //				ToastUtil.show(mContext,"登录成功");
                 //@libin added
@@ -306,11 +324,11 @@ public class LoginActivity extends NetWorkActivity {
             case GET_HOST:
                 mHostResponse = (HostResponse) result.getResult().getData();
                 if (TextUtils.isEmpty(mHostResponse.getPort())) {
-                   SPUtils.put(getActivityContext(),FILE_KEY_HOST,mHostResponse.getHost());
+                    SPUtils.put(getActivityContext(), FILE_KEY_HOST, mHostResponse.getHost());
                 } else {
-                    SPUtils.put(getActivityContext(),FILE_KEY_HOST,mHostResponse.getHost() + ":" + mHostResponse.getPort());
+                    SPUtils.put(getActivityContext(), FILE_KEY_HOST, mHostResponse.getHost() + ":" + mHostResponse.getPort());
                 }
-                SPUtils.put(getActivityContext(),FILE_KEY_DB_NAME,mHostResponse.getDbName());
+                SPUtils.put(getActivityContext(), FILE_KEY_DB_NAME, mHostResponse.getDbName());
                 login();
                 break;
         }
@@ -384,7 +402,12 @@ public class LoginActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     mList.remove(position);
-                    DbUtils mDb = DbUtils.create(mContext);
+                    if (mList == null || mList.size() <= 1) {
+                        loginPopBtn.setVisibility(View.GONE);
+                    } else {
+                        loginPopBtn.setVisibility(View.VISIBLE);
+                    }
+                    DbUtils mDb = MyDbUtil.create(mContext);
                     try {
                         if (user != null) {
                             mDb.delete(user);
@@ -393,6 +416,7 @@ public class LoginActivity extends NetWorkActivity {
                         e.printStackTrace();
                     }
                     notifyDataSetChanged();
+                    showFirstUserFromDB();
                 }
             });
             return convertView;

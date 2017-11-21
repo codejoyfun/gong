@@ -60,6 +60,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ReceiveInfo;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
@@ -871,7 +872,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     }
 
     public void saveReceiveInfo() {
-        DbUtils dbUtils = DbUtils.create(ReceiveActivity.this);
+        DbUtils dbUtils = MyDbUtil.create(ReceiveActivity.this);
         dbUtils.configAllowTransaction(true);
         for (ReceiveBean bean : countMap.values()) {
             ReceiveInfo receiveInfo = new ReceiveInfo();

@@ -16,15 +16,21 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CheckUtil;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.FindPwdRequest;
 import com.runwise.supply.entity.GetCodeRequest;
+import com.runwise.supply.entity.GetHostRequest;
+import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.io.Serializable;
+
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_TEMP_DB_NAME;
+import static com.kids.commonframe.base.util.SPUtils.isLogin;
 
 
 /**
@@ -33,6 +39,7 @@ import java.io.Serializable;
 public class FindPasswordActivity extends NetWorkActivity {
 	private static final int GET_CODE = 1;
 	private static final int FIND_PASSWORD = 2;
+	private static final int GET_HOST = 3;
 	@ViewInject(R.id.teacher_reg_phone)
 	private EditText mPhonenNmber;
 	@ViewInject(R.id.teacher_reg_getcode)
@@ -51,6 +58,9 @@ public class FindPasswordActivity extends NetWorkActivity {
 	private TextView finish;
 
 	private boolean holdCode;
+
+	public static final String INTENT_KEY_COMPANY_NAME = "intent_key_company_name";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,6 +70,10 @@ public class FindPasswordActivity extends NetWorkActivity {
 		this.setTitleText(true,"重置密码");
 		this.setTitleLeftIcon(true,R.drawable.marking);
 		String phoneNum = getIntent().getStringExtra("phoneNumber");
+		if (!isLogin(getActivityContext())){
+			String company = getIntent().getStringExtra(INTENT_KEY_COMPANY_NAME);
+			getHost(company);
+		}
 		mPhonenNmber.setText(phoneNum);
 		if (TextUtils.isEmpty(phoneNum)) {
 			mGetCode.setEnabled(false);
@@ -116,7 +130,13 @@ public class FindPasswordActivity extends NetWorkActivity {
 		mPassword.addTextChangedListener(new TextWatchListener());
 		mPasswordrg.addTextChangedListener(new TextWatchListener());
 	}
-
+	private void getHost(String companyName) {
+		GetHostRequest getHostRequest = new GetHostRequest();
+		getHostRequest.setCompanyName(companyName);
+		sendConnection("http://develop.runwise.cn", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
+	}
+	HostResponse mHostResponse;
+	String mHost;
 	@Override
 	public void onSuccess(BaseEntity result, int where) {
 		switch (where) {
@@ -130,6 +150,15 @@ public class FindPasswordActivity extends NetWorkActivity {
 			case FIND_PASSWORD:
 				ToastUtil.show(mContext, "密码修改成功");
 				this.finish();
+				break;
+			case GET_HOST:
+				mHostResponse = (HostResponse) result.getResult().getData();
+				if (TextUtils.isEmpty(mHostResponse.getPort())) {
+					mHost = mHostResponse.getHost();
+				} else {
+					mHost = mHostResponse.getHost() + ":" + mHostResponse.getPort();
+				}
+				SPUtils.put(getActivityContext(),FILE_KEY_TEMP_DB_NAME,mHostResponse.getDbName());
 				break;
 		}
 	}
@@ -205,7 +234,11 @@ public class FindPasswordActivity extends NetWorkActivity {
 			return;
 		}
 		FindPwdRequest paramBean = new FindPwdRequest(code,phonNumber,password);
-		this.sendConnection("/gongfu/reset_password",paramBean ,FIND_PASSWORD, true, null);
+		if (!TextUtils.isEmpty(mHost)){
+			this.sendConnection(mHost,"/gongfu/reset_password",paramBean ,FIND_PASSWORD, true, null);
+		}else{
+			this.sendConnection("/gongfu/reset_password",paramBean ,FIND_PASSWORD, true, null);
+		}
 	}
 
 	@OnClick(R.id.teacher_reg_getcode)
@@ -226,7 +259,11 @@ public class FindPasswordActivity extends NetWorkActivity {
 			return;
 		}
 		GetCodeRequest paramBean = new GetCodeRequest(phonNumber);
-		this.sendConnection("/gongfu/get_captcha",paramBean ,GET_CODE, true, null);
+		if (!TextUtils.isEmpty(mHost)){
+			this.sendConnection(mHost,"/gongfu/get_captcha",paramBean ,GET_CODE, true, null);
+		}else{
+			this.sendConnection("/gongfu/get_captcha",paramBean ,GET_CODE, true, null);
+		}
 	}
 
 	@Override

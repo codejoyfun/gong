@@ -12,6 +12,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ReceiveInfo;
+import com.runwise.supply.tools.MyDbUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class ProductBasicUtils {
     public static HashMap<String, ProductBasicList.ListBean> getBasicMap(Context context) {
         //如果缓存中没有，去DB查一遍
         if (basicMap.size() == 0) {
-            DbUtils dbUitls = DbUtils.create(context);
+            DbUtils dbUitls = MyDbUtil.create(context);
             try {
                 List<ProductBasicList.ListBean> list = dbUitls.findAll(ProductBasicList.ListBean.class);
                 if (list != null) {
@@ -65,7 +66,7 @@ public class ProductBasicUtils {
     }
 
     public static List<ReceiveInfo> getReceiveInfo(Context context,int orderId,int productId) {
-        DbUtils dbUitls = DbUtils.create(context);
+        DbUtils dbUitls = MyDbUtil.create(context);
         try {
             return dbUitls.findAll(Selector.from(ReceiveInfo.class)
                     .where("orderId", "=", orderId)
@@ -85,7 +86,7 @@ public class ProductBasicUtils {
     public static void clearCache(Context context) {
         basicMap.clear();
         basicArr.clear();
-        DbUtils dbUitls = DbUtils.create(context);
+        DbUtils dbUitls = MyDbUtil.create(context);
         try {
             dbUitls.dropDb();
         } catch (DbException e) {
@@ -98,7 +99,7 @@ public class ProductBasicUtils {
             @Override
             protected String doInBackground(String... strings) {
                 try{
-                    DbUtils dbUtils = DbUtils.create(context);
+                    DbUtils dbUtils = MyDbUtil.create(context);
                     dbUtils.saveOrUpdateAll(listBeanList);
                     Log.d("haha","save finished!");
                 }catch (DbException e){
@@ -112,7 +113,7 @@ public class ProductBasicUtils {
 //        Runnable runnable = new Runnable() {
 //            @Override
 //            public void run() {
-//                DbUtils dbUtils = DbUtils.create(context);
+//                DbUtils dbUtils = MyDbUtil.create(context);
 //                //Log.d("haha","start save!");
 //                for (ProductBasicList.ListBean listBean : listBeanList) {
 //                    try {
