@@ -61,6 +61,13 @@ public abstract class NetWorkActivity extends BaseActivity implements NetWorkHel
 		netWorkHelper.sendConnection(bizName, params , where, showDialog, targerClass);
 	}
 
+	/**
+	 * json请求接口
+	 */
+	public void sendConnection(String host,String bizName,Object params, int where, boolean showDialog, Class<?> targerClass) {
+		netWorkHelper.sendConnection(host,bizName, params , where, showDialog, targerClass);
+	}
+
 	public void sendConnection(String bizName, int where, boolean showDialog, Class<?> targerClass) {
 		netWorkHelper.sendConnection(bizName,where, showDialog, targerClass);
 	}

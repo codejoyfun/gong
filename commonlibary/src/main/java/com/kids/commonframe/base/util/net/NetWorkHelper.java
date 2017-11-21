@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
 
 /**
@@ -271,7 +272,33 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+    }
+
+    /**
+     * json请求封装
+     *
+     * @param bizName     接口URL
+     * @param params      参数对象
+     * @param where       标示
+     * @param showDialog  对话框
+     * @param targerClass 结果class类
+     */
+    public void sendConnection(String host,String bizName, Object params, int where, boolean showDialog, Class<?> targerClass) {
+        this.setJsonParseType();
+        if (params != null) {
+            bodyParamStr = JSON.toJSONString(params);
+            if (!bizName.contains("order/undone_orders/") && !bizName.contains("gongfu/v2/return_order/")) {
+                LogUtils.e(bodyParamStr);
+            }
+        } else {
+            bodyParamStr = "{}";
+        }
+        String url = (String) SPUtils.get(context, FILE_KEY_HOST, "");
+        if (!TextUtils.isEmpty(url)) {
+            Constant.BASE_URL = url;
+        }
+        sendConnection(Method.POST, host + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
     }
 
 
@@ -281,7 +308,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
     }
 
     public void sendConnection(String bizName, Map<String, String> paramMap, int where, boolean showDialog, Class<?> targerClass) {
@@ -291,7 +318,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
     }
 
     /**
@@ -309,7 +336,15 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, Constant.BASE_URL + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList);
+    }
+
+    private String getHost(String bizName){
+        if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")){
+            return (String) SPUtils.get(context, FILE_KEY_HOST,"");
+        }else{
+            return Constant.UNLOGIN_URL;
+        }
     }
 
     @SuppressLint("UseSparseArrays")
@@ -371,6 +406,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "MFtest1025";
 //    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
     public static final String DEFAULT_DATABASE_NAME = "MFTest1117";
+//    public static  String DEFAULT_DATABASE_NAME = "LBZ-Golive-01";
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {
         private Class<?> targerClass;
@@ -510,7 +546,15 @@ public class NetWorkHelper<T extends BaseEntity> {
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
-            headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, "X-Odoo-Db", DEFAULT_DATABASE_NAME));
+            if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")){
+                headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
+            }else{
+                if(url.contains("/api/get/host")){
+                    headerMap.put("X-Odoo-Db", "MFTest1117");
+                }else{
+                    headerMap.put("X-Odoo-Db", "LBZ-Golive-01");
+                }
+            }
 
             LogUtils.e("Headers:" + headerMap.toString());
             return headerMap;

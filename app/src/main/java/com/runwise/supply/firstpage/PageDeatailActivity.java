@@ -16,7 +16,8 @@ import com.runwise.supply.tools.StatusBarUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
+
 
 /**
  * Created by libin on 2017/6/29.
@@ -35,7 +36,7 @@ public class PageDeatailActivity extends NetWorkActivity {
         setTitleText(true,"详情");
         String url = getIntent().getStringExtra("url");
         Map<String, String > map = new HashMap<String, String>() ;
-        map.put("X-Odoo-Db", (String)SPUtils.get(mContext,"X-Odoo-Db",DEFAULT_DATABASE_NAME));
+        map.put("X-Odoo-Db", (String)SPUtils.get(mContext,FILE_KEY_DB_NAME,""));
         webview.loadUrl(url,map);
     }
     @OnClick(R.id.title_iv_left)

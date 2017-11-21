@@ -20,6 +20,8 @@ public class SPUtils {
      */
     public static final String FILE_NAME = "sharefile_data";
     public static final String FILE_KEY_HOST = "file_key_host";
+    public static final String FILE_KEY_DB_NAME = "X-Odoo-Db";
+    public static final String FILE_KEY_PLACE_ORDER_CACHE = "file_key_place_order_cache";
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
@@ -303,6 +305,9 @@ public class SPUtils {
         SPUtils.put(context, "sign", "");
         SPUtils.put(context, "mLogin", false);
         SPUtils.put(context, "userInfo", "");
+        SPUtils.put(context, FILE_KEY_DB_NAME, "LBZ-Golive-01");
+        SPUtils.put(context, FILE_KEY_HOST, "");
+        SPUtils.put(context, FILE_KEY_PLACE_ORDER_CACHE, "");
     }
 
     /**

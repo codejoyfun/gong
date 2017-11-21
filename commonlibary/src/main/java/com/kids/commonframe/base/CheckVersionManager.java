@@ -22,7 +22,6 @@ import com.liulishuo.filedownloader.FileDownloader;
 import java.io.File;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static com.kids.commonframe.base.util.net.NetWorkHelper.DEFAULT_DATABASE_NAME;
 
 /**
  * 版本管理器
@@ -68,8 +67,8 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         localFile = new File(CommonUtils.getCachePath(baseActivity),remoteFile.getName());
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
 
-        String header = (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME);
-        if(!TextUtils.isEmpty(header))downloadTask.addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME));
+        String header = (String) SPUtils.get(baseActivity, "X-Odoo-Db", "");
+        if(!TextUtils.isEmpty(header))downloadTask.addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", ""));
 
         downloadTask.setPath(localFile.getAbsolutePath())
                 //.addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME))

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -23,6 +24,8 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ObjectTransformUtil;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
@@ -32,6 +35,7 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.business.entity.PlaceOrderCache;
 import com.runwise.supply.entity.OrderCommitResponse;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
@@ -49,6 +53,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import me.shaohui.bottomdialog.BottomDialog;
+
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PLACE_ORDER_CACHE;
 
 /**
  * Created by libin on 2017/7/12.
@@ -420,6 +426,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         adapter = new OneKeyAdapter(mContext);
         adapter.setCallback(this);
         pullListView.setAdapter(adapter);
+        restorePlaceOrderCache();
 //        initLoadingImgs();
         handler.postDelayed(runnable, 0);
         dateTv.setText(cachedDWStr);
@@ -558,6 +565,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 Intent intent = new Intent(SelfHelpOrderActivity.this, OrderCommitSuccessActivity.class);
                 intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, orderCommitResponse.getOrders());
                 startActivity(intent);
+                SPUtils.put(getActivityContext(),FILE_KEY_PLACE_ORDER_CACHE, "");
 //                set.setDuration(1000).start();
 //                orderSuccessIv.postDelayed(new Runnable() {
 //                    @Override
@@ -725,6 +733,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                 @Override
                 public void doClickButton(Button btn, CustomDialog dialog) {
+                    savePlaceOrderCache();
                     finish();
                 }
             });
@@ -733,4 +742,28 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         }
         finish();
     }
+
+    public void savePlaceOrderCache(){
+        if (adapter.getCount() > 0){
+            PlaceOrderCache placeOrderCache = new PlaceOrderCache();
+            placeOrderCache.setDefaultPBeans(adapter.getList());
+            for (DefaultPBean defaultPBean:placeOrderCache.getDefaultPBeans()){
+                int count = adapter.getCountMap().get(defaultPBean.getProductID());
+                defaultPBean.setPresetQty(count);
+            }
+            SPUtils.saveObject(getActivityContext(),SPUtils.FILE_KEY_PLACE_ORDER_CACHE,placeOrderCache);
+        }
+    }
+
+    public void restorePlaceOrderCache(){
+            PlaceOrderCache placeOrderCache = (PlaceOrderCache) SPUtils.readObject(getActivityContext(),SPUtils.FILE_KEY_PLACE_ORDER_CACHE);
+            if (placeOrderCache != null && placeOrderCache.getDefaultPBeans() != null){
+                adapter.setData(placeOrderCache.getDefaultPBeans());
+                self_help_rl.setVisibility(View.GONE);
+                bottom_bar.setVisibility(View.VISIBLE);
+                ViewPropertyAnimator.animate(bottom_bar).translationY(-CommonUtils.dip2px(mContext, 55));
+                pullListView.setVisibility(View.VISIBLE);
+            }
+    }
+
 }

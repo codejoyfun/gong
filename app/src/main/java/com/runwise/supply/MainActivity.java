@@ -21,6 +21,7 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -143,6 +144,14 @@ public class MainActivity extends NetWorkActivity {
         setContentView(R.layout.activity_main);
         StatusBarUtil.StatusBarLightMode(this);
         requestPermissions();
+        upLoadVersion();
+        isLogin = SPUtils.isLogin(mContext);
+        if (isLogin) {
+            Constant.BASE_URL = (String) SPUtils.get(getActivityContext(),SPUtils.FILE_KEY_HOST, "");
+            queryProductList();
+        }else{
+            Constant.BASE_URL = Constant.UNLOGIN_URL;
+        }
         initTabView();
         String registrationID = JPushInterface.getRegistrationID(this);
         Log.i("JPushInterface", "dfd " + registrationID);
@@ -154,11 +163,7 @@ public class MainActivity extends NetWorkActivity {
 //        mClient.setListener(mListener);
 //        mClient.connect();
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
-        isLogin = SPUtils.isLogin(mContext);
-        if (isLogin) {
-            queryProductList();
-            upLoadVersion();
-        }
+
         String tab1 = getString(R.string.tab_1);
         String tab2 = getString(R.string.tab_2);
         String tab3 = getString(R.string.tab_3);

@@ -18,12 +18,15 @@ public class Constant {
     public static String RELEASE_URL = "http://erp.runwise.cn";
 
 
+    public static String UNLOGIN_URL = "http://erp.runwise.cn";
+
     //测试环境地址
     public static String TEST_URL = "http://114.215.40.244:8083/";
     //七牛Url
     public static String QINIU_URL = "http://ofwp5weyr.bkt.clouddn.com/";
     //用于请求的URL
-    public static String BASE_URL = test ? DEBUG_URL : RELEASE_URL;
+    public static String BASE_URL;
+
 
     //相册相关
     public static final String ALBUM_PICTAKES = "CLASSCIRCLE_PICTAKES";
