@@ -121,7 +121,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             .setDimAmount(0.5f);
     //    private BottomSheetDialog showDialog = new BottomSheetDialog(mContext);
     private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
+        private Runnable runnable = new Runnable() {
         @Override
         public void run() {
             loadingImg.setImageResource(loadingImgs[currentIndex++]);

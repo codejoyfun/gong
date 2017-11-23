@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp">
+
+    <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sdv_product"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="10dp"
+        fresco:failureImage="@color/grayBackground"
+        fresco:failureImageScaleType="fitXY"
+        fresco:placeholderImage="@color/grayBackground"
+        fresco:placeholderImageScaleType="fitXY"
+        fresco:viewAspectRatio="1.33" />
+
+    <TextView
+        android:id="@+id/tv_product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_toRightOf="@id/sdv_product"
+        android:text="香糯汤圆黑芝麻口味"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="@dimen/second_title" />
+
+    <TextView
+        android:id="@+id/tv_sales_promotion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tv_product_price"
+        android:layout_alignTop="@+id/tv_product_price"
+        android:layout_below="@id/tv_product_name"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@id/sdv_product"
+        android:background="@drawable/bg_red_corner"
+        android:text="促"
+        android:textColor="@color/white"
+        android:textSize="@dimen/third_title" />
+
+    <TextView
+        android:id="@+id/tv_product_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_product_name"
+        android:layout_toRightOf="@id/tv_sales_promotion"
+        android:text="¥100.00/袋 | [满芬牌]100克/袋,10袋/盒"
+        android:textColor="@color/textColorThird"
+        android:textSize="@dimen/third_title" />
+
+    <TextView
+        android:id="@+id/tv_product_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/tv_product_unit"
+        android:text="x 2"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="@dimen/second_title" />
+    <TextView
+        android:id="@+id/tv_product_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="袋"
+        android:layout_marginLeft="5dp"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="@dimen/second_title" />
+
+</RelativeLayout>
