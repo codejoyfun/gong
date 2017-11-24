@@ -48,6 +48,7 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
             //mEtValue.selectAll();
             mEtValue.requestFocus();
         }
+        showInputMethod();
     }
 
     public interface IProductDialogCallback{
@@ -84,8 +85,7 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
     }
 
     private void showInputMethod(){
-        InputMethodManager imm=(InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm!=null)
-            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm!=null)imm.showSoftInput(mEtValue,InputMethodManager.SHOW_IMPLICIT);
     }
 }

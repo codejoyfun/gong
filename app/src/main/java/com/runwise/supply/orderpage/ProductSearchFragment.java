@@ -1,5 +1,6 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -8,6 +9,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -112,6 +115,12 @@ public class ProductSearchFragment extends NetWorkFragment {
 
             }
         });
+
+        if (mEtSearch.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            boolean isShowing = imm.showSoftInput(mEtSearch, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     /**
@@ -219,11 +228,18 @@ public class ProductSearchFragment extends NetWorkFragment {
             if (count > 0) {
                 viewHolder.tvCount.setVisibility(View.VISIBLE);
                 viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
             } else {
                 viewHolder.tvCount.setVisibility(View.INVISIBLE);
                 viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+            }
+
+            //标签
+            if(TextUtils.isEmpty(bean.getProductTag())){
+                viewHolder.tvProductTag.setVisibility(View.GONE);
+            }else{
+                viewHolder.tvProductTag.setText(bean.getProductTag());
             }
 
             /**
@@ -240,7 +256,7 @@ public class ProductSearchFragment extends NetWorkFragment {
                         if (currentNum == 0) {
                             v.setVisibility(View.INVISIBLE);
                             viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
                             mCountMap.remove(bean);
                         }
                         EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
@@ -262,7 +278,7 @@ public class ProductSearchFragment extends NetWorkFragment {
                     if (currentNum == 1) {//0变到1
                         viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                         viewHolder.tvCount.setVisibility(View.VISIBLE);
-                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
                 }
@@ -282,13 +298,13 @@ public class ProductSearchFragment extends NetWorkFragment {
                             if (value == 0) {
                                 viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
                                 viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
                                 mCountMap.remove(bean);
                             }else{
                                 viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                                 viewHolder.tvCount.setVisibility(View.VISIBLE);
                                 viewHolder.tvCount.setText(value+bean.getProductUom());
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
                                 mCountMap.put(bean,value);
                             }
                             viewHolder.tvCount.setText(value + bean.getProductUom());
@@ -337,13 +353,15 @@ public class ProductSearchFragment extends NetWorkFragment {
             @ViewInject(R.id.tv_product_count)
             TextView tvCount;//数量
             @ViewInject(R.id.tv_product_code)//代码
-                    TextView tvCode;
+            TextView tvCode;
             @ViewInject(R.id.tv_product_price_unit)//价格后的单位
-                    TextView tvPriceUnit;
+            TextView tvPriceUnit;
             @ViewInject(R.id.tv_product_price)//价格
-                    TextView tvPrice;
+            TextView tvPrice;
             @ViewInject(R.id.tv_product_content)
             TextView tvContent;
+            @ViewInject(R.id.iv_product_sale)
+            TextView tvProductTag;
         }
     }
 

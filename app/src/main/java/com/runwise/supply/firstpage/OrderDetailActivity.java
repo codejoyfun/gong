@@ -343,6 +343,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 break;
             case R.id.uploadBtn:
                 //凭证
+                if(SystemUpgradeHelper.getInstance(this).check(this))
                 if (bean != null) {
                     Intent intent3 = new Intent(mContext, UploadPayedPicActivity.class);
                     intent3.putExtra("orderid", bean.getOrderID());

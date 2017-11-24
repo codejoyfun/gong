@@ -59,6 +59,7 @@ import java.util.Set;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.kids.commonframe.config.Constant.SP_KEY_CART;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
 
 /**
@@ -299,6 +300,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         findViewById(R.id.tv_order_resume).setOnClickListener(this);
         findViewById(R.id.rl_cart_container).setOnClickListener(this);
         findViewById(R.id.title_iv_rigth2).setOnClickListener(this);
+        findViewById(R.id.tv_order_commit).setOnClickListener(this);
+        findViewById(R.id.rl_bottom_bar).setOnClickListener(this);
     }
 
     @Override
@@ -358,6 +361,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 }
                 break;
             case R.id.iv_product_cart://点购物车按钮
+            case R.id.rl_bottom_bar:
                 showCart(true);
                 break;
             case R.id.tv_order_resume:
@@ -372,9 +376,27 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                         .addToBackStack("product_search")
                         .commitAllowingStateLoss();
                 break;
+            case R.id.tv_order_commit:
+                onOkClicked();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 点击选好了
+     */
+    protected void onOkClicked(){
+        Intent intent = new Intent(this,OrderSubmitActivity.class);
+        ArrayList<ProductData.ListBean> list = new ArrayList<>();
+        for(ProductData.ListBean bean:mMapCount.keySet()){
+            if(bean.isInvalid() || mMapCount.get(bean)==0)continue;
+            bean.setActualQty(mMapCount.get(bean));
+            list.add(bean);
+        }
+        intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
+        startActivity(intent);
     }
 
     /*
@@ -433,19 +455,19 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     public void onFailure(String errMsg, BaseEntity result, int where) {
         //todo
         //测试
-        categoryResponse = new CategoryResponseV2();
-        CategoryResponseV2.Category[] catArr = new CategoryResponseV2.Category[10];
-        categoryResponse.setCategoryList(catArr);
-        for(int i=0;i<catArr.length;i++){
-            catArr[i] = new CategoryResponseV2.Category();
-            catArr[i].setCategoryParent("测试"+i);
-            String[] subCats = new String[8+i];
-            for(int j=0;j<subCats.length;j++){
-                subCats[j] = "测子类"+j;
-            }
-            catArr[i].setCategoryChild(subCats);
-        }
-        setupViewPager();
+//        categoryResponse = new CategoryResponseV2();
+//        CategoryResponseV2.Category[] catArr = new CategoryResponseV2.Category[10];
+//        categoryResponse.setCategoryList(catArr);
+//        for(int i=0;i<catArr.length;i++){
+//            catArr[i] = new CategoryResponseV2.Category();
+//            catArr[i].setCategoryParent("测试"+i);
+//            String[] subCats = new String[8+i];
+//            for(int j=0;j<subCats.length;j++){
+//                subCats[j] = "测子类"+j;
+//            }
+//            catArr[i].setCategoryChild(subCats);
+//        }
+//        setupViewPager();
     }
 
     protected class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
@@ -479,6 +501,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      */
     protected void showCart(boolean isShow){
         if(isShow){
+            if(mTvResume.getVisibility()==View.VISIBLE){
+                //已经在显示，收起
+                showCart(false);
+                return;
+            }
             mTvResume.setVisibility(View.VISIBLE);
             final View view = findViewById(R.id.include_cart);
             view.setVisibility(View.VISIBLE);

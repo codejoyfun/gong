@@ -232,11 +232,11 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             if (count > 0) {
                 viewHolder.tvCount.setVisibility(View.VISIBLE);
                 viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
             } else {
                 viewHolder.tvCount.setVisibility(View.INVISIBLE);
                 viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
             }
 
             /**

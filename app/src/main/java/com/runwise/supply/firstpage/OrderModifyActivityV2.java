@@ -1,8 +1,10 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.orderpage.OrderSubmitActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.DefaultPBean;
@@ -11,6 +13,8 @@ import com.runwise.supply.orderpage.entity.ProductData;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 
 /**
  * 新的修改订单流程
@@ -52,6 +56,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         super.onCreate(savedInstanceState);
         setTitleText(true, bean.getName());
         updateBottomBar();
+        showCart(true);
     }
 
     @Override
@@ -62,5 +67,20 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
     @Override
     protected void saveCache() {
         //不需要保存
+    }
+
+    @Override
+    protected void onOkClicked() {
+
+        Intent intent = new Intent(this,OrderSubmitActivity.class);
+        ArrayList<ProductData.ListBean> list = new ArrayList<>();
+        for(ProductData.ListBean bean:mMapCount.keySet()){
+            if(bean.isInvalid() || mMapCount.get(bean)==0)continue;
+            bean.setActualQty(mMapCount.get(bean));
+            list.add(bean);
+        }
+        intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
+        intent.putExtra(INTENT_KEY_ORDER,bean);
+        startActivity(intent);
     }
 }

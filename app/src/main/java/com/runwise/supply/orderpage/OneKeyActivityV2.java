@@ -122,6 +122,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                 }
                 requestCategory();
                 updateBottomBar();
+                showCart(true);
                 break;
         }
     }

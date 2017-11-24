@@ -1,6 +1,7 @@
 package com.runwise.supply.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.UserUtils;
@@ -27,9 +29,11 @@ import io.vov.vitamio.utils.NumberUtil;
 public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitProductAdapter.ViewHolder>{
 
     List<ProductData.ListBean> mListBeanList;
+    private boolean canSeePrice = false;
 
     public OrderSubmitProductAdapter(List<ProductData.ListBean> listBeanList){
         mListBeanList = listBeanList;
+        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -47,7 +51,15 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         holder.mTvProductCount.setText(String.valueOf(listBean.getActualQty()));
         holder.mTvProductName.setText(listBean.getName());
         holder.mTvProductUnit.setText(listBean.getProductUom());
-        holder.mTvProductPrice.setText("¥"+ NumberUtil.getIOrD(listBean.getPrice())+"/"+listBean.getProductUom()+" | "+listBean.getUnit());
+        StringBuilder sb = new StringBuilder();
+        if(canSeePrice)sb.append("¥").append(NumberUtil.getIOrD(listBean.getPrice())).append("/").append(listBean.getProductUom()).append(" | ");
+        sb.append(listBean.getUnit());
+        holder.mTvProductPrice.setText(sb.toString());
+        if(TextUtils.isEmpty(listBean.getProductTag())){
+            holder.mTvSalesPromotion.setVisibility(View.GONE);
+        }else{
+            holder.mTvSalesPromotion.setText(listBean.getProductTag());
+        }
     }
 
     @Override
