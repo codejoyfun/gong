@@ -38,8 +38,6 @@ public class OrderAgainActivity extends ProductActivityV2 {
         for (OrderResponse.ListBean.LinesBean lb : list) {
             ProductData.ListBean listBean = new ProductData.ListBean();
             ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(lb.getProductID());
-            //检查有效性
-            if(basicBean==null)continue;
             listBean.setProductID(lb.getProductID());
             listBean.setTracking(lb.getTracking());
             listBean.setProductUom(lb.getProductUom());

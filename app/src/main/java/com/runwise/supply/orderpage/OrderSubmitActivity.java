@@ -195,7 +195,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
             case REQUEST_MODIFY:
                 ToastUtil.show(mContext, "订单修改成功");
                 EventBus.getDefault().post(new OrderChangedEvent());
-                finish();
+                
+                ActivityManager.getInstance().finishAll();//关闭所有的activity
+                intent = new Intent(this, MainActivity.class);//重新打开首页
+                startActivity(intent);
 
                 BaseEntity.ResultBean bean = result.getResult();
                 JSONArray jsonArray = (JSONArray) bean.getOrders();
@@ -469,7 +472,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         double totalMoney = 0;
         int totalNum = 0;
         for (ProductData.ListBean bean : mProductList) {
-            totalMoney = totalMoney + bean.getPrice();
+            totalMoney = totalMoney + bean.getPrice() * bean.getActualQty();
             totalNum = totalNum + bean.getActualQty();
         }
         if (GlobalApplication.getInstance().getCanSeePrice()) {

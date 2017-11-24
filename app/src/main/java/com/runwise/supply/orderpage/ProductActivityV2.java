@@ -417,7 +417,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             double totalMoney = 0;
             int totalPieces = 0;
             for(ProductData.ListBean bean:mMapCount.keySet()){
-                totalMoney = totalMoney + bean.getPrice();
+                totalMoney = totalMoney + mMapCount.get(bean) * bean.getPrice();
                 totalPieces = totalPieces + mMapCount.get(bean);
             }
             mTvCartCount.setText(totalPieces+"");
@@ -565,6 +565,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         mmTvDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(mmSelected.size()==0)return;
                 CustomDialog customDialog = new CustomDialog(ProductActivityV2.this);
                 customDialog.setMessage("删除购物车中所选商品");
                 customDialog.setRightBtnListener("删除", new CustomDialog.DialogListener() {

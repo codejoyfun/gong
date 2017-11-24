@@ -83,7 +83,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
         OneKeyRequest request = new OneKeyRequest();
         request.setPredict_sale_amount(predict_sale_amount);
         request.setYongliang_factor(yongliang_factor);
-        sendConnection("/gongfu/v2/shop/preset/product/list", request, REQUEST_PRESET, false, DefaultProductData.class);
+        sendConnection("/gongfu/v2/shop/preset/product/list", request, REQUEST_PRESET, false, PresetProductData.class);
     }
 
     @Override
@@ -96,28 +96,13 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                 ttt.setVisibility(View.GONE);
                 mRlBottomBar.setVisibility(View.VISIBLE);
                 BaseEntity.ResultBean resultBean = result.getResult();
-                DefaultProductData data = (DefaultProductData) resultBean.getData();
+                PresetProductData data = (PresetProductData) resultBean.getData();
                 //init mCountMap;
                 if(data.getList()==null || data.getList().size()==0){
                     Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
                 }else{
-                    for(DefaultPBean pBean: data.getList()){
-                        ProductData.ListBean listBean = new ProductData.ListBean();
-                        listBean.setProductID(pBean.getProductID());
-                        ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(pBean.getProductID());
-                        listBean.setTracking(basicBean.getTracking());
-                        listBean.setProductUom(basicBean.getProductUom());
-                        listBean.setUnit(basicBean.getUnit());
-                        listBean.setPrice(basicBean.getPrice());
-                        listBean.setName(basicBean.getName());
-                        listBean.setDefaultCode(basicBean.getDefaultCode());
-                        listBean.setCategory(basicBean.getCategory());
-                        listBean.setImage(basicBean.getImage());
-                        listBean.setIsTwoUnit(basicBean.isTwoUnit());
-                        listBean.setSettlePrice(basicBean.getSettlePrice()+"");
-                        listBean.setSettleUomId(basicBean.getSettleUomId());
-                        listBean.setStockType(basicBean.getStockType());
-                        mMapCount.put(listBean,pBean.getPresetQty());
+                    for(ProductData.ListBean pBean: data.getList()){
+                        mMapCount.put(pBean,pBean.getPresetQty());
                     }
                 }
                 requestCategory();
