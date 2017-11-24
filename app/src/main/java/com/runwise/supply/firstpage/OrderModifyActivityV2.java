@@ -80,7 +80,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             list.add(bean);
         }
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
-        intent.putExtra(INTENT_KEY_ORDER,bean);
+        intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER,bean);
         startActivity(intent);
     }
 }
