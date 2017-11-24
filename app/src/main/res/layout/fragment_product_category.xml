@@ -4,8 +4,10 @@
     android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_sub_category"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"/>
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        />
     <FrameLayout
         android:id="@+id/fl_product_list_container"
         android:layout_toRightOf="@+id/rv_sub_category"

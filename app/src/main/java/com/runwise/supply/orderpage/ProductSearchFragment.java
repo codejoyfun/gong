@@ -1,24 +1,19 @@
 package com.runwise.supply.orderpage;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.EditorInfo;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,23 +23,20 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.bean.ProductCountChangeEvent;
-import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProductListRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductData;
-import com.runwise.supply.view.NoWatchEditText;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -52,15 +44,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 商品按照类别分页显示
- *
- * 所有的已选数据保存在父Activity的map中
- * TODO;use setUserVisibleHint
- *
+ * Created by Dong on 2017/11/23.
  */
-public class ProductListFragmentV2 extends NetWorkFragment {
-    public static final String INTENT_KEY_CATEGORY = "category";
-    public static final String INTENT_KEY_SUB_CATEGORY = "subcategory";
+
+public class ProductSearchFragment extends NetWorkFragment {
     private static final int REQUEST_PRODUCT_REFRESH = 0;
     private static final int REQUEST_PRODUCT_MORE = 1;
 
@@ -68,6 +55,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     private PullToRefreshListView pullListView;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout mLoadingLayout;
+    @ViewInject(R.id.et_search)
+    private EditText mEtSearch;//搜索框
+
     private ProductAdapter mProductAdapter;
 
     private String mCategory;
@@ -80,13 +70,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
     private List<ProductData.ListBean> mProductList = new ArrayList<>();
 
-    boolean isFirstLoaded = false;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSubCategory = getArguments().getString(INTENT_KEY_SUB_CATEGORY);
-        mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         mProductAdapter = new ProductAdapter();
         mProductAdapter.setData(mProductList);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -97,7 +83,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                refresh(false);
+                refresh();
             }
 
             @Override
@@ -106,9 +92,34 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             }
         });
 
-        if(getArguments()!=null && getArguments().getBoolean("firstLoad")){
-            isFirstLoaded = true;
-            refresh(true);
+        mEtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mKeyword = charSequence.toString();
+                if(TextUtils.isEmpty(mKeyword)){
+                    mProductAdapter.clear();
+                    mProductAdapter.notifyDataSetChanged();
+                    mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+                    return;
+                }
+                refresh(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        if (mEtSearch.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            boolean isShowing = imm.showSoftInput(mEtSearch, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 
@@ -127,17 +138,14 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
     @Override
     protected int createViewByLayoutId() {
-        return R.layout.fragment_products;
+        return R.layout.activity_product_search;
     }
 
     /**
-     * 懒加载，只有当第一次展示给用户的时候才开始查接口
+     * 刷新
      */
-    protected void show(){
-        if(!isFirstLoaded){
-            isFirstLoaded = true;
-            refresh(true);
-        }
+    protected void refresh(){
+        refresh(false);
     }
 
     /**
@@ -162,19 +170,11 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         sendConnection("/gongfu/v3/product/list",new ProductListRequest(mLimit,mPz,mKeyword,mCategory,mSubCategory),where,false,ProductData.class);
     }
 
-    /**
-     * 其它地方修改
-     * @param event
-     */
-    @Subscribe
-    public void updateProductCount(ProductCountUpdateEvent event){
-        mProductAdapter.notifyDataSetChanged();
-    }
-
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_PRODUCT_REFRESH:
+                if(TextUtils.isEmpty(mKeyword))return;
                 ProductData productData = (ProductData)result.getResult().getData();
                 mProductAdapter.clear();
                 mProductAdapter.appendData(productData.getList());
@@ -183,6 +183,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
                 mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
                 break;
             case REQUEST_PRODUCT_MORE:
+                if(TextUtils.isEmpty(mKeyword))return;
                 productData = (ProductData)result.getResult().getData();
                 mProductAdapter.appendData(productData.getList());
                 if(productData.getList()!=null && productData.getList().size()!=0){
@@ -201,6 +202,8 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     }
 
     /**
+     *
+     * TODO:重构为公用
      * 商品列表adapter
      */
     public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
@@ -219,13 +222,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            //标签
-            if(TextUtils.isEmpty(bean.getProductTag())){
-                viewHolder.tvProductTag.setVisibility(View.GONE);
-            }else{
-                viewHolder.tvProductTag.setText(bean.getProductTag());
-            }
-
             final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
             viewHolder.tvCount.setText(count+bean.getProductUom());
             //先根据集合里面对应个数初始化一次
@@ -237,6 +233,13 @@ public class ProductListFragmentV2 extends NetWorkFragment {
                 viewHolder.tvCount.setVisibility(View.INVISIBLE);
                 viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
                 viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+            }
+
+            //标签
+            if(TextUtils.isEmpty(bean.getProductTag())){
+                viewHolder.tvProductTag.setVisibility(View.GONE);
+            }else{
+                viewHolder.tvProductTag.setText(bean.getProductTag());
             }
 
             /**
@@ -253,7 +256,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
                         if (currentNum == 0) {
                             v.setVisibility(View.INVISIBLE);
                             viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
                             mCountMap.remove(bean);
                         }
                         EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
@@ -275,7 +278,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
                     if (currentNum == 1) {//0变到1
                         viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                         viewHolder.tvCount.setVisibility(View.VISIBLE);
-                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
                 }
@@ -295,13 +298,13 @@ public class ProductListFragmentV2 extends NetWorkFragment {
                             if (value == 0) {
                                 viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
                                 viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
                                 mCountMap.remove(bean);
                             }else{
                                 viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                                 viewHolder.tvCount.setVisibility(View.VISIBLE);
                                 viewHolder.tvCount.setText(value+bean.getProductUom());
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
                                 mCountMap.put(bean,value);
                             }
                             viewHolder.tvCount.setText(value + bean.getProductUom());
@@ -361,4 +364,18 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             TextView tvProductTag;
         }
     }
+
+
+    @OnClick({R.id.title_iv_left,R.id.btn_cancel})
+    public void btnClick(View v){
+        switch (v.getId()){
+            case R.id.title_iv_left:
+                getFragmentManager().beginTransaction().remove(this).commit();
+                break;
+            case R.id.btn_cancel:
+                mEtSearch.setText("");
+                break;
+        }
+    }
+
 }

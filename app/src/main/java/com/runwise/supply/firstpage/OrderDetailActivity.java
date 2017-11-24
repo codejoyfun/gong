@@ -222,7 +222,8 @@ public class OrderDetailActivity extends NetWorkActivity {
             case R.id.title_tv_rigth:
                 if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 if (isModifyOrder) {
-                    Intent mIntent = new Intent(this, OrderModifyActivity.class);
+//                    Intent mIntent = new Intent(this, OrderModifyActivity.class);
+                    Intent mIntent = new Intent(this, OrderModifyActivityV2.class);
                     Bundle mBundle = new Bundle();
                     mBundle.putParcelable("order", bean);
                     mIntent.putExtras(mBundle);
@@ -342,6 +343,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 break;
             case R.id.uploadBtn:
                 //凭证
+                if(SystemUpgradeHelper.getInstance(this).check(this))
                 if (bean != null) {
                     Intent intent3 = new Intent(mContext, UploadPayedPicActivity.class);
                     intent3.putExtra("orderid", bean.getOrderID());

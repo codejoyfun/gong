@@ -786,7 +786,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         sendConnection("/gongfu/shop/transfer/output_list", request, REQUEST_TRANSFER_OUT, false, TransferListResponse.class);
     }
 
+    boolean isDialogShown = false;//是不是有可能onCreate未调用同时收到推送，就弹两次框，防止这种情况
     private void showSystemUpgradeNotice(){
+        if(isDialogShown)return;
+        isDialogShown = true;
         final Dialog dialog = new Dialog(getActivity(),R.style.CustomProgressDialog);
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_system_upgrade_notice,null,false);
         dialog.setContentView(rootView);

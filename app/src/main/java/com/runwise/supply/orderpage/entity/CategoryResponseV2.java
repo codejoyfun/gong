@@ -25,23 +25,32 @@ public class CategoryResponseV2 {
      * 类别，包含二级
      */
     public static class Category implements Parcelable{
-        String name;
-        String[] categoryII;
+        int categoryNum;
+        String categoryParent;
+        String[] categoryChild;
 
-        public String getName() {
-            return name;
+        public int getCategoryNum() {
+            return categoryNum;
         }
 
-        public String[] getCategoryII() {
-            return categoryII;
+        public String getCategoryParent() {
+            return categoryParent;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public String[] getCategoryChild() {
+            return categoryChild;
         }
 
-        public void setCategoryII(String[] categoryII) {
-            this.categoryII = categoryII;
+        public void setCategoryNum(int categoryNum) {
+            this.categoryNum = categoryNum;
+        }
+
+        public void setCategoryParent(String categoryParent) {
+            this.categoryParent = categoryParent;
+        }
+
+        public void setCategoryChild(String[] categoryChild) {
+            this.categoryChild = categoryChild;
         }
 
         @Override
@@ -51,16 +60,18 @@ public class CategoryResponseV2 {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.name);
-            dest.writeStringArray(this.categoryII);
+            dest.writeInt(this.categoryNum);
+            dest.writeString(this.categoryParent);
+            dest.writeStringArray(this.categoryChild);
         }
 
         public Category() {
         }
 
         protected Category(Parcel in) {
-            this.name = in.readString();
-            this.categoryII = in.createStringArray();
+            this.categoryNum = in.readInt();
+            this.categoryParent = in.readString();
+            this.categoryChild = in.createStringArray();
         }
 
         public static final Creator<Category> CREATOR = new Creator<Category>() {

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/windowBackground">
+    <LinearLayout
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:paddingTop="13dp"
+        android:layout_height="70dp"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingRight="20dp"
+        android:layout_alignParentTop="true"
+        android:fitsSystemWindows="true"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/title_iv_left"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/nav_back"/>
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:background="@color/white"
+            android:layout_weight="1"
+            android:layout_marginLeft="15dp"
+            android:textSize="14sp"
+            android:drawablePadding="7dp"
+            android:layout_gravity="center_vertical"
+            android:hint="商品名称、关键字"/>
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:background="@drawable/btn_search_bar_close"
+            android:layout_marginLeft="7dp"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_below="@+id/search_bar"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/pullListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:fadingEdge="none"
+            android:fadingEdgeLength="0dp"
+            ptr:ptrAnimationStyle="flip">
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+        <com.kids.commonframe.base.view.LoadingLayout
+            android:id="@+id/loadingLayout"
+            android:layout_below="@id/titleLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            />
+    </FrameLayout>
+</RelativeLayout>

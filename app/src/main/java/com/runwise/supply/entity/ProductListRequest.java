@@ -1,25 +1,20 @@
 package com.runwise.supply.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
+ * 新版分页的商品列表
+ *
  * Created by Dong on 2017/11/1.
  */
 
-public class ProductListRequest {
+public class ProductListRequest implements Parcelable {
     private int limit;
     private int pz;
     private String keyword;
-    private String category;
-    private String subCategory;
-
-    public ProductListRequest(){}
-
-    public ProductListRequest(int limit, int pz, String keyword, String category,String subCategory){
-        this.limit = limit;
-        this.pz = pz;
-        this.keyword = keyword;
-        this.category = category;
-        this.subCategory = subCategory;
-    }
+    private String categoryParent;
+    private String categoryChild;
 
     public int getLimit() {
         return limit;
@@ -31,6 +26,14 @@ public class ProductListRequest {
 
     public String getKeyword() {
         return keyword;
+    }
+
+    public String getCategoryParent() {
+        return categoryParent;
+    }
+
+    public String getCategoryChild() {
+        return categoryChild;
     }
 
     public void setLimit(int limit) {
@@ -45,19 +48,56 @@ public class ProductListRequest {
         this.keyword = keyword;
     }
 
-    public String getCategory() {
-        return category;
+    public void setCategoryParent(String categoryParent) {
+        this.categoryParent = categoryParent;
     }
 
-    public String getSubCategory() {
-        return subCategory;
+    public void setCategoryChild(String categoryChild) {
+        this.categoryChild = categoryChild;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public void setSubCategory(String subCategory) {
-        this.subCategory = subCategory;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.limit);
+        dest.writeInt(this.pz);
+        dest.writeString(this.keyword);
+        dest.writeString(this.categoryParent);
+        dest.writeString(this.categoryChild);
     }
+
+    public ProductListRequest(int limit,int pz,String keyword,String categoryParent,String categoryChild){
+        this.limit = limit;
+        this.pz = pz;
+        this.keyword = keyword;
+        this.categoryParent = categoryParent;
+        this.categoryChild = categoryChild;
+    }
+
+    public ProductListRequest() {
+    }
+
+    protected ProductListRequest(Parcel in) {
+        this.limit = in.readInt();
+        this.pz = in.readInt();
+        this.keyword = in.readString();
+        this.categoryParent = in.readString();
+        this.categoryChild = in.readString();
+    }
+
+    public static final Parcelable.Creator<ProductListRequest> CREATOR = new Parcelable.Creator<ProductListRequest>() {
+        @Override
+        public ProductListRequest createFromParcel(Parcel source) {
+            return new ProductListRequest(source);
+        }
+
+        @Override
+        public ProductListRequest[] newArray(int size) {
+            return new ProductListRequest[size];
+        }
+    };
 }
