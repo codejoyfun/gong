@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rl_content_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/rl_bottom_bar">
+
+        <include layout="@layout/common_title_bar" android:id="@+id/title_bar"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/windowBackground"
+            android:orientation="vertical"
+            android:layout_below="@+id/title_bar">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="42dp">
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/indicator"
+                    style="@style/MyCustomTabLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@color/white"
+                    app:tabMode="scrollable" />
+
+                <ImageView
+                    android:id="@+id/iv_open"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/tab_shadow"
+                    android:padding="15dp"
+                    android:src="@drawable/arrow" />
+            </RelativeLayout>
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vp_product_fragments"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <!--用于智能下单的loading动画-->
+        <RelativeLayout
+            android:id="@+id/ttt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/windowBackground"
+            android:layout_below="@+id/title_bar"
+            android:visibility="gone">
+            <ImageView
+                android:layout_centerInParent="true"
+                android:id="@+id/loadingImg"
+                android:scaleType="fitXY"
+                android:layout_width="64dp"
+                android:layout_height="170dp" />
+            <TextView
+                android:id="@+id/loadingTv"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="正在计算..."
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_marginTop="15dp"
+                android:layout_below="@id/loadingImg"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!-- 购物车弹出框 -->
+    <RelativeLayout
+        android:id="@+id/rl_cart_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/rl_bottom_bar"
+        android:visibility="gone"
+        android:background="#66000000">
+        <include
+            android:id="@+id/include_cart"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_marginTop="127dp"
+            layout="@layout/dialog_cart"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+        <ImageView
+            android:id="@+id/iv_product_cart"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/bg_cart_icon"
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:id="@+id/tv_cart_count"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:text="234"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_red_oval"
+            android:layout_toRightOf="@+id/iv_product_cart"
+            android:layout_above="@+id/iv_product_cart"
+            android:layout_marginLeft="-15dp"
+            android:layout_marginBottom="-15dp"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/tv_product_total_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/iv_product_cart"
+            android:layout_centerVertical="true"
+            android:textColor="@color/textColorRed"
+            android:textSize="16sp"
+            android:layout_marginLeft="18dp"
+            android:visibility="gone"
+            android:text=""/>
+        <TextView
+            android:id="@+id/tv_order_commit"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="选好了"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_green_gradient_selector"
+            />
+        <TextView
+            android:id="@+id/tv_order_resume"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="继续选择"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:layout_toLeftOf="@+id/tv_order_commit"
+            android:background="@drawable/bg_fec35f_gradient"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#f5f5f5"
+            android:layout_alignParentTop="true"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

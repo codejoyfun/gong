@@ -109,7 +109,8 @@ public class OrderFragment extends NetWorkFragment {
                     return;
                 }
                 //跳转到智能下单页面
-                Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
+//                Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
+                Intent intent = new Intent(mContext,OneKeyActivityV2.class);
                 intent.putExtra("yongliang_factor",Double.valueOf(safeArr.get(selectedIndex)));
                 intent.putExtra("predict_sale_amount",Double.valueOf(editText.getText().toString()));
                 startActivity(intent);
@@ -117,7 +118,8 @@ public class OrderFragment extends NetWorkFragment {
             case R.id.selfHelpBtn:
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
-                    Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
+                    //Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
+                    Intent intent2 = new Intent(mContext,ProductActivityV2.class);
                     startActivity(intent2);
                 }else{
                     startActivity(new Intent(getActivity(), LoginActivity.class));

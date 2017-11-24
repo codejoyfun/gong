@@ -37,8 +37,11 @@
         android:layout_toRightOf="@id/sdv_product"
         android:background="@drawable/bg_red_corner"
         android:text="促"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
         android:textColor="@color/white"
-        android:textSize="@dimen/third_title" />
+        android:gravity="center"
+        android:textSize="@dimen/small_title" />
 
     <TextView
         android:id="@+id/tv_product_price"

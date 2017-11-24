@@ -207,7 +207,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
 //        getReceiveInfoFromDB();
         productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
-        if (productBasicHelper.check(lbean.getLines())) {
+        if (lbean.isNewType() && productBasicHelper.check(lbean.getLines())) {//新版订单不用查商品信息
             getCategory();
             updateUI();
         } else {

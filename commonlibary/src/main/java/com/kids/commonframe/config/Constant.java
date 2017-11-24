@@ -4,9 +4,19 @@ package com.kids.commonframe.config;
  * 项目地址 3.0+
  */
 public class Constant {
-    public static final String RELEASE_URL = "";
-    public static final String DEBUG_URL = "";
     //正式环境地址
+//   public final static String RELEASE_URL = "http://develop.runwise.cn";
+//   public final static String RELEASE_URL = "http://test.runwise.cn";
+//   public final static String RELEASE_URL = "http://192.168.0.126:8069";
+
+//    public static final String DEBUG_URL = "http://erp2.runwise.cn";
+    public static final String DEBUG_URL = "http://develop.runwise.cn";
+//    public static final String DEBUG_URL = "http://192.168.10.61:8069";
+
+    public static boolean test = true;
+
+    public static String RELEASE_URL = "http://erp.runwise.cn";
+
 
     public static String UNLOGIN_URL = "http://erp.runwise.cn";
 
@@ -42,4 +52,5 @@ public class Constant {
     public static final String ORDER_STATE_DONE = "done";
     public static final String ORDER_STATE_RATED = "rated";
 
+    public static final String SP_KEY_CART = "cart_cache3";
 }

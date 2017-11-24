@@ -39,6 +39,7 @@ import com.runwise.supply.repertory.entity.EditRequest;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.ProductBasicHelper;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.view.NoScrollViewPager;
 
 import java.util.ArrayList;
@@ -274,6 +275,7 @@ public class EditRepertoryListActivity extends NetWorkActivity{
 				break;
 			//提交
 			case R.id.right_layout:
+				if(!SystemUpgradeHelper.getInstance(this).check(this))return;
                 if(orderProductFragmentList != null && orderProductFragmentList.size()>0) {
 					dialog.setModel(CustomDialog.BOTH);
 					dialog.setLeftBtnListener("取消",null);

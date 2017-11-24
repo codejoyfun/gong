@@ -1,5 +1,8 @@
 package com.runwise.supply.orderpage.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,7 +21,7 @@ public class ProductData implements Serializable{
         this.list = list;
     }
 
-    public static class ListBean implements Serializable{
+    public static class ListBean implements Serializable,Parcelable{
         /**
          * actualQty : 0
          * isTwoUnit : false
@@ -51,6 +54,10 @@ public class ProductData implements Serializable{
         String unit;
         String tracking;
         String productUom;
+        String productTag;
+        //本地数据
+        private int cacheCount;
+        private boolean isInvalid;
 
         public String getProductUom() {
             return productUom;
@@ -194,5 +201,114 @@ public class ProductData implements Serializable{
         public void setUom(String uom) {
             this.uom = uom;
         }
+
+        public int getCacheCount() {
+            return cacheCount;
+        }
+
+        public void setCacheCount(int cacheCount) {
+            this.cacheCount = cacheCount;
+        }
+
+        public void setInvalid(boolean invalid) {
+            isInvalid = invalid;
+        }
+
+        public boolean isInvalid() {
+            return isInvalid;
+        }
+
+        public String getProductTag() {
+            return productTag;
+        }
+
+        public void setProductTag(String productTag) {
+            this.productTag = productTag;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ListBean listBean = (ListBean) o;
+
+            return productID == listBean.productID;
+        }
+
+        @Override
+        public int hashCode() {
+            return productID;
+        }
+
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.actualQty);
+            dest.writeByte(this.isTwoUnit ? (byte) 1 : (byte) 0);
+            dest.writeInt(this.presetQty);
+            dest.writeString(this.settlePrice);
+            dest.writeInt(this.productID);
+            dest.writeString(this.priceID);
+            dest.writeString(this.stockType);
+            dest.writeString(this.category);
+            dest.writeString(this.settleUomId);
+            dest.writeString(this.uomID);
+            dest.writeDouble(this.price);
+            dest.writeString(this.uom);
+            dest.writeSerializable(this.image);
+            dest.writeString(this.name);
+            dest.writeString(this.defaultCode);
+            dest.writeString(this.unit);
+            dest.writeString(this.tracking);
+            dest.writeString(this.productUom);
+            dest.writeString(this.productTag);
+            dest.writeInt(this.cacheCount);
+            dest.writeByte(this.isInvalid ? (byte) 1 : (byte) 0);
+        }
+
+        public ListBean() {
+        }
+
+        protected ListBean(Parcel in) {
+            this.actualQty = in.readInt();
+            this.isTwoUnit = in.readByte() != 0;
+            this.presetQty = in.readInt();
+            this.settlePrice = in.readString();
+            this.productID = in.readInt();
+            this.priceID = in.readString();
+            this.stockType = in.readString();
+            this.category = in.readString();
+            this.settleUomId = in.readString();
+            this.uomID = in.readString();
+            this.price = in.readDouble();
+            this.uom = in.readString();
+            this.image = (ImageBean) in.readSerializable();
+            this.name = in.readString();
+            this.defaultCode = in.readString();
+            this.unit = in.readString();
+            this.tracking = in.readString();
+            this.productUom = in.readString();
+            this.productTag = in.readString();
+            this.cacheCount = in.readInt();
+            this.isInvalid = in.readByte() != 0;
+        }
+
+        public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
+            @Override
+            public ListBean createFromParcel(Parcel source) {
+                return new ListBean(source);
+            }
+
+            @Override
+            public ListBean[] newArray(int size) {
+                return new ListBean[size];
+            }
+        };
     }
 }

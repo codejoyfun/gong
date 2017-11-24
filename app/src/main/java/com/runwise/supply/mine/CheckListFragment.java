@@ -27,6 +27,7 @@ import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.repertory.EditRepertoryListActivity;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 
@@ -216,6 +217,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                 holder.handlerBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         channelPandian(bean.getInventoryID());
                     }
                 });

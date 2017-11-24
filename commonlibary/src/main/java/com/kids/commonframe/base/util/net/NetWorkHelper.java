@@ -408,6 +408,7 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "ZY-PreGolive-001";
 //    public static final String DEFAULT_DATABASE_NAME = "MFtest1025";
 //    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
+    public static final String DEFAULT_DATABASE_NAME = "MFTest1117";
 //    public static  String DEFAULT_DATABASE_NAME = "LBZ-Golive-01";
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {

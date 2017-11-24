@@ -34,6 +34,7 @@ import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.swipmenu.SwipeMenu;
 import com.runwise.supply.view.swipmenu.SwipeMenuCreator;
@@ -137,6 +138,7 @@ public class ReceiveFragment extends BaseFragment {
         List<OrderResponse.ListBean.LinesBean> findArray = findArrayByWord(word);
         adapter.setData(findArray);
     }
+
     //返回当前标签下名称包含的
     private List<OrderResponse.ListBean.LinesBean> findArrayByWord(String word) {
         List<OrderResponse.ListBean.LinesBean> findList = new ArrayList<>();
@@ -199,8 +201,16 @@ public class ReceiveFragment extends BaseFragment {
             }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
-            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-            if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean != null && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+
+            String tracking = null;
+            if (orderBean.isNewType() || !TextUtils.isEmpty(bean.getTracking())) {
+                tracking = bean.getTracking();
+            } else {
+                final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
+                tracking = basicBean.getTracking();
+            }
+//          if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean != null && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+            if (orderBean.getDeliveryType().equals("vendor_delivery") && ProductBasicList.ListBean.TRACKING_TYPE_LOT.equals(tracking)) {
                 return false;
             }
             return super.isEnabled(position);
@@ -209,6 +219,9 @@ public class ReceiveFragment extends BaseFragment {
         @Override
         protected View getExView(final int position, View convertView, ViewGroup parent) {
             final ViewHolder viewHolder;
+            if(orderBean.isNewType()){//新版订单信息
+                return getNewTypeExView(position,convertView,parent);
+            }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
@@ -298,9 +311,9 @@ public class ReceiveFragment extends BaseFragment {
                 }
             }
             String str = viewHolder.receivedTv.getText().toString();
-            if (!TextUtils.isEmpty(str)){
+            if (!TextUtils.isEmpty(str)) {
                 int count = Integer.parseInt(str);
-                setUpBackground(convertView,count, (int) bean.getProductUomQty());
+                setUpBackground(convertView, count, (int) bean.getProductUomQty());
             }
             //双单位相关
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
@@ -374,10 +387,10 @@ public class ReceiveFragment extends BaseFragment {
             }
         }
 
-        public void setUpBackground(View convertView, int actualCount, int sourceCount){
-            if (actualCount != sourceCount){
+        public void setUpBackground(View convertView, int actualCount, int sourceCount) {
+            if (actualCount != sourceCount) {
                 convertView.setBackgroundColor(getResources().getColor(R.color.receive_differ));
-            }else{
+            } else {
                 convertView.setBackgroundColor(getResources().getColor(R.color.white));
             }
         }
@@ -405,8 +418,174 @@ public class ReceiveFragment extends BaseFragment {
             TextView settleTv;
             @ViewInject(R.id.weightTv)
             TextView weightTv;
+        }
 
+        /**
+         * 新版订单，可以直接从订单信息获取商品详细信息
+         *
+         * @param position
+         * @param convertView
+         * @param parent
+         * @return
+         */
+        protected View getNewTypeExView(final int position, View convertView, ViewGroup parent) {
+            final ViewHolder viewHolder;
+            final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
+            String pId = String.valueOf(bean.getProductID());
+            if (convertView == null) {
+                viewHolder = new ViewHolder();
+                convertView = View.inflate(mContext, R.layout.receive_list_item, null);
+                ViewUtils.inject(viewHolder, convertView);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+                viewHolder.receivedTv.setTag(position);
+            }
+            viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReceiveBean rb = new ReceiveBean();
+                    rb.setName(bean.getName());
+                    rb.setCount(0);
+                    rb.setProductId(bean.getProductID());
+                    if (isSettle) {
+                        rb.setTwoUnit(true);
+                        rb.setUnit(""+bean.getSettleUomId());
+                    } else {
+                        rb.setTwoUnit(false);
+                    }
+                    if (callback != null) {
+                        callback.doAction(rb);
+                    }
+                }
+            });
+            viewHolder.name.setText(bean.getName());
+            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + bean.getImageMedium());
+            StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+            sb.append(" | ").append(bean.getUnit());
+            if (canSeePrice) {
+                sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+            }
+            viewHolder.content.setText(sb.toString());
+            viewHolder.countTv.setText("/" + (int) bean.getProductUomQty() + bean.getProductUom());
 
+            if (orderBean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startEditBatch(bean);
+                    }
+                });
+            } else {
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String numText = viewHolder.receivedTv.getText().toString();
+                        int num;
+                        if (TextUtils.isEmpty(numText)) {
+                            num = 0;
+                        } else {
+                            num = Integer.parseInt(numText);
+                        }
+                        setReceiveCount(num, bean);
+                    }
+                });
+            }
+
+            //优先用已输入的数据，没有，则用默认
+            if (mode == 2) {
+                viewHolder.receivedTv.setText(bean.getTallyingAmount() + "");
+//                    Log.i("receivedTv", "022  " + bean.getTallyingAmount());
+//                    viewHolder.weightTv.setText(bean.getSettleAmount() + basicBean.getSettleUomId());
+            } else {
+                if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
+                    ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
+//                        if (rb.getCount() != 0){
+                    viewHolder.receivedTv.setText(rb.getCount() + "");
+//                        }
+//                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());
+                } else {
+                    viewHolder.receivedTv.setText("0");
+//                        Log.i("receivedTv", "011");
+//                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
+                }
+            }
+
+            String str = viewHolder.receivedTv.getText().toString();
+            if (!TextUtils.isEmpty(str)) {
+                int count = Integer.parseInt(str);
+                setUpBackground(convertView, count, (int) bean.getProductUomQty());
+            }
+            //双单位相关
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.line.getLayoutParams();
+            int margin = CommonUtils.dip2px(mContext, 15);
+            if (isSettle) {
+                //显示双单位信息，加号按钮隐藏
+                StringBuffer receiveStr = new StringBuffer();
+                StringBuffer weightStr = new StringBuffer();
+                if (mode == 2) {
+                    viewHolder.doBtn.setVisibility(View.INVISIBLE);
+                    receiveStr.append(bean.getTallyingAmount());
+                    weightStr.append(bean.getSettleAmount()).append(bean.getSettleUomId());
+                } else {
+                    viewHolder.doBtn.setVisibility(View.VISIBLE);
+                    if (mode == 1) {
+                        viewHolder.doBtn.setText("点货");
+                    } else {
+                        viewHolder.doBtn.setText("收货");
+                    }
+                    if (countMap.containsKey(String.valueOf(bean.getProductID()))) {
+                        ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
+                        receiveStr.append(rb.getCount());
+                        weightStr.append(rb.getTwoUnitValue()).append(rb.getUnit());
+                    } else {
+                        receiveStr.append("0");
+                        weightStr.append("0" + bean.getSettleUomId());
+                    }
+                }
+                receiveStr.append(" /" + (int) bean.getProductUomQty() + bean.getProductUom());
+                SpannableString builder = new SpannableString(receiveStr.toString());
+                int end = receiveStr.indexOf(" ");
+                builder.setSpan(new AbsoluteSizeSpan(16, true), 0, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                viewHolder.settleTv.setText(builder);
+                viewHolder.weightTv.setText(weightStr.toString());
+                viewHolder.countLL.setVisibility(View.GONE);
+                viewHolder.settleLL.setVisibility(View.VISIBLE);
+                params.setMargins(0, CommonUtils.dip2px(mContext, 42), margin, 0);
+
+            } else {
+                viewHolder.countLL.setVisibility(View.VISIBLE);
+                viewHolder.settleLL.setVisibility(View.GONE);
+                params.setMargins(0, margin, margin, 0);
+
+            }
+            return convertView;
+        }
+
+        /**
+         * 新版订单，可以直接从订单信息获取商品详细信息
+         */
+        private void setReceiveCount(int count, OrderResponse.ListBean.LinesBean bean) {
+            ReceiveBean rb = new ReceiveBean();
+            rb.setName(bean.getName());
+            rb.setTracking(bean.getTracking());
+//                        rb.setCount((int)bean.getProductUomQty());
+            rb.setCount(count);
+            rb.setProductUomQty((int) bean.getProductUomQty());
+            rb.setProductId(bean.getProductID());
+            rb.setDefaultCode(bean.getDefaultCode());
+            rb.setUnit(bean.getUnit());
+            rb.setStockType(bean.getStockType());
+            if (isSettle) {
+                rb.setTwoUnit(true);
+                rb.setUnit("" + bean.getSettleUomId());
+            } else {
+                rb.setTwoUnit(false);
+            }
+            countMap.put(String.valueOf(bean.getProductID()), rb);
+            if (callback != null) {
+                callback.doAction(rb);
+            }
         }
     }
 }
