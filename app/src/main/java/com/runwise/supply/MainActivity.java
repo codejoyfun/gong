@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,10 +15,12 @@ import android.widget.TextView;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
+import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -35,7 +38,10 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.MainRepertoryFragment;
+import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +87,7 @@ public class MainActivity extends NetWorkActivity {
 
         @Override
         public void run() {
-            DbUtils dbUtils = DbUtils.create(MainActivity.this);
+            DbUtils dbUtils = MyDbUtil.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
 //            Log.d("haha","total from network:"+basicList.size());
             HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
@@ -148,6 +154,10 @@ public class MainActivity extends NetWorkActivity {
         isLogin = SPUtils.isLogin(mContext);
         if (isLogin) {
             Constant.BASE_URL = (String) SPUtils.get(getActivityContext(),SPUtils.FILE_KEY_HOST, "");
+            if (TextUtils.isEmpty(Constant.BASE_URL)){
+                logout();
+                return;
+            }
             queryProductList();
         }else{
             Constant.BASE_URL = Constant.UNLOGIN_URL;
@@ -175,6 +185,19 @@ public class MainActivity extends NetWorkActivity {
         } else {
 
         }
+    }
+
+    private void logout(){
+        SPUtils.loginOut(mContext);
+        MessageFragment.isLogin = false;
+        GlobalApplication.getInstance().cleanUesrInfo();
+        JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
+        //退出登录
+        ActivityManager.getInstance().finishAll();
+        EventBus.getDefault().post(new UserLogoutEvent());
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
+        startActivity(intent);
     }
 
     @TargetApi(23)

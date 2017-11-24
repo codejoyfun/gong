@@ -14,6 +14,8 @@ public class RemUser {
     private String userName;
     @Column
     private String password;
+    @Column
+    private String company;
 
     public int getId() {
         return id;
@@ -37,5 +39,13 @@ public class RemUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
     }
 }

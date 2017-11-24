@@ -35,6 +35,7 @@ import org.w3c.dom.Text;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,8 @@ import java.util.Map.Entry;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_TEMP_DB_NAME;
+import static com.kids.commonframe.base.util.SPUtils.getAll;
 
 /**
  * 网络请求帮助类
@@ -340,7 +343,7 @@ public class NetWorkHelper<T extends BaseEntity> {
     }
 
     private String getHost(String bizName){
-        if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")){
+        if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")||bizName.contains("/api/user/agree_item_time")){
             return (String) SPUtils.get(context, FILE_KEY_HOST,"");
         }else{
             return Constant.UNLOGIN_URL;
@@ -551,7 +554,9 @@ public class NetWorkHelper<T extends BaseEntity> {
             }else{
                 if(url.contains("/api/get/host")){
                     headerMap.put("X-Odoo-Db", "MFTest1117");
-                }else{
+                }else if(url.contains("/gongfu/reset_password")||url.contains("/gongfu/get_captcha")){
+                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context,FILE_KEY_TEMP_DB_NAME,""));
+                }else {
                     headerMap.put("X-Odoo-Db", "LBZ-Golive-01");
                 }
             }
