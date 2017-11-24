@@ -159,15 +159,15 @@ public class MainActivity extends NetWorkActivity {
                 return;
             }
             queryProductList();
+            //检查版本
+            CheckVersionManager checkVersionManager = new CheckVersionManager(this);
+            checkVersionManager.checkVersion(false);
         }else{
             Constant.BASE_URL = Constant.UNLOGIN_URL;
         }
         initTabView();
         String registrationID = JPushInterface.getRegistrationID(this);
         Log.i("JPushInterface", "dfd " + registrationID);
-        //检查版本
-        CheckVersionManager checkVersionManager = new CheckVersionManager(this);
-        checkVersionManager.checkVersion(false);
 //        Capture.init(getApplicationContext());
 //        CaptureClient mClient = new CaptureClient();
 //        mClient.setListener(mListener);

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -329,6 +330,9 @@ public class LoginActivity extends NetWorkActivity {
                     SPUtils.put(getActivityContext(), FILE_KEY_HOST, mHostResponse.getHost() + ":" + mHostResponse.getPort());
                 }
                 SPUtils.put(getActivityContext(), FILE_KEY_DB_NAME, mHostResponse.getDbName());
+                //检查版本
+                CheckVersionManager checkVersionManager = new CheckVersionManager(this);
+                checkVersionManager.checkVersion(false);
                 login();
                 break;
         }

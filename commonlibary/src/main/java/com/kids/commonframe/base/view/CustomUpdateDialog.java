@@ -81,7 +81,7 @@ public class CustomUpdateDialog extends Dialog {
 				@Override
 				public void onClick(View v) {
 					dismiss();
-					checkVersionManager.startDownloadFile(Constant.BASE_URL+bean.getUrl());
+					checkVersionManager.startDownloadFile(bean.getUrl());
 				}
 			});
 		}
@@ -119,7 +119,7 @@ public class CustomUpdateDialog extends Dialog {
 			@Override
 			public void onClick(View arg0) {
 				dismiss();
-				checkVersionManager.startDownloadFile(Constant.BASE_URL+bean.getUrl());
+				checkVersionManager.startDownloadFile(bean.getUrl());
 //				Uri updateUrl = Uri.parse(bean.getUrl());
 //				Intent intent = new Intent(Intent.ACTION_VIEW, updateUrl);
 //				if (bean.getUrl().startsWith("www.")) {

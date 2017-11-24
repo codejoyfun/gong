@@ -342,7 +342,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList);
     }
 
-    private String getHost(String bizName){
+    public String getHost(String bizName){
         if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")||bizName.contains("/api/user/agree_item_time")){
             return (String) SPUtils.get(context, FILE_KEY_HOST,"");
         }else{
