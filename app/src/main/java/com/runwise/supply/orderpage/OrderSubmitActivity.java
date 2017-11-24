@@ -1,5 +1,6 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import com.kids.commonframe.base.UserInfo;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderSubmitProductAdapter;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -27,6 +29,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.shaohui.bottomdialog.BottomDialog;
+
+import static java.lang.System.currentTimeMillis;
 
 public class OrderSubmitActivity extends NetWorkActivity {
 
@@ -69,6 +73,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
     private String cachedDWStr;
     int mReserveGoodsAdvanceDate;
     private Handler handler = new Handler();
+    public static final String INTENT_KEY_ORDER = "intent_key_order";
+    OrderResponse.ListBean mOrder;
 
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener() {
@@ -86,17 +92,56 @@ public class OrderSubmitActivity extends NetWorkActivity {
         setContentView(R.layout.activity_order_sumbit);
         ButterKnife.bind(this);
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
-        OrderSubmitProductAdapter orderSubmitProductAdapter = new OrderSubmitProductAdapter(getTestData());
-        mRvProductList.setAdapter(orderSubmitProductAdapter);
 
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
         selectedDateIndex = 1;
         mTvDate.setText(cachedDWStr);
+        OrderSubmitProductAdapter orderSubmitProductAdapter;
+        if (getIntent().hasExtra(INTENT_KEY_ORDER)) {
+            mOrder = (OrderResponse.ListBean) getIntent().getSerializableExtra(INTENT_KEY_ORDER);
+            orderSubmitProductAdapter = new OrderSubmitProductAdapter(getTestData());
+        }else{
+            orderSubmitProductAdapter = new OrderSubmitProductAdapter(getTestData());
+        }
+        mRvProductList.setAdapter(orderSubmitProductAdapter);
+
         Object paramBean = null;
         sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
     }
+
+    private void setUpDate(int dayDiff) {
+        //送达日期
+        long estimatedStamp = TimeUtils.getFormatTime(mOrder.getEstimatedTime());
+        //下单日期
+        long createTime = TimeUtils.stringToTimeStamp(mOrder.getCreateDate());
+        String estimatedTimeStr;
+        //最初下单的送达日期最小值
+        long minStamp = createTime + 1000 * 3600 * 24 * (dayDiff - 1);
+        if (TimeUtils.differentDaysByMillisecond(currentTimeMillis(), minStamp) > 0) {
+            mReserveGoodsAdvanceDate = 1;
+            estimatedTimeStr = TimeUtils.getMMdd(currentTimeMillis());
+            cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(0);
+            selectedDate = 0;
+        } else {
+            mReserveGoodsAdvanceDate = TimeUtils.differentDaysByMillisecond(createTime + dayDiff * 1000 * 3600 * 24, currentTimeMillis());
+            if (estimatedStamp == createTime + dayDiff * 1000 * 3600 * 24) {
+                estimatedTimeStr = TimeUtils.getMMdd(createTime + dayDiff * 1000 * 3600 * 24);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+            } else if (estimatedStamp > createTime + dayDiff * 1000 * 3600 * 24) {
+                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1);
+                selectedDate = 2;
+            } else {
+                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1);
+                selectedDate = 0;
+            }
+        }
+        mTvDate.setText(cachedDWStr);
+    }
+
 
     List<ProductData.ListBean> getTestData() {
         List<ProductData.ListBean> listBeans = new ArrayList<>();
@@ -114,7 +159,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where){
+        switch (where) {
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
@@ -122,6 +167,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
                 selectedDateIndex = 1;
+                setSelectedColor(1);
+                if (mOrder != null) {
+                    setUpDate(mReserveGoodsAdvanceDate);
+                }
                 break;
         }
     }
@@ -238,19 +287,19 @@ public class OrderSubmitActivity extends NetWorkActivity {
     //参数从0开始
     private void setSelectedColor(int i) {
         for (TextView tv : wArr) {
-            if (tv != null){
+            if (tv != null) {
                 tv.setTextColor(Color.parseColor("#2E2E2E"));
             }
         }
         for (TextView tv : dArr) {
-            if (tv != null){
+            if (tv != null) {
                 tv.setTextColor(Color.parseColor("#2E2E2E"));
             }
         }
-        if (wArr[i] != null){
+        if (wArr[i] != null) {
             wArr[i].setTextColor(Color.parseColor("#6BB400"));
         }
-        if (dArr[i] != null){
+        if (dArr[i] != null) {
             dArr[i].setTextColor(Color.parseColor("#6BB400"));
         }
     }
