@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -22,14 +24,15 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.config.Constant;
+import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderSubmitProductAdapter;
+import com.runwise.supply.entity.OrderChangedEvent;
 import com.runwise.supply.entity.OrderCommitResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
-import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -44,12 +47,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.shaohui.bottomdialog.BottomDialog;
 
-import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PLACE_ORDER_CACHE;
+import static java.lang.System.currentTimeMillis;
 
 public class OrderSubmitActivity extends NetWorkActivity {
     public static final String INTENT_KEY_PRODUCTS = "intent_products";
-    public static final String INTENT_KEY_ORDER = "intent_order";
-
     public static final int REQUEST_USER_INFO = 1 << 0;
     public static final int REQUEST_SUBMIT = 2000;
     public static final int REQUEST_MODIFY = 3000;
@@ -92,9 +93,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
     private String cachedDWStr;
     int mReserveGoodsAdvanceDate;
     private Handler handler = new Handler();
+    public static final String INTENT_KEY_ORDER = "intent_key_order";
+    OrderResponse.ListBean mOrder;
 
     private ArrayList<ProductData.ListBean> mProductList;//选择的商品
-    private OrderResponse.ListBean mOrder;//订单对象，如果是修改订单，则有
 
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener() {
@@ -111,44 +113,73 @@ public class OrderSubmitActivity extends NetWorkActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_sumbit);
         ButterKnife.bind(this);
-        showBackBtn();
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER);
+        if (mOrder != null) {
+            mTvTitle.setText("修改订单");
+            mBtnSubmit.setText("修改订单");
+        }
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
-        OrderSubmitProductAdapter orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
-        mRvProductList.setAdapter(orderSubmitProductAdapter);
 
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
         selectedDateIndex = 1;
         mTvDate.setText(cachedDWStr);
+        OrderSubmitProductAdapter orderSubmitProductAdapter;
+        orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
+        mRvProductList.setAdapter(orderSubmitProductAdapter);
+
         Object paramBean = null;
         sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
         updateBottomBar();
     }
 
-    List<ProductData.ListBean> getProductData(){
+    List<ProductData.ListBean> getProductData() {
         mProductList = getIntent().getParcelableArrayListExtra(INTENT_KEY_PRODUCTS);
         return mProductList;
     }
 
-    List<ProductData.ListBean> getTestData() {
-        List<ProductData.ListBean> listBeans = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            ProductData.ListBean listBean = new ProductData.ListBean();
-            listBean.setActualQty(10);
-            listBean.setName("黑芝麻");
-            listBean.setPrice(10.0f);
-            listBean.setProductUom("袋");
-            listBean.setUnit("[满芬牌]100克/袋,10袋/盒");
-            listBeans.add(listBean);
+    private void setUpDate(int dayDiff) {
+        //送达日期
+        long estimatedStamp = TimeUtils.getFormatTime(mOrder.getEstimatedTime());
+        //下单日期
+        long createTime = TimeUtils.stringToTimeStamp(mOrder.getCreateDate());
+        String estimatedTimeStr;
+        //最初下单的送达日期最小值
+        long minStamp = createTime + 1000 * 3600 * 24 * (dayDiff - 1);
+        if (TimeUtils.differentDaysByMillisecond(currentTimeMillis(), minStamp) > 0) {
+            mReserveGoodsAdvanceDate = 1;
+            estimatedTimeStr = TimeUtils.getMMdd(currentTimeMillis());
+            cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(0);
+            selectedDateIndex = 0;
+            selectedDate = mReserveGoodsAdvanceDate - 1;
+        } else {
+            mReserveGoodsAdvanceDate = TimeUtils.differentDaysByMillisecond(createTime + dayDiff * 1000 * 3600 * 24, currentTimeMillis());
+            if (estimatedStamp == createTime + dayDiff * 1000 * 3600 * 24) {
+                estimatedTimeStr = TimeUtils.getMMdd(createTime + dayDiff * 1000 * 3600 * 24);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+                selectedDateIndex = 1;
+                selectedDate = mReserveGoodsAdvanceDate;
+            } else if (estimatedStamp > createTime + dayDiff * 1000 * 3600 * 24) {
+                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1);
+                selectedDateIndex = 2;
+                selectedDate = mReserveGoodsAdvanceDate+1;
+            } else {
+                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
+                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1);
+                selectedDateIndex = 0;
+                selectedDate = mReserveGoodsAdvanceDate-1;
+            }
         }
-        return listBeans;
+        mTvDate.setText(cachedDWStr);
     }
+
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where){
+        Intent intent;
+        switch (where) {
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
@@ -156,6 +187,25 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
                 selectedDateIndex = 1;
+                setSelectedColor(1);
+                if (mOrder != null) {
+                    setUpDate(mReserveGoodsAdvanceDate);
+                }
+                break;
+            case REQUEST_MODIFY:
+                ToastUtil.show(mContext, "订单修改成功");
+                EventBus.getDefault().post(new OrderChangedEvent());
+                finish();
+
+                BaseEntity.ResultBean bean = result.getResult();
+                JSONArray jsonArray = (JSONArray) bean.getOrders();
+                ArrayList<OrderResponse.ListBean> list = new ArrayList<>();
+                list.addAll(JSON.parseArray(jsonArray.toString(), OrderResponse.ListBean.class));
+
+                intent = new Intent(this, OrderCommitSuccessActivity.class);
+                intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, list);
+                intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE, 0);
+                startActivity(intent);
                 break;
             case REQUEST_SUBMIT:
                 final OrderCommitResponse orderCommitResponse = (OrderCommitResponse) result.getResult().getData();
@@ -163,7 +213,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                     mCustomProgressDialog.dismiss();
                 }
                 ActivityManager.getInstance().finishAll();//关闭所有的activity
-                Intent intent = new Intent(this,MainActivity.class);//重新打开首页
+                intent = new Intent(this, MainActivity.class);//重新打开首页
                 startActivity(intent);
 
                 EventBus.getDefault().post(new OrderSuccessEvent());
@@ -189,8 +239,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
         }
         switch (where) {
             case REQUEST_SUBMIT:
-                if(result.getResult()!=null && "A1001".equals(result.getResult().getState())){
-                    ToastUtil.show(this,"订单操作频率过高，请稍后再试！");
+                if (result.getResult() != null && "A1001".equals(result.getResult().getState())) {
+                    ToastUtil.show(this, "订单操作频率过高，请稍后再试！");
                     mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
                     mBtnSubmit.setEnabled(true);
                     mRlDateOfService.setEnabled(true);
@@ -211,7 +261,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                         startActivity(new Intent(getActivityContext(), MainActivity.class));
                     }
                 });
-                dialog.setLeftBtnListener("取消", new CustomDialog.DialogListener(){
+                dialog.setLeftBtnListener("取消", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
                         //发送取消订单请求
@@ -229,6 +279,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
+                finish();
                 break;
             case R.id.rl_date_of_service:
                 //弹出日期选择控件
@@ -239,8 +290,11 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.btn_submit:
-                if(mOrder==null)submitOrder();//创建订单
-//                else modifyOrder();//修改订单
+                if (mOrder == null) {
+                    submitOrder();//创建订单
+                } else {
+                    modifyOrder();//修改订单
+                }
                 break;
         }
     }
@@ -248,7 +302,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     /**
      * 下单
      */
-    private void submitOrder(){
+    private void submitOrder() {
         //下单按钮
         CommitOrderRequest request = new CommitOrderRequest();
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
@@ -281,26 +335,26 @@ public class OrderSubmitActivity extends NetWorkActivity {
     /**
      * 修改订单
      */
-//    private void modifyOrder(){
-//        //下单按钮
-//        CommitOrderRequest request = new CommitOrderRequest();
-//        request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate - 1 + mDayDiff));
-//        List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
-//        for (ProductData.ListBean bean : mProductList) {
-//            CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
-//            pBean.setProduct_id(bean.getProductID());
-//            int qty = bean.getActualQty();
-//            if (qty == 0) {
-//                continue;
-//            }
-//            pBean.setQty(qty);
-//            cList.add(pBean);
-//        }
-//        request.setProducts(cList);
-//        StringBuffer sb = new StringBuffer("/gongfu/order/");
-//        sb.append(mOrder.getOrderID()).append("/modify/");
-//        sendConnection(sb.toString(), request, REQUEST_MODIFY, true, BaseEntity.ResultBean.class);
-//    }
+    private void modifyOrder() {
+        //下单按钮
+        CommitOrderRequest request = new CommitOrderRequest();
+        request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
+        List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
+        for (ProductData.ListBean bean : mProductList) {
+            CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
+            pBean.setProduct_id(bean.getProductID());
+            int qty = bean.getActualQty();
+            if (qty == 0) {
+                continue;
+            }
+            pBean.setQty(qty);
+            cList.add(pBean);
+        }
+        request.setProducts(cList);
+        StringBuffer sb = new StringBuffer("/gongfu/order/");
+        sb.append(mOrder.getOrderID()).append("/modify/");
+        sendConnection(sb.toString(), request, REQUEST_MODIFY, true, BaseEntity.ResultBean.class);
+    }
 
     private void initDefaultDate(View v) {
         RelativeLayout rll1 = (RelativeLayout) v.findViewById(R.id.rll1);
@@ -391,19 +445,19 @@ public class OrderSubmitActivity extends NetWorkActivity {
     //参数从0开始
     private void setSelectedColor(int i) {
         for (TextView tv : wArr) {
-            if (tv != null){
+            if (tv != null) {
                 tv.setTextColor(Color.parseColor("#2E2E2E"));
             }
         }
         for (TextView tv : dArr) {
-            if (tv != null){
+            if (tv != null) {
                 tv.setTextColor(Color.parseColor("#2E2E2E"));
             }
         }
-        if (wArr[i] != null){
+        if (wArr[i] != null) {
             wArr[i].setTextColor(Color.parseColor("#6BB400"));
         }
-        if (dArr[i] != null){
+        if (dArr[i] != null) {
             dArr[i].setTextColor(Color.parseColor("#6BB400"));
         }
     }
@@ -411,20 +465,20 @@ public class OrderSubmitActivity extends NetWorkActivity {
     /**
      * 更新底部bar
      */
-    protected void updateBottomBar(){
+    protected void updateBottomBar() {
         double totalMoney = 0;
         int totalNum = 0;
-        for(ProductData.ListBean bean:mProductList){
+        for (ProductData.ListBean bean : mProductList) {
             totalMoney = totalMoney + bean.getPrice();
             totalNum = totalNum + bean.getActualQty();
         }
-        if(GlobalApplication.getInstance().getCanSeePrice()){
+        if (GlobalApplication.getInstance().getCanSeePrice()) {
             DecimalFormat df = new DecimalFormat("#.##");
             mTvTotalMoney.setVisibility(View.VISIBLE);
-            mTvTotalMoney.setText("￥"+df.format(totalMoney));//TODO:format
-        }else{
+            mTvTotalMoney.setText("￥" + df.format(totalMoney));//TODO:format
+        } else {
             mTvTotalMoney.setVisibility(View.GONE);
         }
-        mTvProductNum.setText("共"+totalNum+"件");
+        mTvProductNum.setText("共" + totalNum + "件");
     }
 }
