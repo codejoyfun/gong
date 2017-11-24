@@ -68,4 +68,17 @@ public class ImageBean implements Serializable{
     public void setImageID(int imageID) {
         this.imageID = imageID;
     }
+
+    public ImageBean(){}
+
+    /**
+     * one for all
+     * @param url
+     */
+    public ImageBean(String url){
+        image = url;
+        imageMedium = url;
+        imageSmall = url;
+    }
+
 }

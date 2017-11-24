@@ -34,6 +34,7 @@ import com.runwise.supply.firstpage.OrderDoAction;
 import com.runwise.supply.firstpage.ReceiveActivity;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.orderpage.OrderAgainActivity;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.tools.PollingUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -323,6 +324,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder = (ViewHolder) convertView.getTag();
             }
             final OrderResponse.ListBean bean = mList.get(position);
+            holder.tvOneMore.setVisibility(View.GONE);
             //待确认
             if ("draft".equals(bean.getState())) {
                 holder.payStatus.setText("待确认");
@@ -418,6 +420,14 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             }
             //待评价
             else if ("done".equals(bean.getState())) {
+                //再来一单
+                holder.tvOneMore.setVisibility(View.VISIBLE);
+                holder.tvOneMore.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        OrderAgainActivity.start(getActivity(),bean);
+                    }
+                });
                 holder.payStatus.setText("待评价");
                 holder.payBtn.setVisibility(View.GONE);
                 holder.orderStatus.setImageResource(R.drawable.state_restaurant_2_certain);
@@ -437,6 +447,14 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             }
             //已评价
             else if ("rated".equals(bean.getState())) {
+                //再来一单
+                holder.tvOneMore.setVisibility(View.VISIBLE);
+                holder.tvOneMore.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        OrderAgainActivity.start(getActivity(),bean);
+                    }
+                });
                 holder.payStatus.setText("已评价");
                 holder.payBtn.setVisibility(View.GONE);
                 holder.orderStatus.setImageResource(R.drawable.state_restaurant_5_rated);
@@ -523,6 +541,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             TextView returnTv;
             @ViewInject(R.id.realTv)
             TextView realTv;
+            @ViewInject(R.id.tv_one_more)
+            TextView tvOneMore;
         }
     }
 }

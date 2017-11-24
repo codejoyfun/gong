@@ -115,21 +115,41 @@
                 android:drawableLeft="@drawable/icon_price"
                 android:drawablePadding="6dp"
                 />
-
-            <TextView
-                android:id="@+id/payBtn"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/order_pay_bg"
-                android:textSize="14sp"
-                android:textColor="#333333"
-                android:text="wefew"
-                android:layout_gravity="right"
-                android:paddingLeft="18dp"
-                android:paddingRight="18dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                />
+                android:gravity="right">
+                <TextView
+                    android:id="@+id/tv_one_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/order_pay_bg"
+                    android:textSize="14sp"
+                    android:textColor="#333333"
+                    android:text="再来一单"
+                    android:layout_gravity="right"
+                    android:paddingLeft="18dp"
+                    android:paddingRight="18dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_marginRight="12dp"
+                    />
+                <TextView
+                    android:id="@+id/payBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/order_pay_bg"
+                    android:textSize="14sp"
+                    android:textColor="#333333"
+                    android:text="wefew"
+                    android:layout_gravity="right"
+                    android:paddingLeft="18dp"
+                    android:paddingRight="18dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    />
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
