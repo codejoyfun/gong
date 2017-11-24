@@ -42,6 +42,7 @@
             >
 
             <LinearLayout
+                android:id="@+id/topLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -116,9 +117,10 @@
                         />
                     <ImageView
                         android:id="@+id/login_pop_btn"
-                        android:layout_width="18dp"
+                        android:layout_width="28dp"
                         android:layout_height="match_parent"
-                        android:padding="5dp"
+                        android:padding="10dp"
+                        android:clickable="true"
                         android:src="@drawable/login_btn_dropdown"
                         />
                 </LinearLayout>

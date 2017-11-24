@@ -22,6 +22,7 @@ public class SPUtils {
     public static final String FILE_KEY_HOST = "file_key_host";
     public static final String FILE_KEY_DB_NAME = "X-Odoo-Db";
     public static final String FILE_KEY_PLACE_ORDER_CACHE = "file_key_place_order_cache";
+    public static final String FILE_KEY_TEMP_DB_NAME = "file_key_temp_db_name";
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法

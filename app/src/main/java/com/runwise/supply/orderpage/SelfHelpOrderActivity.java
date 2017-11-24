@@ -121,7 +121,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             .setDimAmount(0.5f);
     //    private BottomSheetDialog showDialog = new BottomSheetDialog(mContext);
     private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
+        private Runnable runnable = new Runnable() {
         @Override
         public void run() {
             loadingImg.setImageResource(loadingImgs[currentIndex++]);
@@ -166,7 +166,8 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                     intent.putExtra("apbundle", bundle);
                     startActivityForResult(intent, ADD_PRODUCT);
                 } else {
-                    back();
+                    savePlaceOrderCache();
+                    finish();
                 }
                 break;
             case R.id.title_tv_rigth:
@@ -721,27 +722,11 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         if (editMode) {
             switchEditMode();
         } else {
-            back();
+            savePlaceOrderCache();
+            finish();
         }
     }
 
-    private void back() {
-        if (adapter.getCount() > 0) {
-            dialog.setTitle("提示");
-            dialog.setMessageGravity();
-            dialog.setMessage("确认取消下单？");
-            dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-                @Override
-                public void doClickButton(Button btn, CustomDialog dialog) {
-                    savePlaceOrderCache();
-                    finish();
-                }
-            });
-            dialog.show();
-            return;
-        }
-        finish();
-    }
 
     public void savePlaceOrderCache(){
         if (adapter.getCount() > 0){
