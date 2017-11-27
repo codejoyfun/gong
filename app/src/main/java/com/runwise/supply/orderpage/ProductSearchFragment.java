@@ -2,6 +2,7 @@ package com.runwise.supply.orderpage;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -69,6 +70,7 @@ public class ProductSearchFragment extends NetWorkFragment {
     private boolean canSeePrice = true;//默认价格中可见
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
     private List<ProductData.ListBean> mProductList = new ArrayList<>();
+    private Handler mHandler = new Handler();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,9 +119,13 @@ public class ProductSearchFragment extends NetWorkFragment {
         });
 
         if (mEtSearch.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager)
-                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            boolean isShowing = imm.showSoftInput(mEtSearch, InputMethodManager.SHOW_IMPLICIT);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    boolean isShowing = imm.showSoftInput(mEtSearch, InputMethodManager.SHOW_IMPLICIT);
+                }
+            });
         }
     }
 
@@ -134,6 +140,12 @@ public class ProductSearchFragment extends NetWorkFragment {
         if(parentActivity instanceof ProductActivityV2){
             mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
     }
 
     @Override
@@ -168,6 +180,15 @@ public class ProductSearchFragment extends NetWorkFragment {
 
     protected void requestData(int where){
         sendConnection("/gongfu/v3/product/list",new ProductListRequest(mLimit,mPz,mKeyword,mCategory,mSubCategory),where,false,ProductData.class);
+    }
+
+    /**
+     * 其它地方修改
+     * @param event
+     */
+    @Subscribe
+    public void updateProductCount(ProductCountUpdateEvent event){
+        mProductAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -215,7 +236,7 @@ public class ProductSearchFragment extends NetWorkFragment {
             final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
+                convertView = View.inflate(mContext, R.layout.item_product_without_subcategory, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
             } else {
@@ -377,5 +398,4 @@ public class ProductSearchFragment extends NetWorkFragment {
                 break;
         }
     }
-
 }

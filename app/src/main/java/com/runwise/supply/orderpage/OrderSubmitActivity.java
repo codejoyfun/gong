@@ -230,7 +230,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
 //                Intent intent2 = new Intent(this, OrderSubmitSuccessActivity.class);
 //                startActivity(intent2);
                 //清空购物车
-                SPUtils.put(getActivityContext(), Constant.SP_KEY_CART, "");//删购物车
+                //SPUtils.put(getActivityContext(), Constant.SP_KEY_CART, "");//删购物车
+                CartManager.getInstance(this).clearCart(mProductList);
                 break;
         }
     }
@@ -252,7 +253,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 mCustomProgressDialog.dismiss();
                 dialog.setTitle("提示");
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
-                SPUtils.put(getActivityContext(), Constant.SP_KEY_CART, "");//删购物车
+                CartManager.getInstance(this).clearCart(mProductList);//更新购物车
                 dialog.setMessageGravity();
                 dialog.setModel(CustomDialog.RIGHT);
                 dialog.setCancelable(false);

@@ -56,7 +56,6 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             mMapCount.put(listBean,(int) lb.getProductUomQty());
         }
         super.onCreate(savedInstanceState);
-        updateBottomBar();
         showCart(true);
         mTvOrderCommit.setText("确认修改");
     }
