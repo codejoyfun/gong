@@ -154,6 +154,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * 子类需要重写，否则会写入购物车的缓存
      */
     protected void saveCache(){
+        if(mMapCount.size()==0){
+            CartManager.getInstance(this).clearCart();
+            return;
+        }
         CartManager.getInstance(this).saveCart(mMapCount,mmSelected);
 //        if(mMapCount.size()==0){
 //            SPUtils.put(this,SP_KEY_CART,"");
@@ -281,6 +285,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
         }
         if(hasSubcategory){//有二级分类，不显示
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
+            params.rightMargin = 0;
             ivOpen.setVisibility(View.GONE);
         }
         else if (titles.size() <= TAB_EXPAND_COUNT) {
