@@ -2,6 +2,7 @@ package com.runwise.supply.orderpage;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -50,6 +51,11 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
             //mEtValue.selectAll();
             mEtValue.requestFocus();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         showInputMethod();
     }
 
@@ -87,12 +93,14 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
     }
 
     private void showInputMethod(){
-        new android.os.Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if(imm!=null)imm.showSoftInput(mEtValue,InputMethodManager.SHOW_IMPLICIT);
-            }
-        });
+        if(mEtValue.requestFocus()){
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if(imm!=null)imm.showSoftInput(mEtValue,InputMethodManager.SHOW_IMPLICIT);
+                }
+            },200);//一定要有200延时才出现，还不知道为什么
+        }
     }
 }

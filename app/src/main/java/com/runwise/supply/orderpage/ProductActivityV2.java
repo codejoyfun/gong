@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -110,7 +111,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         init();
         setTitleText(true,"全品目录");
         showBackBtn();
-        setTitleRightIcon2(true,R.drawable.searchbar_ico_search);
+        setTitleRightIcon2(true,R.drawable.ic_nav_search);
         //获取上一个页面传来的Parcelable
         addedPros = getIntent().getParcelableArrayListExtra(INTENT_KEY_ADDED_PRODUCTS);
         getCache();//获取缓存
@@ -270,6 +271,17 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
             }
         });
+
+        //如果有二级分类，不显示下拉按钮
+        boolean hasSubcategory = false;
+        for(CategoryResponseV2.Category category: categoryResponse.getCategoryList()){
+            if(category.getCategoryChild()!=null && category.getCategoryChild().length>0){
+                hasSubcategory = true;
+                break;
+            }
+        }
+        if(hasSubcategory)ivOpen.setVisibility(View.GONE);
+
         if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -295,6 +307,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         mTvCartCount = (TextView)findViewById(R.id.tv_cart_count);
         mTvTotalPrice = (TextView)findViewById(R.id.tv_product_total_price);
         mRlCartContainer = (RelativeLayout) findViewById(R.id.rl_cart_container);
+        mmCbSelectAll = (CheckBox)findViewById(R.id.cb_cart_select_all);
         findViewById(R.id.title_iv_left).setOnClickListener(this);
         findViewById(R.id.iv_open).setOnClickListener(this);
         findViewById(R.id.iv_product_cart).setOnClickListener(this);
@@ -526,6 +539,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 showCart(false);
                 return;
             }
+            if(mMapCount.size()==0)return;
             mTvResume.setVisibility(View.VISIBLE);
             final View view = findViewById(R.id.include_cart);
             view.setVisibility(View.VISIBLE);
@@ -557,7 +571,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      */
     protected void initCartViews(){
         mmRvCart = (RecyclerView)findViewById(R.id.rv_cart);
-        mmCbSelectAll = (CheckBox)findViewById(R.id.cb_cart_select_all);
         mmTvDelete = (TextView)findViewById(R.id.tv_cart_del);
         mmRvCart.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         mmCartAdapter = new CartAdapter();
@@ -600,6 +613,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             }
                         }
                         mmCartAdapter.notifyChanged();
+                        ToastUtil.show(ProductActivityV2.this,"删除成功");
                         EventBus.getDefault().post(new ProductCountUpdateEvent());
                     }
                 });

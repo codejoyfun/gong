@@ -11,11 +11,11 @@
         android:gravity="center_vertical">
         <CheckBox
             android:id="@+id/cb_cart_select_all"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:button="@drawable/product_selector"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="8dp"
+            android:padding="8dp"
             android:layout_centerVertical="true"
             />
         <TextView

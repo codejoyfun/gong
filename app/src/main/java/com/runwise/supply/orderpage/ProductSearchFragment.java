@@ -201,7 +201,7 @@ public class ProductSearchFragment extends NetWorkFragment {
                 mProductAdapter.appendData(productData.getList());
                 mProductAdapter.notifyDataSetChanged();
                 pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,Integer.MAX_VALUE);
-                mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+                mLoadingLayout.onSuccess(mProductAdapter.getCount(), "搜索不到相关商品，换个关键词试试~", R.drawable.default_icon_goodsnone);
                 break;
             case REQUEST_PRODUCT_MORE:
                 if(TextUtils.isEmpty(mKeyword))return;
@@ -391,6 +391,8 @@ public class ProductSearchFragment extends NetWorkFragment {
     public void btnClick(View v){
         switch (v.getId()){
             case R.id.title_iv_left:
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm!=null)imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
                 getFragmentManager().beginTransaction().remove(this).commit();
                 break;
             case R.id.btn_cancel:
