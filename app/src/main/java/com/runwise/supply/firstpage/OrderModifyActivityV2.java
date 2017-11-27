@@ -55,6 +55,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setStockType(lb.getStockType());
             mMapCount.put(listBean,(int) lb.getProductUomQty());
         }
+        initSelectAll();
         super.onCreate(savedInstanceState);
         showCart(true);
         mTvOrderCommit.setText("确认修改");
@@ -76,7 +77,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         Intent intent = new Intent(this,OrderSubmitActivity.class);
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mMapCount.keySet()){
-            if(bean.isInvalid() || mMapCount.get(bean)==0)continue;
+            if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
             bean.setActualQty(mMapCount.get(bean));
             list.add(bean);
         }

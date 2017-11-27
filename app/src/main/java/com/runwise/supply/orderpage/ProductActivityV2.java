@@ -280,9 +280,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 break;
             }
         }
-        if(hasSubcategory)ivOpen.setVisibility(View.GONE);
-
-        if (titles.size() <= TAB_EXPAND_COUNT) {
+        if(hasSubcategory){//有二级分类，不显示
+            ivOpen.setVisibility(View.GONE);
+        }
+        else if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
         } else {
@@ -385,6 +386,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 showCart(false);
                 break;
             case R.id.title_iv_rigth2:
+                mTypeWindow.dismiss();
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.rl_content_container,new ProductSearchFragment())
                         .addToBackStack("product_search")
@@ -564,7 +566,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     CheckBox mmCbSelectAll;
     @ViewInject(R.id.tv_cart_del)
     TextView mmTvDelete;
-    HashSet<Integer> mmSelected = new HashSet<>();//记录购物车中勾选的项目
+    protected HashSet<Integer> mmSelected = new HashSet<>();//记录购物车中勾选的项目
 
     /**
      * 初始化购物车弹框
