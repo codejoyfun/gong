@@ -618,6 +618,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             if(mmSelected.contains(item.getProductID())){
                                 it.remove();
                                 mmProductList.remove(item);
+                                mmSelected.remove(item.getProductID());
                             }
                         }
                         mmCartAdapter.notifyChanged();
