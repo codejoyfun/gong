@@ -19,6 +19,7 @@ import com.kids.commonframe.base.util.CheckUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.FindPwdRequest;
@@ -133,7 +134,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 	private void getHost(String companyName) {
 		GetHostRequest getHostRequest = new GetHostRequest();
 		getHostRequest.setCompanyName(companyName);
-		sendConnection("http://develop.runwise.cn:9000", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
+		sendConnection(Constant.UNLOGIN_URL, "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
 	}
 	HostResponse mHostResponse;
 	String mHost;
