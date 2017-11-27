@@ -61,6 +61,7 @@ import java.util.Map;
 public class ProductListFragmentV2 extends NetWorkFragment {
     public static final String INTENT_KEY_CATEGORY = "category";
     public static final String INTENT_KEY_SUB_CATEGORY = "subcategory";
+    public static final String INTENT_KEY_HAS_OTHER_SUB = "has_other_sub";
     private static final int REQUEST_PRODUCT_REFRESH = 0;
     private static final int REQUEST_PRODUCT_MORE = 1;
 
@@ -81,12 +82,14 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     private List<ProductData.ListBean> mProductList = new ArrayList<>();
 
     boolean isFirstLoaded = false;
+    boolean hasOtherSub;//是否有其它子分类，用于区分子项的layout
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSubCategory = getArguments().getString(INTENT_KEY_SUB_CATEGORY);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
+        hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,true);
         mProductAdapter = new ProductAdapter();
         mProductAdapter.setData(mProductList);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -212,7 +215,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
+                //有其它子分类和没有其它子分类layout有不同，但是id必须是一样的
+                if(hasOtherSub) convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
+                else convertView = View.inflate(mContext,R.layout.item_product_without_subcategory,null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
             } else {

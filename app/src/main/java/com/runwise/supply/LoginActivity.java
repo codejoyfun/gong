@@ -162,7 +162,7 @@ public class LoginActivity extends NetWorkActivity {
     private void getHost(String companyName) {
         GetHostRequest getHostRequest = new GetHostRequest();
         getHostRequest.setCompanyName(companyName);
-        sendConnection("http://develop.runwise.cn", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
+        sendConnection("http://develop.runwise.cn:9000", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
     }
 
     @OnClick(R.id.root_layout)

@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.runwise.supply.R;
 
+import java.util.logging.Handler;
+
 /**
  * 商品列表页输入数量对话框
  *
@@ -85,7 +87,12 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
     }
 
     private void showInputMethod(){
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm!=null)imm.showSoftInput(mEtValue,InputMethodManager.SHOW_IMPLICIT);
+        new android.os.Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm!=null)imm.showSoftInput(mEtValue,InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
     }
 }

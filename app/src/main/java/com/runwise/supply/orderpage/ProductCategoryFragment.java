@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.CategoryResponseV2;
@@ -55,6 +57,10 @@ public class ProductCategoryFragment extends NetWorkFragment {
         //子Fragment加载后不查接口，只有实际到前台展示时，才通过show()查接口
         //加载第一个子fragment
         if(hasSubCategory){//包含二级分类
+            //按比例设置二级分类列表宽度
+            mRvSubCategory.getLayoutParams().width = (int)(GlobalConstant.screenW * 0.2);
+            mRvSubCategory.requestLayout();
+
             mCurrentSubCategory = mCategory.getCategoryChild()[0];
             Fragment newFragment = newProductListFragment(mCurrentSubCategory);
             getChildFragmentManager().beginTransaction()
@@ -62,11 +68,14 @@ public class ProductCategoryFragment extends NetWorkFragment {
                     .commit();
         }else {//只有一级分类
             //直接加入空的二级分类fragment
+            Fragment fragment = newProductListFragment("");
+            fragment.getArguments().putBoolean(ProductListFragmentV2.INTENT_KEY_HAS_OTHER_SUB,false);
             getChildFragmentManager().beginTransaction()
-                    .add(R.id.fl_product_list_container,newProductListFragment(""))
+                    .add(R.id.fl_product_list_container,fragment)
                     .commitAllowingStateLoss();
 
         }
+
     }
 
     @Override

@@ -3,27 +3,17 @@ package com.runwise.supply.orderpage;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.util.CommonUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OneKeyRequest;
-import com.runwise.supply.orderpage.entity.DefaultPBean;
-import com.runwise.supply.orderpage.entity.DefaultProductData;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
-
-import java.util.List;
 
 /**
  * 只能下单，继承自手动下单
@@ -106,6 +96,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                     }
                 }
                 requestCategory();
+                initSelectAll();
                 updateBottomBar();
                 showCart(true);
                 break;

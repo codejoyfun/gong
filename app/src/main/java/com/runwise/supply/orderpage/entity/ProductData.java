@@ -58,6 +58,7 @@ public class ProductData implements Serializable{
         //本地数据
         private int cacheCount;
         private boolean isInvalid;
+        private boolean cacheSelected;
 
         public String getProductUom() {
             return productUom;
@@ -224,6 +225,14 @@ public class ProductData implements Serializable{
 
         public void setProductTag(String productTag) {
             this.productTag = productTag;
+        }
+
+        public boolean isCacheSelected() {
+            return cacheSelected;
+        }
+
+        public void setCacheSelected(boolean cacheSelected) {
+            this.cacheSelected = cacheSelected;
         }
 
         @Override
