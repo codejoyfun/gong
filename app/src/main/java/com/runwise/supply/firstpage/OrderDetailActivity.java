@@ -51,6 +51,7 @@ import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -83,6 +84,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     public static final int RETURN_DETAIL = 4;
     public static final int PRODUCT_DETAIL = 5;
     public static final int REQUEST_USERINFO_TRANSFER = 6;
+    public static final int REQUEST_DELETE_ORDER = 7;
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
@@ -220,7 +222,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.title_tv_rigth:
-                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
+                if (!SystemUpgradeHelper.getInstance(this).check(this)) return;
                 if (isModifyOrder) {
 //                    Intent mIntent = new Intent(this, OrderModifyActivity.class);
                     Intent mIntent = new Intent(this, OrderModifyActivityV2.class);
@@ -238,7 +240,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.btn_right:
-                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
+                if (!SystemUpgradeHelper.getInstance(this).check(this)) return;
                 Intent intent2;
                 OrderDoAction action = OrderActionUtils.getDoActionByText(rightBtn.getText().toString(), bean);
                 switch (action) {
@@ -323,6 +325,18 @@ public class OrderDetailActivity extends NetWorkActivity {
                         break;
                     case DELETE:
                         //TODO
+                        dialog.setMessageGravity();
+                        dialog.setMessage("确认删除订单?");
+                        dialog.setModel(CustomDialog.RIGHT);
+                        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                dialog.dismiss();
+                                //发送删除订单请求
+                                deleteOrderRequest();
+                            }
+                        });
+                        dialog.show();
                         break;
                 }
 //               if (rightBtn.getText().toString().equals("收货")){
@@ -343,18 +357,18 @@ public class OrderDetailActivity extends NetWorkActivity {
                 break;
             case R.id.uploadBtn:
                 //凭证
-                if(SystemUpgradeHelper.getInstance(this).check(this))
-                if (bean != null) {
-                    Intent intent3 = new Intent(mContext, UploadPayedPicActivity.class);
-                    intent3.putExtra("orderid", bean.getOrderID());
-                    intent3.putExtra("ordername", bean.getName());
-                    intent3.putExtra("hasattachment", isHasAttachment);
-                    if (!bean.getState().equals(OrderState.DRAFT.getName()) && bean.getOrderSettleName().contains("单次结算")
-                            && bean.getOrderSettleName().contains("先付款后收货")) {
-                        intent3.putExtra(UploadPayedPicActivity.INTENT_KEY_CANN_NO_EDIT, true);
+                if (SystemUpgradeHelper.getInstance(this).check(this))
+                    if (bean != null) {
+                        Intent intent3 = new Intent(mContext, UploadPayedPicActivity.class);
+                        intent3.putExtra("orderid", bean.getOrderID());
+                        intent3.putExtra("ordername", bean.getName());
+                        intent3.putExtra("hasattachment", isHasAttachment);
+                        if (!bean.getState().equals(OrderState.DRAFT.getName()) && bean.getOrderSettleName().contains("单次结算")
+                                && bean.getOrderSettleName().contains("先付款后收货")) {
+                            intent3.putExtra(UploadPayedPicActivity.INTENT_KEY_CANN_NO_EDIT, true);
+                        }
+                        startActivityForResult(intent3, UPLOAD);
                     }
-                    startActivityForResult(intent3, UPLOAD);
-                }
                 break;
             case R.id.tv_open:
                 if (dragLayout.getState() == DragTopLayout.PanelState.EXPANDED) {
@@ -430,6 +444,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 loadingLayout.onSuccess(1, "暂时没有数据哦");
                 break;
             case CANCEL:
+                EventBus.getDefault().post(new OrderUpdateEvent());
                 finish();
                 break;
             case CATEGORY:
@@ -476,6 +491,10 @@ public class OrderDetailActivity extends NetWorkActivity {
                     //刷新页面
                     setUpDataForViewPage();
                 }
+                break;
+            case REQUEST_DELETE_ORDER:
+                EventBus.getDefault().post(new OrderUpdateEvent());
+                finish();
                 break;
         }
     }
@@ -655,13 +674,11 @@ public class OrderDetailActivity extends NetWorkActivity {
             if (bean.getState().equals(OrderState.DRAFT.getName())) {
                 setTitleRightText(true, "修改");
                 isModifyOrder = true;
-            }
-            else if (!bean.isUnApplyService()&&(bean.getState().equals("rated") || bean.getState().equals("done"))) {
+            } else if (!bean.isUnApplyService() && (bean.getState().equals("rated") || bean.getState().equals("done"))) {
                 //同时，显示右上角，申请售后
                 setTitleRightText(true, "申请售后");
-            }
-            else{
-                setTitleRightText(false,"");
+            } else {
+                setTitleRightText(false, "");
             }
             //订单信息
             orderNumTv.setText(bean.getName());
@@ -699,7 +716,7 @@ public class OrderDetailActivity extends NetWorkActivity {
             payStateValue.setText("未有支付凭证");
             if (!bean.getState().equals(OrderState.DRAFT.getName()) && bean.getOrderSettleName().contains("先付款后收货") && bean.getOrderSettleName().contains("单次结算")) {
                 uploadBtn.setVisibility(View.INVISIBLE);
-            }else{
+            } else {
                 uploadBtn.setText("上传凭证");
             }
             isHasAttachment = false;
@@ -794,7 +811,8 @@ public class OrderDetailActivity extends NetWorkActivity {
                 viewpager.setCurrentItem(position);
 //                mProductTypeWindow.dismiss();
                 mTypeWindow.dismiss();
-                if(dragLayout.getState()== DragTopLayout.PanelState.EXPANDED)dragLayout.toggleTopView();
+                if (dragLayout.getState() == DragTopLayout.PanelState.EXPANDED)
+                    dragLayout.toggleTopView();
             }
 
             @Override
@@ -862,7 +880,14 @@ public class OrderDetailActivity extends NetWorkActivity {
         CancleRequest request = new CancleRequest();
         request.setState("cancel");
         sendConnection(urlSb.toString(), request, CANCEL, true, BaseEntity.ResultBean.class);
+    }
 
+    private void deleteOrderRequest() {
+        StringBuffer urlSb = new StringBuffer("/gongfu/order/");
+        urlSb.append(bean.getOrderID()).append("/state");
+        CancleRequest request = new CancleRequest();
+        request.setState("deleted");
+        sendConnection(urlSb.toString(), request, REQUEST_DELETE_ORDER, true, BaseEntity.ResultBean.class);
     }
 
 //    private PopupWindow mProductTypeWindow;
@@ -875,7 +900,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         mTypeWindow = new ProductTypePopup(this,
                 DensityUtil.getScreenW(getActivityContext()),
                 DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()),
-                typeList,0);
+                typeList, 0);
         mTypeWindow.setViewPager(viewpager);
 //        mProductTypeWindow = new PopupWindow(this);
 //        View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
@@ -928,18 +953,18 @@ public class OrderDetailActivity extends NetWorkActivity {
     }
 
     @Subscribe
-    public void onOrderStatusChanged(OrderStatusChangeEvent orderStatusChangeEvent){
-        if(bean.getOrderID()==orderStatusChangeEvent.orderId){
+    public void onOrderStatusChanged(OrderStatusChangeEvent orderStatusChangeEvent) {
+        if (bean.getOrderID() == orderStatusChangeEvent.orderId) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     refresh();
                 }
-            },2000);
+            }, 2000);
         }
     }
 
-    private void refresh(){
+    private void refresh() {
         Object request = null;
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(orderId).append("/");

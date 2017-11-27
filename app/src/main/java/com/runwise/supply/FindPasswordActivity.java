@@ -133,7 +133,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 	private void getHost(String companyName) {
 		GetHostRequest getHostRequest = new GetHostRequest();
 		getHostRequest.setCompanyName(companyName);
-		sendConnection("http://develop.runwise.cn", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
+		sendConnection("http://develop.runwise.cn:9000", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
 	}
 	HostResponse mHostResponse;
 	String mHost;
@@ -142,7 +142,6 @@ public class FindPasswordActivity extends NetWorkActivity {
 		switch (where) {
 			//获取验证码
 			case GET_CODE:
-				ToastUtil.show(mContext, result.getMsg());
 				mGetCode.setEnabled(false);
 				new WaitTimer(60).start();
 				holdCode = true;
