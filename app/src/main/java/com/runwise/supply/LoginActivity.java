@@ -162,7 +162,7 @@ public class LoginActivity extends NetWorkActivity {
     private void getHost(String companyName) {
         GetHostRequest getHostRequest = new GetHostRequest();
         getHostRequest.setCompanyName(companyName);
-        sendConnection("http://develop.runwise.cn", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
+        sendConnection("http://develop.runwise.cn:9000", "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
     }
 
     @OnClick(R.id.root_layout)
@@ -330,9 +330,6 @@ public class LoginActivity extends NetWorkActivity {
                     SPUtils.put(getActivityContext(), FILE_KEY_HOST, mHostResponse.getHost() + ":" + mHostResponse.getPort());
                 }
                 SPUtils.put(getActivityContext(), FILE_KEY_DB_NAME, mHostResponse.getDbName());
-                //检查版本
-                CheckVersionManager checkVersionManager = new CheckVersionManager(this);
-                checkVersionManager.checkVersion(false);
                 login();
                 break;
         }
