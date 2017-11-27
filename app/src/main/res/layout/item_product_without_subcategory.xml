@@ -23,7 +23,8 @@
             android:layout_marginTop="12dp"
             android:layout_marginRight="10dp"
             fresco:placeholderImage="@drawable/placeholder"
-            fresco:placeholderImageScaleType="focusCrop"/>
+            fresco:placeholderImageScaleType="focusCrop"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:id="@+id/tv_product_name"
@@ -78,6 +79,7 @@
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:layout_toLeftOf="@+id/ll_item_product_btns">
+
             <TextView
                 android:id="@+id/iv_product_sale"
                 android:layout_width="wrap_content"
@@ -89,7 +91,7 @@
                 android:paddingRight="2dp"
                 android:text="促"
                 android:textColor="@color/white"
-                android:textSize="10sp"/>
+                android:textSize="10sp" />
             <TextView
                 android:id="@+id/tv_product_price"
                 android:layout_width="wrap_content"

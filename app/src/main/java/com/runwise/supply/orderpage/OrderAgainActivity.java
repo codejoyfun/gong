@@ -25,8 +25,8 @@ public class OrderAgainActivity extends ProductActivityV2 {
     protected void onCreate(Bundle savedInstanceState) {
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER_AGAIN);
         initData();
+        initSelectAll();
         super.onCreate(savedInstanceState);
-        updateBottomBar();
         showCart(true);
     }
 

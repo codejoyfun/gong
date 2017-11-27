@@ -691,9 +691,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             holder.mmTvCount.setText(count+holder.listBean.getProductUom());
             StringBuilder sb = new StringBuilder();
             if(GlobalApplication.getInstance().getCanSeePrice()){
-                sb.append("￥"+df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getProductUom());
+                sb.append("￥"+df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getProductUom()).append(" ");
             }
-            sb.append(" ").append(holder.listBean.getUnit());
+            sb.append(holder.listBean.getUnit());
             holder.mmTvContent.setText(sb.toString());
 
             if(holder.listBean.isInvalid()){
@@ -703,6 +703,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 holder.mmCbCheck.setEnabled(true);
                 holder.mmTvInvalide.setVisibility(View.GONE);
             }
+
+            if(TextUtils.isEmpty(holder.listBean.getProductTag())){
+                holder.mmTvTag.setVisibility(View.GONE);
+            }else{
+                holder.mmTvTag.setVisibility(View.VISIBLE);
+                holder.mmTvTag.setText(holder.listBean.getProductTag());
+            }
+
             holder.mmCbCheck.setChecked(mmSelected.contains(holder.listBean.getProductID()));
         }
 
@@ -739,6 +747,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         TextView mmTvCount;
         TextView mmTvContent;
         TextView mmTvInvalide;
+        TextView mmTvTag;
         public ViewHolder(View itemView) {
             super(itemView);
             mmTvName = (TextView) itemView.findViewById(R.id.tv_item_cart_name);
@@ -747,6 +756,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mmTvCount = (TextView)itemView.findViewById(R.id.tv_item_cart_count);
             mmTvContent = (TextView)itemView.findViewById(R.id.tv_item_cart_content);
             mmTvInvalide = (TextView)itemView.findViewById(R.id.tv_invalid);
+            mmTvTag = (TextView)itemView.findViewById(R.id.tv_item_cart_sale);
             itemView.findViewById(R.id.iv_item_cart_add).setOnClickListener(this);
             itemView.findViewById(R.id.iv_item_cart_minus).setOnClickListener(this);
         }
