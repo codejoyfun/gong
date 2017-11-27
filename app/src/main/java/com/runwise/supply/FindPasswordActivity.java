@@ -142,7 +142,6 @@ public class FindPasswordActivity extends NetWorkActivity {
 		switch (where) {
 			//获取验证码
 			case GET_CODE:
-				ToastUtil.show(mContext, result.getMsg());
 				mGetCode.setEnabled(false);
 				new WaitTimer(60).start();
 				holdCode = true;
