@@ -271,9 +271,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void onResume() {
         super.onResume();
         if (getUserVisibleHint()) {
-            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
+            requestReturnList();
+//            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
         } else {
-            PollingUtil.getInstance().stopRequestOrder();
+//            PollingUtil.getInstance().stopRequestOrder();
         }
     }
 
@@ -281,17 +282,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
+            requestReturnList();
             mTimeStartFROMRETURN = System.currentTimeMillis();
         } else {
-            PollingUtil.getInstance().stopRequestOrder();
+//            PollingUtil.getInstance().stopRequestOrder();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        PollingUtil.getInstance().stopRequestOrder();
+//        PollingUtil.getInstance().stopRequestOrder();
     }
 
     @Override
