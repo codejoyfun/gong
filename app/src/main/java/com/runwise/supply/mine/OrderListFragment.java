@@ -425,6 +425,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.tvOneMore.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         OrderAgainActivity.start(getActivity(),bean);
                     }
                 });
@@ -452,6 +453,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.tvOneMore.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                         OrderAgainActivity.start(getActivity(),bean);
                     }
                 });
