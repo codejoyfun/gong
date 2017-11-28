@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -135,13 +136,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         CartCache cartCache = CartManager.getInstance(this).loadCart();
         if(cartCache!=null && cartCache.getListBeans()!=null){
             for(ProductData.ListBean bean:cartCache.getListBeans()){
-                //TODO:检查购物车有效性
-                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(bean.getProductID()+"");
-                if(basicBean==null){
-                    //记录失效
-                    bean.setInvalid(true);
-                    mSetInvalid.add(bean);
-                }
+//                //TODO:检查购物车有效性
+//                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(bean.getProductID()+"");
+//                if(basicBean==null){
+//                    //记录失效
+//                    bean.setInvalid(true);
+//                    mSetInvalid.add(bean);
+//                }else{
+//                    bean.setInvalid(false);
+//                }
                 mMapCount.put(bean,bean.getCacheCount());
 
                 if(bean.isCacheSelected())mmSelected.add(bean.getProductID());
@@ -392,7 +395,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 showCart(false);
                 break;
             case R.id.title_iv_rigth2:
-                mTypeWindow.dismiss();
+                if(mTypeWindow!=null)mTypeWindow.dismiss();
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.rl_content_container,new ProductSearchFragment())
                         .addToBackStack("product_search")
@@ -449,7 +452,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 totalPieces = totalPieces + mMapCount.get(bean);
             }
 
-            if(totalMoney!=0){
+            if(totalPieces!=0){
                 mTvCartCount.setText(totalPieces+"");
                 mTvCartCount.setVisibility(View.VISIBLE);
             }else{
@@ -494,21 +497,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         if(!TextUtils.isEmpty(errMsg))toast(errMsg);
-        //todo
-        //测试
-//        categoryResponse = new CategoryResponseV2();
-//        CategoryResponseV2.Category[] catArr = new CategoryResponseV2.Category[10];
-//        categoryResponse.setCategoryList(catArr);
-//        for(int i=0;i<catArr.length;i++){
-//            catArr[i] = new CategoryResponseV2.Category();
-//            catArr[i].setCategoryParent("测试"+i);
-//            String[] subCats = new String[8+i];
-//            for(int j=0;j<subCats.length;j++){
-//                subCats[j] = "测子类"+j;
-//            }
-//            catArr[i].setCategoryChild(subCats);
-//        }
-//        setupViewPager();
     }
 
     protected class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {

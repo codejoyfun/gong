@@ -34,20 +34,24 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
         for (OrderResponse.ListBean.LinesBean lb : list) {
             ProductData.ListBean listBean = new ProductData.ListBean();
-            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(lb.getProductID());
+//            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(lb.getProductID());
             listBean.setProductID(lb.getProductID());
             listBean.setTracking(lb.getTracking());
             listBean.setProductUom(lb.getProductUom());
             listBean.setUnit(lb.getUnit());
-            if(bean.isNewType()){
-                listBean.setPrice(lb.getProductPrice());
-                listBean.setSettlePrice(lb.getProductSettlePrice()+"");
-                listBean.setImage(new ImageBean(lb.getImageMedium()));
-            }else if(basicBean!=null){
-                listBean.setPrice(basicBean.getPrice());
-                listBean.setSettlePrice(basicBean.getSettlePrice()+"");
-                listBean.setImage(basicBean.getImage());
-            }
+            //新建的单都是newtype了
+            listBean.setPrice(lb.getProductPrice());
+            listBean.setSettlePrice(lb.getProductSettlePrice()+"");
+            listBean.setImage(new ImageBean(lb.getImageMedium()));
+//            if(bean.isNewType()){
+//                listBean.setPrice(lb.getProductPrice());
+//                listBean.setSettlePrice(lb.getProductSettlePrice()+"");
+//                listBean.setImage(new ImageBean(lb.getImageMedium()));
+//            }else if(basicBean!=null){
+//                listBean.setPrice(basicBean.getPrice());
+//                listBean.setSettlePrice(basicBean.getSettlePrice()+"");
+//                listBean.setImage(basicBean.getImage());
+//            }
             listBean.setName(lb.getName());
             listBean.setDefaultCode(lb.getDefaultCode());
             listBean.setCategory(lb.getCategory());

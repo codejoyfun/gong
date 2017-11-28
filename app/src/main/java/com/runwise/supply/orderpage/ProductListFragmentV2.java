@@ -30,6 +30,7 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.ProductCountChangeEvent;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
@@ -90,10 +91,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         mSubCategory = getArguments().getString(INTENT_KEY_SUB_CATEGORY);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,true);
-        mProductAdapter = new ProductAdapter();
-        mProductAdapter.setData(mProductList);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
-        pullListView.setAdapter(mProductAdapter);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
 
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -125,6 +123,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         FragmentActivity parentActivity = getActivity();
         if(parentActivity instanceof ProductActivityV2){
             mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
+            mProductAdapter = new ProductAdapter(getActivity(),mCountMap,hasOtherSub);
+            mProductAdapter.setData(mProductList);
+            pullListView.setAdapter(mProductAdapter);
         }
     }
 
@@ -200,170 +201,12 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        //TODO
-    }
-
-    /**
-     * 商品列表adapter
-     */
-    public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        @Override
-        protected View getExView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder viewHolder;
-            final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                //有其它子分类和没有其它子分类layout有不同，但是id必须是一样的
-                if(hasOtherSub) convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
-                else convertView = View.inflate(mContext,R.layout.item_product_without_subcategory,null);
-                ViewUtils.inject(viewHolder, convertView);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
+        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
+            @Override
+            public void retryOnClick(View view) {
+                refresh(true);
             }
-
-            //标签
-            if(TextUtils.isEmpty(bean.getProductTag())){
-                viewHolder.tvProductTag.setVisibility(View.GONE);
-            }else{
-                viewHolder.tvProductTag.setText(bean.getProductTag());
-            }
-
-            final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-            viewHolder.tvCount.setText(count+bean.getProductUom());
-            //先根据集合里面对应个数初始化一次
-            if (count > 0) {
-                viewHolder.tvCount.setVisibility(View.VISIBLE);
-                viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-            } else {
-                viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
-            }
-
-            /**
-             * 减
-             */
-            viewHolder.inputMBtn.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                    if (currentNum > 0) {
-                        viewHolder.tvCount.setText(--currentNum + bean.getProductUom());
-                        mCountMap.put(bean, currentNum);
-                        if (currentNum == 0) {
-                            v.setVisibility(View.INVISIBLE);
-                            viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-                            mCountMap.remove(bean);
-                        }
-                        EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
-                    }
-
-                }
-            });
-
-            /**
-             * 加
-             */
-            viewHolder.inputPBtn.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                    viewHolder.tvCount.setText(++currentNum + bean.getProductUom());
-                    mCountMap.put(bean, currentNum);
-                    if (currentNum == 1) {//0变到1
-                        viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                        viewHolder.tvCount.setVisibility(View.VISIBLE);
-                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
-                    }
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
-                }
-            });
-
-            /**
-             * 点击数量展示输入对话框
-             */
-            viewHolder.tvCount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int currentCount = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                    new ProductValueDialog(getActivity(), bean.getName(), currentCount, new ProductValueDialog.IProductDialogCallback() {
-                        @Override
-                        public void onInputValue(int value) {
-
-                            if (value == 0) {
-                                viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
-                                viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-                                mCountMap.remove(bean);
-                            }else{
-                                viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                                viewHolder.tvCount.setVisibility(View.VISIBLE);
-                                viewHolder.tvCount.setText(value+bean.getProductUom());
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
-                                mCountMap.put(bean,value);
-                            }
-                            viewHolder.tvCount.setText(value + bean.getProductUom());
-                            EventBus.getDefault().post(new ProductCountUpdateEvent(bean,value));
-                        }
-                    }).show();
-                }
-            });
-
-            viewHolder.name.setText(bean.getName());
-            viewHolder.tvCode.setText(bean.getDefaultCode());
-            viewHolder.tvContent.setText(bean.getUnit());
-
-            if (canSeePrice) {
-                StringBuffer sb1 = new StringBuffer();
-                if (bean.isIsTwoUnit()) {
-                    sb1.append("¥").append(df.format(Double.valueOf(bean.getSettlePrice())));
-                    viewHolder.tvPrice.setText(sb1.toString());
-                    viewHolder.tvPriceUnit.setText("/"+bean.getSettleUomId());
-                } else {
-                    sb1.append("¥").append(df.format(Double.valueOf(bean.getPrice())));
-                    viewHolder.tvPrice.setText(sb1.toString());
-                    viewHolder.tvPriceUnit.setText("/"+bean.getUom());
-                }
-            } else {
-                viewHolder.tvPrice.setVisibility(View.GONE);
-                viewHolder.tvPriceUnit.setVisibility(View.GONE);
-            }
-
-            if(bean.getImage()!=null){
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
-            }
-
-            return convertView;
-        }
-
-        class ViewHolder {
-            @ViewInject(R.id.tv_product_name)
-            TextView name;   //名称
-            @ViewInject(R.id.sdv_product_image)
-            SimpleDraweeView sDv;    //头像
-            @ViewInject(R.id.iv_product_reduce)
-            ImageButton inputMBtn;//减
-            @ViewInject(R.id.iv_product_add)
-            ImageButton inputPBtn;//加
-            @ViewInject(R.id.tv_product_count)
-            TextView tvCount;//数量
-            @ViewInject(R.id.tv_product_code)//代码
-            TextView tvCode;
-            @ViewInject(R.id.tv_product_price_unit)//价格后的单位
-            TextView tvPriceUnit;
-            @ViewInject(R.id.tv_product_price)//价格
-            TextView tvPrice;
-            @ViewInject(R.id.tv_product_content)
-            TextView tvContent;
-            @ViewInject(R.id.iv_product_sale)
-            TextView tvProductTag;
-        }
+        });
     }
 }

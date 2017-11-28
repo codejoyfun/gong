@@ -8,15 +8,18 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -75,10 +78,7 @@ public class ProductSearchFragment extends NetWorkFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mProductAdapter = new ProductAdapter();
-        mProductAdapter.setData(mProductList);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
-        pullListView.setAdapter(mProductAdapter);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
 
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -127,6 +127,15 @@ public class ProductSearchFragment extends NetWorkFragment {
                 }
             });
         }
+
+        //点击任意地方收起键盘
+        findViewById(R.id.v_touch_cover).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                hideKeyboard();
+                return false;
+            }
+        });
     }
 
     /**
@@ -139,6 +148,9 @@ public class ProductSearchFragment extends NetWorkFragment {
         FragmentActivity parentActivity = getActivity();
         if(parentActivity instanceof ProductActivityV2){
             mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
+            mProductAdapter = new ProductAdapter(getActivity(),mCountMap,false);
+            mProductAdapter.setData(mProductList);
+            pullListView.setAdapter(mProductAdapter);
         }
     }
 
@@ -222,182 +234,28 @@ public class ProductSearchFragment extends NetWorkFragment {
         //TODO
     }
 
-    /**
-     *
-     * TODO:重构为公用
-     * 商品列表adapter
-     */
-    public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        @Override
-        protected View getExView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder viewHolder;
-            final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.item_product_without_subcategory, null);
-                ViewUtils.inject(viewHolder, convertView);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-            viewHolder.tvCount.setText(count+bean.getProductUom());
-            //先根据集合里面对应个数初始化一次
-            if (count > 0) {
-                viewHolder.tvCount.setVisibility(View.VISIBLE);
-                viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-            } else {
-                viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
-                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
-            }
-
-            //标签
-            if(TextUtils.isEmpty(bean.getProductTag())){
-                viewHolder.tvProductTag.setVisibility(View.GONE);
-            }else{
-                viewHolder.tvProductTag.setText(bean.getProductTag());
-            }
-
-            /**
-             * 减
-             */
-            viewHolder.inputMBtn.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                    if (currentNum > 0) {
-                        viewHolder.tvCount.setText(--currentNum + bean.getProductUom());
-                        mCountMap.put(bean, currentNum);
-                        if (currentNum == 0) {
-                            v.setVisibility(View.INVISIBLE);
-                            viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
-                            mCountMap.remove(bean);
-                        }
-                        EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
-                    }
-
-                }
-            });
-
-            /**
-             * 加
-             */
-            viewHolder.inputPBtn.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                    viewHolder.tvCount.setText(++currentNum + bean.getProductUom());
-                    mCountMap.put(bean, currentNum);
-                    if (currentNum == 1) {//0变到1
-                        viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                        viewHolder.tvCount.setVisibility(View.VISIBLE);
-                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-                    }
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
-                }
-            });
-
-            /**
-             * 点击数量展示输入对话框
-             */
-            viewHolder.tvCount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int currentCount = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                    new ProductValueDialog(getActivity(), bean.getName(), currentCount, new ProductValueDialog.IProductDialogCallback() {
-                        @Override
-                        public void onInputValue(int value) {
-
-                            if (value == 0) {
-                                viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
-                                viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
-                                mCountMap.remove(bean);
-                            }else{
-                                viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-                                viewHolder.tvCount.setVisibility(View.VISIBLE);
-                                viewHolder.tvCount.setText(value+bean.getProductUom());
-                                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-                                mCountMap.put(bean,value);
-                            }
-                            viewHolder.tvCount.setText(value + bean.getProductUom());
-                            EventBus.getDefault().post(new ProductCountUpdateEvent(bean,value));
-                        }
-                    }).show();
-                }
-            });
-
-            viewHolder.name.setText(bean.getName());
-            viewHolder.tvCode.setText(bean.getDefaultCode());
-            viewHolder.tvContent.setText(bean.getUnit());
-
-            if (canSeePrice) {
-                StringBuffer sb1 = new StringBuffer();
-                if (bean.isIsTwoUnit()) {
-                    sb1.append("¥").append(df.format(Double.valueOf(bean.getSettlePrice())));
-                    viewHolder.tvPrice.setText(sb1.toString());
-                    viewHolder.tvPriceUnit.setText("/"+bean.getSettleUomId());
-                } else {
-                    sb1.append("¥").append(df.format(Double.valueOf(bean.getPrice())));
-                    viewHolder.tvPrice.setText(sb1.toString());
-                    viewHolder.tvPriceUnit.setText("/"+bean.getUom());
-                }
-            } else {
-                viewHolder.tvPrice.setVisibility(View.GONE);
-                viewHolder.tvPriceUnit.setVisibility(View.GONE);
-            }
-
-            if(bean.getImage()!=null){
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
-            }
-
-            return convertView;
-        }
-
-        class ViewHolder {
-            @ViewInject(R.id.tv_product_name)
-            TextView name;   //名称
-            @ViewInject(R.id.sdv_product_image)
-            SimpleDraweeView sDv;    //头像
-            @ViewInject(R.id.iv_product_reduce)
-            ImageButton inputMBtn;//减
-            @ViewInject(R.id.iv_product_add)
-            ImageButton inputPBtn;//加
-            @ViewInject(R.id.tv_product_count)
-            TextView tvCount;//数量
-            @ViewInject(R.id.tv_product_code)//代码
-            TextView tvCode;
-            @ViewInject(R.id.tv_product_price_unit)//价格后的单位
-            TextView tvPriceUnit;
-            @ViewInject(R.id.tv_product_price)//价格
-            TextView tvPrice;
-            @ViewInject(R.id.tv_product_content)
-            TextView tvContent;
-            @ViewInject(R.id.iv_product_sale)
-            TextView tvProductTag;
-        }
-    }
-
-
-    @OnClick({R.id.title_iv_left,R.id.btn_cancel})
+    @OnClick({R.id.title_iv_left,R.id.btn_cancel,R.id.loadingLayout})
     public void btnClick(View v){
         switch (v.getId()){
             case R.id.title_iv_left:
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if(imm!=null)imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+                hideKeyboard();
                 getFragmentManager().beginTransaction().remove(this).commit();
                 break;
             case R.id.btn_cancel:
                 mEtSearch.setText("");
                 break;
+            case R.id.loadingLayout:
+                hideKeyboard();
+                break;
+        }
+    }
+
+    InputMethodManager imm;
+    private void hideKeyboard(){
+        if(mEtSearch.hasFocus()){
+            if(imm==null)imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if(imm!=null)imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+            mEtSearch.clearFocus();
         }
     }
 }

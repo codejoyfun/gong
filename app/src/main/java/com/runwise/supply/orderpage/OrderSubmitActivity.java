@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -275,6 +276,9 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 });
                 dialog.show();
                 break;
+                default:
+                    if(!TextUtils.isEmpty(errMsg))ToastUtil.show(this,errMsg);
+                    break;
         }
 
     }

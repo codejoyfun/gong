@@ -40,6 +40,7 @@
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fl"
         android:orientation="vertical"
         android:layout_below="@+id/search_bar"
         android:layout_alignParentBottom="true"
@@ -63,5 +64,11 @@
             android:layout_height="match_parent"
             android:visibility="gone"
             />
+        <!--用于点击任意地方收起键盘-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:id="@+id/v_touch_cover"/>
     </FrameLayout>
 </RelativeLayout>
