@@ -81,7 +81,6 @@ public class SystemUpgradeHelper {
         if(!isUpgradingTime())return true;
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         Toast.makeText(context,context.getString(R.string.system_upgrading_toast,sdf.format(getEndTime()*1000)),Toast.LENGTH_LONG).show();
-//        return false;
-        return true;
+        return false;
     }
 }

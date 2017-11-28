@@ -110,7 +110,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         setStatusBarEnabled();
         setContentView(R.layout.activity_product_selection);
         init();
-        setTitleText(true,"全品目录");
+        setTitleText(true,"全部商品");
         showBackBtn();
         setTitleRightIcon2(true,R.drawable.ic_nav_search);
         //获取上一个页面传来的Parcelable
