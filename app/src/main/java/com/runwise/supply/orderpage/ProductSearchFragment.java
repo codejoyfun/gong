@@ -72,12 +72,13 @@ public class ProductSearchFragment extends NetWorkFragment {
 
     private boolean canSeePrice = true;//默认价格中可见
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
-    private List<ProductData.ListBean> mProductList = new ArrayList<>();
     private Handler mHandler = new Handler();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mProductAdapter = new ProductAdapter(getActivity(),false);
+        pullListView.setAdapter(mProductAdapter);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
 
@@ -148,9 +149,7 @@ public class ProductSearchFragment extends NetWorkFragment {
         FragmentActivity parentActivity = getActivity();
         if(parentActivity instanceof ProductActivityV2){
             mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
-            mProductAdapter = new ProductAdapter(getActivity(),mCountMap,false);
-            mProductAdapter.setData(mProductList);
-            pullListView.setAdapter(mProductAdapter);
+            mProductAdapter.setCountMap(mCountMap);
         }
     }
 

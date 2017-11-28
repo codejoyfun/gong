@@ -78,9 +78,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     private int mLimit = 20;
     private String mKeyword;
 
-    private boolean canSeePrice = true;//默认价格中可见
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
-    private List<ProductData.ListBean> mProductList = new ArrayList<>();
 
     boolean isFirstLoaded = false;
     boolean hasOtherSub;//是否有其它子分类，用于区分子项的layout
@@ -91,8 +89,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         mSubCategory = getArguments().getString(INTENT_KEY_SUB_CATEGORY);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,true);
+        mProductAdapter = new ProductAdapter(getActivity(),hasOtherSub);
+        pullListView.setAdapter(mProductAdapter);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
 
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
 
@@ -123,9 +122,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         FragmentActivity parentActivity = getActivity();
         if(parentActivity instanceof ProductActivityV2){
             mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
-            mProductAdapter = new ProductAdapter(getActivity(),mCountMap,hasOtherSub);
-            mProductAdapter.setData(mProductList);
-            pullListView.setAdapter(mProductAdapter);
+            mProductAdapter.setCountMap(mCountMap);
         }
     }
 

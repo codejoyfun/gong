@@ -35,11 +35,14 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
     Map<ProductData.ListBean,Integer> mCountMap;
     boolean hasOtherSub = false;
 
-    public ProductAdapter(@NonNull Context context, @NonNull Map<ProductData.ListBean,Integer> countMap, boolean hasOtherSub){
+    public ProductAdapter(@NonNull Context context, boolean hasOtherSub){
         mContext = context;
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-        mCountMap = countMap;
         this.hasOtherSub = hasOtherSub;
+    }
+
+    public void setCountMap(Map<ProductData.ListBean,Integer> countMap){
+        mCountMap = countMap;
     }
 
     @Override

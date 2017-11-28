@@ -218,16 +218,19 @@ public class EvaluateActivity extends NetWorkActivity {
 
             }
 
-            if (bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null) {
-                String deliverName = bean.getWaybill().getDeliverUser().getName();
-                mTvName.setText(deliverName);
-                String imgUrl = bean.getWaybill().getDeliverUser().getAvatarUrl();
-                FrecoFactory.getInstance(mContext).disPlay(mHeadSdv, Constant.BASE_URL + imgUrl);
-                mHeadSdv.setImageResource(R.drawable.deliveryman_header);
-            } else {
-                mTvName.setText("配送服务");
-                mHeadSdv.setImageResource(R.drawable.delivery_evaluate_ico);
-            }
+//            if (bean.getWaybill() != null && bean.getWaybill().getDeliverUser() != null) {
+//                String deliverName = bean.getWaybill().getDeliverUser().getName();
+//                mTvName.setText(deliverName);
+//                String imgUrl = bean.getWaybill().getDeliverUser().getAvatarUrl();
+//                FrecoFactory.getInstance(mContext).disPlay(mHeadSdv, Constant.BASE_URL + imgUrl);
+//                mHeadSdv.setImageResource(R.drawable.deliveryman_header);
+//            } else {
+//                mTvName.setText("配送服务");
+//                mHeadSdv.setImageResource(R.drawable.delivery_evaluate_ico);
+//            }
+            mTvName.setText("配送服务");
+            mHeadSdv.setImageResource(R.drawable.delivery_evaluate_ico);
+
             String estimatTime = bean.getEstimatedTime();
             String endUploadTime = bean.getStartUnloadDatetime();
 //            StringBuffer sb = new StringBuffer("预计送达: ");
