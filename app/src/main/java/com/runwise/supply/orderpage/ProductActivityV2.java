@@ -696,7 +696,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 holder.mmTvTag.setVisibility(View.GONE);
             }else{
                 holder.mmTvTag.setVisibility(View.VISIBLE);
-                holder.mmTvTag.setText(holder.listBean.getProductTag());
             }
 
             holder.mmCbCheck.setChecked(mmSelected.contains(holder.listBean.getProductID()));

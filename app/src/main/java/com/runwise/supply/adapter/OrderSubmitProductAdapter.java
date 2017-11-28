@@ -58,7 +58,7 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         if(TextUtils.isEmpty(listBean.getProductTag())){
             holder.mTvSalesPromotion.setVisibility(View.GONE);
         }else{
-            holder.mTvSalesPromotion.setText(listBean.getProductTag());
+            holder.mTvSalesPromotion.setVisibility(View.VISIBLE);
         }
     }
 

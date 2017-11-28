@@ -64,7 +64,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         if(TextUtils.isEmpty(bean.getProductTag())){
             viewHolder.tvProductTag.setVisibility(View.GONE);
         }else{
-            viewHolder.tvProductTag.setText(bean.getProductTag());
+            viewHolder.tvProductTag.setVisibility(View.VISIBLE);
         }
 
         final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
