@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * 单个一级分类的商品列表
  * 包含多个一个/多个二级分类fragment
@@ -33,7 +35,6 @@ public class ProductCategoryFragment extends NetWorkFragment {
     @ViewInject(R.id.rv_sub_category)
     private RecyclerView mRvSubCategory;//子类别的列表view
     private SubCategoryAdapter mSubCategoryAdapter;
-    private Map<String,ProductListFragmentV2> mMapProductListFragments = new HashMap<>();//子类别对应的商品列表fragment
     private String mCurrentSubCategory = "";
     private boolean hasSubCategory = false;//是否含有二级分类
 
@@ -93,28 +94,26 @@ public class ProductCategoryFragment extends NetWorkFragment {
         //empty
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Log.d("haha","setUserVisibleHint:"+(mCategory==null?"null":mCategory.getCategoryParent())+" isVisible:"+isVisible());
+    }
+
+    public void test(){
+        Log.d("haha",mCategory==null?"null":mCategory.getCategoryParent()+" isVisible:"+isVisible());
+    }
+
     /**
      * 每次当前tab被选择的时候被调用，然后再通知当前显示的子fragment，用于懒加载策略
      */
-    public void onSelected() {
+    public void onSelected() {;
+        if(!isAdded())return;
         Fragment currentFragment = getChildFragmentManager().findFragmentById(R.id.fl_product_list_container);
         if(currentFragment!=null){
             ProductListFragmentV2 fragment = (ProductListFragmentV2)currentFragment;
-            fragment.show();
+            fragment.firstLoad();
         }
-        //检查是否已经有子fragment被加载了
-//        List<Fragment> fragmentList = getChildFragmentManager().getFragments();
-//        if(fragmentList!=null && fragmentList.size()>0)return;
-//        //加载第一个子fragment
-//        if(hasSubCategory){//包含二级分类
-//            switchSubCategory(mCategory.getCategoryChild()[0]);
-//        }else {//只有一级分类
-//            //直接加入空的二级分类fragment
-//            getChildFragmentManager().beginTransaction()
-//                    .add(R.id.fl_product_list_container,newProductListFragment("noSub"))
-//                    .commitAllowingStateLoss();
-//
-//        }
     }
 
     /**

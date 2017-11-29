@@ -56,13 +56,13 @@ import java.util.Map;
  * 商品按照类别分页显示
  *
  * 所有的已选数据保存在父Activity的map中
- * TODO;use setUserVisibleHint
  *
  */
 public class ProductListFragmentV2 extends NetWorkFragment {
     public static final String INTENT_KEY_CATEGORY = "category";
     public static final String INTENT_KEY_SUB_CATEGORY = "subcategory";
     public static final String INTENT_KEY_HAS_OTHER_SUB = "has_other_sub";
+    public static final String INTENT_KEY_FIRST_LOAD = "load_first";
     private static final int REQUEST_PRODUCT_REFRESH = 0;
     private static final int REQUEST_PRODUCT_MORE = 1;
 
@@ -106,9 +106,10 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             }
         });
 
-        if(getArguments()!=null && getArguments().getBoolean("firstLoad")){
-            isFirstLoaded = true;
-            refresh(true);
+        //是否需要在onCreate的同时查询接口
+        //第一个子分类不需要
+        if(getArguments()!=null && getArguments().getBoolean(INTENT_KEY_FIRST_LOAD,false)){
+            firstLoad();
         }
     }
 
@@ -134,7 +135,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     /**
      * 懒加载，只有当第一次展示给用户的时候才开始查接口
      */
-    protected void show(){
+    protected void firstLoad(){
         if(!isFirstLoaded){
             isFirstLoaded = true;
             refresh(true);

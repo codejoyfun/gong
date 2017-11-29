@@ -64,6 +64,11 @@ import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CA
  * 分页/二级分类的商品选择页
  * 注意要区分有含有二级分类和完全没有二级分类两种显示
  *
+ * 加载策略：
+ * 加载每个父类别的fragment，以及父类别的第一个子类别fragment，且不会查商品列表接口
+ * 当父类别fragment被选中时，才查第一个子类别的商品列表接口
+ * 当选择其它的子类别时，才加载其它的子类别fragment，同时查询接口
+ *
  * Created by Dong on 2017/7/3.
  */
 
@@ -264,8 +269,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mTypeWindow.dismiss();
 
                 //刷新当前fragment
-                ProductCategoryFragment fragment = mAdapterVp.fragmentList.get(position);
-                fragment.onSelected();
+//                ProductCategoryFragment fragment = mAdapterVp.fragmentList.get(position);
+//                fragment.onSelected();
             }
 
             @Override
@@ -301,7 +306,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
 
         //手动选择第一个类别fragment
-        repertoryEntityFragmentList.get(0).onSelected();
+//        repertoryEntityFragmentList.get(0).onSelected();
     }
 
     /**
@@ -522,6 +527,12 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         @Override
         public int getCount() {
             return titleList.size();
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            super.setPrimaryItem(container, position, object);
+            fragmentList.get(position).onSelected();
         }
     }
 
