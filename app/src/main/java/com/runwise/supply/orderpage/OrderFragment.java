@@ -148,6 +148,8 @@ public class OrderFragment extends NetWorkFragment {
                     opv.setPicker(safeArr);
                 }
                 opv.setSelectOptions(selectedIndex);
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm!=null)imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 opv.show(true);
                 break;
         }
@@ -176,7 +178,7 @@ public class OrderFragment extends NetWorkFragment {
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if(actionId== EditorInfo.IME_ACTION_DONE || actionId==EditorInfo.IME_ACTION_NEXT){
                     InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+                    if(imm!=null)imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
                     showOpv();
                     return true;
                 }

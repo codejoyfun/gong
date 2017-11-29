@@ -455,8 +455,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if(totalPieces!=0){
                 mTvCartCount.setText(totalPieces+"");
                 mTvCartCount.setVisibility(View.VISIBLE);
+                mTvOrderCommit.setEnabled(true);
             }else{
                 mTvCartCount.setVisibility(View.GONE);
+                mTvOrderCommit.setEnabled(false);
             }
 
             if(GlobalApplication.getInstance().getCanSeePrice()){
