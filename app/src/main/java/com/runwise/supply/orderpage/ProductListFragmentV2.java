@@ -90,8 +90,10 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,true);
         mProductAdapter = new ProductAdapter(getActivity(),hasOtherSub);
-        pullListView.setAdapter(mProductAdapter);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
+        pullListView.setPullToRefreshOverScrollEnabled(false);
+        pullListView.setScrollingWhileRefreshingEnabled(true);
+        pullListView.setAdapter(mProductAdapter);
 
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
 
