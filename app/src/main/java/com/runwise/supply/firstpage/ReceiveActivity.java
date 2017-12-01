@@ -73,6 +73,8 @@ import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureDeviceClient;
 import com.socketmobile.capture.events.DataDecodedEvent;
 import com.socketmobile.capture.events.DeviceAvailabilityEvent;
+//import com.socketmobile.capture.events.DataDecodedEvent;
+//import com.socketmobile.capture.events.DeviceAvailabilityEvent;
 //import com.socketmobile.capture.types.DecodedData;
 
 import org.greenrobot.eventbus.EventBus;
@@ -1218,22 +1220,23 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //        }
 //    }
 
-    private void updateDeviceState(DeviceAvailabilityEvent event) {
-        String string;
-        if (event.isAnyDeviceAvailable()) {
-            print("Device available");
-//            btn.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-            string = "Device ready";
-        } else if (event.isAnyDeviceConnected()) {
-            print("Device connected");
-//            btn.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
-            string = "Device in use";
-        } else {
-            print("No device");
-//            btn.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-//            btn.setText("No device connected");
-        }
-    }
+//
+//    private void updateDeviceState(DeviceAvailabilityEvent event) {
+//        String string;
+//        if (event.isAnyDeviceAvailable()) {
+//            print("Device available");
+////            btn.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+//            string = "Device ready";
+//        } else if (event.isAnyDeviceConnected()) {
+//            print("Device connected");
+////            btn.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+//            string = "Device in use";
+//        } else {
+//            print("No device");
+////            btn.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+////            btn.setText("No device connected");
+//        }
+//    }
 
     private void print(String message) {
         ToastUtil.show(mContext, message);

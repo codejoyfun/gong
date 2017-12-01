@@ -342,13 +342,6 @@ public class NetWorkHelper<T extends BaseEntity> {
         sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList);
     }
 
-    public String getHost(String bizName){
-        if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")||bizName.contains("/api/user/agree_item_time")){
-            return (String) SPUtils.get(context, FILE_KEY_HOST,"");
-        }else{
-            return Constant.UNLOGIN_URL;
-        }
-    }
 
     @SuppressLint("UseSparseArrays")
     private void initHelper(Context context, BaseActivity baseActivity, NetWorkCallBack<T> newWorkCallBack) {
@@ -549,22 +542,34 @@ public class NetWorkHelper<T extends BaseEntity> {
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
-            if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")){
-                headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
+
+            if(url.contains("/api/get/host")) {
+                headerMap.put("X-Odoo-Db", "ZY-PreGolive-001");
             }else{
-                if(url.contains("/api/get/host")){
-                    headerMap.put("X-Odoo-Db", "ZY-PreGolive-001");
-                }else if(url.contains("/gongfu/reset_password")||url.contains("/gongfu/get_captcha")){
-                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context,FILE_KEY_TEMP_DB_NAME,""));
-                }else {
-                    headerMap.put("X-Odoo-Db", "MF-PreGolive-001");
+                if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")){
+                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
+                }else{
+                   if(url.contains("/gongfu/reset_password")||url.contains("/gongfu/get_captcha")){
+                        headerMap.put("X-Odoo-Db", (String) SPUtils.get(context,FILE_KEY_TEMP_DB_NAME,""));
+                    }else {
+                        headerMap.put("X-Odoo-Db", "ZY-PreGolive-001");
+                    }
                 }
             }
-
             LogUtils.e("Headers:" + headerMap.toString());
             return headerMap;
         }
+    }
 
+    public String getHost(String bizName){
+        if(bizName.contains("/api/get/host")) {
+            return Constant.UNLOGIN_URL;
+        }
+        if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")||bizName.contains("/api/user/agree_item_time")){
+            return (String) SPUtils.get(context, FILE_KEY_HOST,"");
+        }else{
+            return Constant.UNLOGIN_URL;
+        }
     }
 
     private byte[] encodeParameter(String params, String paramsEncoding) {

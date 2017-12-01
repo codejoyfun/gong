@@ -55,7 +55,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/login_ico_user"
+                    android:src="@drawable/login_ico_company"
                     />
                 <com.runwise.supply.view.ClearEditText
                     android:id="@+id/cet_company"

@@ -36,6 +36,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.Log;
+
 /**
  * Created by mike on 2017/9/13.
  */
@@ -94,6 +96,7 @@ public class SearchListFragment extends NetWorkFragment {
                 findList.add(bean);
             }
         }
+        Log.d("haha","size:"+findList.size());
         return findList;
     }
 
