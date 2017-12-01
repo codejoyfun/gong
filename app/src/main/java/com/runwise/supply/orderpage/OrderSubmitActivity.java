@@ -225,11 +225,15 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 mRlDateOfService.setEnabled(true);
 
                 //跳去中间页
-                Intent intent2 = new Intent(this, OrderCommitSuccessActivity.class);
-                intent2.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, orderCommitResponse.getOrders());
-                startActivity(intent2);
-//                Intent intent2 = new Intent(this, OrderSubmitSuccessActivity.class);
+//                Intent intent2 = new Intent(this, OrderCommitSuccessActivity.class);
+//                intent2.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, orderCommitResponse.getOrders());
 //                startActivity(intent2);
+
+                //异步过程，本地记录记录下单信息
+
+
+                Intent intent2 = new Intent(this, OrderSubmitSuccessActivity.class);
+                startActivity(intent2);
                 //清空购物车
                 //SPUtils.put(getActivityContext(), Constant.SP_KEY_CART, "");//删购物车
                 CartManager.getInstance(this).clearCart(mProductList);
