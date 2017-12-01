@@ -21,8 +21,9 @@ public class SPUtils {
     public static final String FILE_NAME = "sharefile_data";
     public static final String FILE_KEY_HOST = "file_key_host";
     public static final String FILE_KEY_DB_NAME = "X-Odoo-Db";
+    public static final String FILE_KEY_LOGIN_CONFLICT = "file_key_login_conflict";
     public static final String FILE_KEY_PLACE_ORDER_CACHE = "file_key_place_order_cache";
-    public static final String FILE_KEY_TEMP_DB_NAME = "file_key_temp_db_name";
+
 
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
@@ -300,6 +301,14 @@ public class SPUtils {
 
     public static void setLogin(Context context, boolean isLogin) {
         SPUtils.put(context, "mLogin", isLogin);
+    }
+
+    public static boolean isLoginConflict(Context context) {
+        return (boolean) SPUtils.get(context, FILE_KEY_LOGIN_CONFLICT, false);
+    }
+
+    public static void setLoginConflict(Context context, boolean isLogin) {
+        SPUtils.put(context, FILE_KEY_LOGIN_CONFLICT, isLogin);
     }
 
     public static void loginOut(Context context) {

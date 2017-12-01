@@ -124,6 +124,7 @@ public class LoginRelogActivity extends NetWorkActivity {
                 GlobalApplication.getInstance().saveUserInfo(userInfo);
                 JPushInterface.setAliasAndTags(getApplicationContext(), CommonUtils.getDeviceId(this), null, null);
                 SPUtils.setLogin(mContext, true);
+                SPUtils.setLoginConflict(getActivityContext(),false);
                 ToastUtil.show(mContext, "登录成功");
                 ActivityManager.getInstance().finishAll();
                 Intent intent = new Intent(getActivityContext(),MainActivity.class);
