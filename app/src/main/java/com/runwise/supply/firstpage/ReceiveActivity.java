@@ -69,11 +69,11 @@ import com.runwise.supply.view.NoScrollViewPager;
 import com.runwise.supply.view.NoWatchEditText;
 import com.runwise.supply.view.ProductTypePopup;
 import com.socketmobile.capture.Capture;
-import com.socketmobile.capture.client.CaptureClient;
-import com.socketmobile.capture.client.CaptureDeviceClient;
+//import com.socketmobile.capture.client.CaptureClient;
+//import com.socketmobile.capture.client.CaptureDeviceClient;
 import com.socketmobile.capture.events.DataDecodedEvent;
 import com.socketmobile.capture.events.DeviceAvailabilityEvent;
-import com.socketmobile.capture.types.DecodedData;
+//import com.socketmobile.capture.types.DecodedData;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -100,7 +100,7 @@ import static com.runwise.supply.orderpage.entity.ReceiveInfo.SEPARATOR;
  * Created by libin on 2017/7/16.
  */
 
-public class ReceiveActivity extends NetWorkActivity implements DoActionCallback, CaptureClient.Listener {
+public class ReceiveActivity extends NetWorkActivity implements DoActionCallback/*, CaptureClient.Listener*/ {
     private static final int RECEIVE = 100;           //收货
     private static final int TALLYING = 200;          //点货
     private static final int DONE_TALLY = 300;          //第二个人完成点货
@@ -141,7 +141,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private SimpleDraweeView productImage;
     private int totalQty;           //预计总的商品总数
     private OrderResponse.ListBean lbean;
-    private CaptureClient mClient;
+//    private CaptureClient mClient;
     TimePickerView pvCustomTime;
     WheelView wheelView;
 
@@ -191,7 +191,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
         initPopWindow();
         initPopWindow2();       //单独初始化一下双单位的popview
-        Capture.init(getApplicationContext());
+//        Capture.init(getApplicationContext());
 //        mClient = new CaptureClient();
 //        mClient.setListener(this);
 //        mClient.connect();
@@ -1140,20 +1140,20 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
     }
 
-    @Override
-    public void onConnectionFailure(int i) {
-
-    }
-
-    @Override
-    public void onDeviceAvailabilityChanged(CaptureDeviceClient captureDeviceClient) {
-
-    }
-
-    @Override
-    public void onDataDecoded(CaptureDeviceClient captureDeviceClient, DecodedData decodedData) {
-        Log.i("aaaa", "aaaaaa");
-    }
+//    @Override
+//    public void onConnectionFailure(int i) {
+//
+//    }
+//
+//    @Override
+//    public void onDeviceAvailabilityChanged(CaptureDeviceClient captureDeviceClient) {
+//
+//    }
+//
+//    @Override
+//    public void onDataDecoded(CaptureDeviceClient captureDeviceClient, DecodedData decodedData) {
+//        Log.i("aaaa", "aaaaaa");
+//    }
 
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
         private List<String> titleList = new ArrayList<>();
@@ -1191,32 +1191,32 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onScan(DataDecodedEvent event) {
-        print(event.data.getData().toString());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onCaptureDeviceAvailabilityChanged(DeviceAvailabilityEvent event) {
-        Collection<CaptureDeviceClient> devices;
-        updateDeviceState(event);
-
-        // The first time we receive this event - via sticky event - we
-        // want to configure all available devices
-        if (devicesConnected < 0) {
-            devices = event.getAllDevices();
-        } else {
-            devices = event.getChangedDevices();
-        }
-
-        devicesConnected = event.getDeviceCount();
-
-        for (CaptureDeviceClient device : devices) {
-//            if (device.isMine()) {
-//                // Configuration
-//            }
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onScan(DataDecodedEvent event) {
+//        print(event.data.getData().toString());
+//    }
+//
+//    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+//    public void onCaptureDeviceAvailabilityChanged(DeviceAvailabilityEvent event) {
+//        Collection<CaptureDeviceClient> devices;
+//        updateDeviceState(event);
+//
+//        // The first time we receive this event - via sticky event - we
+//        // want to configure all available devices
+//        if (devicesConnected < 0) {
+//            devices = event.getAllDevices();
+//        } else {
+//            devices = event.getChangedDevices();
+//        }
+//
+//        devicesConnected = event.getDeviceCount();
+//
+//        for (CaptureDeviceClient device : devices) {
+////            if (device.isMine()) {
+////                // Configuration
+////            }
+//        }
+//    }
 
     private void updateDeviceState(DeviceAvailabilityEvent event) {
         String string;

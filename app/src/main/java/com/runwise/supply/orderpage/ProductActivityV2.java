@@ -287,7 +287,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         //如果有二级分类，不显示下拉按钮
         boolean hasSubcategory = false;
         for(CategoryResponseV2.Category category: categoryResponse.getCategoryList()){
-            if(category.getCategoryChild()!=null && category.getCategoryChild().length>0){
+            if(category.getCategoryChild()!=null && category.getCategoryChild().size()>0){
                 hasSubcategory = true;
                 break;
             }

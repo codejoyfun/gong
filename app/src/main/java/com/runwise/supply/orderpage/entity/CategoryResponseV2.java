@@ -3,6 +3,8 @@ package com.runwise.supply.orderpage.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 /**
  * 包含二级分类的分类接口返回
  *
@@ -24,10 +26,10 @@ public class CategoryResponseV2 {
     /**
      * 类别，包含二级
      */
-    public static class Category implements Parcelable{
+    public static class Category implements Parcelable {
         int categoryNum;
         String categoryParent;
-        String[] categoryChild;
+        List<String> categoryChild;
 
         public int getCategoryNum() {
             return categoryNum;
@@ -37,7 +39,7 @@ public class CategoryResponseV2 {
             return categoryParent;
         }
 
-        public String[] getCategoryChild() {
+        public List<String> getCategoryChild() {
             return categoryChild;
         }
 
@@ -49,7 +51,7 @@ public class CategoryResponseV2 {
             this.categoryParent = categoryParent;
         }
 
-        public void setCategoryChild(String[] categoryChild) {
+        public void setCategoryChild(List<String> categoryChild) {
             this.categoryChild = categoryChild;
         }
 
@@ -62,7 +64,7 @@ public class CategoryResponseV2 {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(this.categoryNum);
             dest.writeString(this.categoryParent);
-            dest.writeStringArray(this.categoryChild);
+            dest.writeStringList(this.categoryChild);
         }
 
         public Category() {
@@ -71,7 +73,7 @@ public class CategoryResponseV2 {
         protected Category(Parcel in) {
             this.categoryNum = in.readInt();
             this.categoryParent = in.readString();
-            this.categoryChild = in.createStringArray();
+            this.categoryChild = in.createStringArrayList();
         }
 
         public static final Creator<Category> CREATOR = new Creator<Category>() {

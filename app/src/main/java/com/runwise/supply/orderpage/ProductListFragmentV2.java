@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * 商品按照类别分页显示
  *
@@ -59,6 +61,7 @@ import java.util.Map;
  *
  */
 public class ProductListFragmentV2 extends NetWorkFragment {
+    public static final String INTENT_KEY_INIT_DATA = "init_data";
     public static final String INTENT_KEY_CATEGORY = "category";
     public static final String INTENT_KEY_SUB_CATEGORY = "subcategory";
     public static final String INTENT_KEY_HAS_OTHER_SUB = "has_other_sub";
@@ -112,6 +115,19 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         //第一个子分类不需要
         if(getArguments()!=null && getArguments().getBoolean(INTENT_KEY_FIRST_LOAD,false)){
             firstLoad();
+        }
+
+        //用于特价专区，特价专区使用传入的数据，不查接口
+        if(getArguments()!=null){
+            List<ProductData.ListBean> arrayList = getArguments().getParcelableArrayList(INTENT_KEY_INIT_DATA);
+            if(arrayList!=null){
+                isFirstLoaded = true;
+                pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
+                mProductAdapter.appendData(arrayList);
+                mProductAdapter.notifyDataSetChanged();
+                mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+                ((ProductCategoryFragment) getParentFragment()).show();//加载完后显示出来
+            }
         }
     }
 
@@ -180,6 +196,10 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         switch (where) {
             case REQUEST_PRODUCT_REFRESH:
                 ProductData productData = (ProductData)result.getResult().getData();
+                //TODO:如果有特价数据，动态增加一个tag
+//                ProductCategoryFragment parent = (ProductCategoryFragment) getParentFragment();
+//                parent.showSpecialSaleFragment("特价专区2",productData.getList());
+
                 mProductAdapter.clear();
                 mProductAdapter.appendData(productData.getList());
                 mProductAdapter.notifyDataSetChanged();
