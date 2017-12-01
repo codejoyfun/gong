@@ -30,7 +30,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import java.io.Serializable;
 
-import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_TEMP_DB_NAME;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.isLogin;
 
 
@@ -158,7 +158,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 				} else {
 					mHost = mHostResponse.getHost() + ":" + mHostResponse.getPort();
 				}
-				SPUtils.put(getActivityContext(),FILE_KEY_TEMP_DB_NAME,mHostResponse.getDbName());
+				SPUtils.put(getActivityContext(),FILE_KEY_DB_NAME,mHostResponse.getDbName());
 				break;
 		}
 	}

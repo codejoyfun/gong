@@ -43,7 +43,6 @@ import java.util.Map.Entry;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
-import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_TEMP_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.getAll;
 
 /**
@@ -546,14 +545,11 @@ public class NetWorkHelper<T extends BaseEntity> {
             if(url.contains("/api/get/host")) {
                 headerMap.put("X-Odoo-Db", "ZY-PreGolive-001");
             }else{
-                if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")){
+                if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")||SPUtils.isLoginConflict(context)
+                        ||url.contains("/gongfu/get_captcha")||url.contains("/gongfu/reset_password")){
                     headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
                 }else{
-                   if(url.contains("/gongfu/reset_password")||url.contains("/gongfu/get_captcha")){
-                        headerMap.put("X-Odoo-Db", (String) SPUtils.get(context,FILE_KEY_TEMP_DB_NAME,""));
-                    }else {
                         headerMap.put("X-Odoo-Db", "ZY-PreGolive-001");
-                    }
                 }
             }
             LogUtils.e("Headers:" + headerMap.toString());
@@ -565,7 +561,10 @@ public class NetWorkHelper<T extends BaseEntity> {
         if(bizName.contains("/api/get/host")) {
             return Constant.UNLOGIN_URL;
         }
-        if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")||bizName.contains("/api/user/agree_item_time")){
+        if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")
+                ||SPUtils.isLoginConflict(context)
+                ||bizName.contains("/api/user/agree_item_time")
+                ||bizName.contains("/gongfu/get_captcha")){
             return (String) SPUtils.get(context, FILE_KEY_HOST,"");
         }else{
             return Constant.UNLOGIN_URL;

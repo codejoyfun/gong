@@ -54,6 +54,7 @@ import cn.jpush.android.api.JPushInterface;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
+import static com.kids.commonframe.base.util.SPUtils.get;
 import static com.runwise.supply.FindPasswordActivity.INTENT_KEY_COMPANY_NAME;
 
 
@@ -137,7 +138,7 @@ public class LoginActivity extends NetWorkActivity {
         showFirstUserFromDB();
     }
 
-    public void showFirstUserFromDB(){
+    public void showFirstUserFromDB() {
         mDb = MyDbUtil.create(this);
         try {
             List<RemUser> userList = mDb.findAll(Selector.from(RemUser.class).orderBy("id", true));
@@ -243,13 +244,19 @@ public class LoginActivity extends NetWorkActivity {
      */
     @OnClick(R.id.login_find)
     public void onFind(View v) {
-        if (TextUtils.isEmpty(mCetCompany.getText().toString())){
+        if (TextUtils.isEmpty(mCetCompany.getText().toString())) {
             Toast.makeText(this, "公司名不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
         Intent intent = new Intent(this, FindPasswordActivity.class);
-        intent.putExtra(INTENT_KEY_COMPANY_NAME,mCetCompany.getText().toString());
+        intent.putExtra(INTENT_KEY_COMPANY_NAME, mCetCompany.getText().toString());
         this.startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SPUtils.setLoginConflict(getActivityContext(),false);
     }
 
     HostResponse mHostResponse;
@@ -262,6 +269,7 @@ public class LoginActivity extends NetWorkActivity {
                 LoginData loginData = (LoginData) resultBean.getData();
                 UserInfo userInfoData = loginData.getUser();
                 if ("false".equals(loginData.getIsSuccess())) {
+                    SPUtils.setLoginConflict(getActivityContext(), true);
                     Intent intent = new Intent(mContext, LoginTipActivity.class);
                     intent.putExtra("mobel", loginData.getMobile());
                     intent.putExtra("username", loginRequest.getLogin());
@@ -269,25 +277,25 @@ public class LoginActivity extends NetWorkActivity {
                     startActivity(intent);
                     return;
                 }
-                    mDb = MyDbUtil.create(this);
-                    try {
-                        RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", loginRequest.getLogin())));
-                        if (rem != null) {
-                            mDb.delete(rem);
-                        }
-                        RemUser newRem = new RemUser();
-                        newRem.setUserName(loginRequest.getLogin());
-                        if (remPassword.isChecked()){
-                            newRem.setPassword(loginRequest.getPassword());
-                        }else{
-                            newRem.setPassword("");
-                        }
-                        newRem.setCompany(mCetCompany.getText().toString());
-                        mDb.save(newRem);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                mDb = MyDbUtil.create(this);
+                try {
+                    RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", loginRequest.getLogin())));
+                    if (rem != null) {
+                        mDb.delete(rem);
                     }
-                    mDb.close();
+                    RemUser newRem = new RemUser();
+                    newRem.setUserName(loginRequest.getLogin());
+                    if (remPassword.isChecked()) {
+                        newRem.setPassword(loginRequest.getPassword());
+                    } else {
+                        newRem.setPassword("");
+                    }
+                    newRem.setCompany(mCetCompany.getText().toString());
+                    mDb.save(newRem);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mDb.close();
                 GlobalApplication.getInstance().saveUserInfo(userInfoData);
 //				ToastUtil.show(mContext,"登录成功");
                 //@libin added
