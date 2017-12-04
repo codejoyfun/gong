@@ -543,13 +543,13 @@ public class NetWorkHelper<T extends BaseEntity> {
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
 
             if(url.contains("/api/get/host")) {
-                headerMap.put("X-Odoo-Db", "ZY-PreGolive-001");
+                headerMap.put("X-Odoo-Db", "LBZ-Golive-Test-0001");
             }else{
                 if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")||SPUtils.isLoginConflict(context)
                         ||url.contains("/gongfu/get_captcha")||url.contains("/gongfu/reset_password")){
                     headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
                 }else{
-                        headerMap.put("X-Odoo-Db", "ZY-PreGolive-001");
+                        headerMap.put("X-Odoo-Db", "LBZ-Golive-Test-0001");
                 }
             }
             LogUtils.e("Headers:" + headerMap.toString());
