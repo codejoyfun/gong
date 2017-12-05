@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.kids.commonframe.config.Constant;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -317,6 +319,7 @@ public class SPUtils {
         SPUtils.put(context, "userInfo", "");
         SPUtils.put(context, FILE_KEY_DB_NAME, "LBZ-Golive-01");
         SPUtils.put(context, FILE_KEY_HOST, "");
+        Constant.BASE_URL = Constant.UNLOGIN_URL;
         SPUtils.put(context, FILE_KEY_PLACE_ORDER_CACHE, "");
     }
 
