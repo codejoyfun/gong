@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
@@ -36,6 +37,8 @@ public class ProductCategoryFragment extends NetWorkFragment {
     private RecyclerView mRvSubCategory;//子类别的列表view
     @ViewInject(R.id.fl_product_list_container)
     private View vContainer;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout mLoadingLayout;
     private SubCategoryAdapter mSubCategoryAdapter;
     private String mCurrentSubCategory = null;
     private List<String> mCategoryChildList;//子类别列表
@@ -64,6 +67,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public void onSuccess(BaseEntity result, int where) {
         switch (where){
             case REQUEST_CATEGORY_CHILD://查询二级分类返回
+                mLoadingLayout.setVisibility(View.GONE);
                 //根据子类别加入fragment
                 //适配没有二级分类,加一个空的tag
                 CategoryChildResponse categoryChildResponse = (CategoryChildResponse) result.getResult().getData();
@@ -81,12 +85,15 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 switchSubCategory(mCategoryChildList.get(0));
                 break;
         }
-
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        //empty
+        mLoadingLayout.setOnRetryClickListener(v->{
+            mLoadingLayout.setStatusLoading();
+            requestChildCategory();
+        });
+        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
     }
 
     boolean isLoaded = false;
@@ -97,6 +104,12 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public void onSelected() {;
         if(!isAdded() || isLoaded)return;
         isLoaded = true;
+        mLoadingLayout.setStatusLoading();
+        //查询二级分类
+        requestChildCategory();
+    }
+
+    public void requestChildCategory(){
         //查询二级分类
         CategoryChildListRequest request = new CategoryChildListRequest(mCategory);
         sendConnection("/api/v2/product/category/child_list",request,REQUEST_CATEGORY_CHILD,false, CategoryChildResponse.class);
@@ -149,7 +162,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
 //        if(mCurrentSubCategory!=null)ft.hide(mMapProductListFragments.get(mCurrentSubCategory));
 //        ft.show(fragment);
 //        ft.commitAllowingStateLoss();
-//        fragment.refresh();
+//        fragment.requestChildCategory();
 //        mCurrentSubCategory = subCategory;
 //        mSubCategoryAdapter.notifyDataSetChanged();
     }
