@@ -285,25 +285,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
         });
 
-        //TODO:如果有二级分类，不显示下拉按钮
-        boolean hasSubcategory = false;
-//        for(CategoryResponseV2.Category category: categoryResponse.getCategoryList()){
-//            if(category.getCategoryChild()!=null && category.getCategoryChild().size()>0){
-//                hasSubcategory = true;
-//                break;
-//            }
-//        }
-        if(hasSubcategory){//有二级分类，不显示
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
-            params.rightMargin = 0;
-            ivOpen.setVisibility(View.GONE);
-        }
-        else if (titles.size() <= TAB_EXPAND_COUNT) {
+        //统一不不显示下拉
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        } else {
-            ivOpen.setVisibility(View.VISIBLE);
-            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
     }
 
