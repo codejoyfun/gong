@@ -8,6 +8,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.webview.X5WebView;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
@@ -36,7 +37,10 @@ public class PageDeatailActivity extends NetWorkActivity {
         setTitleText(true,"详情");
         String url = getIntent().getStringExtra("url");
         Map<String, String > map = new HashMap<String, String>() ;
-        map.put("X-Odoo-Db", (String)SPUtils.get(mContext,FILE_KEY_DB_NAME,""));
+        String db = "";
+        if(SPUtils.isLogin(this))db = (String)SPUtils.get(mContext,FILE_KEY_DB_NAME,"");
+        else db = Constant.UNLOGIN_DB;
+        map.put("X-Odoo-Db", db);
         webview.loadUrl(url,map);
     }
     @OnClick(R.id.title_iv_left)
