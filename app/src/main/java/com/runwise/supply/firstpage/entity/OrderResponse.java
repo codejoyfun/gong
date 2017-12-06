@@ -103,6 +103,7 @@ public class OrderResponse {
         private List<String> stateTracker;
         private List<String> returnOrders;
         private boolean isNewType;//订单信息是否包含所有的商品信息
+        private boolean canAlter;
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -163,6 +164,7 @@ public class OrderResponse {
             stateTracker = in.createStringArrayList();
             returnOrders = in.createStringArrayList();
             isNewType = in.readByte() != 0;
+            canAlter = in.readByte() != 0;
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -457,6 +459,14 @@ public class OrderResponse {
             this.unApplyService = unApplyService;
         }
 
+        public boolean isCanAlter() {
+            return canAlter;
+        }
+
+        public void setCanAlter(boolean canAlter) {
+            this.canAlter = canAlter;
+        }
+
         public boolean isNewType() {
             return isNewType;
         }
@@ -508,6 +518,7 @@ public class OrderResponse {
             dest.writeStringList(stateTracker);
             dest.writeStringList(returnOrders);
             dest.writeByte((byte)(isNewType ? 1:0));
+            dest.writeByte((byte) (canAlter ? 1:0));
         }
 
         public static class StoreBean {
