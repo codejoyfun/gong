@@ -61,11 +61,9 @@ import java.util.Map;
  *
  */
 public class ProductListFragmentV2 extends NetWorkFragment {
-    public static final String INTENT_KEY_INIT_DATA = "init_data";
     public static final String INTENT_KEY_CATEGORY = "category";
     public static final String INTENT_KEY_SUB_CATEGORY = "subcategory";
     public static final String INTENT_KEY_HAS_OTHER_SUB = "has_other_sub";
-    public static final String INTENT_KEY_FIRST_LOAD = "load_first";
     private static final int REQUEST_PRODUCT_REFRESH = 0;
     private static final int REQUEST_PRODUCT_MORE = 1;
 
@@ -83,7 +81,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
 
-    boolean isFirstLoaded = false;
     boolean hasOtherSub;//是否有其它子分类，用于区分子项的layout
 
     @Override
@@ -91,7 +88,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         mSubCategory = getArguments().getString(INTENT_KEY_SUB_CATEGORY);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
-        hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,true);
+        hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,false);
         mProductAdapter = new ProductAdapter(getActivity(),hasOtherSub);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setPullToRefreshOverScrollEnabled(false);
@@ -111,24 +108,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             }
         });
 
-        //是否需要在onCreate的同时查询接口
-        //第一个子分类不需要
-        if(getArguments()!=null && getArguments().getBoolean(INTENT_KEY_FIRST_LOAD,false)){
-            firstLoad();
-        }
-
-        //用于特价专区，特价专区使用传入的数据，不查接口
-        if(getArguments()!=null){
-            List<ProductData.ListBean> arrayList = getArguments().getParcelableArrayList(INTENT_KEY_INIT_DATA);
-            if(arrayList!=null){
-                isFirstLoaded = true;
-                pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
-                mProductAdapter.appendData(arrayList);
-                mProductAdapter.notifyDataSetChanged();
-                mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
-                ((ProductCategoryFragment) getParentFragment()).show();//加载完后显示出来
-            }
-        }
+        refresh(true);
     }
 
     /**
@@ -148,18 +128,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     @Override
     protected int createViewByLayoutId() {
         return R.layout.fragment_products;
-    }
-
-    /**
-     * 懒加载，只有当第一次展示给用户的时候才开始查接口
-     * TODO:新流程不需要，在oncreate就查，因为列表的加载延迟到子类别fragment加载的时候
-     */
-    @Deprecated
-    protected void firstLoad(){
-        if(!isFirstLoaded){
-            isFirstLoaded = true;
-            refresh(true);
-        }
     }
 
     /**
@@ -198,10 +166,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         switch (where) {
             case REQUEST_PRODUCT_REFRESH:
                 ProductData productData = (ProductData)result.getResult().getData();
-                //TODO:如果有特价数据，动态增加一个tag
-//                ProductCategoryFragment parent = (ProductCategoryFragment) getParentFragment();
-//                parent.showSpecialSaleFragment("特价专区2",productData.getList());
-
                 mProductAdapter.clear();
                 mProductAdapter.appendData(productData.getList());
                 mProductAdapter.notifyDataSetChanged();

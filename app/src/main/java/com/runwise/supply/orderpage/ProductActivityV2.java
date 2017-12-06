@@ -33,6 +33,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CartCache;
+import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.AddedProduct;
@@ -100,7 +101,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     protected ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
     protected ProductTypePopup mTypeWindow;//商品类型弹出框
 
-    CategoryResponseV2 categoryResponse;
+    CategoryRespone categoryResponse;
     public static final String INTENT_KEY_BACKAP = "backap";
 
     protected Map<ProductData.ListBean, Integer> mMapCount = new HashMap<>();
@@ -195,14 +196,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         ///gongfu/v3/shop/product/list
         GetCategoryRequest request = new GetCategoryRequest();
         request.setUser_id(Integer.valueOf(GlobalApplication.getInstance().getUid()));
-        sendConnection("/api/v2/product/category", request, REQUEST_CATEGORY, true, CategoryResponseV2.class);
+        sendConnection("/api/v3/product/category", request, REQUEST_CATEGORY, true, CategoryRespone.class);
     }
 
     protected void setupViewPager() {
         List<ProductCategoryFragment> categoryFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        for (CategoryResponseV2.Category category : categoryResponse.getCategoryList()) {
-            titles.add(category.getCategoryParent());
+        for (String category : categoryResponse.getCategoryList()) {
+            titles.add(category);
             categoryFragmentList.add(newCategoryFragment(category));
         }
 
@@ -215,10 +216,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * @param category
      * @return
      */
-    protected ProductCategoryFragment newCategoryFragment(CategoryResponseV2.Category category) {
+    protected ProductCategoryFragment newCategoryFragment(String category) {
         ProductCategoryFragment productCategoryFragment = new ProductCategoryFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(INTENT_KEY_CATEGORY, category);
+        bundle.putString(INTENT_KEY_CATEGORY, category);
         productCategoryFragment.setArguments(bundle);
         return productCategoryFragment;
     }
@@ -284,14 +285,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
         });
 
-        //如果有二级分类，不显示下拉按钮
+        //TODO:如果有二级分类，不显示下拉按钮
         boolean hasSubcategory = false;
-        for(CategoryResponseV2.Category category: categoryResponse.getCategoryList()){
-            if(category.getCategoryChild()!=null && category.getCategoryChild().size()>0){
-                hasSubcategory = true;
-                break;
-            }
-        }
+//        for(CategoryResponseV2.Category category: categoryResponse.getCategoryList()){
+//            if(category.getCategoryChild()!=null && category.getCategoryChild().size()>0){
+//                hasSubcategory = true;
+//                break;
+//            }
+//        }
         if(hasSubcategory){//有二级分类，不显示
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
             params.rightMargin = 0;
@@ -304,9 +305,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             ivOpen.setVisibility(View.VISIBLE);
             smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
-
-        //手动选择第一个类别fragment
-//        repertoryEntityFragmentList.get(0).onSelected();
     }
 
     /**
@@ -478,7 +476,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         switch (where) {
             case REQUEST_CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
-                categoryResponse = (CategoryResponseV2) resultBean1.getData();
+                categoryResponse = (CategoryRespone) resultBean1.getData();
                 setupViewPager();
                 break;
             default:
