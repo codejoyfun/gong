@@ -104,6 +104,8 @@ public class OrderResponse {
         private List<String> returnOrders;
         private boolean isNewType;//订单信息是否包含所有的商品信息
         private boolean canAlter;
+        private boolean isAsyncOrder;
+        private List<String> orderUserIDs;
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -165,6 +167,8 @@ public class OrderResponse {
             returnOrders = in.createStringArrayList();
             isNewType = in.readByte() != 0;
             canAlter = in.readByte() != 0;
+            isAsyncOrder = in.readByte() != 0;
+            orderUserIDs = in.createStringArrayList();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -178,6 +182,22 @@ public class OrderResponse {
                 return new ListBean[size];
             }
         };
+
+        public boolean isAsyncOrder() {
+            return isAsyncOrder;
+        }
+
+        public List<String> getOrderUserIDs() {
+            return orderUserIDs;
+        }
+
+        public void setIsAsyncOrder(boolean asyncOrder) {
+            isAsyncOrder = asyncOrder;
+        }
+
+        public void setOrderUserIDs(List<String> orderUserIDs) {
+            this.orderUserIDs = orderUserIDs;
+        }
 
         public double getAmountTotal() {
             return amountTotal;
@@ -519,6 +539,8 @@ public class OrderResponse {
             dest.writeStringList(returnOrders);
             dest.writeByte((byte)(isNewType ? 1:0));
             dest.writeByte((byte) (canAlter ? 1:0));
+            dest.writeByte((byte) (isAsyncOrder ? 1:0));
+            dest.writeStringList(orderUserIDs);
         }
 
         public static class StoreBean {

@@ -97,6 +97,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_SUBMITTING_ORDER = 7;
     private static final int REQUEST_CANCEL_TRANSFER = 9;
     private static final int REQUEST_OUTPUT_CONFIRM = 10;
+    private static final int REQUEST_READ = 11;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -235,6 +236,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     Intent intent = new Intent(mContext, OrderDetailActivity.class);
                     Bundle bundle = new Bundle();
                     OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
+                    setOrderRead(bean);
                     bundle.putParcelable("order", bean);
                     intent.putExtras(bundle);
                     startActivity(intent);
@@ -852,5 +854,19 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         mSelectTransferEntity = transferEntity;
         Object request = null;
         sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
+    }
+
+    /**
+     * 设置一个订单为已读状态
+     */
+    private void setOrderRead(OrderResponse.ListBean order){
+        //修改本地数据
+        if(order.getOrderUserIDs()==null)order.setOrderUserIDs(new ArrayList<>());
+        order.getOrderUserIDs().add(GlobalApplication.getInstance().getUid());
+        adapter.notifyDataSetChanged();
+
+        //TODO:通知服务器
+        Object request = null;
+        sendConnection("/test",request,REQUEST_READ,false,Object.class);
     }
 }
