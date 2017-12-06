@@ -526,7 +526,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case RECEIVE://正常收货
                 Intent intent = new Intent(mContext, ReceiveActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("order", (OrderResponse.ListBean) adapter.getItem(position));
+                OrderResponse.ListBean listBean = (OrderResponse.ListBean) adapter.getItem(position);
+                bundle.putParcelable("order", listBean);
                 bundle.putInt("mode", 0);
                 intent.putExtras(bundle);
                 startActivity(intent);
