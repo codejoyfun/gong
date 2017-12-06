@@ -183,17 +183,21 @@ public class NetWorkHelper<T extends BaseEntity> {
     }
 
     /**
-     * 发送http请求
+     * 指定timeStamp
+     * 现在先用于首页重新下单，需要指定相同的timestamp
      *
+     * @param method
      * @param url
-     * @param argsKeys   url参数key
-     * @param argsValues url参数值
+     * @param argsKeys
+     * @param argsValues
      * @param where
-     * @param showDialog 是否显示进度条
+     * @param showDialog
+     * @param targerClass
+     * @param partList
+     * @return
      */
-    public void sendConnection(int method, String url, String[] argsKeys,
-                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList) {
-        setRequestTimestamp();
+    public long sendConnection(int method, String url, String[] argsKeys,
+                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList,long timeStamp) {
         if (argsKeys.length != argsValues.length) {
             throw new IllegalArgumentException("check your Params key or value length!");
         }
@@ -211,13 +215,54 @@ public class NetWorkHelper<T extends BaseEntity> {
         RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass);
         RequestErrorListener errorLietener = new RequestErrorListener(where);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
-                (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass);
+                (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
 
         Request<T> request = requestQuerue.add(httpCallback);
         requestStack.put(where, request);
         if (showDialog && baseActivity != null) {
             baseActivity.showIProgressDialog();
         }
+        return timeStamp;
+    }
+
+    /**
+     * 发送http请求
+     *
+     * @param url
+     * @param argsKeys   url参数key
+     * @param argsValues url参数值
+     * @param where
+     * @param showDialog 是否显示进度条
+     */
+    public long sendConnection(int method, String url, String[] argsKeys,
+                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList) {
+        setRequestTimestamp();
+        long timeStamp = REQUEST_TIMESTAMP;
+        if (argsKeys.length != argsValues.length) {
+            throw new IllegalArgumentException("check your Params key or value length!");
+        }
+        StringBuffer queryParam = new StringBuffer();
+        for (int i = 0; i < argsKeys.length; i++) {
+            queryParam.append(argsKeys[i] + "=" + argsValues[i] + "&");
+        }
+        if (queryParam.length() > 0 && "&".equals(queryParam.charAt(queryParam.length() - 1))) {
+            queryParam.deleteCharAt(queryParam.length() - 1);
+            url += "?" + queryParam.toString();
+        }
+        if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
+            LogUtils.e(url);
+        }
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass);
+        RequestErrorListener errorLietener = new RequestErrorListener(where);
+        HttpCallBack<T> httpCallback = new HttpCallBack<T>
+                (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
+
+        Request<T> request = requestQuerue.add(httpCallback);
+        requestStack.put(where, request);
+        if (showDialog && baseActivity != null) {
+            baseActivity.showIProgressDialog();
+        }
+        return timeStamp;
     }
 
 //	/**
@@ -260,7 +305,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      * @param showDialog  对话框
      * @param targerClass 结果class类
      */
-    public void sendConnection(String bizName, Object params, int where, boolean showDialog, Class<?> targerClass) {
+    public long sendConnection(String bizName, Object params, int where, boolean showDialog, Class<?> targerClass) {
         this.setJsonParseType();
         if (params != null) {
             bodyParamStr = JSON.toJSONString(params);
@@ -274,7 +319,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        return sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
     }
 
     /**
@@ -411,8 +456,9 @@ public class NetWorkHelper<T extends BaseEntity> {
         private String paramsStr;
         private List<Part> filePartList;
         String url;
+        private long timeStamp;
 
-        public HttpCallBack(String url, Listener<T> listener, ErrorListener errorListener, int where, int method, Map<String, String> paramsMap, String paramsStr, List<Part> partList, Class<?> targerClass) {
+        public HttpCallBack(String url, Listener<T> listener, ErrorListener errorListener, int where, int method, Map<String, String> paramsMap, String paramsStr, List<Part> partList, Class<?> targerClass,long timeStamp) {
             super(method, url, listener, errorListener);
             this.url = url;
             RetryPolicy policy = new DefaultRetryPolicy(DEFAULT_TIMEOUT_MS, DEFAULT_MAX_RETRIES, DEFAULT_BACKOFF_MULT);
@@ -422,6 +468,7 @@ public class NetWorkHelper<T extends BaseEntity> {
             this.paramsMap = paramsMap;
             this.paramsStr = paramsStr;
             this.filePartList = partList;
+            this.timeStamp = timeStamp;
         }
 
         @Override
@@ -537,7 +584,8 @@ public class NetWorkHelper<T extends BaseEntity> {
             Map<String, String> headerMap = new HashMap<String, String>();
             String userToken = (String) SPUtils.get(context, "sign", "");
             headerMap.put("Cookie", userToken);
-            headerMap.put("timeStamp", String.valueOf(REQUEST_TIMESTAMP));
+            headerMap.put("timeStamp", String.valueOf(timeStamp));
+//            headerMap.put("timeStamp", String.valueOf(REQUEST_TIMESTAMP));
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));

@@ -152,7 +152,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
     /**
      * 懒加载，只有当第一次展示给用户的时候才开始查接口
+     * TODO:新流程不需要，在oncreate就查，因为列表的加载延迟到子类别fragment加载的时候
      */
+    @Deprecated
     protected void firstLoad(){
         if(!isFirstLoaded){
             isFirstLoaded = true;

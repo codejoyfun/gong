@@ -51,7 +51,7 @@
             android:textSize="18sp"
             android:layout_marginLeft="8dp"
             android:textColor="#2E2E2E"
-            android:text=" "
+            android:text="333"
             />
     </LinearLayout>
     <TextView

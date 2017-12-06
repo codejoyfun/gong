@@ -14,6 +14,8 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class SPUtils {
@@ -266,7 +268,7 @@ public class SPUtils {
      * @param data
      * @return modified:
      */
-    private static byte[] StringToBytes(String data) {
+    public static byte[] StringToBytes(String data) {
         String hexString = data.toUpperCase().trim();
         if (hexString.length() % 2 != 0) {
             return null;
@@ -354,6 +356,61 @@ public class SPUtils {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * desc:保存对象
+     *
+     * @param preferences
+     * @param key
+     * @param obj     要保存的对象，只能保存实现了serializable的对象
+     */
+    public static void saveObject(SharedPreferences preferences, String key, Object obj) {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream(bos);
+            os.writeObject(obj);
+            String bytesToHexString = bytesToHexString(bos.toByteArray());
+            preferences.edit().putString(key,bytesToHexString).apply();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * desc:获取保存的Object对象
+     *
+     * @param preferences
+     * @param key
+     * @return modified:
+     */
+    public static Object readObject(SharedPreferences preferences, String key) {
+        try {
+            String string = preferences.getString(key,null);
+            if (TextUtils.isEmpty(string)) {
+                return null;
+            } else {
+                //将16进制的数据转为数组，准备反序列化
+                byte[] stringToBytes = StringToBytes(string);
+                ByteArrayInputStream bis = new ByteArrayInputStream(stringToBytes);
+                ObjectInputStream is = new ObjectInputStream(bis);
+                //返回反序列化得到的对象
+                Object readObject = is.readObject();
+                return readObject;
+            }
+        } catch (StreamCorruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

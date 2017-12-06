@@ -529,6 +529,10 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".firstpage.TempOrderActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".firstpage.EditBatchActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity android:name=".firstpage.EvaluateSuccessActivity"></activity>

@@ -18,6 +18,7 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.entity.CategoryChildResponse;
 import com.runwise.supply.orderpage.entity.CategoryResponseV2;
 import com.runwise.supply.orderpage.entity.ProductData;
 
@@ -44,7 +45,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
     private View vContainer;
     private SubCategoryAdapter mSubCategoryAdapter;
     private String mCurrentSubCategory = "";
-    //private boolean hasSubCategory = false;//是否含有二级分类
+    private List<String> mCategoryChildList;//子类别列表
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,28 @@ public class ProductCategoryFragment extends NetWorkFragment {
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        //empty
+
+        //根据子类别加入fragment
+        //适配没有二级分类,加一个空的tag
+        CategoryChildResponse categoryChildResponse = new CategoryChildResponse();
+        mCategoryChildList = categoryChildResponse.getCategoryChild();
+        if(categoryChildResponse.getCategoryChild()==null || categoryChildResponse.getCategoryChild().isEmpty()){
+            //没有子类别
+            mRvSubCategory.setVisibility(View.GONE);
+            mCategoryChildList = new ArrayList<>();
+            mCategoryChildList.add("");
+        }
+
+        mSubCategoryAdapter = new SubCategoryAdapter();
+        mRvSubCategory.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        mRvSubCategory.setAdapter(mSubCategoryAdapter);
+
+        //按比例设置二级分类列表宽度
+        mRvSubCategory.getLayoutParams().width = (int)(GlobalConstant.screenW * 0.2);
+        mRvSubCategory.requestLayout();
+
+        //切换到第一个子类别，并刷新
+        switchSubCategory(mCategoryChildList.get(0));
     }
 
     @Override
@@ -95,16 +117,21 @@ public class ProductCategoryFragment extends NetWorkFragment {
     }
 
     /**
-     * 每次当前tab被选择的时候调用，然后再通知当前显示的子fragment，用于懒加载策略
+     * 每次当前tab被选择的时候调用
+     * 查询子类别
      */
     public void onSelected() {;
         if(!isAdded())return;
+        //TODO:判断查了子类别没有
         Log.d("haha",mCategory.getCategoryParent()+" onSelected");
         Fragment currentFragment = getChildFragmentManager().findFragmentById(R.id.fl_product_list_container);
-        if(currentFragment!=null){
+        if(currentFragment!=null){//TODO:新流程不需要了
             ProductListFragmentV2 fragment = (ProductListFragmentV2)currentFragment;
             fragment.firstLoad();
         }
+        //TODO:new process
+        Object request = null;
+        //sendConnection();
     }
 
     /**
@@ -140,6 +167,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
         }
         else{
             newFragment = newProductListFragment(subCategory);
+            //TODO：不需要再传这个了，onCreate就查
             newFragment.getArguments().putBoolean(INTENT_KEY_FIRST_LOAD,true);//表示加载的同时需要查询商品列表接口
             ft.add(R.id.fl_product_list_container,newFragment,subCategory);
         }
@@ -205,6 +233,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
     /**
      * 只有一个子分类，不显示子分类
      */
+    @Deprecated
     private void shouldShowSubCategory(){
         if(mCategory.getCategoryChild().size()==1)mRvSubCategory.setVisibility(View.GONE);
         else mRvSubCategory.setVisibility(View.VISIBLE);
@@ -214,6 +243,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
      * 添加展示特价专区子分类
      * @param productList
      */
+    @Deprecated
     public void showSpecialSaleFragment(String tagName,List<ProductData.ListBean> productList){
         if(productList==null || productList.isEmpty()){//没有特价商品
             shouldShowSubCategory();

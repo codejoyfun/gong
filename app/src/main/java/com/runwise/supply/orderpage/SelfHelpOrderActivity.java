@@ -60,7 +60,7 @@ import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PLACE_ORDER_CACHE;
  * Created by libin on 2017/7/12.
  * 跟智能下单页面大体一致，可继承，暂复制。
  */
-
+@Deprecated
 public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdapter.OneKeyInterface {
     private static final int DEFAULT_TYPE = 1 << 0;
     private static final int COMMIT_TYPE = 1 << 1;
