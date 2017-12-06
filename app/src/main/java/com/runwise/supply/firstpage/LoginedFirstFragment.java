@@ -41,6 +41,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
+import com.runwise.supply.entity.CheckOrderSuccessRequest;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.event.OrderStatusChangeEvent;
 import com.runwise.supply.firstpage.entity.CancleRequest;
@@ -662,7 +663,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             return;
         }
         mTempOrders = orders;
-        Object request = null;
+        CheckOrderSuccessRequest request = new CheckOrderSuccessRequest(mTempOrders);
         sendConnection("/api/order/is/success",request,REQUEST_SUBMITTING_ORDER,false,null);
     }
 
