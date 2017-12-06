@@ -33,6 +33,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CartCache;
+import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.AddedProduct;
@@ -63,6 +64,11 @@ import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CA
 /**
  * 分页/二级分类的商品选择页
  * 注意要区分有含有二级分类和完全没有二级分类两种显示
+ *
+ * 加载策略：
+ * 加载每个父类别的fragment，以及父类别的第一个子类别fragment，且不会查商品列表接口
+ * 当父类别fragment被选中时，才查第一个子类别的商品列表接口
+ * 当选择其它的子类别时，才加载其它的子类别fragment，同时查询接口
  *
  * Created by Dong on 2017/7/3.
  */
@@ -95,7 +101,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     protected ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
     protected ProductTypePopup mTypeWindow;//商品类型弹出框
 
-    CategoryResponseV2 categoryResponse;
+    CategoryRespone categoryResponse;
     public static final String INTENT_KEY_BACKAP = "backap";
 
     protected Map<ProductData.ListBean, Integer> mMapCount = new HashMap<>();
@@ -190,14 +196,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         ///gongfu/v3/shop/product/list
         GetCategoryRequest request = new GetCategoryRequest();
         request.setUser_id(Integer.valueOf(GlobalApplication.getInstance().getUid()));
-        sendConnection("/api/v2/product/category", request, REQUEST_CATEGORY, true, CategoryResponseV2.class);
+        sendConnection("/api/v3/product/category", request, REQUEST_CATEGORY, true, CategoryRespone.class);
     }
 
     protected void setupViewPager() {
         List<ProductCategoryFragment> categoryFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        for (CategoryResponseV2.Category category : categoryResponse.getCategoryList()) {
-            titles.add(category.getCategoryParent());
+        for (String category : categoryResponse.getCategoryList()) {
+            titles.add(category);
             categoryFragmentList.add(newCategoryFragment(category));
         }
 
@@ -210,10 +216,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * @param category
      * @return
      */
-    protected ProductCategoryFragment newCategoryFragment(CategoryResponseV2.Category category) {
+    protected ProductCategoryFragment newCategoryFragment(String category) {
         ProductCategoryFragment productCategoryFragment = new ProductCategoryFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(INTENT_KEY_CATEGORY, category);
+        bundle.putString(INTENT_KEY_CATEGORY, category);
         productCategoryFragment.setArguments(bundle);
         return productCategoryFragment;
     }
@@ -264,8 +270,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mTypeWindow.dismiss();
 
                 //刷新当前fragment
-                ProductCategoryFragment fragment = mAdapterVp.fragmentList.get(position);
-                fragment.onSelected();
+//                ProductCategoryFragment fragment = mAdapterVp.fragmentList.get(position);
+//                fragment.onSelected();
             }
 
             @Override
@@ -279,29 +285,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
         });
 
-        //如果有二级分类，不显示下拉按钮
-        boolean hasSubcategory = false;
-        for(CategoryResponseV2.Category category: categoryResponse.getCategoryList()){
-            if(category.getCategoryChild()!=null && category.getCategoryChild().length>0){
-                hasSubcategory = true;
-                break;
-            }
-        }
-        if(hasSubcategory){//有二级分类，不显示
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
-            params.rightMargin = 0;
-            ivOpen.setVisibility(View.GONE);
-        }
-        else if (titles.size() <= TAB_EXPAND_COUNT) {
+        //统一不不显示下拉
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        } else {
-            ivOpen.setVisibility(View.VISIBLE);
-            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
-
-        //手动选择第一个类别fragment
-        repertoryEntityFragmentList.get(0).onSelected();
     }
 
     /**
@@ -473,7 +461,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         switch (where) {
             case REQUEST_CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
-                categoryResponse = (CategoryResponseV2) resultBean1.getData();
+                categoryResponse = (CategoryRespone) resultBean1.getData();
                 setupViewPager();
                 break;
             default:
@@ -524,6 +512,12 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         @Override
         public int getCount() {
             return titleList.size();
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            super.setPrimaryItem(container, position, object);
+            fragmentList.get(position).onSelected();
         }
     }
 

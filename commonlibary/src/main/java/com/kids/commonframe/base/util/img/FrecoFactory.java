@@ -22,10 +22,13 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.config.Constant;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
 
 /**
  * 所有facebook freco加载顶图片都应用该类
@@ -102,7 +105,27 @@ public class FrecoFactory {
     public void disPlay(DraweeView draweeView,Uri uri,ResizeOptions resizeOptions) {
         disPlay(draweeView, uri,null, resizeOptions, null, null,null);
     }
+
+    /**
+     * @param draweeView
+     * @param imgUrl 不需要传baseUrl
+     */
+    public void displayWithoutHost(DraweeView draweeView, String imgUrl){
+        String baseUrl = null;
+        if(SPUtils.isLogin(mContext)){
+            baseUrl = (String) SPUtils.get(mContext, FILE_KEY_HOST, "");
+        }else{
+            baseUrl = Constant.UNLOGIN_URL;
+        }
+        disPlay(draweeView,baseUrl+imgUrl);
+    }
+
     public void disPlay(DraweeView draweeView,String imgUrl) {
+        String url = (String) SPUtils.get(mContext, FILE_KEY_HOST, "");
+        //fix bug:未登录但是用了登录的url
+        if(!SPUtils.isLogin(mContext) && !TextUtils.isEmpty(url) && imgUrl.startsWith(url)){
+            imgUrl = Constant.UNLOGIN_URL + imgUrl.substring(url.length());
+        }
         disPlay(draweeView,getUriFromStr(imgUrl),null,null,null,null,null);
     }
     public void disPlay(DraweeView draweeView,String imgUrl,String lowResUri) {

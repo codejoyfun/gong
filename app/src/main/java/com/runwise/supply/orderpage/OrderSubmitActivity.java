@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -50,6 +51,9 @@ import me.shaohui.bottomdialog.BottomDialog;
 
 import static java.lang.System.currentTimeMillis;
 
+/**
+ * 下单页 以及 修改订单页，取决于有没有传订单对象
+ */
 public class OrderSubmitActivity extends NetWorkActivity {
     public static final String INTENT_KEY_PRODUCTS = "intent_products";
     public static final int REQUEST_USER_INFO = 1 << 0;
@@ -98,6 +102,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     OrderResponse.ListBean mOrder;
 
     private ArrayList<ProductData.ListBean> mProductList;//选择的商品
+    private TempOrderManager.TempOrder mTempOrder;//本地记录提交中的订单
 
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener() {
@@ -225,11 +230,15 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 mRlDateOfService.setEnabled(true);
 
                 //跳去中间页
-                Intent intent2 = new Intent(this, OrderCommitSuccessActivity.class);
-                intent2.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, orderCommitResponse.getOrders());
-                startActivity(intent2);
-//                Intent intent2 = new Intent(this, OrderSubmitSuccessActivity.class);
+//                Intent intent2 = new Intent(this, OrderCommitSuccessActivity.class);
+//                intent2.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, orderCommitResponse.getOrders());
 //                startActivity(intent2);
+
+                //异步过程，本地记录记录下单信息
+                TempOrderManager.getInstance(this).saveTempOrderAsync(mTempOrder);
+
+                Intent intent2 = new Intent(this, OrderSubmitSuccessActivity.class);
+                startActivity(intent2);
                 //清空购物车
                 //SPUtils.put(getActivityContext(), Constant.SP_KEY_CART, "");//删购物车
                 CartManager.getInstance(this).clearCart(mProductList);
@@ -251,6 +260,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
                     mRlDateOfService.setEnabled(true);
                     return;
                 }
+                //异步过程，本地记录记录下单信息
+                Log.d("haha","save temp order");
+                TempOrderManager.getInstance(this).saveTempOrderAsync(mTempOrder);
+
                 mCustomProgressDialog.dismiss();
                 dialog.setTitle("提示");
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
@@ -331,13 +344,20 @@ public class OrderSubmitActivity extends NetWorkActivity {
             return;
         }
         request.setProducts(cList);
-        sendConnection("/gongfu/v2/order/create/", request, REQUEST_SUBMIT, false, OrderCommitResponse.class);
+//        sendConnection("/gongfu/v2/order/create/", request, REQUEST_SUBMIT, false, OrderCommitResponse.class);
+        long timestamp = sendConnection("/api/order/async/create", request, REQUEST_SUBMIT, false, OrderCommitResponse.class);
         mCustomProgressDialog = new CustomProgressDialog(this);
         mCustomProgressDialog.setMsg("下单中...");
         mCustomProgressDialog.show();
         mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
         mBtnSubmit.setEnabled(false);
         mRlDateOfService.setEnabled(false);
+        //记录订单信息,接口返回后才写入存储
+        mTempOrder = new TempOrderManager.TempOrder();
+        //只取日期
+        mTempOrder.setEstimateDate(request.getEstimated_time().split(" ")[0]);
+        mTempOrder.setHashKey(String.valueOf(timestamp));
+        mTempOrder.setProductList(mProductList);
     }
 
     /**

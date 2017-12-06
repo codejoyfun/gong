@@ -71,6 +71,8 @@ import com.runwise.supply.view.ProductTypePopup;
 import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;
+import com.socketmobile.capture.events.DataDecodedEvent;
+import com.socketmobile.capture.events.DeviceAvailabilityEvent;
 //import com.socketmobile.capture.events.DataDecodedEvent;
 //import com.socketmobile.capture.events.DeviceAvailabilityEvent;
 //import com.socketmobile.capture.types.DecodedData;
@@ -1217,6 +1219,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 ////            }
 //        }
 //    }
+
 //
 //    private void updateDeviceState(DeviceAvailabilityEvent event) {
 //        String string;

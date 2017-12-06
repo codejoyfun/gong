@@ -27,8 +27,10 @@ import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.tools.UserUtils;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -50,6 +52,7 @@ public class OrderAdapter extends IBaseAdapter {
     protected static final int TYPE_ORDER = 0;        //正常订单
     protected static final int TYPE_RETURN = 1;       //退货单
     static final int TYPE_TRANSFER = 2;                 //调拨单
+    static final int TYPE_TEMP_ORDER = 3;//本地保存的提交中的订单
 
     public static final int TRANS_ACTION_CANCEL = 0;
     public static final int TRANS_ACTION_OUTPUT_CONFIRM = 1;
@@ -58,6 +61,7 @@ public class OrderAdapter extends IBaseAdapter {
         void doAction(OrderDoAction action, int postion);
         void doTransferAction(int type,TransferEntity transferEntity);
         void call(String phone);
+        void resubmitOrder(TempOrderManager.TempOrder tempOrder);
     }
 
     private DoActionInterface callback;
@@ -84,12 +88,16 @@ public class OrderAdapter extends IBaseAdapter {
     public OrderAdapter(Context context, DoActionInterface callback) {
         this.context = context;
         this.callback = callback;
+        mFailedColor = context.getResources().getColor(R.color.colorffe7e0);
+        mNormalColor = context.getResources().getColor(android.R.color.white);
     }
 
     @Override
     protected View getExView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
-        if(getItemViewType(position)==TYPE_TRANSFER)return getTransferView(position,convertView,parent);
+        int viewType = getItemViewType(position);
+        if(viewType==TYPE_TEMP_ORDER)return getSubmittingOrderView(position,convertView,parent);
+        if(viewType==TYPE_TRANSFER)return getTransferView(position,convertView,parent);
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
@@ -393,6 +401,9 @@ public class OrderAdapter extends IBaseAdapter {
             if(((OrderResponse.ListBean) object).isTransfer())return TYPE_TRANSFER;
             return TYPE_ORDER;
         }
+        else if(object instanceof TempOrderManager.TempOrder){
+            return TYPE_TEMP_ORDER;
+        }
 //        else if(object instanceof TransferEntity){
 //            return TYPE_TRANSFER;
 //        }
@@ -401,7 +412,7 @@ public class OrderAdapter extends IBaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return 4;
     }
 
     SimpleDateFormat sdfSource = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -413,6 +424,69 @@ public class OrderAdapter extends IBaseAdapter {
             e.printStackTrace();
             return str;
         }
+    }
+
+    int mFailedColor;//提交中失败的背景色
+    int mNormalColor;//提交中正常的颜色
+    /**
+     * 提交中的订单
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
+    private View getSubmittingOrderView(final int position, View convertView, ViewGroup parent){
+        SubmittingOrderViewHolder viewHolder = null;
+        if(convertView==null){
+            convertView = View.inflate(context,R.layout.firstpage_order_temp_item,null);
+            viewHolder = new SubmittingOrderViewHolder();
+            ViewUtils.inject(viewHolder,convertView);
+            convertView.setTag(viewHolder);
+        }else{
+            viewHolder = (SubmittingOrderViewHolder) convertView.getTag();
+        }
+        TempOrderManager.TempOrder order = (TempOrderManager.TempOrder) mList.get(position);
+        viewHolder.mmTvTitle.setText("预计"+formatTimeStr(order.getEstimateDate())+"送达");
+
+        if(GlobalApplication.getInstance().getCanSeePrice()){
+            viewHolder.mmTvPrice.setVisibility(View.VISIBLE);
+            viewHolder.mmTvPrice.setText(UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
+        }else{
+            viewHolder.mmTvPrice.setVisibility(View.GONE);
+        }
+//        viewHolder.mmTvPrice.setText(UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
+        viewHolder.mmTvPieces.setText("共"+order.getTotalPieces()+"件商品");
+
+        //删除按钮
+        if(order.isFailed()){
+            viewHolder.mmIvClose.setVisibility(View.VISIBLE);
+            viewHolder.mmTvStatus.setText("提交失败");
+            viewHolder.mmTvStatus.setTextColor(context.getResources().getColor(R.color.colore64340));
+            viewHolder.mmContainer.setBackgroundColor(mFailedColor);
+            viewHolder.mmTvButton.setVisibility(View.VISIBLE);
+            viewHolder.mmTvSubTitle.setText("--");
+        }else{
+            viewHolder.mmIvClose.setVisibility(View.INVISIBLE);
+            viewHolder.mmTvStatus.setText("提交中");
+            viewHolder.mmContainer.setBackgroundColor(mNormalColor);
+            viewHolder.mmTvButton.setVisibility(View.GONE);
+            viewHolder.mmTvStatus.setTextColor(context.getResources().getColor(R.color.color333333));
+            viewHolder.mmTvSubTitle.setText("订单提交中");
+        }
+
+        //删除按钮
+        viewHolder.mmIvClose.setOnClickListener(v->{
+            TempOrderManager.getInstance(context).removeTempOrder(order);
+            mList.remove(order);
+            notifyDataSetChanged();
+        });
+
+        //重新提交按钮
+        viewHolder.mmTvButton.setOnClickListener(v->{
+            if(callback!=null)callback.resubmitOrder(order);
+        });
+
+        return convertView;
     }
 
     /**
@@ -429,7 +503,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder = new TransferViewHolder();
             ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
-            } else {
+        } else {
             viewHolder = (TransferViewHolder) convertView.getTag();
         }
         final TransferEntity transferEntity = (TransferEntity) mList.get(position);
@@ -553,4 +627,27 @@ public class OrderAdapter extends IBaseAdapter {
         TextView mmTvCancel;
     }
 
+    /**
+     * 提交中订单
+     */
+    private class SubmittingOrderViewHolder{
+        @ViewInject(R.id.tv_item_temp_title)
+        TextView mmTvTitle;
+        @ViewInject(R.id.tv_item_temp_sub_title)
+        TextView mmTvSubTitle;
+        @ViewInject(R.id.iv_first_order_item_remove)
+        ImageView mmIvClose;
+        @ViewInject(R.id.tv_item_temp_status)
+        TextView mmTvStatus;
+        @ViewInject(R.id.tv_item_temp_action)
+        TextView mmTvButton;
+        @ViewInject(R.id.tv_item_temp_pieces)
+        TextView mmTvPieces;
+        @ViewInject(R.id.tv_item_temp_price)
+        TextView mmTvPrice;
+        @ViewInject(R.id.iv_temp_status)
+        ImageView mmIvIcon;
+        @ViewInject(R.id.ll_item_temp_container)
+        ViewGroup mmContainer;
+    }
 }

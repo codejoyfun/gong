@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -52,11 +53,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * 商品按照类别分页显示
  *
  * 所有的已选数据保存在父Activity的map中
- * TODO;use setUserVisibleHint
  *
  */
 public class ProductListFragmentV2 extends NetWorkFragment {
@@ -80,7 +81,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
 
-    boolean isFirstLoaded = false;
     boolean hasOtherSub;//是否有其它子分类，用于区分子项的layout
 
     @Override
@@ -88,7 +88,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         mSubCategory = getArguments().getString(INTENT_KEY_SUB_CATEGORY);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
-        hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,true);
+        hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,false);
         mProductAdapter = new ProductAdapter(getActivity(),hasOtherSub);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setPullToRefreshOverScrollEnabled(false);
@@ -108,10 +108,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             }
         });
 
-        if(getArguments()!=null && getArguments().getBoolean("firstLoad")){
-            isFirstLoaded = true;
-            refresh(true);
-        }
+        refresh(true);
     }
 
     /**
@@ -131,16 +128,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     @Override
     protected int createViewByLayoutId() {
         return R.layout.fragment_products;
-    }
-
-    /**
-     * 懒加载，只有当第一次展示给用户的时候才开始查接口
-     */
-    protected void show(){
-        if(!isFirstLoaded){
-            isFirstLoaded = true;
-            refresh(true);
-        }
     }
 
     /**

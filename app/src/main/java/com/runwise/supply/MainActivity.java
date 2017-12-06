@@ -104,6 +104,7 @@ public class MainActivity extends NetWorkActivity {
 
             try{
                 //把数据库中原有的数据也提取出来，可能包括协议已删除的商品
+                dbUtils = MyDbUtil.create(MainActivity.this);
                 List<ProductBasicList.ListBean> list = dbUtils.findAll(ProductBasicList.ListBean.class);
 //                Log.d("haha","total in db:"+list.size());
                 for(ProductBasicList.ListBean bean:list){
