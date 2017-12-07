@@ -46,6 +46,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -149,7 +151,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 //                }else{
 //                    bean.setInvalid(false);
 //                }
-                mMapCount.put(bean,bean.getCacheCount());
+
+                mMapCount.put(bean,bean.getActualQty());
 
                 if(bean.isCacheSelected())mmSelected.add(bean.getProductID());
             }
@@ -225,9 +228,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     /**
      * 供子fragment共享设置商品数量
      */
-    public Map<ProductData.ListBean,Integer> getCountMap(){
-        return mMapCount;
-    }
+//    public Map<ProductData.ListBean,Integer> getCountMap(){
+//        return mMapCount;
+//    }
 
     protected void initPopWindow(ArrayList<String> typeList) {
         final int[] location = new int[2];
@@ -548,7 +551,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     /**
      * ************* 以下为弹出的购物车框 ******************
      */
-    List<ProductData.ListBean> mmProductList;//购物车显示用的数据，包含有效和无效商品
+    List<ProductData.ListBean> mmProductList = new ArrayList<>();//购物车显示用的数据，包含有效和无效商品
     @ViewInject(R.id.rv_cart)
     RecyclerView mmRvCart;
     CartAdapter mmCartAdapter;
@@ -622,10 +625,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      */
     protected void initProductListData(){
         mmProductList = new ArrayList<>();
-        //mmProductList.addAll(mMapCount.keySet());//TODO:很重要，必须与mMapCount保持一直
+        //mmProductList.addAll(mMapCount.keySet());
         for(ProductData.ListBean bean:mMapCount.keySet()){//先加入合法商品
             if(!bean.isInvalid())mmProductList.add(bean);
         }
+        //按照添加先后排序
+        Collections.sort(mmProductList, (p1,p2)->(int)(p2.getCartAddedTime() - p1.getCartAddedTime()));
+
         if(mSetInvalid.size()>0){
             mmProductList.add(new ProductData.ListBean());//加入头部
             for(ProductData.ListBean bean:mSetInvalid){//加入失效商品
@@ -764,12 +770,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     mmCbCheck.setChecked(true);
                     break;
                 case R.id.iv_item_cart_minus://减少
-                    count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
-                    mMapCount.put(listBean,--count);
+//                    count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
+//                    mMapCount.put(listBean,--count);
+                    count = mCountSetter.getCount(listBean);
+                    mCountSetter.setCount(listBean,--count);
                     if(count==0){
                         //从购物车中删除
-                        mmProductList.remove(listBean);
-                        mMapCount.remove(listBean);
+//                        mmProductList.remove(listBean);
+//                        mMapCount.remove(listBean);
                         mSetInvalid.remove(listBean);
                         if(mSetInvalid.size()==0){
                             initProductListData();
@@ -831,7 +839,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     }
 
     /**
-     * 初始化全选
+     * 初始化全选按钮
      */
     protected void initSelectAll(){
         for(ProductData.ListBean listBean:mMapCount.keySet()){
@@ -839,4 +847,38 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
     }
 
+    ProductCountSetter mCountSetter = new ProductCountSetter() {
+        @Override
+        public void setCount(ProductData.ListBean bean, int count) {
+            if(count==0){
+                bean.setCartAddedTime(0);
+                mMapCount.remove(bean);
+            }
+            else{
+                //设置加入购物车的时间
+                if(!mMapCount.containsKey(bean))bean.setCartAddedTime(System.currentTimeMillis());
+                mMapCount.put(bean,count);
+            }
+        }
+
+        @Override
+        public int getCount(ProductData.ListBean bean) {
+            return mMapCount.get(bean)==null?0:mMapCount.get(bean);
+        }
+    };
+
+    /**
+     * 供子fragment统一设置商品数量
+     */
+    public ProductCountSetter getProductCountSetter(){
+        return mCountSetter;
+    }
+
+    /**
+     * 供子fragment统一设置商品数量,隐藏细节
+     */
+    public interface ProductCountSetter {
+        void setCount(ProductData.ListBean bean, int count);
+        int getCount(ProductData.ListBean bean);
+    }
 }

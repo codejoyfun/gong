@@ -186,9 +186,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         lbean = bundle.getParcelable("order");
         isSettle = lbean.isIsTwoUnit();
         setTitleLeftIcon(true, R.drawable.nav_back);
-        if (lbean != null && lbean.getLines() != null) {
-            datas.addAll(lbean.getLines());
-        }
         mode = bundle.getInt("mode");
         if (mode == 1) {
             setTitleText(true, "点货");
@@ -212,6 +209,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
      * 获取到商品列表后更新界面
      */
     private void initUI(){
+        if (lbean != null && lbean.getLines() != null) {
+            datas.addAll(lbean.getLines());
+        }
         if (mode == 1) {
             //开始点货
             String userName = GlobalApplication.getInstance().getUserName();
