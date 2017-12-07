@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -9,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -27,6 +29,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
@@ -50,6 +53,7 @@ import com.runwise.supply.view.AutoLinefeedLayout;
 import com.runwise.supply.view.YourScrollableViewPager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +63,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import io.vov.vitamio.utils.Log;
 
 import static com.runwise.supply.R.id.cb1;
 import static com.runwise.supply.R.id.cb2;
@@ -655,5 +659,18 @@ public class EvaluateActivity extends NetWorkActivity {
                 mTvOpen.setImageResource(R.drawable.arrow);
             }
         });
+    }
+
+    //点空白收起键盘
+    @OnClick({R.id.top_view})
+    public void t(View v){
+        hideKeyboard();
+    }
+
+    InputMethodManager imm;
+    private void hideKeyboard(){
+        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        View v = getCurrentFocus();
+        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 }
