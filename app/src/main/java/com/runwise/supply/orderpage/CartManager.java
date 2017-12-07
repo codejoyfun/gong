@@ -53,7 +53,7 @@ public class CartManager {
     public void saveCart(Map<ProductData.ListBean,Integer> mapCount, HashSet<Integer> selected){
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mapCount.keySet()){
-            bean.setCacheCount(mapCount.get(bean));
+            bean.setActualQty(mapCount.get(bean));
             bean.setCacheSelected(selected.contains(bean.getProductID()));
         }
         list.addAll(mapCount.keySet());

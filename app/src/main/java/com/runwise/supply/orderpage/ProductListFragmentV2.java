@@ -1,56 +1,25 @@
 package com.runwise.supply.orderpage;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.bean.ProductCountChangeEvent;
-import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProductListRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductData;
-import com.runwise.supply.view.NoWatchEditText;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 
@@ -120,8 +89,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         super.onActivityCreated(savedInstanceState);
         FragmentActivity parentActivity = getActivity();
         if(parentActivity instanceof ProductActivityV2){
-            mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
-            mProductAdapter.setCountMap(mCountMap);
+//            mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
+//            mProductAdapter.setCountMap(mCountMap);
+            mProductAdapter.setProductCountSetter(((ProductActivityV2)parentActivity).getProductCountSetter());
         }
     }
 

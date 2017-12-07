@@ -56,9 +56,9 @@ public class ProductData implements Serializable{
         String productUom;
         String productTag;
         //本地数据
-        private int cacheCount;
         private boolean isInvalid;
         private boolean cacheSelected;
+        private long cartAddedTime;//加入购物车时间,用于排序
 
         public String getProductUom() {
             return productUom;
@@ -203,14 +203,6 @@ public class ProductData implements Serializable{
             this.uom = uom;
         }
 
-        public int getCacheCount() {
-            return cacheCount;
-        }
-
-        public void setCacheCount(int cacheCount) {
-            this.cacheCount = cacheCount;
-        }
-
         public void setInvalid(boolean invalid) {
             isInvalid = invalid;
         }
@@ -233,6 +225,14 @@ public class ProductData implements Serializable{
 
         public void setCacheSelected(boolean cacheSelected) {
             this.cacheSelected = cacheSelected;
+        }
+
+        public long getCartAddedTime() {
+            return cartAddedTime;
+        }
+
+        public void setCartAddedTime(long cartAddedTime) {
+            this.cartAddedTime = cartAddedTime;
         }
 
         @Override
@@ -277,7 +277,6 @@ public class ProductData implements Serializable{
             dest.writeString(this.tracking);
             dest.writeString(this.productUom);
             dest.writeString(this.productTag);
-            dest.writeInt(this.cacheCount);
             dest.writeByte(this.isInvalid ? (byte) 1 : (byte) 0);
         }
 
@@ -304,7 +303,6 @@ public class ProductData implements Serializable{
             this.tracking = in.readString();
             this.productUom = in.readString();
             this.productTag = in.readString();
-            this.cacheCount = in.readInt();
             this.isInvalid = in.readByte() != 0;
         }
 
