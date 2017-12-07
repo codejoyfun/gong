@@ -53,5 +53,5 @@ public class Constant {
     public static final String ORDER_STATE_DONE = "done";
     public static final String ORDER_STATE_RATED = "rated";
 
-    public static final String SP_KEY_CART = "cart_cache8";
+    public static final String SP_KEY_CART = "cart_cache9";
 }

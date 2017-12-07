@@ -10,27 +10,15 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -39,12 +27,8 @@ import com.runwise.supply.entity.ProductListRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductData;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -148,8 +132,9 @@ public class ProductSearchFragment extends NetWorkFragment {
         super.onActivityCreated(savedInstanceState);
         FragmentActivity parentActivity = getActivity();
         if(parentActivity instanceof ProductActivityV2){
-            mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
-            mProductAdapter.setCountMap(mCountMap);
+//            mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
+//            mProductAdapter.setCountMap(mCountMap);
+            mProductAdapter.setProductCountSetter(((ProductActivityV2)parentActivity).getProductCountSetter());
         }
     }
 
