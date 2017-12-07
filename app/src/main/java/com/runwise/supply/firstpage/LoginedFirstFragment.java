@@ -40,6 +40,7 @@ import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
+import com.runwise.supply.business.entity.CheckOrderResponse;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.entity.CheckOrderSuccessRequest;
 import com.runwise.supply.entity.TransferEntity;
@@ -65,6 +66,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -380,6 +382,23 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 startActivity(TransferOutActivity.getStartIntent(getActivity(),mSelectTransferEntity));
                 mInTheRequest = false;
                 break;
+            case REQUEST_SUBMITTING_ORDER:
+                CheckOrderResponse checkOrderResponse = (CheckOrderResponse) result.getResult().getData();
+                if(checkOrderResponse.getOrderingList()!=null){
+                    Iterator<TempOrderManager.TempOrder> iterator = mTempOrders.iterator();
+                    while(iterator.hasNext()){
+                        TempOrderManager.TempOrder tempOrder = iterator.next();
+                        for(CheckOrderResponse.OrderingBean orderingBean:checkOrderResponse.getOrderingList()){
+                            if(tempOrder.getHashKey().equals(orderingBean.getHash()) && "A0006".equals(orderingBean.getState())){
+                                iterator.remove();
+                                TempOrderManager.getInstance(getActivity()).removeTempOrder(tempOrder);
+                            }
+                        }
+                    }
+                }
+                submitRequesting = false;
+                checkSuccess();
+                break;
         }
     }
 
@@ -667,7 +686,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         }
         mTempOrders = orders;
         CheckOrderSuccessRequest request = new CheckOrderSuccessRequest(mTempOrders);
-        sendConnection("/api/order/is/success",request,REQUEST_SUBMITTING_ORDER,false,null);
+        sendConnection("/api/order/is/success",request,REQUEST_SUBMITTING_ORDER,false, CheckOrderResponse.class);
     }
 
     /**
@@ -860,13 +879,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      * 设置一个订单为已读状态
      */
     private void setOrderRead(OrderResponse.ListBean order){
-        //修改本地数据
-        if(order.getOrderUserIDs()==null)order.setOrderUserIDs(new ArrayList<>());
-        order.getOrderUserIDs().add(GlobalApplication.getInstance().getUid());
+        order.setUserRead(GlobalApplication.getInstance().getUid());
         adapter.notifyDataSetChanged();
-
-        //TODO:通知服务器
-        Object request = null;
-        sendConnection("/test",request,REQUEST_READ,false,Object.class);
     }
 }

@@ -117,13 +117,11 @@ public class OrderAdapter extends IBaseAdapter {
         final RecyclerView recyclerView = viewHolder.recyclerView;
         if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
-            //TODO:未读红点
-            if(bean.getOrderUserIDs()==null)bean.setOrderUserIDs(new ArrayList<>());
-            if(bean.isAsyncOrder() &&
-                    bean.getOrderUserIDs()!=null && bean.getOrderUserIDs().contains(uid)){//TODO:TBD
-                viewHolder.ivUnread.setVisibility(View.GONE);
-            }else{
+            //未读红点
+            if(bean.isAsyncOrder() && !bean.isUserRead(uid)){
                 viewHolder.ivUnread.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.ivUnread.setVisibility(View.GONE);
             }
 
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {

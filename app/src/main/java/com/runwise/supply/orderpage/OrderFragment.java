@@ -24,7 +24,6 @@ import com.bigkoo.pickerview.OptionsPickerView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
-import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -33,7 +32,6 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
-import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.view.SystemUpgradeLayout;
@@ -44,6 +42,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 
 /**
  * Created by libin on 2017/6/29.
@@ -120,6 +120,7 @@ public class OrderFragment extends NetWorkFragment {
                 if (SPUtils.isLogin(mContext)){
                     //Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
                     Intent intent2 = new Intent(mContext,ProductActivityV2.class);
+                    intent2.putExtra(INTENT_KEY_SELF_HELP,true);//自助下单
                     startActivity(intent2);
                 }else{
                     startActivity(new Intent(getActivity(), LoginActivity.class));

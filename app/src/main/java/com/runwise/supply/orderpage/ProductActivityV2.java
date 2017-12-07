@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -37,8 +36,6 @@ import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.AddedProduct;
-import com.runwise.supply.orderpage.entity.CategoryResponseV2;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -58,6 +55,7 @@ import java.util.Set;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
 
@@ -406,6 +404,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             return;
         }
         Intent intent = new Intent(this,OrderSubmitActivity.class);
+        //判断是否是自助下单
+        intent.putExtra(INTENT_KEY_SELF_HELP,getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false));
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mMapCount.keySet()){
             if(!mmSelected.contains(bean.getProductID()))continue;//木有在购物车中打勾，跳过

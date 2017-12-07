@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import com.runwise.supply.entity.TransferEntity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -105,7 +107,7 @@ public class OrderResponse {
         private boolean isNewType;//订单信息是否包含所有的商品信息
         private boolean canAlter;
         private boolean isAsyncOrder;
-        private List<String> orderUserIDs;
+        private String orderUserIDs;
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -168,7 +170,7 @@ public class OrderResponse {
             isNewType = in.readByte() != 0;
             canAlter = in.readByte() != 0;
             isAsyncOrder = in.readByte() != 0;
-            orderUserIDs = in.createStringArrayList();
+            orderUserIDs = in.readString();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -187,7 +189,7 @@ public class OrderResponse {
             return isAsyncOrder;
         }
 
-        public List<String> getOrderUserIDs() {
+        public String getOrderUserIDs() {
             return orderUserIDs;
         }
 
@@ -195,7 +197,7 @@ public class OrderResponse {
             isAsyncOrder = asyncOrder;
         }
 
-        public void setOrderUserIDs(List<String> orderUserIDs) {
+        public void setOrderUserIDs(String orderUserIDs) {
             this.orderUserIDs = orderUserIDs;
         }
 
@@ -471,6 +473,32 @@ public class OrderResponse {
             return getPickingName()!=null&&getPickingName().trim().length()>0;
         }
 
+        /**
+         * 记录已经读过这条订单的用户
+         */
+        private List<String> readUsers;
+        private void initReadUsers(){
+            if(readUsers==null){
+                readUsers = new ArrayList<>();
+                if(orderUserIDs!=null)readUsers.addAll(Arrays.asList(orderUserIDs.split(",")));
+            }
+        }
+
+        /**
+         * 判断用户是否已经读了这条订单
+         * @param userId
+         * @return
+         */
+        public boolean isUserRead(String userId){
+            initReadUsers();
+            return readUsers.contains(userId);
+        }
+
+        public void setUserRead(String userId){
+            initReadUsers();
+            readUsers.add(userId);
+        }
+
         public boolean isUnApplyService() {
             return unApplyService;
         }
@@ -540,7 +568,7 @@ public class OrderResponse {
             dest.writeByte((byte)(isNewType ? 1:0));
             dest.writeByte((byte) (canAlter ? 1:0));
             dest.writeByte((byte) (isAsyncOrder ? 1:0));
-            dest.writeStringList(orderUserIDs);
+            dest.writeString(orderUserIDs);
         }
 
         public static class StoreBean {

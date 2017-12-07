@@ -17,6 +17,7 @@ public class CommitOrderRequest {
     private String estimated_time;
     private List<ProductsBean> products;
     private String order_type_id;
+    private String hash;//唯一标识一个提交中的订单
     public String getEstimated_time() {
         return estimated_time;
     }
@@ -39,6 +40,14 @@ public class CommitOrderRequest {
 
     public void setProducts(List<ProductsBean> products) {
         this.products = products;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public static class ProductsBean {

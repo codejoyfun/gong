@@ -39,7 +39,7 @@ import rx.schedulers.Schedulers;
 
 public class TempOrderManager {
     private static TempOrderManager sInstance;
-    private static final String PREF_NAME_PREFIX = "temp_orders2_";
+    private static final String PREF_NAME_PREFIX = "temp_orders3_";
     private SharedPreferences mPrefs;
 
     public static TempOrderManager getInstance(Context context){

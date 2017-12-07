@@ -21,11 +21,8 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
-import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
-import com.kids.commonframe.base.view.CustomProgressDialog;
-import com.kids.commonframe.config.Constant;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
@@ -55,9 +52,11 @@ import static java.lang.System.currentTimeMillis;
  * 下单页 以及 修改订单页，取决于有没有传订单对象
  */
 public class OrderSubmitActivity extends NetWorkActivity {
+    public static final String INTENT_KEY_SELF_HELP = "is_normal_order";//是不是一般下单流程
     public static final String INTENT_KEY_PRODUCTS = "intent_products";
     public static final int REQUEST_USER_INFO = 1 << 0;
     public static final int REQUEST_SUBMIT = 2000;
+    public static final int REQUEST_DUPLICATE = 2500;
     public static final int REQUEST_MODIFY = 3000;
 
     @BindView(R.id.title_iv_left)
@@ -103,6 +102,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     private ArrayList<ProductData.ListBean> mProductList;//选择的商品
     private TempOrderManager.TempOrder mTempOrder;//本地记录提交中的订单
+    private boolean isSelfHelpOrder;//是否一般下单流程，是的话需要清空购物车缓存；再来一单、智能下单不需要清空购物车
 
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener() {
@@ -120,6 +120,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         setContentView(R.layout.activity_order_sumbit);
         ButterKnife.bind(this);
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER);
+        isSelfHelpOrder = getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false);
         if (mOrder != null) {
             mTvTitle.setText("修改订单");
             mBtnSubmit.setText("修改订单");
@@ -216,8 +217,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE, 0);
                 startActivity(intent);
                 break;
-            case REQUEST_SUBMIT:
-                final OrderCommitResponse orderCommitResponse = (OrderCommitResponse) result.getResult().getData();
+            case REQUEST_SUBMIT://下单
+            case REQUEST_DUPLICATE://确认的重复下单
                 if (mCustomProgressDialog != null) {
                     mCustomProgressDialog.dismiss();
                 }
@@ -230,18 +231,18 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 mRlDateOfService.setEnabled(true);
 
                 //跳去中间页
+//                final OrderCommitResponse orderCommitResponse = (OrderCommitResponse) result.getResult().getData();
 //                Intent intent2 = new Intent(this, OrderCommitSuccessActivity.class);
 //                intent2.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, orderCommitResponse.getOrders());
 //                startActivity(intent2);
 
                 //异步过程，本地记录记录下单信息
                 TempOrderManager.getInstance(this).saveTempOrderAsync(mTempOrder);
-
+                //新的中间页
                 Intent intent2 = new Intent(this, OrderSubmitSuccessActivity.class);
                 startActivity(intent2);
-                //清空购物车
-                //SPUtils.put(getActivityContext(), Constant.SP_KEY_CART, "");//删购物车
-                CartManager.getInstance(this).clearCart(mProductList);
+                //更新购物车缓存
+                if(isSelfHelpOrder)CartManager.getInstance(this).clearCart(mProductList);
                 break;
         }
     }
@@ -253,21 +254,45 @@ public class OrderSubmitActivity extends NetWorkActivity {
         }
         switch (where) {
             case REQUEST_SUBMIT:
+            case REQUEST_DUPLICATE:
                 if (result.getResult() != null && "A1001".equals(result.getResult().getState())) {
-                    ToastUtil.show(this, "订单操作频率过高，请稍后再试！");
-                    mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
-                    mBtnSubmit.setEnabled(true);
-                    mRlDateOfService.setEnabled(true);
+//                    ToastUtil.show(this, "订单操作频率过高，请稍后再试！");
+//                    mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
+//                    mBtnSubmit.setEnabled(true);
+//                    mRlDateOfService.setEnabled(true);
+
+                    CustomDialog dialog = new CustomDialog(this);
+                    dialog.setCancelable(false);
+                    dialog.setTitleGone();
+                    dialog.setMessageGravity();
+                    dialog.setMessage("订单内容重复\n请确认是否再次提交");
+                    dialog.setRightBtnListener("我再看看", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
+                            mBtnSubmit.setEnabled(true);
+                            mRlDateOfService.setEnabled(true);
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.setLeftBtnListener("确认提交", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            submitDuplicateOrder();
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
                     return;
+
                 }
                 //异步过程，本地记录记录下单信息
-                Log.d("haha","save temp order");
                 TempOrderManager.getInstance(this).saveTempOrderAsync(mTempOrder);
 
                 mCustomProgressDialog.dismiss();
                 dialog.setTitle("提示");
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
-                CartManager.getInstance(this).clearCart(mProductList);//更新购物车
+                if(isSelfHelpOrder)CartManager.getInstance(this).clearCart(mProductList);//更新购物车缓存
                 dialog.setMessageGravity();
                 dialog.setModel(CustomDialog.RIGHT);
                 dialog.setCancelable(false);
@@ -320,12 +345,13 @@ public class OrderSubmitActivity extends NetWorkActivity {
         }
     }
 
+    CommitOrderRequest request;
     /**
      * 下单
      */
     private void submitOrder() {
         //下单按钮
-        CommitOrderRequest request = new CommitOrderRequest();
+        request = new CommitOrderRequest();
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         request.setOrder_type_id("121");
         List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
@@ -344,8 +370,9 @@ public class OrderSubmitActivity extends NetWorkActivity {
             return;
         }
         request.setProducts(cList);
+        request.setHash(String.valueOf(System.currentTimeMillis()));
 //        sendConnection("/gongfu/v2/order/create/", request, REQUEST_SUBMIT, false, OrderCommitResponse.class);
-        long timestamp = sendConnection("/api/order/async/create", request, REQUEST_SUBMIT, false, OrderCommitResponse.class);
+        sendConnection("/api/order/async/create", request, REQUEST_SUBMIT, false, OrderCommitResponse.class);
         mCustomProgressDialog = new CustomProgressDialog(this);
         mCustomProgressDialog.setMsg("下单中...");
         mCustomProgressDialog.show();
@@ -356,7 +383,28 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mTempOrder = new TempOrderManager.TempOrder();
         //只取日期
         mTempOrder.setEstimateDate(request.getEstimated_time().split(" ")[0]);
-        mTempOrder.setHashKey(String.valueOf(timestamp));
+        mTempOrder.setHashKey(request.getHash());
+        mTempOrder.setProductList(mProductList);
+    }
+
+    /**
+     * 接口返回重复下单提醒后，重复提交订单
+     */
+    private void submitDuplicateOrder(){
+        //下单按钮
+        request.setHash(String.valueOf(System.currentTimeMillis()));
+        sendConnection("/api/duplicate/order/async/create", request, REQUEST_DUPLICATE, false, OrderCommitResponse.class);
+        mCustomProgressDialog = new CustomProgressDialog(this);
+        mCustomProgressDialog.setMsg("下单中...");
+        mCustomProgressDialog.show();
+        mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
+        mBtnSubmit.setEnabled(false);
+        mRlDateOfService.setEnabled(false);
+        //记录订单信息,接口返回后才写入存储
+        mTempOrder = new TempOrderManager.TempOrder();
+        //只取日期
+        mTempOrder.setEstimateDate(request.getEstimated_time().split(" ")[0]);
+        mTempOrder.setHashKey(request.getHash());
         mTempOrder.setProductList(mProductList);
     }
 
