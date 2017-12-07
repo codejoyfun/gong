@@ -255,11 +255,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
         switch (where) {
             case REQUEST_SUBMIT:
             case REQUEST_DUPLICATE:
+                //接口返回重复下单
                 if (result.getResult() != null && "A1001".equals(result.getResult().getState())) {
-//                    ToastUtil.show(this, "订单操作频率过高，请稍后再试！");
-//                    mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
-//                    mBtnSubmit.setEnabled(true);
-//                    mRlDateOfService.setEnabled(true);
 
                     CustomDialog dialog = new CustomDialog(this);
                     dialog.setCancelable(false);
@@ -269,6 +266,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                     dialog.setRightBtnListener("我再看看", new CustomDialog.DialogListener() {
                         @Override
                         public void doClickButton(Button btn, CustomDialog dialog) {
+                            //重新开放提交按钮
                             mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
                             mBtnSubmit.setEnabled(true);
                             mRlDateOfService.setEnabled(true);
@@ -286,9 +284,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                     return;
 
                 }
-                //异步过程，本地记录记录下单信息
-                TempOrderManager.getInstance(this).saveTempOrderAsync(mTempOrder);
-
+                //一般失败
                 mCustomProgressDialog.dismiss();
                 dialog.setTitle("提示");
                 dialog.setMessage("网络连接失败，请查看首页订单列表，检查下单是否成功");
@@ -350,7 +346,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
      * 下单
      */
     private void submitOrder() {
-        //下单按钮
+        //禁用下单按钮
+        mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
+        mBtnSubmit.setEnabled(false);
+        //保留request，用于确认重复下单时重发
         request = new CommitOrderRequest();
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         request.setOrder_type_id("121");
@@ -376,8 +375,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mCustomProgressDialog = new CustomProgressDialog(this);
         mCustomProgressDialog.setMsg("下单中...");
         mCustomProgressDialog.show();
-        mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
-        mBtnSubmit.setEnabled(false);
         mRlDateOfService.setEnabled(false);
         //记录订单信息,接口返回后才写入存储
         mTempOrder = new TempOrderManager.TempOrder();
@@ -391,15 +388,15 @@ public class OrderSubmitActivity extends NetWorkActivity {
      * 接口返回重复下单提醒后，重复提交订单
      */
     private void submitDuplicateOrder(){
-        //下单按钮
+        mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
+        mBtnSubmit.setEnabled(false);
+        mRlDateOfService.setEnabled(false);
+        //复用request，新的下单请求用新的hash
         request.setHash(String.valueOf(System.currentTimeMillis()));
         sendConnection("/api/duplicate/order/async/create", request, REQUEST_DUPLICATE, false, OrderCommitResponse.class);
         mCustomProgressDialog = new CustomProgressDialog(this);
         mCustomProgressDialog.setMsg("下单中...");
         mCustomProgressDialog.show();
-        mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
-        mBtnSubmit.setEnabled(false);
-        mRlDateOfService.setEnabled(false);
         //记录订单信息,接口返回后才写入存储
         mTempOrder = new TempOrderManager.TempOrder();
         //只取日期
