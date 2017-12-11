@@ -151,6 +151,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 //                    bean.setInvalid(false);
 //                }
 
+                bean.setCartAddedTime(0);//用于排序，表示不是当前新加商品
                 mMapCount.put(bean,bean.getActualQty());
 
                 if(bean.isCacheSelected())mmSelected.add(bean.getProductID());
@@ -627,7 +628,12 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if(!bean.isInvalid())mmProductList.add(bean);
         }
         //按照添加先后排序
-        Collections.sort(mmProductList, (p1,p2)->(int)(p2.getCartAddedTime() - p1.getCartAddedTime()));
+        Collections.sort(mmProductList, (p1,p2)->{
+            if(p1.getCartAddedTime()==0 && p2.getCartAddedTime()==0)return p1.getProductID() - p2.getProductID();
+            else if(p1.getCartAddedTime() == 0 && p2.getCartAddedTime()!=0)return 1;
+            else if(p1.getCartAddedTime() != 0 && p2.getCartAddedTime()==0)return -1;
+            return (int)(p2.getCartAddedTime() - p1.getCartAddedTime());
+        });
 
         if(mSetInvalid.size()>0){
             mmProductList.add(new ProductData.ListBean());//加入头部
