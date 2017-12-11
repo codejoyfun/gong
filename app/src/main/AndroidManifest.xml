@@ -533,6 +533,15 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".repertory.InventoryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".repertory.EditBatchDialog"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/myTransparent"/>
+        <activity
             android:name=".firstpage.EditBatchActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity android:name=".firstpage.EvaluateSuccessActivity"></activity>

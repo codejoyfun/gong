@@ -70,7 +70,10 @@ public class MainRepertoryFragment extends NetWorkFragment {
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
             Object parma = null;
-            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
+//            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
+            //TODO:test
+            Intent intent = new Intent(getActivity(),InventoryActivity.class);
+            startActivity(intent);
         }
         else{
             Intent intent = new Intent(mContext, LoginActivity.class);
