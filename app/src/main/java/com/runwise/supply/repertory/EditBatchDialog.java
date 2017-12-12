@@ -88,6 +88,7 @@ public class EditBatchDialog extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_batch2);
+        setTranslucentStatus(true);
         ButterKnife.bind(this);
         mBatchEntities = new ArrayList<>();
 
@@ -110,7 +111,7 @@ public class EditBatchDialog extends BaseActivity {
         mLvBatch.setAdapter(batchListAdapter);
         mBatchEntities = initBatchData();
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-        //mViewBg.post(()->mViewBg.setBackgroundColor(getResources().getColor(R.color.translucent)));
+        mViewBg.postDelayed(()->mViewBg.setBackgroundColor(getResources().getColor(R.color.translucent)),500);
     }
 
     /**
@@ -182,17 +183,18 @@ public class EditBatchDialog extends BaseActivity {
                 finish();
                 break;
             case R.id.rl_edit_batch_root:
-                dialog.setMessageGravity();
-                dialog.setMessage("还没保存哦,确认取消?");
-                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        mBatchEntities.clear();
-                        finish();
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+//                dialog.setMessageGravity();
+//                dialog.setMessage("还没保存哦,确认取消?");
+//                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+//                    @Override
+//                    public void doClickButton(Button btn, CustomDialog dialog) {
+//                        mBatchEntities.clear();
+//                        finish();
+//                        dialog.dismiss();
+//                    }
+//                });
+//                dialog.show();
+                finish();
                 break;
         }
     }

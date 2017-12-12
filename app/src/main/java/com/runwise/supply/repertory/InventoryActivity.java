@@ -1,16 +1,20 @@
 package com.runwise.supply.repertory;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.view.residemenu.DragLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -19,23 +23,27 @@ import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.InventoryResponse;
+import com.runwise.supply.event.InventoryEditEvent;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
-import com.runwise.supply.repertory.entity.PandianResult;
+import com.runwise.supply.repertory.entity.NewAdd;
 import com.runwise.supply.tools.InventoryCacheManager;
-import com.runwise.supply.view.NoScrollViewPager;
 
-import org.w3c.dom.Text;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
-import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.repertory.EditRepertoryAddActivity.INTENT_FILTER;
+import static com.runwise.supply.repertory.InventoryFragment.INTENT_CATEGORY;
 
 /**
  * 新界面的盘点
@@ -68,11 +76,13 @@ public class InventoryActivity extends NetWorkActivity {
         setContentView(R.layout.activity_inventory_list);
         setTitleText(true,"盘点单");
         showBackBtn();
+        setTitleRightIcon2(true,R.drawable.nav_add);
         dragLayout.setOverDrag(false);
         mInventoryBean = (InventoryResponse.InventoryBean) getIntent().getSerializableExtra(INTENT_KEY_INVENTORY_BEAN);
         mTvInventoryId.setText(String.valueOf(mInventoryBean.getInventoryID()));
         mTvInventoryPerson.setText(mInventoryBean.getCreateUser());
         mTvInventoryDate.setText(mInventoryBean.getCreateDate());
+        initDialog();
         getCategory();
     }
 
@@ -112,7 +122,7 @@ public class InventoryActivity extends NetWorkActivity {
             map.put(category,new ArrayList<>());
         }
 
-        for (InventoryResponse.InventoryProduct inventoryProduct : mInventoryBean.getProductList()) {
+        for (InventoryResponse.InventoryProduct inventoryProduct : mInventoryBean.getLines()) {
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(this).get(String.valueOf(inventoryProduct.getProductID()));
             if (!TextUtils.isEmpty(listBean.getCategory())){
                 ArrayList<InventoryResponse.InventoryProduct> productByCategory = map.get(listBean.getCategory());
@@ -126,11 +136,11 @@ public class InventoryActivity extends NetWorkActivity {
 
         for(String category:categoryRespone.getCategoryList()){
             ArrayList<InventoryResponse.InventoryProduct> value = map.get(category);
-            orderProductFragmentList.add(newProductFragment(value));
+            orderProductFragmentList.add(newProductFragment(category,value));
             tabFragmentList.add(TabFragment.newInstance(category));
         }
         //加入全部
-        orderProductFragmentList.add(0, newProductFragment(mInventoryBean.getProductList()));
+        orderProductFragmentList.add(0, newProductFragment("",mInventoryBean.getLines()));
 
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
         viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
@@ -155,13 +165,16 @@ public class InventoryActivity extends NetWorkActivity {
         });
     }
 
-    public Fragment newProductFragment(List<InventoryResponse.InventoryProduct> value) {
+    public Fragment newProductFragment(String category, List<InventoryResponse.InventoryProduct> value) {
         InventoryFragment editRepertoryListFragment = new InventoryFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(INTENT_CATEGORY,category);
+        editRepertoryListFragment.setArguments(bundle);
         editRepertoryListFragment.setData(value);
         return editRepertoryListFragment;
     }
 
-    @OnClick({R.id.tv_inventory_commit,R.id.tv_inventory_cache})
+    @OnClick({R.id.tv_inventory_commit,R.id.tv_inventory_cache,R.id.title_iv_rigth2})
     public void onBtnClicked(View v){
         switch (v.getId()){
             case R.id.tv_inventory_commit:
@@ -169,6 +182,17 @@ public class InventoryActivity extends NetWorkActivity {
                 break;
             case R.id.tv_inventory_cache:
                 new InventoryCacheManager(this).saveInventory(mInventoryBean);
+                finish();
+                break;
+            case R.id.title_iv_rigth2:
+                //增加新商品，传入已有商品进行过滤
+                Intent intent = new Intent(this,EditRepertoryAddActivity.class);
+                ArrayList<Integer> filters = new ArrayList<>();
+                for(InventoryResponse.InventoryProduct product:mInventoryBean.getLines()){
+                    filters.add(product.getProductID());
+                }
+                intent.putExtra(INTENT_FILTER,filters);
+                startActivity(intent);
                 break;
         }
     }
@@ -178,13 +202,88 @@ public class InventoryActivity extends NetWorkActivity {
      * @param inventoryResponse
      */
     private void initData(InventoryResponse inventoryResponse){
-        List<InventoryResponse.InventoryProduct> productList = inventoryResponse.getInventory().getProductList();
+        List<InventoryResponse.InventoryProduct> productList = inventoryResponse.getInventory().getLines();
         for(InventoryResponse.InventoryProduct product:productList){
             if(product.getLotList()!=null){
                 for(InventoryResponse.InventoryLot batch:product.getLotList()){
-                    batch.setEditNum(batch.getQty());
+                    batch.setEditNum(batch.getTheoreticalQty());
                 }
             }
         }
+    }
+
+    /**
+     * 添加新商品
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddNewBean(NewAdd newBean) {
+        if (newBean.getType() == 1) {
+            boolean isFind = false;
+            for (InventoryResponse.InventoryProduct bean : mInventoryBean.getLines()) {
+                if (bean.getProductID()==newBean.getInventoryProduct().getProductID()) {
+                    bean.setEditNum(bean.getEditNum() + newBean.getBean().getEditNum());
+                    isFind = true;
+                    break;
+                }
+            }
+            if (!isFind) {
+                mInventoryBean.getLines().add(0, newBean.getInventoryProduct());
+            }
+        } else {
+            mInventoryBean.getLines().add(0, newBean.getInventoryProduct());
+        }
+        //adapter.notifyDataSetChanged();
+        EventBus.getDefault().post(new InventoryEditEvent());
+    }
+
+    /**
+     * 初始化修改商品数量dialog
+     */
+    @ViewInject(R.id.name1)
+    private TextView mTvTitle;
+    @ViewInject(R.id.colseIcon1)
+    private ImageView mIvClose;
+    @ViewInject(R.id.et_product_amount1)
+    private EditText mEtCount;
+    @ViewInject(R.id.rl_dialog_add_sum)
+    private View mIncludeSumDialog;
+    @ViewInject(R.id.finalButton1)
+    private TextView mTvButton;
+    private void initDialog(){
+        mIvClose.setOnClickListener(v->{
+            mIncludeSumDialog.setVisibility(View.GONE);
+            hideKeyboard();
+        });
+        mIncludeSumDialog.setOnClickListener(v->{
+            v.setVisibility(View.GONE);
+            hideKeyboard();
+        });
+    }
+
+    /**
+     * 显示修改没有批次的商品数量
+     * @param inventoryProduct
+     */
+    public void showAddSumDialog(InventoryResponse.InventoryProduct inventoryProduct){
+        mIncludeSumDialog.setVisibility(View.VISIBLE);
+        mTvTitle.setText(inventoryProduct.getProduct().getName());
+        mEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getEditNum()));
+        mEtCount.selectAll();
+        mTvButton.setOnClickListener(v->{
+            String etValue = mEtCount.getText().toString();
+            if(TextUtils.isDigitsOnly(etValue)){
+                inventoryProduct.setEditNum(Double.valueOf(etValue));
+                EventBus.getDefault().post(new InventoryEditEvent());
+            }
+            hideKeyboard();
+            mIncludeSumDialog.setVisibility(View.GONE);
+        });
+    }
+
+    InputMethodManager imm;
+    private void hideKeyboard(){
+        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        View v = getCurrentFocus();
+        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 }

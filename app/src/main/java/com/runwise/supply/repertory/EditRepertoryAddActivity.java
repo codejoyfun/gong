@@ -44,6 +44,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
@@ -65,7 +66,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import rx.Observable;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
@@ -74,9 +79,12 @@ import static com.runwise.supply.orderpage.ProductBasicUtils.getBasicMap;
 
 /**
  * 库存添加收索
+ *
+ * 新加逻辑：过滤掉已有的商品
+ *
  */
-
 public class EditRepertoryAddActivity extends NetWorkActivity{
+    public static final String INTENT_FILTER = "intent_filter";
     @ViewInject(R.id.searchET)
     private EditText searchET;
     private final int PRODUCT_GET = 1;
@@ -143,6 +151,10 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
     private EditHotResult.ListBean returnBean;
     //数量
     private  String amount;
+
+    //过滤
+    Set<Integer> filters = new HashSet<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,6 +186,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
 //                setCommontTopHide();
 //            }
 //        });
+        filters.addAll(getIntent().getIntegerArrayListExtra(INTENT_FILTER));
     }
 
     @OnClick({R.id.cancelBtn,R.id.iv_open})
@@ -345,13 +358,14 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     }
                 }
             });
-            finalButton1.setOnClickListener(new View.OnClickListener() {
+            finalButton1.setOnClickListener(new View.OnClickListener() {//无批次
                 @Override
                 public void onClick(View view) {
                     amount = et_product_amount1.getText().toString();
 
-                    PandianResult.InventoryBean.LinesBean bean = new PandianResult.InventoryBean.LinesBean();
+                    //PandianResult.InventoryBean.LinesBean bean = new PandianResult.InventoryBean.LinesBean();
 //                    bean.setLifeEndDate(lotBean.getLifeEndDate());
+                    InventoryResponse.InventoryProduct bean = new InventoryResponse.InventoryProduct();
                     bean.setTheoreticalQty(0);
 //                    bean.setLotNum(lotBean.getLotName());
                     bean.setLotID(0);
@@ -379,7 +393,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     bean.setProduct(product);
 
                     NewAdd newAddBean = new NewAdd();
-                    newAddBean.setType(1);
+                    newAddBean.setType(1);//无批次
                     newAddBean.setBean(bean);
                     EventBus.getDefault().post(newAddBean);
                     setCommontTopHide();
@@ -420,22 +434,26 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         }
     }
     CategoryRespone categoryRespone;
-    List<EditHotResult.ListBean> hotList;
+    List<EditHotResult.ListBean> hotList = new ArrayList<>();
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case PRODUCT_GET:
                 EditHotResult editHotResult = (EditHotResult)result.getResult().getData();
-                hotList = editHotResult.getList();
+                Observable.from(editHotResult.getList())
+                        .filter(listBean -> !filters.contains(listBean.getProductID()))
+                        .subscribe(listBean -> hotList.add(listBean));
+                //hotList = editHotResult.getList();
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 break;
-            case PRODUCT_ADD_1:
+            case PRODUCT_ADD_1://有批次
                 AddRepertoryData addRepertoryData = (AddRepertoryData) result.getResult().getData();
                 AddRepertoryData.LotNewsBean lotBean = addRepertoryData.getLotNews();
 
-                PandianResult.InventoryBean.LinesBean bean = new PandianResult.InventoryBean.LinesBean();
+//                PandianResult.InventoryBean.LinesBean bean = new PandianResult.InventoryBean.LinesBean();
+                InventoryResponse.InventoryProduct bean = new InventoryResponse.InventoryProduct();
                 bean.setLifeEndDate(lotBean.getLifeEndDate());
                 bean.setTheoreticalQty(0);
                 bean.setLotNum(lotBean.getLotName());
@@ -464,6 +482,19 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     product.setProductUom(listBean.getProductUom());
                 }
                 bean.setProduct(product);
+
+                InventoryResponse.InventoryLot inventoryLot = new InventoryResponse.InventoryLot();
+                inventoryLot.setLotNum(bean.getLotNum());
+                inventoryLot.setEditNum(bean.getEditNum());
+                inventoryLot.setLifeEndDate(bean.getLifeEndDate());
+                inventoryLot.setTheoreticalQty(0);
+                inventoryLot.setLotID(lotBean.getLotID());
+                inventoryLot.setCode(productBean.getDefaultCode());
+                inventoryLot.setInventoryLineID(returnBean.getInventoryAddLineID());
+                inventoryLot.setProductID(lotBean.getProductID());
+                ArrayList<InventoryResponse.InventoryLot> lotList = new ArrayList<>();
+                lotList.add(inventoryLot);
+                bean.setLotList(lotList);
 
                 NewAdd newAddBean = new NewAdd();
                 newAddBean.setBean(bean);

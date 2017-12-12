@@ -28,9 +28,9 @@ public class InventoryResponse implements Serializable {
         private String name;
         private String createUser;
         private int inventoryID;
-        private String createDate;
+        private String createDate;//yyyy-MM-dd hh:mm:ss
         private double value;
-        private List<InventoryProduct> productList;
+        private List<InventoryProduct> lines;
 
         public String getState() {
             return state;
@@ -60,8 +60,8 @@ public class InventoryResponse implements Serializable {
             return value;
         }
 
-        public List<InventoryProduct> getProductList() {
-            return productList;
+        public List<InventoryProduct> getLines() {
+            return lines;
         }
 
         public void setState(String state) {
@@ -92,18 +92,31 @@ public class InventoryResponse implements Serializable {
             this.value = value;
         }
 
-        public void setProductList(List<InventoryProduct> productList) {
-            this.productList = productList;
+        public void setLines(List<InventoryProduct> lines) {
+            this.lines = lines;
         }
     }
 
     public static class InventoryProduct implements Serializable{
+        //有批次无批次公用
         private int productID;
-        private String uom;
         private String code;
-        private List<InventoryLot> lotList;
         private ProductBasicList.ListBean product;
-        private double qty;
+
+        //无批次
+        private String uom;
+        private double actualQty;
+        private double theoreticalQty;
+        private long inventoryLineID;
+        private String lifeEndDate;
+        private long lotID;
+        private int diff;
+        private double unitPrice;
+        private String lotNum;
+
+        //有批次
+        private List<InventoryLot> lotList;
+
         //本地使用
         private double editNum;
 
@@ -155,12 +168,68 @@ public class InventoryResponse implements Serializable {
             this.product = product;
         }
 
-        public double getQty() {
-            return qty;
+        public double getTheoreticalQty() {
+            return theoreticalQty;
         }
 
-        public void setQty(double qty) {
-            this.qty = qty;
+        public void setTheoreticalQty(double theoreticalQty) {
+            this.theoreticalQty = theoreticalQty;
+        }
+
+        public double getActualQty() {
+            return actualQty;
+        }
+
+        public long getInventoryLineID() {
+            return inventoryLineID;
+        }
+
+        public String getLifeEndDate() {
+            return lifeEndDate;
+        }
+
+        public long getLotID() {
+            return lotID;
+        }
+
+        public int getDiff() {
+            return diff;
+        }
+
+        public double getUnitPrice() {
+            return unitPrice;
+        }
+
+        public String getLotNum() {
+            return lotNum;
+        }
+
+        public void setActualQty(double actualQty) {
+            this.actualQty = actualQty;
+        }
+
+        public void setInventoryLineID(long inventoryLineID) {
+            this.inventoryLineID = inventoryLineID;
+        }
+
+        public void setLifeEndDate(String lifeEndDate) {
+            this.lifeEndDate = lifeEndDate;
+        }
+
+        public void setLotID(long lotID) {
+            this.lotID = lotID;
+        }
+
+        public void setDiff(int diff) {
+            this.diff = diff;
+        }
+
+        public void setUnitPrice(double unitPrice) {
+            this.unitPrice = unitPrice;
+        }
+
+        public void setLotNum(String lotNum) {
+            this.lotNum = lotNum;
         }
     }
 
@@ -168,9 +237,14 @@ public class InventoryResponse implements Serializable {
         private String lotNum;
         private String lifeEndDate;
         private int lotID;
-        private double inventoryValue;
-        private double qty;
+        private double theoreticalQty;
         private int inventoryLineID;//TODO:TBD
+        private int actualQty;
+        private String code;
+        private int diff;
+        private double unitPrice;
+        private long productID;
+        private String uom;
 
         //本地使用
         private double editNum;
@@ -228,20 +302,12 @@ public class InventoryResponse implements Serializable {
             this.editNum = editNum;
         }
 
-        public double getInventoryValue() {
-            return inventoryValue;
+        public double getTheoreticalQty() {
+            return theoreticalQty;
         }
 
-        public double getQty() {
-            return qty;
-        }
-
-        public void setInventoryValue(double inventoryValue) {
-            this.inventoryValue = inventoryValue;
-        }
-
-        public void setQty(double qty) {
-            this.qty = qty;
+        public void setTheoreticalQty(double theoreticalQty) {
+            this.theoreticalQty = theoreticalQty;
         }
 
         public String getProductDate() {
@@ -258,6 +324,54 @@ public class InventoryResponse implements Serializable {
 
         public void setProductDate(boolean productDate) {
             isProductDate = productDate;
+        }
+
+        public int getActualQty() {
+            return actualQty;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public int getDiff() {
+            return diff;
+        }
+
+        public double getUnitPrice() {
+            return unitPrice;
+        }
+
+        public long getProductID() {
+            return productID;
+        }
+
+        public String getUom() {
+            return uom;
+        }
+
+        public void setActualQty(int actualQty) {
+            this.actualQty = actualQty;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public void setDiff(int diff) {
+            this.diff = diff;
+        }
+
+        public void setUnitPrice(double unitPrice) {
+            this.unitPrice = unitPrice;
+        }
+
+        public void setProductID(long productID) {
+            this.productID = productID;
+        }
+
+        public void setUom(String uom) {
+            this.uom = uom;
         }
     }
 }

@@ -571,6 +571,13 @@ public class DateFormateUtil {
 		}
 		//2017-10-03 11:25:03
 		final Calendar calendar = dateFormatFromString(timeStr, DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
-		return 0;
+		calendar.set(Calendar.HOUR,23);
+		calendar.set(Calendar.MINUTE,59);
+		calendar.set(Calendar.SECOND,59);
+		Calendar today = Calendar.getInstance();
+		today.set(Calendar.HOUR,23);
+		today.set(Calendar.MINUTE,59);
+		today.set(Calendar.SECOND,59);
+		return (calendar.getTimeInMillis() - today.getTimeInMillis())/(1000 * 60 * 60 * 24);
 	}
 }

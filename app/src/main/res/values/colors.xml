@@ -49,4 +49,5 @@
     <color name="stock_3_days_bg">#14FF9F00</color>
     <color name="stock_4_days">#999999</color>
     <color name="stock_4_days_bg">#FFF5F5F5</color>
+    <color name="inventory_changed_bg">#FFF3FBED</color>
 </resources>

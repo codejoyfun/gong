@@ -18,7 +18,6 @@ import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.entity.InventoryResponse;
-import com.runwise.supply.mine.RepertoryFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -147,19 +146,19 @@ public class MainRepertoryFragment extends NetWorkFragment {
         inventoryBean.setCreateUser(GlobalApplication.getInstance().getUserName());
         inventoryBean.setInventoryID(2312);
         inventoryResponse.setInventory(inventoryBean);
-        inventoryBean.setProductList(new ArrayList<>());
+        inventoryBean.setLines(new ArrayList<>());
         for(int i=0;i<10;i++){
             InventoryResponse.InventoryProduct inventoryProduct = new InventoryResponse.InventoryProduct();
             inventoryProduct.setProductID(651);
-            inventoryProduct.setUom("包");
-            inventoryBean.getProductList().add(inventoryProduct);
+            inventoryBean.getLines().add(inventoryProduct);
             inventoryProduct.setLotList(new ArrayList<>());
             inventoryProduct.setProduct(ProductBasicUtils.getBasicMap(getActivity()).get(inventoryProduct.getProductID()+""));
             for(int j=1;j<i+2;j++){
                 InventoryResponse.InventoryLot lot = new InventoryResponse.InventoryLot();
-                lot.setLifeEndDate("2017-12-12 00:00:00");
-                lot.setQty(j);
+                lot.setLifeEndDate("2017-12-1"+(i%5)+" 00:00:00");
+                lot.setTheoreticalQty(j);
                 lot.setEditNum(j);
+                lot.setUom("包");
                 lot.setLotNum("313251235"+i+j);
                 inventoryProduct.getLotList().add(lot);
             }
