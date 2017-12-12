@@ -1,5 +1,7 @@
 package com.runwise.supply.entity;
 
+import com.runwise.supply.orderpage.entity.ProductBasicList;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -97,9 +99,13 @@ public class InventoryResponse implements Serializable {
 
     public static class InventoryProduct implements Serializable{
         private int productID;
+        private String uom;
         private String code;
-        private double editNum;
         private List<InventoryLot> lotList;
+        private ProductBasicList.ListBean product;
+        private double qty;
+        //本地使用
+        private double editNum;
 
         public int getProductID() {
             return productID;
@@ -132,21 +138,44 @@ public class InventoryResponse implements Serializable {
         public void setLotList(List<InventoryLot> lotList) {
             this.lotList = lotList;
         }
+
+        public String getUom() {
+            return uom;
+        }
+
+        public ProductBasicList.ListBean getProduct() {
+            return product;
+        }
+
+        public void setUom(String uom) {
+            this.uom = uom;
+        }
+
+        public void setProduct(ProductBasicList.ListBean product) {
+            this.product = product;
+        }
+
+        public double getQty() {
+            return qty;
+        }
+
+        public void setQty(double qty) {
+            this.qty = qty;
+        }
     }
 
     public static class InventoryLot implements Serializable{
-        private double theoreticalQty;
-        private String lifeEndDate;
-        private double actualQty;
-        private int inventoryLineID;
-        private int lotID;
         private String lotNum;
-        private double unitPrice;
-        private double diff;
-        private int productID;
-        private boolean checked;
-        private int type;
+        private String lifeEndDate;
+        private int lotID;
+        private double inventoryValue;
+        private double qty;
+        private int inventoryLineID;//TODO:TBD
+
+        //本地使用
         private double editNum;
+        private String productDate;
+        private boolean isProductDate;
 
         //本地使用
         private boolean isNewAdded;
@@ -159,16 +188,8 @@ public class InventoryResponse implements Serializable {
             isNewAdded = newAdded;
         }
 
-        public double getTheoreticalQty() {
-            return theoreticalQty;
-        }
-
         public String getLifeEndDate() {
             return lifeEndDate;
-        }
-
-        public double getActualQty() {
-            return actualQty;
         }
 
         public int getInventoryLineID() {
@@ -183,40 +204,12 @@ public class InventoryResponse implements Serializable {
             return lotNum;
         }
 
-        public double getUnitPrice() {
-            return unitPrice;
-        }
-
-        public double getDiff() {
-            return diff;
-        }
-
-        public int getProductID() {
-            return productID;
-        }
-
-        public boolean isChecked() {
-            return checked;
-        }
-
-        public int getType() {
-            return type;
-        }
-
         public double getEditNum() {
             return editNum;
         }
 
-        public void setTheoreticalQty(double theoreticalQty) {
-            this.theoreticalQty = theoreticalQty;
-        }
-
         public void setLifeEndDate(String lifeEndDate) {
             this.lifeEndDate = lifeEndDate;
-        }
-
-        public void setActualQty(double actualQty) {
-            this.actualQty = actualQty;
         }
 
         public void setInventoryLineID(int inventoryLineID) {
@@ -231,28 +224,40 @@ public class InventoryResponse implements Serializable {
             this.lotNum = lotNum;
         }
 
-        public void setUnitPrice(double unitPrice) {
-            this.unitPrice = unitPrice;
-        }
-
-        public void setDiff(double diff) {
-            this.diff = diff;
-        }
-
-        public void setProductID(int productID) {
-            this.productID = productID;
-        }
-
-        public void setChecked(boolean checked) {
-            this.checked = checked;
-        }
-
-        public void setType(int type) {
-            this.type = type;
-        }
-
         public void setEditNum(double editNum) {
             this.editNum = editNum;
+        }
+
+        public double getInventoryValue() {
+            return inventoryValue;
+        }
+
+        public double getQty() {
+            return qty;
+        }
+
+        public void setInventoryValue(double inventoryValue) {
+            this.inventoryValue = inventoryValue;
+        }
+
+        public void setQty(double qty) {
+            this.qty = qty;
+        }
+
+        public String getProductDate() {
+            return productDate;
+        }
+
+        public boolean isProductDate() {
+            return isProductDate;
+        }
+
+        public void setProductDate(String productDate) {
+            this.productDate = productDate;
+        }
+
+        public void setProductDate(boolean productDate) {
+            isProductDate = productDate;
         }
     }
 }

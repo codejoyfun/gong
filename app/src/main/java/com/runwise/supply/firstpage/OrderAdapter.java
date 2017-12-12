@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -28,6 +29,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.orderpage.TempOrderManager;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
@@ -53,6 +55,7 @@ public class OrderAdapter extends IBaseAdapter {
     protected static final int TYPE_RETURN = 1;       //退货单
     static final int TYPE_TRANSFER = 2;                 //调拨单
     static final int TYPE_TEMP_ORDER = 3;//本地保存的提交中的订单
+    static final int TYPE_INVENTORY = 4;//盘点缓存
 
     public static final int TRANS_ACTION_CANCEL = 0;
     public static final int TRANS_ACTION_OUTPUT_CONFIRM = 1;
@@ -62,6 +65,7 @@ public class OrderAdapter extends IBaseAdapter {
         void doTransferAction(int type,TransferEntity transferEntity);
         void call(String phone);
         void resubmitOrder(TempOrderManager.TempOrder tempOrder);
+        void gotoInventory(int inventoryId);
     }
 
     private DoActionInterface callback;
@@ -98,6 +102,7 @@ public class OrderAdapter extends IBaseAdapter {
         int viewType = getItemViewType(position);
         if(viewType==TYPE_TEMP_ORDER)return getSubmittingOrderView(position,convertView,parent);
         if(viewType==TYPE_TRANSFER)return getTransferView(position,convertView,parent);
+        if(viewType==TYPE_INVENTORY)return getInventoryView(position,convertView,parent);
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
@@ -404,6 +409,9 @@ public class OrderAdapter extends IBaseAdapter {
         else if(object instanceof TempOrderManager.TempOrder){
             return TYPE_TEMP_ORDER;
         }
+        else if(object instanceof InventoryCacheManager.InventoryBrief){
+            return TYPE_INVENTORY;
+        }
 //        else if(object instanceof TransferEntity){
 //            return TYPE_TRANSFER;
 //        }
@@ -412,7 +420,7 @@ public class OrderAdapter extends IBaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 4;
+        return 5;
     }
 
     SimpleDateFormat sdfSource = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -527,6 +535,34 @@ public class OrderAdapter extends IBaseAdapter {
         }
         return convertView;
     }
+
+    /**
+     * 盘点item
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
+    private View getInventoryView(final int position, View convertView, ViewGroup parent){
+        InventoryViewHolder viewHolder = null;
+        if (convertView == null) {
+            convertView = View.inflate(context, R.layout.firstpage_inventory_item, null);
+            viewHolder = new InventoryViewHolder();
+            ViewUtils.inject(viewHolder, convertView);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (InventoryViewHolder) convertView.getTag();
+        }
+        final InventoryCacheManager.InventoryBrief inventoryBrief = (InventoryCacheManager.InventoryBrief) mList.get(position);
+        viewHolder.inventoryBrief = inventoryBrief;
+        viewHolder.tvInventoryDate.setText("盘点日期："+ inventoryBrief.getCreateTime());
+        viewHolder.tvInventoryId.setText(inventoryBrief.getInventoryID()+"");
+        viewHolder.tvInventoryPerson.setText(inventoryBrief.getCreateUser());
+        viewHolder.tvInventoryCancel.setOnClickListener(viewHolder);
+        viewHolder.cvRoot.setOnClickListener(viewHolder);
+        return convertView;
+    }
+
 
     /**
      * 入库方的列表项
@@ -649,5 +685,37 @@ public class OrderAdapter extends IBaseAdapter {
         ImageView mmIvIcon;
         @ViewInject(R.id.ll_item_temp_container)
         ViewGroup mmContainer;
+    }
+
+    /**
+     * 盘点的viewholder
+     */
+    private class InventoryViewHolder implements View.OnClickListener{
+        InventoryCacheManager.InventoryBrief inventoryBrief;
+        @ViewInject(R.id.tv_item_inventory_date)
+        TextView tvInventoryDate;
+        @ViewInject(R.id.tv_item_inventory_person)
+        TextView tvInventoryPerson;
+        @ViewInject(R.id.tv_item_inventory_id)
+        TextView tvInventoryId;
+        @ViewInject(R.id.tv_item_inventory_cancel)
+        TextView tvInventoryCancel;
+        @ViewInject(R.id.cv_inventory_root)
+        CardView cvRoot;
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.tv_item_inventory_cancel:
+                    //本地删除
+                    new InventoryCacheManager(context).removeInventory(inventoryBrief.getInventoryID());
+                    mList.remove(inventoryBrief);
+                    notifyDataSetChanged();
+                    break;
+                case R.id.cv_inventory_root:
+                    if(callback!=null)callback.gotoInventory(inventoryBrief.getInventoryID());
+                    break;
+            }
+        }
     }
 }

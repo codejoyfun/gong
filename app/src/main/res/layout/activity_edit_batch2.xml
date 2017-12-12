@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/rl_edit_batch_root"
     tools:context="com.runwise.supply.firstpage.EditBatchActivity">
 
     <RelativeLayout
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
         android:layout_alignParentBottom="true"
         tools:context="com.runwise.supply.firstpage.EditBatchActivity">
 

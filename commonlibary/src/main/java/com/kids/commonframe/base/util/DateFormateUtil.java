@@ -564,4 +564,13 @@ public class DateFormateUtil {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		return dateFormat.format(date);
 	}
+
+	public static long getDaysToExpire(String timeStr) {
+		if(TextUtils.isEmpty(timeStr)) {
+			return 0;
+		}
+		//2017-10-03 11:25:03
+		final Calendar calendar = dateFormatFromString(timeStr, DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
+		return 0;
+	}
 }

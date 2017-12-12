@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -25,6 +26,8 @@ import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.view.NoScrollViewPager;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,18 +38,27 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 /**
+ * 新界面的盘点
+ *
  * Created by Dong on 2017/12/8.
  */
 
 public class InventoryActivity extends NetWorkActivity {
 
+    public static final String INTENT_KEY_INVENTORY_BEAN = "inventory_bean";//传入盘点对象
     @ViewInject(R.id.tablayout)
     private TabLayout tablayout;
     @ViewInject(R.id.drag_layout)
     private DragTopLayout dragLayout;
     @ViewInject(R.id.viewpager)
     private ViewPager viewpager;
-    InventoryResponse mInventoryResponse;
+    @ViewInject(R.id.tv_inventory_id)
+    private TextView mTvInventoryId;
+    @ViewInject(R.id.tv_inventory_person)
+    private TextView mTvInventoryPerson;
+    @ViewInject(R.id.tv_inventory_date)
+    private TextView mTvInventoryDate;
+    InventoryResponse.InventoryBean mInventoryBean;
     CategoryRespone categoryRespone;
     List<Fragment> orderProductFragmentList;
 
@@ -56,39 +68,21 @@ public class InventoryActivity extends NetWorkActivity {
         setContentView(R.layout.activity_inventory_list);
         setTitleText(true,"盘点单");
         showBackBtn();
-
         dragLayout.setOverDrag(false);
-        TestData();
+        mInventoryBean = (InventoryResponse.InventoryBean) getIntent().getSerializableExtra(INTENT_KEY_INVENTORY_BEAN);
+        mTvInventoryId.setText(String.valueOf(mInventoryBean.getInventoryID()));
+        mTvInventoryPerson.setText(mInventoryBean.getCreateUser());
+        mTvInventoryDate.setText(mInventoryBean.getCreateDate());
         getCategory();
     }
 
-    private void TestData(){
-        InventoryResponse inventoryResponse = new InventoryResponse();
-        InventoryResponse.InventoryBean inventoryBean = new InventoryResponse.InventoryBean();
-        inventoryResponse.setInventory(inventoryBean);
-        inventoryBean.setProductList(new ArrayList<>());
-        for(int i=0;i<10;i++){
-            InventoryResponse.InventoryProduct inventoryProduct = new InventoryResponse.InventoryProduct();
-            inventoryProduct.setProductID(651);
-
-            inventoryBean.getProductList().add(inventoryProduct);
-            inventoryProduct.setLotList(new ArrayList<>());
-            for(int j=0;j<10;j++){
-                InventoryResponse.InventoryLot lot = new InventoryResponse.InventoryLot();
-                lot.setLifeEndDate("10-01-23");
-                lot.setTheoreticalQty(10);
-                lot.setLotNum("313251235"+i+j);
-                inventoryProduct.getLotList().add(lot);
-            }
-        }
-        mInventoryResponse = inventoryResponse;
-    }
-
+    /**
+     * 查询类别
+     */
     private void getCategory(){
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-
     }
 
     @Override
@@ -118,7 +112,7 @@ public class InventoryActivity extends NetWorkActivity {
             map.put(category,new ArrayList<>());
         }
 
-        for (InventoryResponse.InventoryProduct inventoryProduct : mInventoryResponse.getInventory().getProductList()) {
+        for (InventoryResponse.InventoryProduct inventoryProduct : mInventoryBean.getProductList()) {
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(this).get(String.valueOf(inventoryProduct.getProductID()));
             if (!TextUtils.isEmpty(listBean.getCategory())){
                 ArrayList<InventoryResponse.InventoryProduct> productByCategory = map.get(listBean.getCategory());
@@ -136,7 +130,7 @@ public class InventoryActivity extends NetWorkActivity {
             tabFragmentList.add(TabFragment.newInstance(category));
         }
         //加入全部
-        orderProductFragmentList.add(0, newProductFragment(mInventoryResponse.getInventory().getProductList()));
+        orderProductFragmentList.add(0, newProductFragment(mInventoryBean.getProductList()));
 
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
         viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
@@ -174,7 +168,7 @@ public class InventoryActivity extends NetWorkActivity {
                 //TODO:提交请求
                 break;
             case R.id.tv_inventory_cache:
-                new InventoryCacheManager(this).saveInventory(mInventoryResponse.getInventory());
+                new InventoryCacheManager(this).saveInventory(mInventoryBean);
                 break;
         }
     }
@@ -188,7 +182,7 @@ public class InventoryActivity extends NetWorkActivity {
         for(InventoryResponse.InventoryProduct product:productList){
             if(product.getLotList()!=null){
                 for(InventoryResponse.InventoryLot batch:product.getLotList()){
-                    batch.setEditNum(batch.getTheoreticalQty());
+                    batch.setEditNum(batch.getQty());
                 }
             }
         }

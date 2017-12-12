@@ -66,7 +66,8 @@ public class EditBatchDialog extends BaseActivity {
     public static final String INTENT_KEY_INIT_BATCH = "init_batch";
 
     ArrayList<BatchEntity> mBatchEntities;
-
+    @BindView(R.id.rl_edit_batch_root)
+    View mViewBg;
     @BindView(R.id.name)
     TextView mName;
     @BindView(R.id.iv_cancle)
@@ -109,6 +110,7 @@ public class EditBatchDialog extends BaseActivity {
         mLvBatch.setAdapter(batchListAdapter);
         mBatchEntities = initBatchData();
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        //mViewBg.post(()->mViewBg.setBackgroundColor(getResources().getColor(R.color.translucent)));
     }
 
     /**
@@ -128,7 +130,10 @@ public class EditBatchDialog extends BaseActivity {
         for (InventoryResponse.InventoryLot lotBean : lotBeens) {
             BatchEntity batchEntity = new BatchEntity();
             batchEntity.setBatchNum(lotBean.getLotNum());
-            batchEntity.setProductCount(String.valueOf((int)lotBean.getTheoreticalQty()));
+            batchEntity.setProductCount(String.valueOf((int)lotBean.getEditNum()));
+            batchEntity.setProductDate(lotBean.getProductDate());
+            batchEntity.setProductDate(lotBean.isProductDate());
+            batchEntity.setNewAdded(lotBean.isNewAdded());
             batchEntities.add(batchEntity);
         }
         return batchEntities;
@@ -143,7 +148,7 @@ public class EditBatchDialog extends BaseActivity {
     }
 
 
-    @OnClick({R.id.iv_cancle, R.id.btn_confirm})
+    @OnClick({R.id.iv_cancle, R.id.btn_confirm, R.id.rl_edit_batch_root})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_cancle:
@@ -161,7 +166,7 @@ public class EditBatchDialog extends BaseActivity {
                 break;
             case R.id.btn_confirm:
                 for (BatchEntity batchEntity : mBatchEntities) {
-                    if (TextUtils.isEmpty(batchEntity.getProductDate())) {
+                    if (batchEntity.isNewAdded() && TextUtils.isEmpty(batchEntity.getProductDate())) {
                         ToastUtil.show(mContext, "你还没有填写日期!");
                         return;
                     }
@@ -176,8 +181,19 @@ public class EditBatchDialog extends BaseActivity {
                 setResult(RESULT_OK, intent);
                 finish();
                 break;
-
-
+            case R.id.rl_edit_batch_root:
+                dialog.setMessageGravity();
+                dialog.setMessage("还没保存哦,确认取消?");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        mBatchEntities.clear();
+                        finish();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                break;
         }
     }
 
@@ -309,17 +325,17 @@ public class EditBatchDialog extends BaseActivity {
                 }
             });
 
-            viewHolder.etProductCount.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                        view.setFocusableInTouchMode(true);
-                        view.requestFocus();
-                        ((EditText) view).selectAll();
-                    }
-                    return false;
-                }
-            });
+//            viewHolder.etProductCount.setOnTouchListener(new View.OnTouchListener() {
+//                @Override
+//                public boolean onTouch(View view, MotionEvent motionEvent) {
+//                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+//                        view.setFocusableInTouchMode(true);
+//                        view.requestFocus();
+//                        ((EditText) view).selectAll();
+//                    }
+//                    return false;
+//                }
+//            });
 
             viewHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
                 @Override

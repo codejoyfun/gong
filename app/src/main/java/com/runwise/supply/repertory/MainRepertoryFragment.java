@@ -13,12 +13,19 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
+import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.mine.RepertoryFragment;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+
+import java.util.ArrayList;
+
+import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
 
 /**
  * 库存
@@ -73,6 +80,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
 //            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
             //TODO:test
             Intent intent = new Intent(getActivity(),InventoryActivity.class);
+            intent.putExtra(INTENT_KEY_INVENTORY_BEAN,testData());
             startActivity(intent);
         }
         else{
@@ -130,6 +138,33 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 dialog.show();
                 break;
         }
+    }
+
+    private InventoryResponse.InventoryBean testData(){
+        InventoryResponse inventoryResponse = new InventoryResponse();
+        InventoryResponse.InventoryBean inventoryBean = new InventoryResponse.InventoryBean();
+        inventoryBean.setCreateDate("2017-12-12");
+        inventoryBean.setCreateUser(GlobalApplication.getInstance().getUserName());
+        inventoryBean.setInventoryID(2312);
+        inventoryResponse.setInventory(inventoryBean);
+        inventoryBean.setProductList(new ArrayList<>());
+        for(int i=0;i<10;i++){
+            InventoryResponse.InventoryProduct inventoryProduct = new InventoryResponse.InventoryProduct();
+            inventoryProduct.setProductID(651);
+            inventoryProduct.setUom("包");
+            inventoryBean.getProductList().add(inventoryProduct);
+            inventoryProduct.setLotList(new ArrayList<>());
+            inventoryProduct.setProduct(ProductBasicUtils.getBasicMap(getActivity()).get(inventoryProduct.getProductID()+""));
+            for(int j=1;j<i+2;j++){
+                InventoryResponse.InventoryLot lot = new InventoryResponse.InventoryLot();
+                lot.setLifeEndDate("2017-12-12 00:00:00");
+                lot.setQty(j);
+                lot.setEditNum(j);
+                lot.setLotNum("313251235"+i+j);
+                inventoryProduct.getLotList().add(lot);
+            }
+        }
+        return inventoryResponse.getInventory();
     }
 }
 
