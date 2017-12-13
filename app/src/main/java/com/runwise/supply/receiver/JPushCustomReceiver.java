@@ -53,6 +53,8 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                         String strId = jsonObject.optString("dataid");
                         if(!TextUtils.isEmpty(strId) && TextUtils.isDigitsOnly(strId)){
                             EventBus.getDefault().post(new OrderStatusChangeEvent(Integer.valueOf(strId)));
+                        }else{
+                            EventBus.getDefault().post(new OrderStatusChangeEvent());
                         }
                     }
                     if (TYPE_SYSTEM_UPGRADE.equals(type)){
