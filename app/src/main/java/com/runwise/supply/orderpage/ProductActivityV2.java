@@ -57,6 +57,7 @@ import java.util.Set;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
 
@@ -406,6 +407,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             return;
         }
         Intent intent = new Intent(this,OrderSubmitActivity.class);
+        //判断是否是自助下单
+        intent.putExtra(INTENT_KEY_SELF_HELP,getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false));
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mMapCount.keySet()){
             if(!mmSelected.contains(bean.getProductID()))continue;//木有在购物车中打勾，跳过

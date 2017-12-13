@@ -40,7 +40,9 @@ import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
+import com.runwise.supply.business.entity.CheckOrderResponse;
 import com.runwise.supply.business.entity.ImagesBean;
+import com.runwise.supply.entity.CheckOrderSuccessRequest;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.event.OrderStatusChangeEvent;
@@ -68,6 +70,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -101,7 +104,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_SUBMITTING_ORDER = 7;
     private static final int REQUEST_CANCEL_TRANSFER = 9;
     private static final int REQUEST_OUTPUT_CONFIRM = 10;
-    private static final int REQUEST_CANCEL_INVENTORY = 11;
+    private static final int REQUEST_READ = 11;
+    private static final int REQUEST_CANCEL_INVENTORY = 12;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -240,6 +244,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     Intent intent = new Intent(mContext, OrderDetailActivity.class);
                     Bundle bundle = new Bundle();
                     OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
+                    setOrderRead(bean);
                     bundle.putParcelable("order", bean);
                     intent.putExtras(bundle);
                     startActivity(intent);
@@ -382,6 +387,23 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case REQUEST_OUTPUT_CONFIRM:
                 startActivity(TransferOutActivity.getStartIntent(getActivity(),mSelectTransferEntity));
                 mInTheRequest = false;
+                break;
+            case REQUEST_SUBMITTING_ORDER:
+                CheckOrderResponse checkOrderResponse = (CheckOrderResponse) result.getResult().getData();
+                if(checkOrderResponse.getOrderingList()!=null){
+                    Iterator<TempOrderManager.TempOrder> iterator = mTempOrders.iterator();
+                    while(iterator.hasNext()){
+                        TempOrderManager.TempOrder tempOrder = iterator.next();
+                        for(CheckOrderResponse.OrderingBean orderingBean:checkOrderResponse.getOrderingList()){
+                            if(tempOrder.getHashKey().equals(orderingBean.getHash()) && "A0006".equals(orderingBean.getState())){
+                                iterator.remove();
+                                TempOrderManager.getInstance(getActivity()).removeTempOrder(tempOrder);
+                            }
+                        }
+                    }
+                }
+                submitRequesting = false;
+                checkSuccess();
                 break;
             case REQUEST_CANCEL_INVENTORY:
                 //本地删除，刷新页面
@@ -702,8 +724,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             return;
         }
         mTempOrders = orders;
-        Object request = null;
-        sendConnection("/api/order/is/success",request,REQUEST_SUBMITTING_ORDER,false,null);
+        CheckOrderSuccessRequest request = new CheckOrderSuccessRequest(mTempOrders);
+        sendConnection("/api/order/is/success",request,REQUEST_SUBMITTING_ORDER,false, CheckOrderResponse.class);
     }
 
     List<InventoryCacheManager.InventoryBrief> inventoryBriefList;
@@ -893,5 +915,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         mSelectTransferEntity = transferEntity;
         Object request = null;
         sendConnection("/gongfu/shop/transfer/output_confirm/" + transferEntity.getPickingID(), request, REQUEST_OUTPUT_CONFIRM, true, null);
+    }
+
+    /**
+     * 设置一个订单为已读状态
+     */
+    private void setOrderRead(OrderResponse.ListBean order){
+        order.setUserRead(GlobalApplication.getInstance().getUid());
+        adapter.notifyDataSetChanged();
     }
 }

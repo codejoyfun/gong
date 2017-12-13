@@ -37,6 +37,7 @@ import com.runwise.supply.tools.UserUtils;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +60,7 @@ public class OrderAdapter extends IBaseAdapter {
 
     public static final int TRANS_ACTION_CANCEL = 0;
     public static final int TRANS_ACTION_OUTPUT_CONFIRM = 1;
+    private String uid;
 
     public interface DoActionInterface {
         void doAction(OrderDoAction action, int postion);
@@ -95,6 +97,7 @@ public class OrderAdapter extends IBaseAdapter {
         this.callback = callback;
         mFailedColor = context.getResources().getColor(R.color.colorffe7e0);
         mNormalColor = context.getResources().getColor(android.R.color.white);
+        uid = GlobalApplication.getInstance().getUid();
     }
 
     @Override
@@ -120,6 +123,13 @@ public class OrderAdapter extends IBaseAdapter {
         final RecyclerView recyclerView = viewHolder.recyclerView;
         if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
+            //未读红点
+            if(bean.isAsyncOrder() && !bean.isUserRead(uid)){
+                viewHolder.ivUnread.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.ivUnread.setVisibility(View.GONE);
+            }
+
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -385,7 +395,8 @@ public class OrderAdapter extends IBaseAdapter {
         TextView realTv;
         @ViewInject(R.id.tv_to_pay)
         TextView tvToPay;
-
+        @ViewInject(R.id.iv_first_order_item_unread)
+        ImageView ivUnread;
     }
 
     private void setTimeLineContent(List<String> stList, RecyclerView recyclerView) {
