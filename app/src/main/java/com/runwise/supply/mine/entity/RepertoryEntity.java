@@ -43,6 +43,15 @@ public class RepertoryEntity implements Serializable{
         private int productID;
         int  ImageId;
         private ProductBasicList.ListBean product;
+        private List<RepertoryLot> lotList;
+
+        public List<RepertoryLot> getLotList() {
+            return lotList;
+        }
+
+        public void setLotList(List<RepertoryLot> lotList) {
+            this.lotList = lotList;
+        }
 
         public int getImageId() {
             return ImageId;
@@ -122,6 +131,63 @@ public class RepertoryEntity implements Serializable{
 
         public void setProductID(int productID) {
             this.productID = productID;
+        }
+    }
+
+    public static class RepertoryLot{
+        private String lotNum;
+        private String lifeEndDate;
+        private int lotID;
+        private double qty;
+        private String uom;
+        private double inventoryValue;
+
+        public String getLotNum() {
+            return lotNum;
+        }
+
+        public String getLifeEndDate() {
+            return lifeEndDate;
+        }
+
+        public int getLotID() {
+            return lotID;
+        }
+
+        public double getQty() {
+            return qty;
+        }
+
+        public String getUom() {
+            return uom;
+        }
+
+        public double getInventoryValue() {
+            return inventoryValue;
+        }
+
+        public void setLotNum(String lotNum) {
+            this.lotNum = lotNum;
+        }
+
+        public void setLifeEndDate(String lifeEndDate) {
+            this.lifeEndDate = lifeEndDate;
+        }
+
+        public void setLotID(int lotID) {
+            this.lotID = lotID;
+        }
+
+        public void setQty(double qty) {
+            this.qty = qty;
+        }
+
+        public void setUom(String uom) {
+            this.uom = uom;
+        }
+
+        public void setInventoryValue(double inventoryValue) {
+            this.inventoryValue = inventoryValue;
         }
     }
 }
