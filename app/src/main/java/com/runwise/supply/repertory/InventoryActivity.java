@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -71,6 +73,7 @@ public class InventoryActivity extends NetWorkActivity {
     InventoryResponse.InventoryBean mInventoryBean;
     CategoryRespone categoryRespone;
     List<Fragment> orderProductFragmentList;
+    private double mInventoryTotal = 0;//盘点后总数
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +87,7 @@ public class InventoryActivity extends NetWorkActivity {
         mTvInventoryId.setText(mInventoryBean.getName());
         mTvInventoryPerson.setText(mInventoryBean.getCreateUser());
         mTvInventoryDate.setText(mInventoryBean.getCreateDate());
-        initDialog();
+//        initDialog();
         getCategory();
     }
 
@@ -106,11 +109,22 @@ public class InventoryActivity extends NetWorkActivity {
                 setUpDataForViewPage();
                 break;
             case INVENTORY_COMMIT:
-                InventoryCacheManager inventoryCacheManager = new InventoryCacheManager(this);
-                inventoryCacheManager.removeInventory(mInventoryBean.getInventoryID());
+                InventoryCacheManager.getInstance(this).removeInventory(mInventoryBean.getInventoryID());
                 ToastUtil.show(mContext,"盘点成功");
-                Intent intent = new Intent(mContext,EditRepertoryFinishActivity.class);
-                startActivity(intent);
+                //计算原库存数量
+                double total = 0;
+                for(InventoryResponse.InventoryProduct product:mInventoryBean.getLines()){
+                    if(product.getLotList()!=null){
+                        for(InventoryResponse.InventoryLot lot:product.getLotList()){
+                            total = total + lot.getTheoreticalQty();
+                        }
+                    }else{
+                        total = total + product.getTheoreticalQty();
+                    }
+                }
+                //计算盘点后数量
+
+                EditRepertoryFinishActivity.start(this,total,mInventoryTotal);
                 finish();
                 break;
         }
@@ -118,7 +132,7 @@ public class InventoryActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        ToastUtil.show(this,errMsg);
     }
 
     private void setUpDataForViewPage() {
@@ -188,11 +202,14 @@ public class InventoryActivity extends NetWorkActivity {
     public void onBtnClicked(View v){
         switch (v.getId()){
             case R.id.tv_inventory_commit:
-                commit();
-                //TODO:提交请求
+                CustomDialog dialog = new CustomDialog(this);
+                dialog.setMessage("盘点成功，确认更新库存？");
+                dialog.setTitleGone();
+                dialog.setRightBtnListener("确认", (btn,dialg)->commit());
+                dialog.show();
                 break;
             case R.id.tv_inventory_cache:
-                new InventoryCacheManager(this).saveInventory(mInventoryBean);
+                InventoryCacheManager.getInstance(this).saveInventory(mInventoryBean);
                 finish();
                 break;
             case R.id.title_iv_rigth2:
@@ -205,21 +222,6 @@ public class InventoryActivity extends NetWorkActivity {
                 intent.putExtra(INTENT_FILTER,filters);
                 startActivity(intent);
                 break;
-        }
-    }
-
-    /**
-     * 设置初始盘点值
-     * @param inventoryResponse
-     */
-    private void initData(InventoryResponse inventoryResponse){
-        List<InventoryResponse.InventoryProduct> productList = inventoryResponse.getInventory().getLines();
-        for(InventoryResponse.InventoryProduct product:productList){
-            if(product.getLotList()!=null){
-                for(InventoryResponse.InventoryLot batch:product.getLotList()){
-                    batch.setEditNum(batch.getTheoreticalQty());
-                }
-            }
         }
     }
 
@@ -251,62 +253,66 @@ public class InventoryActivity extends NetWorkActivity {
     /**
      * 初始化修改商品数量dialog
      */
-    @ViewInject(R.id.name1)
-    private TextView mTvTitle;
-    @ViewInject(R.id.colseIcon1)
-    private ImageView mIvClose;
-    @ViewInject(R.id.et_product_amount1)
-    private EditText mEtCount;
-    @ViewInject(R.id.rl_dialog_add_sum)
-    private View mIncludeSumDialog;
-    @ViewInject(R.id.finalButton1)
-    private TextView mTvButton;
-    private void initDialog(){
-        mIvClose.setOnClickListener(v->{
-            finishDialog();
-        });
-        mIncludeSumDialog.setOnClickListener(v->{
-            finishDialog();
-        });
-    }
+//    @ViewInject(R.id.name1)
+//    private TextView mTvTitle;
+//    @ViewInject(R.id.colseIcon1)
+//    private ImageView mIvClose;
+//    @ViewInject(R.id.et_product_amount1)
+//    private EditText mEtCount;
+//    @ViewInject(R.id.rl_dialog_add_sum)
+//    private View mIncludeSumDialog;
+//    @ViewInject(R.id.finalButton1)
+//    private TextView mTvButton;
+//    private void initDialog(){
+//        mIvClose.setOnClickListener(v->{
+//            finishDialog();
+//        });
+//        mIncludeSumDialog.setOnClickListener(v->{
+//            finishDialog();
+//        });
+//    }
+//
+//    /**
+//     * 显示修改没有批次的商品数量
+//     * @param inventoryProduct
+//     */
+//    public void showAddSumDialog(InventoryResponse.InventoryProduct inventoryProduct){
+//        mIncludeSumDialog.setVisibility(View.VISIBLE);
+//        mTvTitle.setText(inventoryProduct.getProduct().getName());
+//        mEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getEditNum()));
+//        mEtCount.selectAll();
+//        mTvButton.setOnClickListener(v->{
+//            String etValue = mEtCount.getText().toString();
+//            if(TextUtils.isDigitsOnly(etValue)){
+//                inventoryProduct.setEditNum(Double.valueOf(etValue));
+//                EventBus.getDefault().post(new InventoryEditEvent());
+//            }
+//            finishDialog();
+//        });
+//    }
+//
+//    private void finishDialog(){
+//        hideKeyboard();
+//        mIncludeSumDialog.setVisibility(View.GONE);
+//    }
+//
+//
+//    InputMethodManager imm;
+//    private void hideKeyboard(){
+//        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        View v = getCurrentFocus();
+//        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//    }
 
     /**
-     * 显示修改没有批次的商品数量
-     * @param inventoryProduct
+     * 提交盘点
      */
-    public void showAddSumDialog(InventoryResponse.InventoryProduct inventoryProduct){
-        mIncludeSumDialog.setVisibility(View.VISIBLE);
-        mTvTitle.setText(inventoryProduct.getProduct().getName());
-        mEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getEditNum()));
-        mEtCount.selectAll();
-        mTvButton.setOnClickListener(v->{
-            String etValue = mEtCount.getText().toString();
-            if(TextUtils.isDigitsOnly(etValue)){
-                inventoryProduct.setEditNum(Double.valueOf(etValue));
-                EventBus.getDefault().post(new InventoryEditEvent());
-            }
-            finishDialog();
-        });
-    }
-
-    private void finishDialog(){
-        hideKeyboard();
-        mIncludeSumDialog.setVisibility(View.GONE);
-    }
-
-
-    InputMethodManager imm;
-    private void hideKeyboard(){
-        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        View v = getCurrentFocus();
-        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-    }
-
     private void commit(){
         EditRequest editRequest = new EditRequest();
         editRequest.setId(mInventoryBean.getInventoryID());
         editRequest.setState("done");
         List<EditRequest.ProductBean> editListBean = new ArrayList<>();
+        mInventoryTotal = 0;
         for(InventoryResponse.InventoryProduct bean : mInventoryBean.getLines()) {
             if(bean.getLotList()==null){//无批次
                 EditRequest.ProductBean productBean = new EditRequest.ProductBean();
@@ -316,6 +322,7 @@ public class InventoryActivity extends NetWorkActivity {
                 productBean.setLot_id((int)bean.getLotID());
                 productBean.setLot_num(bean.getLotNum());
                 editListBean.add(productBean);
+                mInventoryTotal = mInventoryTotal + bean.getEditNum();//计算盘点后总数
                 continue;
             }
             for(InventoryResponse.InventoryLot lot:bean.getLotList()){
@@ -325,6 +332,7 @@ public class InventoryActivity extends NetWorkActivity {
                 productBean.setActual_qty(lot.getEditNum());
                 productBean.setLot_id(lot.getLotID());
                 productBean.setLot_num(lot.getLotNum());
+                mInventoryTotal = mInventoryTotal + lot.getEditNum();//计算盘点后总数
                 if(lot.isProductDate() && lot.isNewAdded())productBean.setProduce_datetime(lot.getProductDate());
                 else if(!lot.isProductDate() && lot.isNewAdded())productBean.setLife_datetime(lot.getProductDate());
                 editListBean.add(productBean);

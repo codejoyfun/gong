@@ -20,6 +20,7 @@ import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import java.util.ArrayList;
@@ -80,10 +81,6 @@ public class MainRepertoryFragment extends NetWorkFragment {
             Object parma = null;
 //            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
             sendConnection("/api/v2/inventory/create",parma,REQUEST_INVENTORY,true,InventoryResponse.class);
-            //test
-//            Intent intent = new Intent(getActivity(),InventoryActivity.class);
-//            intent.putExtra(INTENT_KEY_INVENTORY_BEAN,testData());
-//            startActivity(intent);
         }
         else{
             Intent intent = new Intent(mContext, LoginActivity.class);
@@ -130,7 +127,11 @@ public class MainRepertoryFragment extends NetWorkFragment {
             case REQUEST_INVENTORY:
                 InventoryResponse inventoryResponse = (InventoryResponse)result.getResult().getData();
                 Intent intent1 = new Intent(getActivity(),InventoryActivity.class);
-                intent1.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryResponse.getInventory());
+                InventoryResponse.InventoryBean inventoryBean = inventoryResponse.getInventory();
+                //检查是否有缓存
+                InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
+                if(cacheBean!=null)inventoryBean = cacheBean;
+                intent1.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryBean);
                 startActivity(intent1);
                 break;
         }

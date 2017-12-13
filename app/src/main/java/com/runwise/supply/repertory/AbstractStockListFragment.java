@@ -352,11 +352,11 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
             }
 
             viewHolder.mmTvTitle.setText(inventoryProduct.getProduct().getName());
-            viewHolder.mmTvCode.setText(inventoryProduct.getCode());
+            viewHolder.mmTvCode.setText(inventoryProduct.getProduct().getDefaultCode());
             viewHolder.mmTvUnit.setText(inventoryProduct.getProduct().getUnit());
             //TODO:图片
             if(inventoryProduct.getProduct().getImage()!=null){
-                FrecoFactory.getInstance(getActivity()).disPlay(viewHolder.mmSdvImage,inventoryProduct.getProduct().getImage().getImage());
+                FrecoFactory.getInstance(getActivity()).disPlay(viewHolder.mmSdvImage,Constant.BASE_URL+inventoryProduct.getProduct().getImage().getImage());
             }
             return convertView;
         }

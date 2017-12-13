@@ -41,9 +41,11 @@ import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.CheckOrderResponse;
+import com.runwise.supply.business.entity.FirstPageInventoryResult;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.entity.CheckOrderSuccessRequest;
 import com.runwise.supply.entity.InventoryResponse;
+import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.event.OrderStatusChangeEvent;
 import com.runwise.supply.firstpage.entity.CancleRequest;
@@ -59,6 +61,7 @@ import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.TransferOutActivity;
+import com.runwise.supply.repertory.EditCountDialog;
 import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -73,9 +76,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static com.runwise.supply.R.id.lqLL;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
@@ -106,6 +106,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_OUTPUT_CONFIRM = 10;
     private static final int REQUEST_READ = 11;
     private static final int REQUEST_CANCEL_INVENTORY = 12;
+    private static final int REQUEST_INVENTORY_LIST = 13;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -138,6 +139,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private boolean returnRequesting = false;//标记是否在查询退货单
     private boolean orderRequesting = false;//标记是否在查询订单
     private boolean submitRequesting = false;//标记是否在查询提交中的订单
+    private boolean inventoryRequesting = false;//是否在查询盘点列表中
     private List<TempOrderManager.TempOrder> mTempOrders;//本地保存的提交中的订单的数据
 
     public LoginedFirstFragment() {
@@ -407,9 +409,19 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_CANCEL_INVENTORY:
                 //本地删除，刷新页面
-                new InventoryCacheManager(getActivity()).removeInventory(mCancelInventory.getInventoryID());
+                InventoryCacheManager.getInstance(getActivity()).removeInventory(mCancelInventory.getInventoryID());
                 adapter.getList().remove(mCancelInventory);
                 adapter.notifyDataSetChanged();
+                break;
+            case REQUEST_INVENTORY_LIST:
+                FirstPageInventoryResult inventoryResult = (FirstPageInventoryResult) result.getResult().getData();
+                if(inventoryResult.getList()!=null && inventoryResult.getList().size()>0){
+                    InventoryResponse.InventoryBean inventoryBean = inventoryResult.getList().get(0);
+                    //有确认中的盘点单，则显示
+                    if("confirm".equals(inventoryBean.getState())) inventoryList.add(inventoryBean);
+                }
+                inventoryRequesting = false;
+                checkSuccess();
                 break;
         }
     }
@@ -418,8 +430,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      * 检查是否订单，退货单，提交中订单三个接口全部返回，是则更新界面
      */
     private void checkSuccess(){
-        if(!orderRequesting && !returnRequesting && !submitRequesting){
-            if(inventoryBriefList!=null)orderList.addAll(0,inventoryBriefList);
+        if(!orderRequesting && !returnRequesting && !submitRequesting && !inventoryRequesting){
+            orderList.addAll(0,inventoryList);
             if(mTempOrders!=null)orderList.addAll(0,mTempOrders);//提交中订单加在最前边
             adapter.setData(orderList);
             pullListView.onRefreshComplete();
@@ -488,28 +500,33 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 submitRequesting = false;
                 checkSuccess();
                 break;
+            case REQUEST_INVENTORY_LIST:
+                inventoryRequesting = false;
+                checkSuccess();
+                break;
         }
     }
 
     /**
-     * 加载缓存的盘点数据，跳去盘点页
-     * @param inventoryId
+     * 跳去盘点页
+     * 先查找是否有缓存数据
      */
     @Override
-    public void gotoInventory(int inventoryId) {
-        InventoryCacheManager manager = new InventoryCacheManager(getActivity());
-        InventoryResponse.InventoryBean bean = manager.loadInventory(inventoryId);
+    public void gotoInventory(InventoryResponse.InventoryBean inventoryBean) {
+        InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
+        //读取缓存
+        if(cacheBean!=null)inventoryBean = cacheBean;
         Intent intent = new Intent(getActivity(), InventoryActivity.class);
-        intent.putExtra(INTENT_KEY_INVENTORY_BEAN,bean);
+        intent.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryBean);
         startActivity(intent);
     }
 
-    private InventoryCacheManager.InventoryBrief mCancelInventory;//记录删除的盘点对象
+    private InventoryResponse.InventoryBean mCancelInventory;//记录删除的盘点对象
     /**
      * 取消盘点缓存
      */
     @Override
-    public void cancelInventory(InventoryCacheManager.InventoryBrief inventoryBrief) {
+    public void cancelInventory(InventoryResponse.InventoryBean inventoryBrief) {
         mCancelInventory = inventoryBrief;
         ChannelPandian request = new ChannelPandian();
         request.setId(inventoryBrief.getInventoryID());
@@ -728,21 +745,25 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         sendConnection("/api/order/is/success",request,REQUEST_SUBMITTING_ORDER,false, CheckOrderResponse.class);
     }
 
-    List<InventoryCacheManager.InventoryBrief> inventoryBriefList;
+    List<InventoryResponse.InventoryBean> inventoryList = new ArrayList<>();
     /**
      *  一次性加载全部，无分页,【先加载退货单，然后跟着正常订单】改为:
      *  并行查询退货单、正常订单、和提交中的订单的状态
      */
     private void requestReturnList() {
-        if(returnRequesting || orderRequesting || submitRequesting)return;
+        if(returnRequesting || orderRequesting || submitRequesting || inventoryRequesting)return;
+        inventoryRequesting = true;
         returnRequesting = true;
         orderRequesting = true;
         submitRequesting = true;
         orderList.clear();
+        //查询提交中订单是否完成
         TempOrderManager.getInstance(getActivity().getApplicationContext())
                 .getTempOrdersAsync(this::checkTempOrders);
 
-        inventoryBriefList = new InventoryCacheManager(getActivity()).loadInventoryBrief();
+        //清空盘点信息
+        inventoryList.clear();
+        checkInventory();
 
         Object request = null;
         sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, false, ReturnOrderBean.class);
@@ -923,5 +944,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private void setOrderRead(OrderResponse.ListBean order){
         order.setUserRead(GlobalApplication.getInstance().getUid());
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 检查盘点单
+     */
+    private void checkInventory(){
+        PageRequest request = new PageRequest();
+        //只查盘点列表第一个，盘点中的单一定在第一条
+        request.setLimit(1);
+        request.setPz(1);
+        request.setDate_type(0);
+        sendConnection("/api/v2/inventory/list",request,REQUEST_INVENTORY_LIST,false,FirstPageInventoryResult.class);
     }
 }

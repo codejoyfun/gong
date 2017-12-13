@@ -1,10 +1,13 @@
 package com.runwise.supply.repertory;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseActivity;
+import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.CheckActivity;
@@ -13,8 +16,18 @@ import com.runwise.supply.tools.UserUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 
 public class EditRepertoryFinishActivity extends BaseActivity {
+
+    public static final String INTENT_OLD_STOCK_COUNT = "old_count";
+    public static final String INTENT_INVENTORY_COUNT = "new_count";
+
+    @ViewInject(R.id.tv_stock_old_count)
+    private TextView mTvOldCount;
+    @ViewInject(R.id.tv_inventory_new_count)
+    private TextView mTvNewCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +35,8 @@ public class EditRepertoryFinishActivity extends BaseActivity {
         setContentView(R.layout.activity_devide_pay_step_finish);
         setTitleText(true,"盘点成功");
         setTitleLeftIcon(true,R.drawable.nav_closed);
+        mTvOldCount.setText("库存商品数量："+ NumberUtil.getIOrD(getIntent().getDoubleExtra(INTENT_OLD_STOCK_COUNT,0)));
+        mTvNewCount.setText("盘点商品数量："+NumberUtil.getIOrD(getIntent().getDoubleExtra(INTENT_INVENTORY_COUNT,0)));
     }
 
     @OnClick({R.id.stepPayFinish,R.id.stepPayFinish1,R.id.left_layout})
@@ -45,5 +60,12 @@ public class EditRepertoryFinishActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().post(new UpdateRepertory());
+    }
+
+    public static void start(Activity activity, double oldCount, double newCount){
+        Intent intent = new Intent(activity,EditRepertoryFinishActivity.class);
+        intent.putExtra(INTENT_OLD_STOCK_COUNT,oldCount);
+        intent.putExtra(INTENT_INVENTORY_COUNT,newCount);
+        activity.startActivity(intent);
     }
 }

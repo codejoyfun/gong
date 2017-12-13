@@ -24,6 +24,8 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
+import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
@@ -57,9 +59,10 @@ import static com.runwise.supply.repertory.EditBatchDialog.INTENT_KEY_INIT_BATCH
 public class InventoryFragment extends NetWorkFragment {
     public static final String INTENT_CATEGORY = "intent_category";
     private static final int REQ_MODIFY_BATCH = 0x234;
-    private static final int REQUEST_ADD_INVENTORY_LINE = 0x2355;
     @ViewInject(R.id.pullListView)
     private ListView pullToRefreshListView;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout loadingLayout;
     private List<InventoryResponse.InventoryProduct> mInventoryProductList;
     private InventoryAdapter mInventoryAdapter = new InventoryAdapter();
     private LayoutInflater mInflater;
@@ -78,6 +81,7 @@ public class InventoryFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         mCategory = getArguments().getString(INTENT_CATEGORY);
         pullToRefreshListView.setAdapter(mInventoryAdapter);
+        loadingLayout.onSuccess(mInventoryAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
         pullToRefreshListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -90,14 +94,16 @@ public class InventoryFragment extends NetWorkFragment {
                     return;
                 }
 
-                if(inventoryProduct.getLotList()!=null){//有批次
+                if(!"none".equals(inventoryProduct.getProduct().getTracking())){//有批次
                     Intent intent = new Intent(getActivity(),EditBatchDialog.class);
                     intent.putExtra(INTENT_KEY_INIT_BATCH,inventoryProduct);
                     mModifyProduct = inventoryProduct;
                     startActivityForResult(intent,REQ_MODIFY_BATCH);
                     getActivity().overridePendingTransition(R.anim.slide_in_from_bottom,R.anim.activity_close_exit);
                 }else{//无批次
-                     ((InventoryActivity)getActivity()).showAddSumDialog(inventoryProduct);
+                    new EditCountDialog(getActivity())
+                            .setup(count -> EventBus.getDefault().post(new InventoryEditEvent()),inventoryProduct)
+                            .show();
                 }
             }
         });
@@ -110,20 +116,7 @@ public class InventoryFragment extends NetWorkFragment {
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch(where){
-            case REQUEST_ADD_INVENTORY_LINE:
-                AddInventoryBatchResponse response = (AddInventoryBatchResponse) result.getResult().getData();
-                InventoryResponse.InventoryProduct inventoryProduct = response.getInventoryProduct();
-                //找到对应的要修改的产品,直接替换批次信息
-                for (InventoryResponse.InventoryProduct product:mInventoryProductList){
-                    if(product.getProductID()==inventoryProduct.getProductID()){
-                        product.setLotList(inventoryProduct.getLotList());
-                        break;
-                    }
-                }
-                mInventoryAdapter.notifyDataSetChanged();
-                break;
-        }
+
     }
 
     @Override
@@ -189,7 +182,7 @@ public class InventoryFragment extends NetWorkFragment {
                             lot.setLotNum(batchEntity.getBatchNum());
                             lot.setProductDate(batchEntity.getProductDate());
                             lot.setProductDate(batchEntity.isProductDate());
-                            lot.setUom(mModifyProduct.getUom());
+                            lot.setUom(mModifyProduct.getProduct().getUom());
                             if(!batchEntity.isProductDate()){//有输入到期日期
                                 lot.setLifeEndDate(lot.getProductDate()+" 08:00:00");
                             }else{
@@ -231,17 +224,6 @@ public class InventoryFragment extends NetWorkFragment {
             colorBgChanged = Color.parseColor("#FFF3FBED");
         }
 
-        public void test(){
-            //预生成
-            for(int i=0;i<20;i++){
-                View view = mInflater.inflate(R.layout.item_inventory_lot,null,false);
-                LotViewHolder lotViewHolder = new LotViewHolder();
-                ViewUtils.inject(lotViewHolder,view);
-                view.setTag(lotViewHolder);
-                cacheLotView.offer(view);
-            }
-        }
-
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             InventoryResponse.InventoryProduct inventoryProduct = mInventoryProductList.get(position);
@@ -253,14 +235,31 @@ public class InventoryFragment extends NetWorkFragment {
                 convertView.setTag(viewHolder);
             }
             viewHolder = (ViewHolder)convertView.getTag();
+            boolean isLot = !"none".equals(inventoryProduct.getProduct().getTracking());
+            //无批次
+            if(!isLot){
+                viewHolder.mmEtCount.setVisibility(View.VISIBLE);
+                viewHolder.mmTvUom.setVisibility(View.VISIBLE);
+                viewHolder.mmIvArrow.setVisibility(View.VISIBLE);
+                viewHolder.mmTvTheoretical.setVisibility(View.VISIBLE);
+                viewHolder.mmEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getEditNum()));
+                viewHolder.mmTvTheoretical.setText("/"+NumberUtil.getIOrD(inventoryProduct.getTheoreticalQty()));
+                viewHolder.mmTvUom.setText(inventoryProduct.getUom());
 
-            //添加批次信息
-            //***********************有批次***************************
-            if(inventoryProduct.getLotList()!=null && inventoryProduct.getLotList().size()>0){
+                boolean isChanged = inventoryProduct.getEditNum()!=inventoryProduct.getTheoreticalQty();
+                viewHolder.mmRlRoot.setBackgroundColor(isChanged?colorBgChanged:colorBgUnChanged);
+
+            }else{//有批次
                 viewHolder.mmEtCount.setVisibility(View.GONE);
                 viewHolder.mmTvUom.setVisibility(View.GONE);
                 viewHolder.mmIvArrow.setVisibility(View.GONE);
                 viewHolder.mmTvTheoretical.setVisibility(View.GONE);
+            }
+
+            //添加批次信息，注意有可能无批次商品也有批次信息，也显示出来
+            //***********************有批次信息***************************
+            if(inventoryProduct.getLotList()!=null && inventoryProduct.getLotList().size()>0){
+
                 viewHolder.mmLayoutContainer.setVisibility(View.VISIBLE);
                 boolean isChanged = false;
                 for(int i=0;i<inventoryProduct.getLotList().size();i++){
@@ -322,54 +321,26 @@ public class InventoryFragment extends NetWorkFragment {
                     lotViewHolder.mmTvLotUom.setText(inventoryLot.getUom());
                     lotViewHolder.inventoryLot = inventoryLot;
                 }
-                viewHolder.mmRlRoot.setBackgroundColor(isChanged?colorBgChanged:colorBgUnChanged);
+                viewHolder.mmRlRoot.setBackgroundColor(isLot && isChanged?colorBgChanged:colorBgUnChanged);
                 //remove and cache unused child view
                 int currentSize = inventoryProduct.getLotList().size();
                 int totalChild = viewHolder.mmLayoutContainer.getChildCount();
-                Log.d("haha","pos:"+position+" totalChild:"+totalChild);
                 for(int i = totalChild - 1;i>=currentSize;i--){//由后往前删，防止index乱
-                    Log.d("haha","pos:"+position+" remove child at:"+i);
                     View view = viewHolder.mmLayoutContainer.getChildAt(i);
                     if(view==null)break;
                     viewHolder.mmLayoutContainer.removeViewAt(i);
                     cacheLotView.offer(view);
                 }
 
-            }else{//**********************无批次******************************
-                viewHolder.mmEtCount.setVisibility(View.VISIBLE);
-                viewHolder.mmTvUom.setVisibility(View.VISIBLE);
-                viewHolder.mmIvArrow.setVisibility(View.VISIBLE);
-                viewHolder.mmTvTheoretical.setVisibility(View.VISIBLE);
-                viewHolder.mmEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getEditNum()));
-                viewHolder.mmTvTheoretical.setText("/"+NumberUtil.getIOrD(inventoryProduct.getTheoreticalQty()));
-                viewHolder.mmTvUom.setText(inventoryProduct.getUom());
+            }else{//**********************无批次信息******************************
                 viewHolder.mmLayoutContainer.setVisibility(View.GONE);
-
-                boolean isChanged = inventoryProduct.getEditNum()!=inventoryProduct.getTheoreticalQty();
-                viewHolder.mmRlRoot.setBackgroundColor(isChanged?colorBgChanged:colorBgUnChanged);
             }
 
-//            convertView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if(inventoryProduct.getLotList()!=null){//有批次
-//                        Intent intent = new Intent(getActivity(),EditBatchDialog.class);
-//                        intent.putExtra(INTENT_KEY_INIT_BATCH,inventoryProduct);
-//                        mModifyProduct = inventoryProduct;
-//                        startActivityForResult(intent,REQ_MODIFY_BATCH);
-//                        getActivity().overridePendingTransition(R.anim.slide_in_from_bottom,R.anim.activity_close_exit);
-//                    }else{//无批次
-//
-//                        ((InventoryActivity)getActivity()).showAddSumDialog(inventoryProduct);
-//                    }
-//                }
-//            });
             viewHolder.mmTvTitle.setText(inventoryProduct.getProduct().getName());
             viewHolder.mmTvCode.setText(inventoryProduct.getCode());
             viewHolder.mmTvUnit.setText(inventoryProduct.getProduct().getUnit());
-            //TODO:图片
             if(inventoryProduct.getProduct().getImage()!=null){
-                FrecoFactory.getInstance(getActivity()).disPlay(viewHolder.mmSdvImage,inventoryProduct.getProduct().getImage().getImage());
+                FrecoFactory.getInstance(getActivity()).disPlay(viewHolder.mmSdvImage, Constant.BASE_URL+inventoryProduct.getProduct().getImage().getImage());
             }
             return convertView;
         }
@@ -401,6 +372,9 @@ public class InventoryFragment extends NetWorkFragment {
         ImageView mmIvArrow;
     }
 
+    /**
+     * 批次行的viewholder
+     */
     private class LotViewHolder{
         InventoryResponse.InventoryLot inventoryLot;
         @ViewInject(R.id.tv_stock_lot_expire)

@@ -6,4 +6,11 @@
         android:id="@+id/pullListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
 </RelativeLayout>

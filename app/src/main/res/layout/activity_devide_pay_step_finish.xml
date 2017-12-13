@@ -21,7 +21,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_ordersubmitsucced"
+            android:src="@drawable/default_ico_order_successed"
             android:layout_gravity="center_horizontal"
             />
         <TextView
@@ -34,6 +34,7 @@
             android:layout_marginTop="12dp"
             />
         <TextView
+            android:id="@+id/tv_stock_old_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -41,9 +42,9 @@
             android:textSize="14sp"
             android:text="库存商品数量"
             android:layout_marginTop="12dp"
-            android:visibility="gone"
             />
         <TextView
+            android:id="@+id/tv_inventory_new_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -51,7 +52,6 @@
             android:textSize="14sp"
             android:text="盘点商品数量"
             android:layout_marginTop="4dp"
-            android:visibility="gone"
             />
     </LinearLayout>
 
@@ -62,26 +62,30 @@
         android:gravity="center"
         android:layout_marginTop="40dp"
         >
-        <Button
+        <TextView
             android:id="@+id/stepPayFinish"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/blue_boder_bg"
             android:text="查看盘点记录"
             android:layout_marginLeft="22dp"
             android:layout_marginRight="22dp"
             android:textColor="#363636"
+            android:gravity="center"
+            android:padding="8dp"
             />
 
-        <Button
+        <TextView
             android:id="@+id/stepPayFinish1"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/blue_boder_bg"
             android:text="查看库存"
             android:layout_marginLeft="22dp"
             android:layout_marginRight="22dp"
             android:textColor="#363636"
+            android:gravity="center"
+            android:padding="8dp"
             />
     </LinearLayout>
 
