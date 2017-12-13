@@ -7,8 +7,11 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,6 +40,9 @@ import com.runwise.supply.repertory.entity.UpdateRepertory;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 import io.vov.vitamio.utils.NumberUtil;
 
 /**
@@ -48,12 +54,13 @@ import io.vov.vitamio.utils.NumberUtil;
 public abstract class AbstractStockListFragment extends NetWorkFragment {
     public static final String ARG_CATEGORY = "arg_category";
     public static final String ARG_CURRENT = "arg_current";
-    private static final int PAGE_LIMIT = 500;
+    private static final int PAGE_LIMIT = 50;
     private static final int REQ_STOCK = 0;
     private static final int REQ_STOCK_MORE = 1;
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
-    protected ProductAdapter adapter;
+//    protected ProductAdapter adapter;
+    protected StockAdapterV2 adapter;
     @ViewInject(R.id.loadingLayout)
     protected LoadingLayout loadingLayout;
 
@@ -66,7 +73,8 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCategory = getArguments().getString(ARG_CATEGORY);
-        adapter = new ProductAdapter();
+//        adapter = new ProductAdapter();
+        adapter = new StockAdapterV2();
         pullListView = (PullToRefreshListView)findViewById(R.id.pullListView);
         loadingLayout = (LoadingLayout)findViewById(R.id.loadingLayout);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -142,7 +150,7 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
             },500);
             return;
         }
-        sendConnection("/api/v2/stock/list",new StockListRequest(limit,mPz,mKeyword,mCategory),where,false,RepertoryEntity.class);
+        sendConnection("/api/v3/stock/list",new StockListRequest(limit,mPz,mKeyword,mCategory),where,false,RepertoryEntity.class);
     }
 
     @Override
@@ -170,6 +178,7 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
         }
     }
 
+    @Deprecated
     public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean> {
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
@@ -242,13 +251,147 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+
+    /**
+     * 盘点商品列表的adapter
+     */
+    public class StockAdapterV2 extends IBaseAdapter<RepertoryEntity.ListBean>{
+
+        Queue<View> cacheLotView = new ArrayDeque<>();
+        LayoutInflater mInflater;
+        int colorBgChanged;
+        int colorBgUnChanged;
+
+        StockAdapterV2(){
+            colorBgUnChanged = Color.parseColor("#ffffff");
+            colorBgChanged = Color.parseColor("#FFF3FBED");
+        }
+
+        @Override
+        protected View getExView(int position, View convertView, ViewGroup parent) {
+            if(mInflater==null)mInflater = LayoutInflater.from(getActivity());
+            RepertoryEntity.ListBean inventoryProduct = mList.get(position);
+            ViewHolder viewHolder;
+            if(convertView==null){
+                convertView = mInflater.inflate(R.layout.item_stock,parent,false);
+                viewHolder = new ViewHolder();
+                ViewUtils.inject(viewHolder, convertView);
+                convertView.setTag(viewHolder);
+            }
+            viewHolder = (ViewHolder)convertView.getTag();
+
+            //添加批次信息
+            //***********************有批次***************************
+            if(inventoryProduct.getLotList()!=null && inventoryProduct.getLotList().size()>0){
+                viewHolder.mmEtCount.setVisibility(View.GONE);
+                viewHolder.mmTvUom.setVisibility(View.GONE);
+                viewHolder.mmLayoutContainer.setVisibility(View.VISIBLE);
+                for(int i=0;i<inventoryProduct.getLotList().size();i++){
+                    View view = viewHolder.mmLayoutContainer.getChildAt(i);
+                    LotViewHolder lotViewHolder;
+                    if(view!=null){
+                        lotViewHolder = (LotViewHolder) view.getTag();
+                    }else{
+                        //need to add view
+                        //get from cache first
+                        view = cacheLotView.poll();
+                        if(view == null){//cache is not available, need inflate
+                            view = mInflater.inflate(R.layout.item_stock_lot,viewHolder.mmLayoutContainer,false);
+                            lotViewHolder = new LotViewHolder();
+                            ViewUtils.inject(lotViewHolder,view);
+                            view.setTag(lotViewHolder);
+                        }
+                        lotViewHolder = (LotViewHolder)view.getTag();
+                        viewHolder.mmLayoutContainer.addView(view);
+                    }
+                    RepertoryEntity.RepertoryLot inventoryLot = inventoryProduct.getLotList().get(i);
+                    //判断过期
+                    long dayDiff = DateFormateUtil.getDaysToExpire(inventoryLot.getLifeEndDate());
+                    if(dayDiff == 0){
+                        //今天到期
+                        lotViewHolder.mmTvExpire.setText("今天到期");
+                        lotViewHolder.mmTvExpire.setTextColor(getResources().getColor(R.color.inventory_expire));
+                        lotViewHolder.mmTvExpire.setBackgroundColor(getResources().getColor(R.color.inventory_expire_bg));
+                    }else if(dayDiff<0){
+                        //过期
+                        lotViewHolder.mmTvExpire.setText("已过期");
+                        lotViewHolder.mmTvExpire.setTextColor(getResources().getColor(R.color.inventory_expire));
+                        lotViewHolder.mmTvExpire.setBackgroundColor(getResources().getColor(R.color.inventory_expire_bg));
+                    }else if(dayDiff<=3){
+                        //小于3天
+                        lotViewHolder.mmTvExpire.setText(dayDiff+"天到期");
+                        lotViewHolder.mmTvExpire.setTextColor(getResources().getColor(R.color.stock_3_days));
+                        lotViewHolder.mmTvExpire.setBackgroundColor(getResources().getColor(R.color.stock_3_days_bg));
+                    }else{
+                        //大于4天
+                        lotViewHolder.mmTvExpire.setText(dayDiff+"天到期");
+                        lotViewHolder.mmTvExpire.setTextColor(getResources().getColor(R.color.stock_4_days));
+                        lotViewHolder.mmTvExpire.setBackgroundColor(getResources().getColor(R.color.stock_4_days_bg));
+                    }
+                    lotViewHolder.mmTvLotName.setText(inventoryLot.getLotNum()!=null?"批次："+ inventoryLot.getLotNum():"");
+                    lotViewHolder.mmTvLotCount.setText(NumberUtil.getIOrD(inventoryLot.getQty()));
+                    lotViewHolder.mmTvLotUom.setText(inventoryLot.getUom());
+                }
+                //remove and cache unused child view
+                int currentSize = inventoryProduct.getLotList().size();
+                int totalChild = viewHolder.mmLayoutContainer.getChildCount();
+                for(int i = totalChild - 1;i>=currentSize;i--){//由后往前删，防止index乱
+                    View view = viewHolder.mmLayoutContainer.getChildAt(i);
+                    if(view==null)break;
+                    viewHolder.mmLayoutContainer.removeViewAt(i);
+                    cacheLotView.offer(view);
+                }
+
+            }else{//**********************无批次******************************
+                viewHolder.mmEtCount.setVisibility(View.VISIBLE);
+                viewHolder.mmTvUom.setVisibility(View.VISIBLE);
+                viewHolder.mmEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getQty()));
+                viewHolder.mmTvUom.setText(inventoryProduct.getUom());
+                viewHolder.mmLayoutContainer.setVisibility(View.GONE);
+
+            }
+
+            viewHolder.mmTvTitle.setText(inventoryProduct.getProduct().getName());
+            viewHolder.mmTvCode.setText(inventoryProduct.getCode());
+            viewHolder.mmTvUnit.setText(inventoryProduct.getProduct().getUnit());
+            //TODO:图片
+            if(inventoryProduct.getProduct().getImage()!=null){
+                FrecoFactory.getInstance(getActivity()).disPlay(viewHolder.mmSdvImage,inventoryProduct.getProduct().getImage().getImage());
+            }
+            return convertView;
+        }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+    /**
+     * 盘点商品列表viewholder
+     */
+    private class ViewHolder{
+        @ViewInject(R.id.rl_item_inventory)
+        View mmRlRoot;
+        @ViewInject(R.id.sdv_stock_image)
+        SimpleDraweeView mmSdvImage;
+        @ViewInject(R.id.tv_stock_title)
+        TextView mmTvTitle;
+        @ViewInject(R.id.tv_stock_code)
+        TextView mmTvCode;
+        @ViewInject(R.id.tv_stock_unit)
+        TextView mmTvUnit;
+        @ViewInject(R.id.ll_stock_container)
+        LinearLayout mmLayoutContainer;
+        @ViewInject(R.id.tv_stock_count)
+        TextView mmEtCount;
+        @ViewInject(R.id.tv_stock_uom)
+        TextView mmTvUom;
+    }
+
+    private class LotViewHolder{
+        @ViewInject(R.id.tv_stock_lot_expire)
+        TextView mmTvExpire;
+        @ViewInject(R.id.tv_stock_lot_name)
+        TextView mmTvLotName;
+        @ViewInject(R.id.tv_stock_lot_count)
+        TextView mmTvLotCount;
+        @ViewInject(R.id.tv_stock_lot_uom)
+        TextView mmTvLotUom;
     }
 }

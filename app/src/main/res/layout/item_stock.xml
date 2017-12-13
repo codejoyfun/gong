@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto">
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/sdv_stock_image"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginLeft="15dp"
+        android:layout_marginBottom="20dp"
+        fresco:placeholderImage="@drawable/placeholder"
+        fresco:placeholderImageScaleType="focusCrop"
         android:layout_marginTop="20dp"/>
     <TextView
         android:id="@+id/tv_stock_title"
@@ -55,7 +60,7 @@
         android:layout_below="@+id/tv_stock_code"
         android:layout_alignLeft="@+id/tv_stock_code"
         />
-    <EditText
+    <TextView
         android:id="@+id/tv_stock_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

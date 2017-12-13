@@ -1,5 +1,6 @@
 package com.runwise.supply.repertory;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -194,7 +196,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         int vid = view.getId();
         switch (vid) {
             case R.id.cancelBtn:
-                this.finish();
+                customFinish();
                 break;
             case R.id.iv_open:
                 if (mProductTypeWindow == null){
@@ -397,7 +399,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     newAddBean.setBean(bean);
                     EventBus.getDefault().post(newAddBean);
                     setCommontTopHide();
-                    finish();
+                    customFinish();
                 }
             });
         }
@@ -500,7 +502,8 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 newAddBean.setBean(bean);
                 EventBus.getDefault().post(newAddBean);
                 setCommontTopHide();
-                finish();
+//                finish();
+                customFinish();
                 break;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
@@ -727,5 +730,22 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             bgView.setVisibility(View.GONE);
 
         }
+    }
+
+    InputMethodManager imm;
+    private void hideKeyboard(){
+        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        View v = getCurrentFocus();
+        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    /**
+     * 超级蛋疼的，键盘展示的时候回退到InventoryActivity，会造成draglayout显示错误，必须先收起键盘，暂时找不到原因
+     * 先收起键盘，等待一小段时间，再finish
+     */
+    private void customFinish(){
+        hideKeyboard();
+//        smartTabLayout.postDelayed(()->finish(),500);
+        finish();
     }
 }

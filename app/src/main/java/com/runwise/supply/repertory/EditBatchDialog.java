@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -111,7 +112,7 @@ public class EditBatchDialog extends BaseActivity {
         mLvBatch.setAdapter(batchListAdapter);
         mBatchEntities = initBatchData();
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-        mViewBg.postDelayed(()->mViewBg.setBackgroundColor(getResources().getColor(R.color.translucent)),500);
+        mViewBg.postDelayed(()->mViewBg.setBackgroundColor(getResources().getColor(R.color.translucent)),600);
     }
 
     /**
@@ -123,7 +124,7 @@ public class EditBatchDialog extends BaseActivity {
         mBean = (InventoryResponse.InventoryProduct)getIntent().getSerializableExtra(INTENT_KEY_INIT_BATCH);
         ArrayList<BatchEntity> batchEntities = new ArrayList<>();
         String pId = String.valueOf(mBean.getProductID());
-        final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(pId);
+        final ProductBasicList.ListBean basicBean = mBean.getProduct();
 
         mName.setText(basicBean.getName());
 
@@ -194,7 +195,8 @@ public class EditBatchDialog extends BaseActivity {
 //                    }
 //                });
 //                dialog.show();
-                finish();
+//                finish();
+                customFinish();
                 break;
         }
     }
@@ -407,5 +409,22 @@ public class EditBatchDialog extends BaseActivity {
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+    }
+
+    InputMethodManager imm;
+    private void hideKeyboard(){
+        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        View v = getCurrentFocus();
+        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    /**
+     * 超级蛋疼的，键盘展示的时候回退到InventoryActivity，会造成draglayout显示错误，必须先收起键盘，暂时找不到原因
+     * 先收起键盘，等待一小段时间，再finish
+     */
+    private void customFinish(){
+        hideKeyboard();
+//        mName.postDelayed(this::finish,800);
+        finish();
     }
 }

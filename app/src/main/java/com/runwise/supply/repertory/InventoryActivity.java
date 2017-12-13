@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -25,8 +26,9 @@ import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.event.InventoryEditEvent;
 import com.runwise.supply.fragment.TabFragment;
-import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.repertory.entity.EditRepertoryResult;
+import com.runwise.supply.repertory.entity.EditRequest;
 import com.runwise.supply.repertory.entity.NewAdd;
 import com.runwise.supply.tools.InventoryCacheManager;
 
@@ -52,12 +54,12 @@ import static com.runwise.supply.repertory.InventoryFragment.INTENT_CATEGORY;
  */
 
 public class InventoryActivity extends NetWorkActivity {
-
+    private static final int INVENTORY_COMMIT = 0x34;
     public static final String INTENT_KEY_INVENTORY_BEAN = "inventory_bean";//传入盘点对象
     @ViewInject(R.id.tablayout)
     private TabLayout tablayout;
     @ViewInject(R.id.drag_layout)
-    private DragTopLayout dragLayout;
+    public DragTopLayout dragLayout;
     @ViewInject(R.id.viewpager)
     private ViewPager viewpager;
     @ViewInject(R.id.tv_inventory_id)
@@ -103,6 +105,14 @@ public class InventoryActivity extends NetWorkActivity {
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage();
                 break;
+            case INVENTORY_COMMIT:
+                InventoryCacheManager inventoryCacheManager = new InventoryCacheManager(this);
+                inventoryCacheManager.removeInventory(mInventoryBean.getInventoryID());
+                ToastUtil.show(mContext,"盘点成功");
+                Intent intent = new Intent(mContext,EditRepertoryFinishActivity.class);
+                startActivity(intent);
+                finish();
+                break;
         }
     }
 
@@ -123,7 +133,7 @@ public class InventoryActivity extends NetWorkActivity {
         }
 
         for (InventoryResponse.InventoryProduct inventoryProduct : mInventoryBean.getLines()) {
-            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(this).get(String.valueOf(inventoryProduct.getProductID()));
+            ProductBasicList.ListBean listBean = inventoryProduct.getProduct();
             if (!TextUtils.isEmpty(listBean.getCategory())){
                 ArrayList<InventoryResponse.InventoryProduct> productByCategory = map.get(listBean.getCategory());
                 if (productByCategory == null) {
@@ -178,6 +188,7 @@ public class InventoryActivity extends NetWorkActivity {
     public void onBtnClicked(View v){
         switch (v.getId()){
             case R.id.tv_inventory_commit:
+                commit();
                 //TODO:提交请求
                 break;
             case R.id.tv_inventory_cache:
@@ -217,6 +228,7 @@ public class InventoryActivity extends NetWorkActivity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddNewBean(NewAdd newBean) {
+        dragLayout.toggleTopView();
         if (newBean.getType() == 1) {
             boolean isFind = false;
             for (InventoryResponse.InventoryProduct bean : mInventoryBean.getLines()) {
@@ -251,12 +263,10 @@ public class InventoryActivity extends NetWorkActivity {
     private TextView mTvButton;
     private void initDialog(){
         mIvClose.setOnClickListener(v->{
-            mIncludeSumDialog.setVisibility(View.GONE);
-            hideKeyboard();
+            finishDialog();
         });
         mIncludeSumDialog.setOnClickListener(v->{
-            v.setVisibility(View.GONE);
-            hideKeyboard();
+            finishDialog();
         });
     }
 
@@ -275,15 +285,55 @@ public class InventoryActivity extends NetWorkActivity {
                 inventoryProduct.setEditNum(Double.valueOf(etValue));
                 EventBus.getDefault().post(new InventoryEditEvent());
             }
-            hideKeyboard();
-            mIncludeSumDialog.setVisibility(View.GONE);
+            finishDialog();
         });
     }
+
+    private void finishDialog(){
+        hideKeyboard();
+        mIncludeSumDialog.setVisibility(View.GONE);
+    }
+
 
     InputMethodManager imm;
     private void hideKeyboard(){
         if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         View v = getCurrentFocus();
         if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    private void commit(){
+        EditRequest editRequest = new EditRequest();
+        editRequest.setId(mInventoryBean.getInventoryID());
+        editRequest.setState("done");
+        List<EditRequest.ProductBean> editListBean = new ArrayList<>();
+        for(InventoryResponse.InventoryProduct bean : mInventoryBean.getLines()) {
+            if(bean.getLotList()==null){//无批次
+                EditRequest.ProductBean productBean = new EditRequest.ProductBean();
+                productBean.setProduct_id(bean.getProductID());
+                productBean.setId((int)bean.getInventoryLineID());
+                productBean.setActual_qty(bean.getEditNum());
+                productBean.setLot_id((int)bean.getLotID());
+                productBean.setLot_num(bean.getLotNum());
+                editListBean.add(productBean);
+                continue;
+            }
+            for(InventoryResponse.InventoryLot lot:bean.getLotList()){
+                EditRequest.ProductBean productBean = new EditRequest.ProductBean();
+                productBean.setProduct_id(bean.getProductID());
+                productBean.setId(lot.getInventoryLineID());
+                productBean.setActual_qty(lot.getEditNum());
+                productBean.setLot_id(lot.getLotID());
+                productBean.setLot_num(lot.getLotNum());
+                if(lot.isProductDate() && lot.isNewAdded())productBean.setProduce_datetime(lot.getProductDate());
+                else if(!lot.isProductDate() && lot.isNewAdded())productBean.setLife_datetime(lot.getProductDate());
+                editListBean.add(productBean);
+            }
+
+        }
+        editRequest.setInventory_lines(editListBean);
+
+//							sendConnection("/gongfu/shop/inventory/state",editRequest,PRODUCT_COMMIT,true, EditRepertoryResult.class);
+        sendConnection("/api/inventory/state",editRequest,INVENTORY_COMMIT,true, EditRepertoryResult.class);
     }
 }

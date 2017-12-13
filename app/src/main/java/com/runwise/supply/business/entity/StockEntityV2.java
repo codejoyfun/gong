@@ -1,103 +1,20 @@
-package com.runwise.supply.entity;
+package com.runwise.supply.business.entity;
 
+import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by Dong on 2017/12/8.
+ * Created by Dong on 2017/12/12.
  */
 
-public class InventoryResponse implements Serializable {
+public class StockEntityV2 {
 
-    private InventoryBean inventory;
+    List<StockProduct> list;
 
-    public InventoryBean getInventory() {
-        return inventory;
-    }
-
-    public void setInventory(InventoryBean inventory) {
-        this.inventory = inventory;
-    }
-
-    public static class InventoryBean implements Serializable {
-
-        private String state;
-        private double num;
-        private String name;
-        private String createUser;
-        private int inventoryID;
-        private String createDate;//yyyy-MM-dd hh:mm:ss
-        private double value;
-        private List<InventoryProduct> lines;
-
-        public String getState() {
-            return state;
-        }
-
-        public double getNum() {
-            return num;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getCreateUser() {
-            return createUser;
-        }
-
-        public int getInventoryID() {
-            return inventoryID;
-        }
-
-        public String getCreateDate() {
-            return createDate;
-        }
-
-        public double getValue() {
-            return value;
-        }
-
-        public List<InventoryProduct> getLines() {
-            return lines;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-
-        public void setNum(double num) {
-            this.num = num;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public void setCreateUser(String createUser) {
-            this.createUser = createUser;
-        }
-
-        public void setInventoryID(int inventoryID) {
-            this.inventoryID = inventoryID;
-        }
-
-        public void setCreateDate(String createDate) {
-            this.createDate = createDate;
-        }
-
-        public void setValue(double value) {
-            this.value = value;
-        }
-
-        public void setLines(List<InventoryProduct> lines) {
-            this.lines = lines;
-        }
-    }
-
-    public static class InventoryProduct implements Serializable{
+    public static class StockProduct implements Serializable {
         //有批次无批次公用
         private int productID;
         private String code;
@@ -115,10 +32,10 @@ public class InventoryResponse implements Serializable {
         private String lotNum;
 
         //有批次
-        private List<InventoryLot> lotList;
+        private List<StockLot> lotList;
 
         //本地使用
-        private double editNum = -1;
+        private double editNum;
 
         public int getProductID() {
             return productID;
@@ -129,11 +46,10 @@ public class InventoryResponse implements Serializable {
         }
 
         public double getEditNum() {
-            if(editNum==-1)editNum = theoreticalQty;
             return editNum;
         }
 
-        public List<InventoryLot> getLotList() {
+        public List<StockLot> getLotList() {
             return lotList;
         }
 
@@ -149,7 +65,7 @@ public class InventoryResponse implements Serializable {
             this.editNum = editNum;
         }
 
-        public void setLotList(List<InventoryLot> lotList) {
+        public void setLotList(List<StockLot> lotList) {
             this.lotList = lotList;
         }
 
@@ -234,12 +150,12 @@ public class InventoryResponse implements Serializable {
         }
     }
 
-    public static class InventoryLot implements Serializable{
+    public static class StockLot implements Serializable{
         private String lotNum;
         private String lifeEndDate;
         private int lotID;
         private double theoreticalQty;
-        private int inventoryLineID;
+        private int inventoryLineID;//TODO:TBD
         private int actualQty;
         private String code;
         private int diff;
@@ -248,7 +164,7 @@ public class InventoryResponse implements Serializable {
         private String uom;
 
         //本地使用
-        private double editNum = -1;
+        private double editNum;
         private String productDate;
         private boolean isProductDate;
 
@@ -280,7 +196,6 @@ public class InventoryResponse implements Serializable {
         }
 
         public double getEditNum() {
-            if(editNum==-1)editNum = theoreticalQty;
             return editNum;
         }
 

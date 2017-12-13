@@ -41,6 +41,8 @@ public class EditRequest {
         private double actual_qty;
         private int lot_id;
         private String lot_num;
+        private String life_datetime;
+        private String produce_datetime;
 
         public int getProduct_id() {
             return product_id;
@@ -80,6 +82,22 @@ public class EditRequest {
 
         public void setLot_num(String lot_num) {
             this.lot_num = lot_num;
+        }
+
+        public String getLife_datetime() {
+            return life_datetime;
+        }
+
+        public String getProduce_datetime() {
+            return produce_datetime;
+        }
+
+        public void setLife_datetime(String life_datetime) {
+            this.life_datetime = life_datetime;
+        }
+
+        public void setProduce_datetime(String produce_datetime) {
+            this.produce_datetime = produce_datetime;
         }
     }
 }

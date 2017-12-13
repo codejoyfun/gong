@@ -23,6 +23,7 @@ import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
 
@@ -31,6 +32,7 @@ import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTOR
  */
 public class MainRepertoryFragment extends NetWorkFragment {
     private final int REQUEST_EXIT = 1;
+    private final int REQUEST_INVENTORY = 2;
     @ViewInject(R.id.tipLayout)
     private View tipLayout;
 
@@ -77,10 +79,11 @@ public class MainRepertoryFragment extends NetWorkFragment {
         if(isLogin) {
             Object parma = null;
 //            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
-            //TODO:test
-            Intent intent = new Intent(getActivity(),InventoryActivity.class);
-            intent.putExtra(INTENT_KEY_INVENTORY_BEAN,testData());
-            startActivity(intent);
+            sendConnection("/api/v2/inventory/create",parma,REQUEST_INVENTORY,true,InventoryResponse.class);
+            //test
+//            Intent intent = new Intent(getActivity(),InventoryActivity.class);
+//            intent.putExtra(INTENT_KEY_INVENTORY_BEAN,testData());
+//            startActivity(intent);
         }
         else{
             Intent intent = new Intent(mContext, LoginActivity.class);
@@ -124,6 +127,12 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 intent.putExtra("bean",repertoryEntity);
                 startActivity(intent);
                 break;
+            case REQUEST_INVENTORY:
+                InventoryResponse inventoryResponse = (InventoryResponse)result.getResult().getData();
+                Intent intent1 = new Intent(getActivity(),InventoryActivity.class);
+                intent1.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryResponse.getInventory());
+                startActivity(intent1);
+                break;
         }
     }
 
@@ -131,6 +140,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
             case REQUEST_EXIT:
+            case REQUEST_INVENTORY:
                 dialog.setModel(CustomDialog.LEFT);
                 dialog.setMessage(errMsg);
                 dialog.setLeftBtnListener("我知道了", null);
