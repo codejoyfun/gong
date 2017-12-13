@@ -678,10 +678,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             holder.listBean = mmProductList.get(position);
             holder.mmTvName.setText(holder.listBean.getName());
             int count = mMapCount.containsKey(holder.listBean)?mMapCount.get(holder.listBean):0;
-            holder.mmTvCount.setText(count+holder.listBean.getProductUom());
+            holder.mmTvCount.setText(count+holder.listBean.getUom());
             StringBuilder sb = new StringBuilder();
             if(GlobalApplication.getInstance().getCanSeePrice()){
-                sb.append("￥"+df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getProductUom()).append(" ");
+                sb.append("￥"+df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getUom()).append(" ");
             }
             sb.append(holder.listBean.getUnit());
             holder.mmTvContent.setText(sb.toString());
@@ -766,7 +766,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     int count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
                     mMapCount.put(listBean,++count);
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean,count));
-                    mmTvCount.setText(count+listBean.getProductUom());
+                    mmTvCount.setText(count+listBean.getUom());
                     mmCbCheck.setChecked(true);
                     break;
                 case R.id.iv_item_cart_minus://减少
@@ -787,7 +787,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                         mmCbCheck.setChecked(true);
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean,count));
-                    mmTvCount.setText(count+listBean.getProductUom());
+                    mmTvCount.setText(count+listBean.getUom());
                     break;
             }
         }
