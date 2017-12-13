@@ -81,7 +81,7 @@ public class InventoryActivity extends NetWorkActivity {
         setTitleRightIcon2(true,R.drawable.nav_add);
         dragLayout.setOverDrag(false);
         mInventoryBean = (InventoryResponse.InventoryBean) getIntent().getSerializableExtra(INTENT_KEY_INVENTORY_BEAN);
-        mTvInventoryId.setText(String.valueOf(mInventoryBean.getInventoryID()));
+        mTvInventoryId.setText(mInventoryBean.getName());
         mTvInventoryPerson.setText(mInventoryBean.getCreateUser());
         mTvInventoryDate.setText(mInventoryBean.getCreateDate());
         initDialog();
@@ -334,6 +334,6 @@ public class InventoryActivity extends NetWorkActivity {
         editRequest.setInventory_lines(editListBean);
 
 //							sendConnection("/gongfu/shop/inventory/state",editRequest,PRODUCT_COMMIT,true, EditRepertoryResult.class);
-        sendConnection("/api/inventory/state",editRequest,INVENTORY_COMMIT,true, EditRepertoryResult.class);
+        sendConnection("/api/v2/inventory/state",editRequest,INVENTORY_COMMIT,true, EditRepertoryResult.class);
     }
 }

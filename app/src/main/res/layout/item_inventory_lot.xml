@@ -28,7 +28,6 @@
         android:id="@+id/tv_stock_lot_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="4dp"
         android:layout_toLeftOf="@+id/tv_stock_theoretical"
         android:layout_centerVertical="true"
         android:text="12"

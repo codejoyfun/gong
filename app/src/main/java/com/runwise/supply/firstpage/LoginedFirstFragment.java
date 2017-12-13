@@ -52,6 +52,7 @@ import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.mine.ProcurementLimitActivity;
+import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
@@ -100,6 +101,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_SUBMITTING_ORDER = 7;
     private static final int REQUEST_CANCEL_TRANSFER = 9;
     private static final int REQUEST_OUTPUT_CONFIRM = 10;
+    private static final int REQUEST_CANCEL_INVENTORY = 11;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -381,6 +383,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 startActivity(TransferOutActivity.getStartIntent(getActivity(),mSelectTransferEntity));
                 mInTheRequest = false;
                 break;
+            case REQUEST_CANCEL_INVENTORY:
+                //本地删除，刷新页面
+                new InventoryCacheManager(getActivity()).removeInventory(mCancelInventory.getInventoryID());
+                adapter.getList().remove(mCancelInventory);
+                adapter.notifyDataSetChanged();
+                break;
         }
     }
 
@@ -472,6 +480,19 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         Intent intent = new Intent(getActivity(), InventoryActivity.class);
         intent.putExtra(INTENT_KEY_INVENTORY_BEAN,bean);
         startActivity(intent);
+    }
+
+    private InventoryCacheManager.InventoryBrief mCancelInventory;//记录删除的盘点对象
+    /**
+     * 取消盘点缓存
+     */
+    @Override
+    public void cancelInventory(InventoryCacheManager.InventoryBrief inventoryBrief) {
+        mCancelInventory = inventoryBrief;
+        ChannelPandian request = new ChannelPandian();
+        request.setId(inventoryBrief.getInventoryID());
+        request.setState("draft");
+        sendConnection("/api/inventory/state",request,REQUEST_CANCEL_INVENTORY,true,null);
     }
 
     @Override

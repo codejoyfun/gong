@@ -66,6 +66,7 @@ public class OrderAdapter extends IBaseAdapter {
         void call(String phone);
         void resubmitOrder(TempOrderManager.TempOrder tempOrder);
         void gotoInventory(int inventoryId);
+        void cancelInventory(InventoryCacheManager.InventoryBrief inventoryBrief);
     }
 
     private DoActionInterface callback;
@@ -556,7 +557,7 @@ public class OrderAdapter extends IBaseAdapter {
         final InventoryCacheManager.InventoryBrief inventoryBrief = (InventoryCacheManager.InventoryBrief) mList.get(position);
         viewHolder.inventoryBrief = inventoryBrief;
         viewHolder.tvInventoryDate.setText("盘点日期："+ inventoryBrief.getCreateTime());
-        viewHolder.tvInventoryId.setText(inventoryBrief.getInventoryID()+"");
+        viewHolder.tvInventoryId.setText(inventoryBrief.getName());
         viewHolder.tvInventoryPerson.setText(inventoryBrief.getCreateUser());
         viewHolder.tvInventoryCancel.setOnClickListener(viewHolder);
         viewHolder.cvRoot.setOnClickListener(viewHolder);
@@ -708,9 +709,7 @@ public class OrderAdapter extends IBaseAdapter {
             switch (v.getId()){
                 case R.id.tv_item_inventory_cancel:
                     //本地删除
-                    new InventoryCacheManager(context).removeInventory(inventoryBrief.getInventoryID());
-                    mList.remove(inventoryBrief);
-                    notifyDataSetChanged();
+                    if(callback!=null)callback.cancelInventory(inventoryBrief);
                     break;
                 case R.id.cv_inventory_root:
                     if(callback!=null)callback.gotoInventory(inventoryBrief.getInventoryID());

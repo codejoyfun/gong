@@ -30,8 +30,8 @@ import java.util.Map;
 
 public class InventoryCacheManager {
 
-    private static final String PREF_NAME = "inventory_";
-    private static final String PREF_BRIEF = "inventory_list_items";
+    private static final String PREF_NAME = "inventory2_";
+    private static final String PREF_BRIEF = "inventory_list_items2";
     private SharedPreferences mInventoryPrefs;
     private SharedPreferences mListPrefs;
 
@@ -51,6 +51,7 @@ public class InventoryCacheManager {
         inventoryBrief.setInventoryID(inventoryBean.getInventoryID());
         inventoryBrief.setCreateUser(GlobalApplication.getInstance().getUserName());
         inventoryBrief.setCreateTime(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
+        inventoryBrief.setName(inventoryBean.getName());
         SPUtils.saveObject(mListPrefs,String.valueOf(inventoryBrief.getInventoryID()),inventoryBrief);
     }
 
@@ -112,6 +113,7 @@ public class InventoryCacheManager {
         private int inventoryID;
         private String createTime;
         private String createUser;
+        private String name;
 
         public int getInventoryID() {
             return inventoryID;
@@ -135,6 +137,14 @@ public class InventoryCacheManager {
 
         public void setCreateUser(String createUser) {
             this.createUser = createUser;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }

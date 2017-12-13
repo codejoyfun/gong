@@ -84,7 +84,8 @@ public class InventoryFragment extends NetWorkFragment {
                 InventoryResponse.InventoryProduct inventoryProduct = mInventoryProductList.get(position);
 
                 if(parent.getLastVisiblePosition()==mInventoryAdapter.getCount()-1 &&
-                        ((InventoryActivity)getActivity()).dragLayout.getState().toInt()!=0){
+                        ((InventoryActivity)getActivity()).dragLayout.getState().toInt()!=0 &&
+                        parent.getFirstVisiblePosition()!=0){
                     ToastUtil.show(getActivity(),parent.getLastVisiblePosition()+" "+((InventoryActivity)getActivity()).dragLayout.getState());
                     return;
                 }
@@ -167,6 +168,13 @@ public class InventoryFragment extends NetWorkFragment {
                             lot.setEditNum(Double.valueOf(batchEntity.getProductCount()));
                             lot.setProductDate(batchEntity.getProductDate());
                             lot.setProductDate(batchEntity.isProductDate());
+                            if(lot.isNewAdded()){//新加的，更新日期数据
+                                if(!batchEntity.isProductDate()){//有输入到期日期
+                                    lot.setLifeEndDate(lot.getProductDate()+" 08:00:00");
+                                }else{
+                                    lot.setLifeEndDate("");
+                                }
+                            }
                             batchMap.remove(key);//已经设置的，从map中去掉，最后剩下的就是新加的
                         }else {
                             //回传中找不到，表示已经删除，适用于新加的批次
@@ -183,7 +191,7 @@ public class InventoryFragment extends NetWorkFragment {
                             lot.setProductDate(batchEntity.isProductDate());
                             lot.setUom(mModifyProduct.getUom());
                             if(!batchEntity.isProductDate()){//有输入到期日期
-                                lot.setLifeEndDate(lot.getProductDate());
+                                lot.setLifeEndDate(lot.getProductDate()+" 08:00:00");
                             }else{
                                 lot.setLifeEndDate("");
                             }
@@ -282,6 +290,7 @@ public class InventoryFragment extends NetWorkFragment {
                     if(!TextUtils.isEmpty(inventoryLot.getLifeEndDate())){
                         lotViewHolder.mmTvExpire.setVisibility(View.VISIBLE);
                         long dayDiff = DateFormateUtil.getDaysToExpire(inventoryLot.getLifeEndDate());
+                        Log.d("haha",inventoryLot.getLifeEndDate()+" "+dayDiff);
                         if(dayDiff == 0){
                             //今天到期
                             lotViewHolder.mmTvExpire.setText("今天到期");
