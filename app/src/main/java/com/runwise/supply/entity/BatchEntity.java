@@ -12,6 +12,15 @@ public class BatchEntity implements Serializable{
     String productDate;
     String productCount;
     boolean isProductDate;
+    private boolean isNewAdded;
+
+    public boolean isNewAdded() {
+        return isNewAdded;
+    }
+
+    public void setNewAdded(boolean newAdded) {
+        isNewAdded = newAdded;
+    }
 
     public String getBatchNum() {
         return batchNum;

@@ -13,18 +13,26 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
-import com.runwise.supply.mine.RepertoryFragment;
+import com.runwise.supply.entity.InventoryResponse;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
 
 /**
  * 库存
  */
 public class MainRepertoryFragment extends NetWorkFragment {
     private final int REQUEST_EXIT = 1;
+    private final int REQUEST_INVENTORY = 2;
     @ViewInject(R.id.tipLayout)
     private View tipLayout;
 
@@ -70,7 +78,12 @@ public class MainRepertoryFragment extends NetWorkFragment {
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
             Object parma = null;
-            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
+//            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
+            sendConnection("/api/v2/inventory/create",parma,REQUEST_INVENTORY,true,InventoryResponse.class);
+            //test
+//            Intent intent = new Intent(getActivity(),InventoryActivity.class);
+//            intent.putExtra(INTENT_KEY_INVENTORY_BEAN,testData());
+//            startActivity(intent);
         }
         else{
             Intent intent = new Intent(mContext, LoginActivity.class);
@@ -114,6 +127,12 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 intent.putExtra("bean",repertoryEntity);
                 startActivity(intent);
                 break;
+            case REQUEST_INVENTORY:
+                InventoryResponse inventoryResponse = (InventoryResponse)result.getResult().getData();
+                Intent intent1 = new Intent(getActivity(),InventoryActivity.class);
+                intent1.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryResponse.getInventory());
+                startActivity(intent1);
+                break;
         }
     }
 
@@ -121,12 +140,40 @@ public class MainRepertoryFragment extends NetWorkFragment {
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
             case REQUEST_EXIT:
+            case REQUEST_INVENTORY:
                 dialog.setModel(CustomDialog.LEFT);
                 dialog.setMessage(errMsg);
                 dialog.setLeftBtnListener("我知道了", null);
                 dialog.show();
                 break;
         }
+    }
+
+    private InventoryResponse.InventoryBean testData(){
+        InventoryResponse inventoryResponse = new InventoryResponse();
+        InventoryResponse.InventoryBean inventoryBean = new InventoryResponse.InventoryBean();
+        inventoryBean.setCreateDate("2017-12-12");
+        inventoryBean.setCreateUser(GlobalApplication.getInstance().getUserName());
+        inventoryBean.setInventoryID(2312);
+        inventoryResponse.setInventory(inventoryBean);
+        inventoryBean.setLines(new ArrayList<>());
+        for(int i=0;i<10;i++){
+            InventoryResponse.InventoryProduct inventoryProduct = new InventoryResponse.InventoryProduct();
+            inventoryProduct.setProductID(651);
+            inventoryBean.getLines().add(inventoryProduct);
+            inventoryProduct.setLotList(new ArrayList<>());
+            inventoryProduct.setProduct(ProductBasicUtils.getBasicMap(getActivity()).get(inventoryProduct.getProductID()+""));
+            for(int j=1;j<i+2;j++){
+                InventoryResponse.InventoryLot lot = new InventoryResponse.InventoryLot();
+                lot.setLifeEndDate("2017-12-1"+(i%5)+" 00:00:00");
+                lot.setTheoreticalQty(j);
+                lot.setEditNum(j);
+                lot.setUom("包");
+                lot.setLotNum("313251235"+i+j);
+                inventoryProduct.getLotList().add(lot);
+            }
+        }
+        return inventoryResponse.getInventory();
     }
 }
 

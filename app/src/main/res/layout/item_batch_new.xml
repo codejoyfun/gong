@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/windowBackground"
+                android:paddingLeft="15dp">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/msg_context_bg"
+        android:layout_marginRight="15dp"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_batch"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="批次号"
+                android:textColor="@color/bottom_dialog_textcolor"
+                android:textSize="13sp" />
+
+            <com.runwise.supply.view.NoWatchEditText
+                android:id="@+id/et_batch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/tv_batch"
+                android:layout_alignTop="@id/tv_batch"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/tv_batch"
+                android:background="@null"
+                android:gravity="center|right"
+                android:hint="添加批次号(选填)"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:cursorVisible="true"
+                android:textColorHint="@color/bottom_dialog_divider"
+                android:textSize="13sp" />
+
+            <View
+                android:id="@+id/v_line"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_below="@id/et_batch"
+                android:layout_marginTop="5dp"
+                android:background="@color/divider" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_product_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_product_date"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="生产日期"
+                android:textColor="@color/bottom_dialog_textcolor"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tv_product_date_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/tv_product_date"
+                android:layout_alignTop="@id/tv_product_date"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/tv_product_date"
+                android:background="@null"
+                android:gravity="center|right"
+                android:hint="请填写日期"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/bottom_dialog_divider"
+                android:textSize="13sp" />
+
+            <View
+                android:id="@+id/v_line1"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_below="@id/tv_product_date"
+                android:layout_marginTop="5dp"
+                android:background="@color/divider" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_product_count"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="商品数量"
+                android:textColor="@color/bottom_dialog_textcolor"
+                android:textSize="13sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/tv_product_count"
+                android:layout_alignTop="@id/tv_product_count"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/tv_product_count">
+
+                <ImageView
+                    android:id="@+id/iv_add"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/ic_allocation_btn_count_add"/>
+
+                <com.runwise.supply.view.NoWatchEditText
+                    android:id="@+id/et_product_count"
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:hint=""
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:cursorVisible="true"
+                    android:textColor="@color/black"
+                    android:layout_toLeftOf="@id/iv_add"
+                    android:layout_marginRight="5dp"
+                    android:maxLength="8"
+                    android:textColorHint="@color/bottom_dialog_divider"
+                    android:textSize="13sp" />
+
+                <ImageView
+                    android:id="@+id/iv_reduce"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="5dp"
+                    android:layout_toLeftOf="@id/et_product_count"
+                    android:src="@drawable/ic_allocation_btn_count_reduce"/>
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_delete"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/batch_btn_delete"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"/>
+
+
+</RelativeLayout>
