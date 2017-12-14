@@ -62,7 +62,6 @@ public class OrderAdapter extends IBaseAdapter {
 
     public static final int TRANS_ACTION_CANCEL = 0;
     public static final int TRANS_ACTION_OUTPUT_CONFIRM = 1;
-    private String uid;
 
     public interface DoActionInterface {
         void doAction(OrderDoAction action, int postion);
@@ -99,7 +98,6 @@ public class OrderAdapter extends IBaseAdapter {
         this.callback = callback;
         mFailedColor = context.getResources().getColor(R.color.colorffe7e0);
         mNormalColor = context.getResources().getColor(android.R.color.white);
-        uid = GlobalApplication.getInstance().getUid();
     }
 
     @Override
@@ -126,7 +124,7 @@ public class OrderAdapter extends IBaseAdapter {
         if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
             //未读红点
-            if(bean.isAsyncOrder() && !bean.isUserRead(uid)){
+            if(bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid())){
                 viewHolder.ivUnread.setVisibility(View.VISIBLE);
                 viewHolder.mmRlRoot.setBackgroundColor(Color.parseColor("#FFFAFEF6"));
             }else{
