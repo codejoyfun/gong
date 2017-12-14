@@ -2,6 +2,7 @@ package com.runwise.supply.repertory;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -58,7 +59,7 @@ public class EditCountDialog extends Dialog {
         setContentView(R.layout.dialog_add_sum);
         Window window = getWindow();
         window.getAttributes().gravity = Gravity.BOTTOM;
-        window.setWindowAnimations(com.kids.commonframe.R.style.MyPopwindow_anim_style);
+        window.setWindowAnimations(com.kids.commonframe.R.style.MyPopwindow_anim_style2);
         window.setLayout(MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         setCanceledOnTouchOutside(true);
     }
@@ -67,19 +68,33 @@ public class EditCountDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ViewUtils.inject(this,findViewById(R.id.ll_dialog_add_sum_root));
-        mTvTitle.setText(mInventoryProduct.getProduct().getName());
+        //mTvTitle.setText(mInventoryProduct.getProduct().getName());
         mEtCount.setText(NumberUtil.getIOrD(mInventoryProduct.getEditNum()));
         mEtCount.selectAll();
         mTvButton.setOnClickListener(v->{
             String etValue = mEtCount.getText().toString();
-            if(TextUtils.isDigitsOnly(etValue)){
+            if(!TextUtils.isEmpty(etValue)){
                 mInventoryProduct.setEditNum(Double.valueOf(etValue));
                 if(mListener!=null)mListener.onSetCount(Double.valueOf(etValue));
                 EventBus.getDefault().post(new InventoryEditEvent());
             }
             dismiss();
         });
-        showInputMethod();
+       showInputMethod();
+    }
+
+
+
+    @Override
+    public void show() {
+//        setOnShowListener(new OnShowListener() {
+//            @Override
+//            public void onShow(DialogInterface dialog) {
+//                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                if(imm!=null)imm.showSoftInput(mEtCount,InputMethodManager.SHOW_IMPLICIT);
+//            }
+//        });
+        super.show();
     }
 
     public EditCountDialog setup(SetCountListener listener, InventoryResponse.InventoryProduct inventoryProduct){
@@ -97,6 +112,17 @@ public class EditCountDialog extends Dialog {
                     if(imm!=null)imm.showSoftInput(mEtCount,InputMethodManager.SHOW_IMPLICIT);
                 }
             },200);//一定要有200延时才出现，还不知道为什么
+            showDialog();
         }
     }
+
+    private void showDialog(){
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.ll_dialog_add_sum_root).setVisibility(View.VISIBLE);
+            }
+        },400);
+    }
+
 }

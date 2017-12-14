@@ -46,6 +46,7 @@ import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
 import io.vov.vitamio.utils.Log;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
@@ -120,7 +121,7 @@ public class CheckDetailActivity extends NetWorkActivity {
                 text5.setTextColor(Color.parseColor("#e75967"));
             }
         } else {
-            text5.setText(bean.getNum() + "");
+            text5.setText(NumberUtil.getIOrD(bean.getNum()));
             if (bean.getNum() >= 0) {
                 text5.setTextColor(Color.parseColor("#9cb62e"));
             } else {

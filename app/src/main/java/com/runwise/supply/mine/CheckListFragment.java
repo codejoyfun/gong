@@ -38,6 +38,8 @@ import com.runwise.supply.tools.UserUtils;
 
 import java.util.ArrayList;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 import static com.runwise.supply.R.id.moneySum;
 
 /**
@@ -258,7 +260,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                     }
                 }
                 else{
-                    holder.money.setText(bean.getNum()+"");
+                    holder.money.setText(NumberUtil.getIOrD(bean.getNum()));
                     if(bean.getNum() >= 0) {
                         holder.money.setTextColor(Color.parseColor("#9cb62e"));
                     }

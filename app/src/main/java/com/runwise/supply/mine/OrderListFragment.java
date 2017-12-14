@@ -59,6 +59,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     private static final int DELETE_ORDER = 5;
     private static final int REQUEST_MAIN_PAGE = 6;
     private static final int REQUEST_ORDER = 7;
+    private static final int REQUEST_DETAIL_FOR_ORDER_AGAIN = 8;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -241,6 +242,10 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                     adapter.notifyDataSetChanged();
                 }
                 break;
+            case REQUEST_DETAIL_FOR_ORDER_AGAIN:
+                OrderDetailResponse res = (OrderDetailResponse)result.getResult().getData();
+                OrderAgainActivity.start(getActivity(),res.getOrder());
+                break;
         }
     }
 
@@ -308,6 +313,16 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
         CancleRequest request = new CancleRequest();
         request.setState("deleted");
         sendConnection(urlSb.toString(), request, DELETE_ORDER, true, BaseEntity.ResultBean.class);
+    }
+
+    /**
+     * 请求订单详情，拿商品信息然后再来一单
+     */
+    private void requestOrderDetailForOrderAgain(int orderId){
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+        sb.append(orderId).append("/");
+        sendConnection(sb.toString(), request, REQUEST_DETAIL_FOR_ORDER_AGAIN, true, OrderDetailResponse.class);
     }
 
     public class CarInfoListAdapter extends IBaseAdapter<OrderResponse.ListBean> {
@@ -426,7 +441,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                     @Override
                     public void onClick(View view) {
                         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                        OrderAgainActivity.start(getActivity(),bean);
+                        requestOrderDetailForOrderAgain(bean.getOrderID());
                     }
                 });
                 holder.payStatus.setText("待评价");

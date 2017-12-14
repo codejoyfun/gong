@@ -60,6 +60,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
+import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_FIRST;
 
 /**
  * 分页/二级分类的商品选择页
@@ -207,7 +208,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             titles.add(category);
             categoryFragmentList.add(newCategoryFragment(category));
         }
-
+        categoryFragmentList.get(0).getArguments().putBoolean(INTENT_KEY_FIRST, true);
         initUI(titles, categoryFragmentList);
         initPopWindow((ArrayList<String>) titles);
     }
@@ -271,8 +272,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mTypeWindow.dismiss();
 
                 //刷新当前fragment
-//                ProductCategoryFragment fragment = mAdapterVp.fragmentList.get(position);
-//                fragment.onSelected();
+                ProductCategoryFragment fragment = mAdapterVp.fragmentList.get(position);
+                fragment.onSelected();
             }
 
             @Override
@@ -520,7 +521,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
-            fragmentList.get(position).onSelected();
+//            fragmentList.get(position).onSelected();
         }
     }
 

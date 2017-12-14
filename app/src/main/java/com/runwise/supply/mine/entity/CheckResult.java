@@ -35,7 +35,7 @@ public class CheckResult {
          */
 
         private String state;
-        private int num;
+        private double num;
         private String name;
         private String createUser;
         private int inventoryID;
@@ -52,11 +52,11 @@ public class CheckResult {
             this.state = state;
         }
 
-        public int getNum() {
+        public double getNum() {
             return num;
         }
 
-        public void setNum(int num) {
+        public void setNum(double num) {
             this.num = num;
         }
 
