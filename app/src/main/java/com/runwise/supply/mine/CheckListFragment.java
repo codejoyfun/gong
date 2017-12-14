@@ -18,6 +18,7 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -173,7 +174,11 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         CheckResult.ListBean bean = (CheckResult.ListBean)parent.getAdapter().getItem(position);
-        if ("confirm".equals(bean.getState()) && bean.getCreateUser().equals(mName)) {
+        if ("confirm".equals(bean.getState())) {
+            if(!bean.getCreateUser().equals(mName)){//不是本用户盘点的，弹提示
+                ToastUtil.show(getActivity(),"当前"+bean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
+                return;
+            }
             //检查是否有缓存
             InventoryResponse.InventoryBean inventoryBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(bean.getInventoryID());
             if(inventoryBean==null){//没有缓存

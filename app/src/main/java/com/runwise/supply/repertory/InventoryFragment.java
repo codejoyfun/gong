@@ -397,5 +397,6 @@ public class InventoryFragment extends NetWorkFragment {
         if(event.category!=null && !event.category.equals(mCategory))return;
         mInventoryAdapter.setData(mInventoryProductList);
         mInventoryAdapter.notifyDataSetChanged();
+        loadingLayout.onSuccess(mInventoryAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
     }
 }

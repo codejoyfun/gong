@@ -513,6 +513,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      */
     @Override
     public void gotoInventory(InventoryResponse.InventoryBean inventoryBean) {
+
+        if(!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
+            ToastUtil.show(getActivity(),"当前"+inventoryBean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
+            return;
+        }
+
         InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
         //读取缓存
         if(cacheBean!=null)inventoryBean = cacheBean;

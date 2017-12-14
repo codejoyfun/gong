@@ -382,6 +382,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     product.setStockType(productBean.getStockType());
                     product.setDefaultCode(productBean.getDefaultCode());
                     product.setUnit(productBean.getUnit());
+                    product.setTracking(productBean.getTracking());
                     ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
                     if (listBean != null){
                         product.setUom(listBean.getUom());
@@ -473,6 +474,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 product.setStockType(productBean.getStockType());
                 product.setDefaultCode(productBean.getDefaultCode());
                 product.setUnit(productBean.getUnit());
+                product.setTracking(productBean.getTracking());
                 ImageBean imageBean = new ImageBean();
                 imageBean.setImage(productBean.getImage().getImage());
                 imageBean.setImageSmall(productBean.getImage().getImageSmall());

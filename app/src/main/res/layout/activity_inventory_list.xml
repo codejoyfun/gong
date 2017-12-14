@@ -94,6 +94,10 @@
                     android:layout_marginRight="15dp"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="@color/windowBackground"/>
         </LinearLayout>
 
         <LinearLayout
@@ -139,6 +143,8 @@
             android:id="@+id/tv_inventory_cache"
             android:layout_width="100dp"
             android:layout_height="match_parent"
+            android:enabled="false"
+            android:visibility="gone"
             android:text="暂时保存"
             android:gravity="center"
             android:textSize="18sp"
