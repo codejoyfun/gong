@@ -35,9 +35,18 @@ public class InventoryCacheManager {
     private SharedPreferences mInventoryPrefs;
     private SharedPreferences mListPrefs;
 
-    public InventoryCacheManager(Context context){
+    private InventoryCacheManager(Context context){
         mInventoryPrefs = context.getSharedPreferences(PREF_NAME,0);
         mListPrefs = context.getSharedPreferences(PREF_BRIEF,0);
+    }
+
+    private static InventoryCacheManager sInstance;
+
+    public static InventoryCacheManager getInstance(Context context){
+        if(sInstance==null){
+            sInstance = new InventoryCacheManager(context);
+        }
+        return sInstance;
     }
 
     /**

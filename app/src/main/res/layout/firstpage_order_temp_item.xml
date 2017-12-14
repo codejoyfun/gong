@@ -16,7 +16,6 @@
             android:layout_marginBottom="5dp"
             card_view:cardElevation="1px"
             card_view:cardCornerRadius="5dp"
-            android:background="@color/white"
             >
 
             <RelativeLayout
@@ -26,6 +25,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingRight="15dp"
+                android:background="#FFFAFEF6"
                 >
 
                 <ImageView

@@ -129,15 +129,18 @@ public class EditBatchDialog extends BaseActivity {
         mName.setText(basicBean.getName());
 
         List<InventoryResponse.InventoryLot> lotBeens = mBean.getLotList();
-        for (InventoryResponse.InventoryLot lotBean : lotBeens) {
-            BatchEntity batchEntity = new BatchEntity();
-            batchEntity.setBatchNum(lotBean.getLotNum());
-            batchEntity.setProductCount(String.valueOf((int)lotBean.getEditNum()));
-            batchEntity.setProductDate(lotBean.getProductDate());
-            batchEntity.setProductDate(lotBean.isProductDate());
-            batchEntity.setNewAdded(lotBean.isNewAdded());
-            batchEntities.add(batchEntity);
+        if(lotBeens!=null){
+            for (InventoryResponse.InventoryLot lotBean : lotBeens) {
+                BatchEntity batchEntity = new BatchEntity();
+                batchEntity.setBatchNum(lotBean.getLotNum());
+                batchEntity.setProductCount(String.valueOf((int)lotBean.getEditNum()));
+                batchEntity.setProductDate(lotBean.getProductDate());
+                batchEntity.setProductDate(lotBean.isProductDate());
+                batchEntity.setNewAdded(lotBean.isNewAdded());
+                batchEntities.add(batchEntity);
+            }
         }
+
         return batchEntities;
     }
 

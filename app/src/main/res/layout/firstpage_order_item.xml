@@ -15,6 +15,7 @@
         android:background="@color/white"
         >
         <RelativeLayout
+            android:id="@+id/rl_firstpage_order_item_root"
             android:layout_width="match_parent"
             android:paddingTop="15dp"
             android:descendantFocusability="blocksDescendants"
@@ -191,6 +192,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:background="@color/white"
                 android:layout_below="@id/line">
                 <include layout="@layout/firstpage_timeline_layout"
                     android:visibility="gone"/>

@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
@@ -24,6 +25,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferInActivity;
+import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
@@ -60,15 +62,14 @@ public class OrderAdapter extends IBaseAdapter {
 
     public static final int TRANS_ACTION_CANCEL = 0;
     public static final int TRANS_ACTION_OUTPUT_CONFIRM = 1;
-    private String uid;
 
     public interface DoActionInterface {
         void doAction(OrderDoAction action, int postion);
         void doTransferAction(int type,TransferEntity transferEntity);
         void call(String phone);
         void resubmitOrder(TempOrderManager.TempOrder tempOrder);
-        void gotoInventory(int inventoryId);
-        void cancelInventory(InventoryCacheManager.InventoryBrief inventoryBrief);
+        void gotoInventory(InventoryResponse.InventoryBean inventoryBean);
+        void cancelInventory(InventoryResponse.InventoryBean inventoryBean);
     }
 
     private DoActionInterface callback;
@@ -97,7 +98,6 @@ public class OrderAdapter extends IBaseAdapter {
         this.callback = callback;
         mFailedColor = context.getResources().getColor(R.color.colorffe7e0);
         mNormalColor = context.getResources().getColor(android.R.color.white);
-        uid = GlobalApplication.getInstance().getUid();
     }
 
     @Override
@@ -124,10 +124,12 @@ public class OrderAdapter extends IBaseAdapter {
         if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
             //未读红点
-            if(bean.isAsyncOrder() && !bean.isUserRead(uid)){
+            if(bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid())){
                 viewHolder.ivUnread.setVisibility(View.VISIBLE);
+                viewHolder.mmRlRoot.setBackgroundColor(Color.parseColor("#FFFAFEF6"));
             }else{
                 viewHolder.ivUnread.setVisibility(View.GONE);
+                viewHolder.mmRlRoot.setBackgroundColor(Color.WHITE);
             }
 
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
@@ -397,6 +399,8 @@ public class OrderAdapter extends IBaseAdapter {
         TextView tvToPay;
         @ViewInject(R.id.iv_first_order_item_unread)
         ImageView ivUnread;
+        @ViewInject(R.id.rl_firstpage_order_item_root)
+        RelativeLayout mmRlRoot;
     }
 
     private void setTimeLineContent(List<String> stList, RecyclerView recyclerView) {
@@ -421,7 +425,7 @@ public class OrderAdapter extends IBaseAdapter {
         else if(object instanceof TempOrderManager.TempOrder){
             return TYPE_TEMP_ORDER;
         }
-        else if(object instanceof InventoryCacheManager.InventoryBrief){
+        else if(object instanceof InventoryResponse.InventoryBean){
             return TYPE_INVENTORY;
         }
 //        else if(object instanceof TransferEntity){
@@ -565,13 +569,18 @@ public class OrderAdapter extends IBaseAdapter {
         } else {
             viewHolder = (InventoryViewHolder) convertView.getTag();
         }
-        final InventoryCacheManager.InventoryBrief inventoryBrief = (InventoryCacheManager.InventoryBrief) mList.get(position);
-        viewHolder.inventoryBrief = inventoryBrief;
-        viewHolder.tvInventoryDate.setText("盘点日期："+ inventoryBrief.getCreateTime());
-        viewHolder.tvInventoryId.setText(inventoryBrief.getName());
-        viewHolder.tvInventoryPerson.setText(inventoryBrief.getCreateUser());
-        viewHolder.tvInventoryCancel.setOnClickListener(viewHolder);
+        final InventoryResponse.InventoryBean inventoryBean = (InventoryResponse.InventoryBean) mList.get(position);
+        viewHolder.inventoryBean = inventoryBean;
+        viewHolder.tvInventoryDate.setText("盘点日期 "+ inventoryBean.getCreateDate().substring(5,10));
+        viewHolder.tvInventoryId.setText(inventoryBean.getName());
+        viewHolder.tvInventoryPerson.setText(inventoryBean.getCreateUser());
         viewHolder.cvRoot.setOnClickListener(viewHolder);
+        //当前用户创建的，可以取消
+        if(GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
+            viewHolder.tvInventoryCancel.setOnClickListener(viewHolder);
+        }else {
+            viewHolder.tvInventoryCancel.setVisibility(View.GONE);
+        }
         return convertView;
     }
 
@@ -703,7 +712,7 @@ public class OrderAdapter extends IBaseAdapter {
      * 盘点的viewholder
      */
     private class InventoryViewHolder implements View.OnClickListener{
-        InventoryCacheManager.InventoryBrief inventoryBrief;
+        InventoryResponse.InventoryBean inventoryBean;
         @ViewInject(R.id.tv_item_inventory_date)
         TextView tvInventoryDate;
         @ViewInject(R.id.tv_item_inventory_person)
@@ -720,10 +729,16 @@ public class OrderAdapter extends IBaseAdapter {
             switch (v.getId()){
                 case R.id.tv_item_inventory_cancel:
                     //本地删除
-                    if(callback!=null)callback.cancelInventory(inventoryBrief);
+                    if(callback!=null)callback.cancelInventory(inventoryBean);
                     break;
                 case R.id.cv_inventory_root:
-                    if(callback!=null)callback.gotoInventory(inventoryBrief.getInventoryID());
+                    if(!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
+                        CustomDialog dialog = new CustomDialog(context);
+                        dialog.setMessage("当前"+inventoryBean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
+                        dialog.show();
+                        return;
+                    }
+                    if(callback!=null)callback.gotoInventory(inventoryBean);
                     break;
             }
         }
