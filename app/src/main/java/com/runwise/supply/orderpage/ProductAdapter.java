@@ -73,7 +73,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 
 //        final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
         int count = productCountSetter.getCount(bean);
-        viewHolder.tvCount.setText(count+bean.getProductUom());
+        viewHolder.tvCount.setText(count+bean.getUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
             viewHolder.tvCount.setVisibility(View.VISIBLE);
@@ -95,7 +95,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 //                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
                 int currentNum = productCountSetter.getCount(bean);
                 if (currentNum > 0) {
-                    viewHolder.tvCount.setText(--currentNum + bean.getProductUom());
+                    viewHolder.tvCount.setText(--currentNum + bean.getUom());
 //                    mCountMap.put(bean, currentNum);
                     productCountSetter.setCount(bean,currentNum);
                     if (currentNum == 0) {
@@ -119,7 +119,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
             public void onClick(View v) {
 //                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
                 int currentNum = productCountSetter.getCount(bean);
-                viewHolder.tvCount.setText(++currentNum + bean.getProductUom());
+                viewHolder.tvCount.setText(++currentNum + bean.getUom());
 //                mCountMap.put(bean, currentNum);
                 productCountSetter.setCount(bean,currentNum);
                 if (currentNum == 1) {//0变到1
@@ -152,11 +152,11 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                         }else{
                             viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                             viewHolder.tvCount.setVisibility(View.VISIBLE);
-                            viewHolder.tvCount.setText(value+bean.getProductUom());
+                            viewHolder.tvCount.setText(value+bean.getUom());
                             viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                            mCountMap.put(bean,value);
                         }
-                        viewHolder.tvCount.setText(value + bean.getProductUom());
+                        viewHolder.tvCount.setText(value + bean.getUom());
                         EventBus.getDefault().post(new ProductCountUpdateEvent(bean,value));
                     }
                 }).show();

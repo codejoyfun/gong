@@ -26,7 +26,6 @@ import java.util.List;
 /**
  * 单个一级分类的商品列表
  * 包含多个一个/多个二级分类fragment
- * TODO:加入loading，和出错提示
  */
 public class ProductCategoryFragment extends NetWorkFragment {
 
