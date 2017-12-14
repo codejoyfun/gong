@@ -734,7 +734,7 @@ public class OrderAdapter extends IBaseAdapter {
                 case R.id.cv_inventory_root:
                     if(!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
                         CustomDialog dialog = new CustomDialog(context);
-                        dialog.setMessage("当前"+inventoryBean.getCreateUser()+"正在盘点中，无法创建盘点单");
+                        dialog.setMessage("当前"+inventoryBean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
                         dialog.show();
                         return;
                     }
