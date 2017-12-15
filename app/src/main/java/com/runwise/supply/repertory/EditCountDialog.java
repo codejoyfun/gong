@@ -9,6 +9,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -120,9 +122,24 @@ public class EditCountDialog extends Dialog {
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                findViewById(R.id.ll_dialog_add_sum_root).setVisibility(View.VISIBLE);
+//                findViewById(R.id.ll_dialog_add_sum_root).setVisibility(View.VISIBLE);
+                Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.fade_in);
+                View v = findViewById(R.id.ll_dialog_add_sum_root);
+                v.setVisibility(View.VISIBLE);
+                v.startAnimation(animation);
             }
         },400);
     }
 
+//    private void showDialog(){
+//        new android.os.Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Animation animation = AnimationUtils.loadAnimation(getContext(),R.anim.slide_in_bottom);
+//                View v = findViewById(R.id.ll_dialog_add_sum_root);
+//                v.setVisibility(View.VISIBLE);
+//                v.startAnimation(animation);
+//            }
+//        },200);
+//    }
 }
