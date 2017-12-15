@@ -54,6 +54,7 @@ public class EditRepertoryFinishActivity extends BaseActivity {
                 finish();
                 break;
             case  R.id.stepPayFinish:
+                finish();
                 Intent intent = new Intent(mContext, CheckActivity.class);
                 if (UserUtils.checkLogin(intent,this)) {
                     startActivity(intent);

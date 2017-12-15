@@ -31,6 +31,7 @@
             android:textColor="#444"
             android:textSize="17sp"
             android:text="盘点成功"
+            android:visibility="gone"
             android:layout_marginTop="12dp"
             />
         <TextView
@@ -42,6 +43,7 @@
             android:textSize="14sp"
             android:text="库存商品数量"
             android:layout_marginTop="12dp"
+            android:visibility="gone"
             />
         <TextView
             android:id="@+id/tv_inventory_new_count"
@@ -69,7 +71,7 @@
             android:background="@drawable/blue_boder_bg"
             android:text="查看盘点记录"
             android:layout_marginLeft="22dp"
-            android:layout_marginRight="22dp"
+            android:layout_marginRight="7dp"
             android:textColor="#363636"
             android:gravity="center"
             android:padding="8dp"
@@ -81,7 +83,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/blue_boder_bg"
             android:text="查看库存"
-            android:layout_marginLeft="22dp"
+            android:layout_marginLeft="7dp"
             android:layout_marginRight="22dp"
             android:textColor="#363636"
             android:gravity="center"

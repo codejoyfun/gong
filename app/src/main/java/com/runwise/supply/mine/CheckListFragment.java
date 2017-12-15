@@ -162,6 +162,8 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                 break;
             case REQUEST_CHANNEL:
                 ToastUtil.show(mContext,"盘点已取消");
+                adapter.getList().remove(mCancelBean);
+                adapter.notifyDataSetChanged();
                 requestData(false, REQUEST_MAIN, page, 10);
                 break;
         }
@@ -214,7 +216,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         requestData(false, REQUEST_MAIN, page, 10);
     }
 
-
+    public CheckResult.ListBean mCancelBean;
     public class CarInfoListAdapter extends IBaseAdapter<CheckResult.ListBean> {
         @Override
         protected View getExView(int position, View convertView,
@@ -239,6 +241,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                     @Override
                     public void onClick(View v) {
                         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        mCancelBean = bean;
                         channelPandian(bean.getInventoryID());
                     }
                 });

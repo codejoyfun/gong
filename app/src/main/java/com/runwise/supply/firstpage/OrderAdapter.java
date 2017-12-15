@@ -579,6 +579,7 @@ public class OrderAdapter extends IBaseAdapter {
         //当前用户创建的，可以取消
         if(GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
             viewHolder.tvInventoryCancel.setOnClickListener(viewHolder);
+            viewHolder.tvInventoryCancel.setVisibility(View.VISIBLE);
         }else {
             viewHolder.tvInventoryCancel.setVisibility(View.GONE);
         }
