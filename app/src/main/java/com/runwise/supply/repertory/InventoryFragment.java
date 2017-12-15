@@ -90,7 +90,7 @@ public class InventoryFragment extends NetWorkFragment {
                 if(parent.getLastVisiblePosition()==mInventoryAdapter.getCount()-1 &&
                         ((InventoryActivity)getActivity()).dragLayout.getState().toInt()!=0 &&
                         parent.getFirstVisiblePosition()!=0){
-                    ToastUtil.show(getActivity(),parent.getLastVisiblePosition()+" "+((InventoryActivity)getActivity()).dragLayout.getState());
+                    //ToastUtil.show(getActivity(),parent.getLastVisiblePosition()+" "+((InventoryActivity)getActivity()).dragLayout.getState());
                     return;
                 }
 

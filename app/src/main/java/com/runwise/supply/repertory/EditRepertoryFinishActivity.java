@@ -9,7 +9,9 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.mine.CheckActivity;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.UserUtils;
@@ -35,18 +37,24 @@ public class EditRepertoryFinishActivity extends BaseActivity {
         setContentView(R.layout.activity_devide_pay_step_finish);
         setTitleText(true,"盘点成功");
         setTitleLeftIcon(true,R.drawable.nav_closed);
-        mTvOldCount.setText("库存商品数量："+ NumberUtil.getIOrD(getIntent().getDoubleExtra(INTENT_OLD_STOCK_COUNT,0)));
-        mTvNewCount.setText("盘点商品数量："+NumberUtil.getIOrD(getIntent().getDoubleExtra(INTENT_INVENTORY_COUNT,0)));
+        mTvOldCount.setText("盘点前商品数量："+ NumberUtil.getIOrD(getIntent().getDoubleExtra(INTENT_OLD_STOCK_COUNT,0)));
+        mTvNewCount.setText("盘点后商品数量："+NumberUtil.getIOrD(getIntent().getDoubleExtra(INTENT_INVENTORY_COUNT,0)));
     }
 
     @OnClick({R.id.stepPayFinish,R.id.stepPayFinish1,R.id.left_layout})
     public void doFinish(View view) {
         switch (view.getId()) {
             case R.id.stepPayFinish1:
+                Intent intent2 = new Intent(EditRepertoryFinishActivity.this,MainActivity.class);
+                intent2.putExtra(MainActivity.INTENT_KEY_TAB,2);
+                intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent2);
+                break;
             case R.id.left_layout:
                 finish();
                 break;
             case  R.id.stepPayFinish:
+                finish();
                 Intent intent = new Intent(mContext, CheckActivity.class);
                 if (UserUtils.checkLogin(intent,this)) {
                     startActivity(intent);

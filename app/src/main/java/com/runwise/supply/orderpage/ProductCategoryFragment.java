@@ -164,7 +164,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public void onSelected() {
 //        if(!isAdded() || isLoaded)return;
 //        isLoaded = true;
-//        mLoadingLayout.setStatusLoading();
+        mLoadingLayout.setStatusLoading();
         //查询二级分类
         requestChildCategory();
     }
