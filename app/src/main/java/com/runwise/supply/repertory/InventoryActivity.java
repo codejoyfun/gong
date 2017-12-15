@@ -74,6 +74,7 @@ public class InventoryActivity extends NetWorkActivity {
     CategoryRespone categoryRespone;
     List<Fragment> orderProductFragmentList;
     private double mInventoryTotal = 0;//盘点后总数
+    private boolean isSubmitted = false;//是否提交，提交了则onStop不保存
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,12 @@ public class InventoryActivity extends NetWorkActivity {
         mTvInventoryDate.setText(mInventoryBean.getCreateDate());
 //        initDialog();
         getCategory();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(!isSubmitted) InventoryCacheManager.getInstance(this).saveInventory(mInventoryBean);
     }
 
     /**
@@ -109,6 +116,7 @@ public class InventoryActivity extends NetWorkActivity {
                 setUpDataForViewPage();
                 break;
             case INVENTORY_COMMIT:
+                isSubmitted = true;
                 InventoryCacheManager.getInstance(this).removeInventory(mInventoryBean.getInventoryID());
                 ToastUtil.show(mContext,"盘点成功");
                 //计算原库存数量
@@ -123,7 +131,6 @@ public class InventoryActivity extends NetWorkActivity {
                     }
                 }
                 //计算盘点后数量
-
                 EditRepertoryFinishActivity.start(this,total,mInventoryTotal);
                 finish();
                 break;
@@ -209,7 +216,6 @@ public class InventoryActivity extends NetWorkActivity {
                 dialog.show();
                 break;
             case R.id.tv_inventory_cache:
-                InventoryCacheManager.getInstance(this).saveInventory(mInventoryBean);
                 finish();
                 break;
             case R.id.title_iv_rigth2:
@@ -230,7 +236,6 @@ public class InventoryActivity extends NetWorkActivity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddNewBean(NewAdd newBean) {
-        dragLayout.toggleTopView();
         if (newBean.getType() == 1) {
             boolean isFind = false;
             for (InventoryResponse.InventoryProduct bean : mInventoryBean.getLines()) {

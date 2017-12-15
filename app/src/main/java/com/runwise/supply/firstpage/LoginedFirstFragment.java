@@ -409,6 +409,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_CANCEL_INVENTORY:
                 //本地删除，刷新页面
+                ToastUtil.show(mContext, "取消成功");
                 InventoryCacheManager.getInstance(getActivity()).removeInventory(mCancelInventory.getInventoryID());
                 adapter.getList().remove(mCancelInventory);
                 adapter.notifyDataSetChanged();
@@ -494,7 +495,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 }
                 return;
             case REQUEST_SUBMITTING_ORDER:
-                //TODO:test
                 //TODO:删除提交成功的订单，或者更新状态为提交失败订单
                 //展示提交中的订单
                 submitRequesting = false;
@@ -504,6 +504,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 inventoryRequesting = false;
                 checkSuccess();
                 break;
+            default:
+                if(!TextUtils.isEmpty(errMsg))ToastUtil.show(mContext, errMsg);
         }
     }
 
@@ -513,6 +515,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      */
     @Override
     public void gotoInventory(InventoryResponse.InventoryBean inventoryBean) {
+
+        if(!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
+            ToastUtil.show(getActivity(),"当前"+inventoryBean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
+            return;
+        }
+
         InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
         //读取缓存
         if(cacheBean!=null)inventoryBean = cacheBean;
@@ -527,11 +535,21 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      */
     @Override
     public void cancelInventory(InventoryResponse.InventoryBean inventoryBrief) {
-        mCancelInventory = inventoryBrief;
-        ChannelPandian request = new ChannelPandian();
-        request.setId(inventoryBrief.getInventoryID());
-        request.setState("draft");
-        sendConnection("/api/inventory/state",request,REQUEST_CANCEL_INVENTORY,true,null);
+        CustomDialog dialog = new CustomDialog(getActivity());
+        dialog.setTitle("提示");
+        dialog.setMessage("确认取消盘点?");
+        dialog.setMessageGravity();
+        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+            @Override
+            public void doClickButton(Button btn, CustomDialog dialog) {
+                mCancelInventory = inventoryBrief;
+                ChannelPandian request = new ChannelPandian();
+                request.setId(inventoryBrief.getInventoryID());
+                request.setState("draft");
+                sendConnection("/api/inventory/state",request,REQUEST_CANCEL_INVENTORY,true,null);
+            }
+        });
+        dialog.show();
     }
 
     @Override

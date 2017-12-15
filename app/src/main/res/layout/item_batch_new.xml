@@ -132,7 +132,7 @@
                     android:background="@null"
                     android:gravity="right|center_vertical"
                     android:hint="商品数量"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:singleLine="true"
                     android:cursorVisible="true"
                     android:textColor="@color/black"

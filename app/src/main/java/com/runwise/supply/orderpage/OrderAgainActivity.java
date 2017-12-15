@@ -46,10 +46,12 @@ public class OrderAgainActivity extends ProductActivityV2 {
                 listBean.setPrice(lb.getProductPrice());
                 listBean.setSettlePrice(lb.getProductSettlePrice()+"");
                 listBean.setImage(new ImageBean(lb.getImageMedium()));
+                listBean.setUom(lb.getProductUom());
             }else if(basicBean!=null){
                 listBean.setPrice(basicBean.getPrice());
                 listBean.setSettlePrice(basicBean.getSettlePrice()+"");
                 listBean.setImage(basicBean.getImage());
+                listBean.setUom(basicBean.getUom());
             }
             listBean.setName(lb.getName());
             listBean.setDefaultCode(lb.getDefaultCode());

@@ -1,7 +1,9 @@
 package com.runwise.supply.orderpage;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CategoryChildListRequest;
 import com.runwise.supply.orderpage.entity.CategoryChildResponse;
+import com.runwise.supply.orderpage.entity.CategoryResponseV2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,8 @@ import java.util.List;
 public class ProductCategoryFragment extends NetWorkFragment {
 
     public static final String INTENT_KEY_CATEGORY = "ap_category";
+    public static final String INTENT_KEY_FIRST = "first";
+
     private static final int REQUEST_CATEGORY_CHILD = 0;
     private String mCategory;
     @ViewInject(R.id.rv_sub_category)
@@ -58,6 +63,14 @@ public class ProductCategoryFragment extends NetWorkFragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(getArguments().getBoolean(INTENT_KEY_FIRST,false)){
+            onSelected();
+        }
+    }
+
+    @Override
     protected int createViewByLayoutId() {
         return R.layout.fragment_product_category;
     }
@@ -70,6 +83,54 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 //根据子类别加入fragment
                 //适配没有二级分类,加一个空的tag
                 CategoryChildResponse categoryChildResponse = (CategoryChildResponse) result.getResult().getData();
+
+                //检查接口返回的二级分类和现有的是否一致
+                boolean isNeedUpdate = false;//是否需要刷新二级分类
+                if(mCategoryChildList==null){//初次进入，没有子分类
+                    isNeedUpdate = true;
+                } else if(categoryChildResponse.getCategoryChild()!=null){
+                    if(mCategoryChildList.size()!=categoryChildResponse.getCategoryChild().size()){//原有子分类数量不一样
+                        isNeedUpdate = true;
+                    }else{
+                        for(int i=0;i<mCategoryChildList.size();i++){
+                            String childCategory = mCategoryChildList.get(i);
+                            if(!childCategory.equals(categoryChildResponse.getCategoryChild().get(i))){
+                                isNeedUpdate = true;
+                                break;
+                            }
+                        }
+                    }
+                }else{//mCategoryChildList!=null && categoryChildResponse.getCategoryChild()==null
+                    isNeedUpdate = true;
+                }
+
+//                isNeedUpdate = true;
+                //不需要更新二级分类，刷新当前列表
+                if(!isNeedUpdate){
+                    ProductListFragmentV2 fragment = (ProductListFragmentV2) getChildFragmentManager().findFragmentByTag(mCurrentSubCategory);
+                    fragment.refresh(true);
+                    return;
+                }
+
+                //*****需要更新二级分类****
+                mCurrentSubCategory = null;
+
+                //清空现有fragment
+                //NOTE:remove居然没有用，在之后的findTagById还是会找出来，但是最后却还是remove了，可能是因为是队列处理的原因？
+                //现在先用detach
+                List<Fragment> fragments = getChildFragmentManager().getFragments();
+                if(fragments!=null){
+                    for(Fragment fragment:fragments){
+                        getChildFragmentManager().beginTransaction().detach(fragment).commitAllowingStateLoss();
+                    }
+                }
+
+//                if(mCategoryChildList!=null){
+//                    for(String category:mCategoryChildList){
+//                        transaction.remove(getChildFragmentManager().findFragmentByTag(category));
+//                    }
+//                }
+
                 mCategoryChildList = categoryChildResponse.getCategoryChild();
                 if(categoryChildResponse.getCategoryChild()==null || categoryChildResponse.getCategoryChild().isEmpty()){
                     //没有子类别
@@ -95,15 +156,15 @@ public class ProductCategoryFragment extends NetWorkFragment {
         mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
     }
 
-    boolean isLoaded = false;
+//    boolean isLoaded = false;
     /**
      * 每次当前tab被选择的时候调用
      * 查询子类别
      */
-    public void onSelected() {;
-        if(!isAdded() || isLoaded)return;
-        isLoaded = true;
-        //mLoadingLayout.setStatusLoading();
+    public void onSelected() {
+//        if(!isAdded() || isLoaded)return;
+//        isLoaded = true;
+//        mLoadingLayout.setStatusLoading();
         //查询二级分类
         requestChildCategory();
     }
@@ -147,6 +208,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
         Fragment newFragment = getChildFragmentManager().findFragmentByTag(subCategory);
         if(newFragment!=null){
             ft.attach(newFragment);
+            ((ProductListFragmentV2)newFragment).refresh(true);
         }
         else{
             newFragment = newProductListFragment(subCategory);

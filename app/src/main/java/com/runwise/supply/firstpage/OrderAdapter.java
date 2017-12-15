@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -732,12 +733,6 @@ public class OrderAdapter extends IBaseAdapter {
                     if(callback!=null)callback.cancelInventory(inventoryBean);
                     break;
                 case R.id.cv_inventory_root:
-                    if(!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
-                        CustomDialog dialog = new CustomDialog(context);
-                        dialog.setMessage("当前"+inventoryBean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
-                        dialog.show();
-                        return;
-                    }
                     if(callback!=null)callback.gotoInventory(inventoryBean);
                     break;
             }
