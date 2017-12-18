@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
@@ -812,7 +813,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
         //同时查订单和退货单
         Object requestOrder = null;
-        sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
+//        sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
+        sendConnection(Request.Method.POST,"http://rap2api.taobao.org/app/mock/2108/POST/haha", new String[]{}, new String[]{}, FROMORDER, false, OrderResponse.class);
+
     }
 
     private void requestLB() {

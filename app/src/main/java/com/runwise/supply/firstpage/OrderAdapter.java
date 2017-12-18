@@ -276,9 +276,11 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.mmRlRoot.setBackgroundColor(mColorPink);
                 viewHolder.stateTv.setText("配送失败");
                 viewHolder.stateTv.setTextColor(mColorRed);
+                viewHolder.mmViewArrowArea.setVisibility(View.GONE);
             }else{
                 viewHolder.mmRlRoot.setBackgroundColor(mColorWhite);
                 viewHolder.stateTv.setTextColor(Color.BLACK);
+                viewHolder.mmViewArrowArea.setVisibility(View.VISIBLE);
             }
         } else {
             final ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) mList.get(position);
@@ -423,6 +425,8 @@ public class OrderAdapter extends IBaseAdapter {
         ImageView ivUnread;
         @ViewInject(R.id.rl_firstpage_order_item_root)
         RelativeLayout mmRlRoot;
+        @ViewInject(R.id.arrowArea)
+        View mmViewArrowArea;
     }
 
     private void setTimeLineContent(List<String> stList, RecyclerView recyclerView) {

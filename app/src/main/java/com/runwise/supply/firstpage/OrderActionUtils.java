@@ -23,7 +23,7 @@ public class OrderActionUtils {
             //不做任务事情，返回null,隐藏此按钮
         }else if(bean.getState().equals(PEISONG.getName())){
             if(!TextUtils.isEmpty(bean.getReceiveError())){
-                btnText = "收货失败";
+                btnText = "重新提交";
             }
             else if (bean.isIsDoubleReceive()){
                 if (bean.isIsFinishTallying()){
@@ -55,7 +55,10 @@ public class OrderActionUtils {
     //通过状态字，得到订单的下一步操作是什么
     public static OrderDoAction getDoActionByText(String doAction, OrderResponse.ListBean bean){
         OrderDoAction action = null;
-        if ("取消订单".equals(doAction)){
+        if("重新提交".equals(doAction)){
+            action = OrderDoAction.RECEIVE_AGAIN;
+        }
+        else if ("取消订单".equals(doAction)){
             action = OrderDoAction.CANCLE;
         }else if("点货".equals(doAction)){
             //如果有人在点货，则弹窗提示
