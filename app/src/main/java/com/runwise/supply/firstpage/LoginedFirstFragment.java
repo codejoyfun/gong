@@ -44,6 +44,7 @@ import com.runwise.supply.business.entity.CheckOrderResponse;
 import com.runwise.supply.business.entity.FirstPageInventoryResult;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.entity.CheckOrderSuccessRequest;
+import com.runwise.supply.entity.InventoryInProgressEvent;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.entity.TransferEntity;
@@ -66,6 +67,7 @@ import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -419,7 +421,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 if(inventoryResult.getList()!=null && inventoryResult.getList().size()>0){
                     InventoryResponse.InventoryBean inventoryBean = inventoryResult.getList().get(0);
                     //有确认中的盘点单，则显示
-                    if("confirm".equals(inventoryBean.getState())) inventoryList.add(inventoryBean);
+                    if("confirm".equals(inventoryBean.getState())) {
+                        if(getActivity()!=null){
+                            InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);
+                            EventBus.getDefault().post(new InventoryInProgressEvent());
+                        }
+                        inventoryList.add(inventoryBean);
+                    }
                 }
                 inventoryRequesting = false;
                 checkSuccess();

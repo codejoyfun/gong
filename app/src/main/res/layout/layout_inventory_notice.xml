@@ -2,15 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rl_upgrade_notice"
-        android:visibility="gone"
+        android:id="@+id/rl_inventory_notice"
         android:background="#FEFCEC">
         <ImageView
             android:id="@+id/iv_notice"
             android:layout_width="15dp"
             android:layout_height="14dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/notice_ico"
+            android:src="@drawable/ico_inventory_warn"
             android:layout_marginLeft="14dp"
             android:layout_marginRight="10dp"/>
         <TextView

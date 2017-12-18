@@ -17,11 +17,14 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
+import com.runwise.supply.entity.InventoryInProgressEvent;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +151,15 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 dialog.show();
                 break;
         }
+    }
+
+    /**
+     * 当前是否正在盘点中
+     * @param inventoryInProgressEvent
+     */
+    @Subscribe
+    public void onInventoryInProgress(InventoryInProgressEvent inventoryInProgressEvent){
+
     }
 
     private InventoryResponse.InventoryBean testData(){
