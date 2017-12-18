@@ -883,7 +883,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             pbList.add(pb);
         }
         rr.setProducts(pbList);
-        StringBuffer sb = new StringBuffer("/gongfu/order/");
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(lbean.getOrderID()).append("/receive/");
         sendConnection(sb.toString(), rr, RECEIVE, true, BaseEntity.ResultBean.class);
     }

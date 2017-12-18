@@ -54,6 +54,7 @@ import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.firstpage.entity.ReceiveResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.mine.ProcurementLimitActivity;
 import com.runwise.supply.mine.entity.ChannelPandian;
@@ -61,11 +62,14 @@ import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.TransferOutActivity;
+import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.repertory.EditCountDialog;
 import com.runwise.supply.repertory.InventoryActivity;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -107,6 +111,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_READ = 11;
     private static final int REQUEST_CANCEL_INVENTORY = 12;
     private static final int REQUEST_INVENTORY_LIST = 13;
+    private static final int REQUEST_RECEIVE_AGAIN = 14;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -141,6 +146,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private boolean submitRequesting = false;//标记是否在查询提交中的订单
     private boolean inventoryRequesting = false;//是否在查询盘点列表中
     private List<TempOrderManager.TempOrder> mTempOrders;//本地保存的提交中的订单的数据
+    private OrderResponse.ListBean mReceiveAgainOrder;//记录重新收货的订单
 
     public LoginedFirstFragment() {
     }
@@ -424,6 +430,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 inventoryRequesting = false;
                 checkSuccess();
                 break;
+            case REQUEST_RECEIVE_AGAIN:
+                requestReturnList();
+
+                intent = new Intent(mContext, ReceiveSuccessActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order", mReceiveAgainOrder);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                EventBus.getDefault().post(new UpdateRepertory());
+                EventBus.getDefault().post(new OrderUpdateEvent());
+                break;
         }
     }
 
@@ -626,6 +643,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 bundle.putInt("mode", 0);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                break;
+            case RECEIVE_AGAIN://收货失败，重新收货
+                mReceiveAgainOrder = (OrderResponse.ListBean) adapter.getItem(position);
+                StringBuffer sb = new StringBuffer("/gongfu/order/");
+                sb.append(mReceiveAgainOrder.getOrderID()).append("/receive/again");
+                Object request = null;
+                sendConnection(sb.toString(), request, REQUEST_RECEIVE_AGAIN, true, BaseEntity.ResultBean.class);
                 break;
             case SETTLERECEIVE:
                 //点货，计入结算单位
