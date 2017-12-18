@@ -44,7 +44,7 @@ import com.runwise.supply.business.entity.CheckOrderResponse;
 import com.runwise.supply.business.entity.FirstPageInventoryResult;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.entity.CheckOrderSuccessRequest;
-import com.runwise.supply.entity.InventoryInProgressEvent;
+import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.entity.TransferEntity;
@@ -143,6 +143,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private boolean submitRequesting = false;//标记是否在查询提交中的订单
     private boolean inventoryRequesting = false;//是否在查询盘点列表中
     private List<TempOrderManager.TempOrder> mTempOrders;//本地保存的提交中的订单的数据
+    //需求为点击关闭后，下次进入需要重新显示，所以用成员变量标记是否被用户关闭
+    private boolean isNoticeClose = false;//是否点击关闭了盘点中提示，防止每次刷到数据都重新显示
 
     public LoginedFirstFragment() {
     }
@@ -166,7 +168,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         dqCountTv = (TextView) headView.findViewById(R.id.dqCountTv);
         loadingLayout = (LoadingLayout)headView.findViewById(R.id.loadingLayout);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
-        mViewNotice = headView.findViewById(R.id.iv_notice);
+        mViewNotice = headView.findViewById(R.id.include_layout_notice);
         headView.findViewById(R.id.lqLL).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -414,6 +416,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 //本地删除，刷新页面
                 ToastUtil.show(mContext, "取消成功");
                 InventoryCacheManager.getInstance(getActivity()).removeInventory(mCancelInventory.getInventoryID());
+                InventoryCacheManager.getInstance(getActivity()).setShouldShow(false);
                 adapter.getList().remove(mCancelInventory);
                 adapter.notifyDataSetChanged();
                 break;
@@ -422,15 +425,19 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 if(inventoryResult.getList()!=null && inventoryResult.getList().size()>0){
                     InventoryResponse.InventoryBean inventoryBean = inventoryResult.getList().get(0);
                     //有确认中的盘点单，则显示
-                    if("confirm".equals(inventoryBean.getState())) {
-                        if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);
+                    boolean isInProgresss = "confirm".equals(inventoryBean.getState());
+                    if(isInProgresss) {
+                        if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
                         inventoryList.add(inventoryBean);
                     }else{//没有确认中的盘点单
                         if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
                     }
+
                     //如果是当前用户盘点中，需要展示提示
-                    if(GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
-                        EventBus.getDefault().post(new InventoryInProgressEvent());
+                    if(isInProgresss && GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
+                        InventoryCacheManager.getInstance(getActivity()).setShouldShow(true);
+                    }else{
+                        InventoryCacheManager.getInstance(getActivity()).setShouldShow(false);
                     }
                 }
                 inventoryRequesting = false;
@@ -631,6 +638,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 startActivity(rIntent);
                 break;
             case RECEIVE://正常收货
+                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
                 Intent intent = new Intent(mContext, ReceiveActivity.class);
                 Bundle bundle = new Bundle();
                 OrderResponse.ListBean listBean = (OrderResponse.ListBean) adapter.getItem(position);
@@ -988,14 +996,21 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         sendConnection("/api/v2/inventory/list",request,REQUEST_INVENTORY_LIST,false,FirstPageInventoryResult.class);
     }
 
-    public void showInventoryNotice(){
-        if(InventoryCacheManager.getInstance(getActivity()).isInventoryInProgress()){
+    /**
+     * 展示盘点中
+     */
+    @Subscribe
+    public void showInventoryNotice(ShowInventoryNoticeEvent event){
+        if(event.isShow && !isNoticeClose){
+            //用户当前未点关闭，并且正在盘点中
             mViewNotice.setVisibility(View.VISIBLE);
             //关闭按钮
             mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v->{
+                isNoticeClose = true;
                 mViewNotice.setVisibility(View.GONE);
             });
         }else{
+            if(!event.isShow)isNoticeClose = false;//重置标记位，当下次再收到展示消息时，可以展示
             mViewNotice.setVisibility(View.GONE);
         }
     }

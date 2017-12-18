@@ -14,7 +14,8 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
             <include
-                android:id="@+id/include_inventory_notice"
+                android:id="@+id/include_notice"
+                android:visibility="gone"
                 layout="@layout/layout_notice"/>
             <com.runwise.supply.view.SystemUpgradeLayout
                 android:id="@+id/layout_system_upgrade_notice"

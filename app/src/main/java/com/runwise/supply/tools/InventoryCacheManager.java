@@ -9,6 +9,9 @@ import android.widget.Toast;
 import com.kids.commonframe.base.util.SPUtils;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.entity.InventoryResponse;
+import com.runwise.supply.entity.ShowInventoryNoticeEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -144,6 +147,16 @@ public class InventoryCacheManager {
             return true;
         }
         return false;
+    }
+
+    boolean shouldShow = false;
+    public void setShouldShow(boolean shouldShow){
+        EventBus.getDefault().post(new ShowInventoryNoticeEvent(shouldShow));
+        this.shouldShow = shouldShow;
+    }
+
+    public boolean shouldShow(){
+        return shouldShow;
     }
 
     /**

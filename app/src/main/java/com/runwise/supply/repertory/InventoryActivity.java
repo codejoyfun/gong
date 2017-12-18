@@ -95,7 +95,10 @@ public class InventoryActivity extends NetWorkActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(!isSubmitted) InventoryCacheManager.getInstance(this).saveInventory(mInventoryBean);
+        if(!isSubmitted) {
+            InventoryCacheManager.getInstance(this).saveInventory(mInventoryBean);
+            InventoryCacheManager.getInstance(this).setShouldShow(true);
+        }
     }
 
     /**
@@ -121,17 +124,18 @@ public class InventoryActivity extends NetWorkActivity {
                 ToastUtil.show(mContext,"盘点成功");
                 //计算原库存数量
                 double total = 0;
-                for(InventoryResponse.InventoryProduct product:mInventoryBean.getLines()){
-                    if(product.getLotList()!=null){
-                        for(InventoryResponse.InventoryLot lot:product.getLotList()){
-                            total = total + lot.getTheoreticalQty();
-                        }
-                    }else{
-                        total = total + product.getTheoreticalQty();
-                    }
-                }
+//                for(InventoryResponse.InventoryProduct product:mInventoryBean.getLines()){
+//                    if(product.getLotList()!=null){
+//                        for(InventoryResponse.InventoryLot lot:product.getLotList()){
+//                            total = total + lot.getTheoreticalQty();
+//                        }
+//                    }else{
+//                        total = total + product.getTheoreticalQty();
+//                    }
+//                }
                 //计算盘点后数量
                 EditRepertoryFinishActivity.start(this,total,mInventoryTotal);
+                InventoryCacheManager.getInstance(this).setShouldShow(false);
                 finish();
                 break;
         }

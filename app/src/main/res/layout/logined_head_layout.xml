@@ -12,7 +12,8 @@
         app:canLoop="true"
         />
     <include
-        android:id="@+id/include_notice"
+        android:id="@+id/include_layout_notice"
+        android:visibility="gone"
         layout="@layout/layout_notice"/>
     <LinearLayout
         android:id="@+id/numsLL"

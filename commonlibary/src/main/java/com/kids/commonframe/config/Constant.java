@@ -18,8 +18,10 @@ public class Constant {
     public static String RELEASE_URL = "http://erp.runwise.cn";
 
 
-    public static String UNLOGIN_URL = "http://runwise.iask.in";
-    public static String UNLOGIN_DB = "lbz";
+//    public static String UNLOGIN_URL = "http://runwise.iask.in";
+//    public static String UNLOGIN_DB = "lbz";
+    public static String UNLOGIN_URL = "http://192.168.10.99:8070";
+    public static String UNLOGIN_DB = "MF-PreGolive-Test-001";
 
     //测试环境地址
     public static String TEST_URL = "http://114.215.40.244:8083/";
