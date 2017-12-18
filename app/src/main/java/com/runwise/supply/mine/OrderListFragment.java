@@ -469,7 +469,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                     @Override
                     public void onClick(View view) {
                         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                        OrderAgainActivity.start(getActivity(),bean);
+//                        OrderAgainActivity.start(getActivity(),bean);
+                        requestOrderDetailForOrderAgain(bean.getOrderID());
                     }
                 });
                 holder.payStatus.setText("已评价");
