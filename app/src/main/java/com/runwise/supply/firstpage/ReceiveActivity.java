@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -1158,6 +1160,16 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             },200);
+            View dialogRoot = dialogView2.findViewById(R.id.dialog_main);
+            dialogRoot.setVisibility(View.GONE);
+            edEt.postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    Animation animation = AnimationUtils.loadAnimation(getActivityContext(),R.anim.fade_in);
+                    dialogRoot.setVisibility(View.VISIBLE);
+                    dialogRoot.startAnimation(animation);
+                }
+            },400);
             //更新进度条
             updatePbProgress();
             //更新fragment列表内容
