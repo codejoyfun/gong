@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.kids.commonframe.base.util.SPUtils;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.entity.InventoryResponse;
-import com.runwise.supply.orderpage.TempOrderManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -131,7 +130,7 @@ public class InventoryCacheManager {
      * 获取是否盘点中
      * @return
      */
-    public boolean isInventory(){
+    public boolean isInventoryInProgress(){
         return mPrefs.getBoolean(PREF_KEY_IS_INVENTORY,false);
     }
 
@@ -140,7 +139,7 @@ public class InventoryCacheManager {
      * @return
      */
     public boolean checkIsInventory(Context context){
-        if(isInventory()){
+        if(isInventoryInProgress()){
             Toast.makeText(context,"当前有未完成的盘点，请盘点完再进行次操作",Toast.LENGTH_LONG).show();
             return true;
         }

@@ -62,7 +62,6 @@ import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.TransferOutActivity;
-import com.runwise.supply.repertory.EditCountDialog;
 import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -122,6 +121,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private RelativeLayout rl_title;
     @ViewInject(R.id.iv_call)
     private ImageView mIvCallBtn;
+    private View mViewNotice;
 
     private LayoutInflater layoutInflater;
     private ConvenientBanner banner;
@@ -166,6 +166,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         dqCountTv = (TextView) headView.findViewById(R.id.dqCountTv);
         loadingLayout = (LoadingLayout)headView.findViewById(R.id.loadingLayout);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
+        mViewNotice = headView.findViewById(R.id.iv_notice);
         headView.findViewById(R.id.lqLL).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -422,11 +423,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     InventoryResponse.InventoryBean inventoryBean = inventoryResult.getList().get(0);
                     //有确认中的盘点单，则显示
                     if("confirm".equals(inventoryBean.getState())) {
-                        if(getActivity()!=null){
-                            InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);
-                            EventBus.getDefault().post(new InventoryInProgressEvent());
-                        }
+                        if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);
                         inventoryList.add(inventoryBean);
+                    }else{//没有确认中的盘点单
+                        if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
+                    }
+                    //如果是当前用户盘点中，需要展示提示
+                    if(GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
+                        EventBus.getDefault().post(new InventoryInProgressEvent());
                     }
                 }
                 inventoryRequesting = false;
@@ -983,4 +987,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         request.setDate_type(0);
         sendConnection("/api/v2/inventory/list",request,REQUEST_INVENTORY_LIST,false,FirstPageInventoryResult.class);
     }
+
+    public void showInventoryNotice(){
+        if(InventoryCacheManager.getInstance(getActivity()).isInventoryInProgress()){
+            mViewNotice.setVisibility(View.VISIBLE);
+            //关闭按钮
+            mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v->{
+                mViewNotice.setVisibility(View.GONE);
+            });
+        }else{
+            mViewNotice.setVisibility(View.GONE);
+        }
+    }
+
 }
