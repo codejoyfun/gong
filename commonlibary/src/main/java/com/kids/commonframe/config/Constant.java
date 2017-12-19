@@ -18,7 +18,7 @@ public class Constant {
     public static String RELEASE_URL = "http://erp.runwise.cn";
 
 
-    public static String UNLOGIN_URL = "http://runwise.iask.in";
+    public static String UNLOGIN_URL = "http://runwise.iask.in:58069";
     public static String UNLOGIN_DB = "lbz";
 
     //测试环境地址

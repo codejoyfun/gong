@@ -29,6 +29,7 @@ import com.kids.commonframe.base.ReLoginData;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import org.w3c.dom.Text;
 
