@@ -181,7 +181,7 @@ public class InventoryActivity extends NetWorkActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
-                viewpager.setCurrentItem(position);
+                viewpager.setCurrentItem(position,false);
             }
 
             @Override
