@@ -25,11 +25,12 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.firstpage.OrderDetailActivity;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.view.ProductTypePopup;
 import com.runwise.supply.view.SystemUpgradeLayout;
 
@@ -60,6 +61,8 @@ public class StockFragment extends NetWorkFragment {
     private ImageView ivOpen;
     @ViewInject(R.id.layout_system_upgrade_notice)
     private SystemUpgradeLayout mLayoutUpgradeNotice;
+    @ViewInject(R.id.include_notice)
+    private View mViewNotice;
     private TabPageIndicatorAdapter adapter;
 
     boolean isLogin;
@@ -74,6 +77,10 @@ public class StockFragment extends NetWorkFragment {
         isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
             requestCategory();
+            //展示盘点中
+            if(InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress()){
+                showNotice(new ShowInventoryNoticeEvent(true));
+            }
         }
         else{
             buildData();
@@ -322,20 +329,21 @@ public class StockFragment extends NetWorkFragment {
         }
     }
 
-
+    /**
+     * 展示盘点中提示
+     */
+    boolean isClose = false;
+    @Subscribe
+    public void showNotice(ShowInventoryNoticeEvent showInventoryNoticeEvent){
+        if(showInventoryNoticeEvent.isShow && !isClose){
+            mViewNotice.setVisibility(View.VISIBLE);
+            mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v->{
+                isClose = true;
+                mViewNotice.setVisibility(View.GONE);
+            });
+        }else{
+            if(!showInventoryNoticeEvent.isShow)isClose = false;
+            mViewNotice.setVisibility(View.GONE);
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.kids.commonframe.base.util.SPUtils;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.entity.InventoryResponse;
-import com.runwise.supply.orderpage.TempOrderManager;
+import com.runwise.supply.entity.ShowInventoryNoticeEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,12 +35,15 @@ public class InventoryCacheManager {
 
     private static final String PREF_NAME = "inventory2_";
     private static final String PREF_BRIEF = "inventory_list_items2";
+    private static final String PREF_KEY_IS_INVENTORY = "is_inventory";
     private SharedPreferences mInventoryPrefs;
     private SharedPreferences mListPrefs;
+    private SharedPreferences mPrefs;
 
     private InventoryCacheManager(Context context){
         mInventoryPrefs = context.getSharedPreferences(PREF_NAME,0);
         mListPrefs = context.getSharedPreferences(PREF_BRIEF,0);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     private static InventoryCacheManager sInstance;
@@ -113,6 +119,44 @@ public class InventoryCacheManager {
             e.printStackTrace();
         }
         return dataList;
+    }
+
+    /**
+     * 设置是否盘点中
+     * @param isInventory
+     */
+    public void setIsInventory(boolean isInventory){
+        mPrefs.edit().putBoolean(PREF_KEY_IS_INVENTORY,isInventory).apply();
+    }
+
+    /**
+     * 获取是否盘点中
+     * @return
+     */
+    public boolean isInventoryInProgress(){
+        return mPrefs.getBoolean(PREF_KEY_IS_INVENTORY,false);
+    }
+
+    /**
+     * 获取是否盘点中,并弹提示
+     * @return
+     */
+    public boolean checkIsInventory(Context context){
+        if(isInventoryInProgress()){
+            Toast.makeText(context,"当前门店仓库盘点中，请先完成或取消！",Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return false;
+    }
+
+    boolean shouldShow = false;
+    public void shouldShowInventoryInProgress(boolean shouldShow){
+        EventBus.getDefault().post(new ShowInventoryNoticeEvent(shouldShow));
+        this.shouldShow = shouldShow;
+    }
+
+    public boolean shouldShowInventoryInProgress(){
+        return shouldShow;
     }
 
     /**

@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rl_upgrade_notice"
-        android:visibility="gone"
-        android:background="#FEFCEC">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rl_notice"
+    android:background="#FEFCEC">
         <ImageView
             android:id="@+id/iv_notice"
             android:layout_width="15dp"
             android:layout_height="14dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/notice_ico"
+            android:src="@drawable/ico_inventory_warn"
             android:layout_marginLeft="14dp"
             android:layout_marginRight="10dp"/>
         <TextView
             android:layout_toRightOf="@+id/iv_notice"
-            android:layout_toLeftOf="@+id/iv_warn_closed"
-            android:id="@+id/tv_upgrade_notice"
+            android:layout_toLeftOf="@+id/iv_notice_close"
+            android:id="@+id/tv_notice"
             android:layout_width="match_parent"
             android:layout_height="36dp"
-            android:text="234234asdgasdgasgaegagasdgawegaegasdgawegawegaegawegaewga尾巴"
+            android:text="@string/inventory_notice"
             android:singleLine="true"
             android:marqueeRepeatLimit="marquee_forever"
             android:ellipsize="marquee"
@@ -28,7 +27,7 @@
             android:layout_centerVertical="true"
             android:textColor="#F86E21"/>
         <ImageView
-            android:id="@+id/iv_warn_closed"
+            android:id="@+id/iv_notice_close"
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:src="@drawable/warning_ico_closed"

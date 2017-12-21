@@ -54,6 +54,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
@@ -530,6 +531,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         returnTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(InventoryCacheManager.getInstance(OrderDetailActivity.this).checkIsInventory(OrderDetailActivity.this))return;
                 //跳转到退换流程：如果超过7天,不支持退货
                 if (isMoreThanReturnData()) {
                     dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");

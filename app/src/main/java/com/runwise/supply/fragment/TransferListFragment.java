@@ -30,6 +30,7 @@ import com.runwise.supply.TransferInActivity;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import java.text.DecimalFormat;
@@ -324,6 +325,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                         @Override
                         public void onClick(View view) {
                             if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
                             Intent intent = new Intent(getActivity(), TransferInActivity.class);
                             intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
                             startActivity(intent);
@@ -373,6 +375,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                         @Override
                         public void onClick(View view) {
                             if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                            if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
                             int realPosition = (int) view.getTag();
                             if (realPosition == position) {
                                 //变成可用状态
