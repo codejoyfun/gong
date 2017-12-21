@@ -17,7 +17,6 @@ public class Constant {
 
     public static String RELEASE_URL = "http://erp.runwise.cn";
 
-
 //    public static String UNLOGIN_URL = "http://lbz.prd.runwise.cn";
 //    public static String UNLOGIN_DB = "LBZ-Golive-Test-0001";
     public static String UNLOGIN_URL = "http://gethost.runwise.cn";

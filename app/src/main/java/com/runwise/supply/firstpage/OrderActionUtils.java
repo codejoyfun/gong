@@ -6,6 +6,8 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 
+import static com.runwise.supply.firstpage.entity.OrderState.PEISONG;
+
 /**
  * Created by libin on 2017/8/20.
  */
@@ -19,8 +21,11 @@ public class OrderActionUtils {
             btnText = "取消订单";
         }else if(bean.getState().equals(OrderState.SALE.getName())){
             //不做任务事情，返回null,隐藏此按钮
-        }else if(bean.getState().equals(OrderState.PEISONG.getName())){
-            if (bean.isIsDoubleReceive()){
+        }else if(bean.getState().equals(PEISONG.getName())){
+            if(!TextUtils.isEmpty(bean.getReceiveError())){
+                btnText = "重新提交";
+            }
+            else if (bean.isIsDoubleReceive()){
                 if (bean.isIsFinishTallying()){
                     //双人收货
                     btnText = "收货";
@@ -50,7 +55,10 @@ public class OrderActionUtils {
     //通过状态字，得到订单的下一步操作是什么
     public static OrderDoAction getDoActionByText(String doAction, OrderResponse.ListBean bean){
         OrderDoAction action = null;
-        if ("取消订单".equals(doAction)){
+        if("重新提交".equals(doAction)){
+            action = OrderDoAction.RECEIVE_AGAIN;
+        }
+        else if ("取消订单".equals(doAction)){
             action = OrderDoAction.CANCLE;
         }else if("点货".equals(doAction)){
             //如果有人在点货，则弹窗提示
@@ -62,8 +70,9 @@ public class OrderActionUtils {
             }
 
         }else if("收货".equals(doAction)){
-            //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
-            if (bean.isIsDoubleReceive()){
+            if(bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())){//收货失败
+                action = OrderDoAction.RECEIVE_AGAIN;//重新收货
+            } else if (bean.isIsDoubleReceive()){//在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
                 String userName = GlobalApplication.getInstance().getUserName();
                 if (bean.getTallyingUserName().equals(userName)){
                     action = OrderDoAction.SELFTALLY;
