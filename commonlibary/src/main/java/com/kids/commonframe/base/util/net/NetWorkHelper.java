@@ -235,7 +235,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      * @param showDialog 是否显示进度条
      */
     public long sendConnection(int method, String url, String[] argsKeys,
-                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList) {
+                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList,boolean useUnLoginDB) {
         setRequestTimestamp();
         long timeStamp = REQUEST_TIMESTAMP;
         if (argsKeys.length != argsValues.length) {
@@ -256,6 +256,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         RequestErrorListener errorLietener = new RequestErrorListener(where);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
+        httpCallback.setUseUnLoginDB(useUnLoginDB);
 
         Request<T> request = requestQuerue.add(httpCallback);
         requestStack.put(where, request);
@@ -319,7 +320,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        return sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        return sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,false);
     }
 
     /**
@@ -331,7 +332,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      * @param showDialog  对话框
      * @param targerClass 结果class类
      */
-    public void sendConnection(String host,String bizName, Object params, int where, boolean showDialog, Class<?> targerClass) {
+    public void sendConnection(String host,String bizName, Object params, int where, boolean showDialog, Class<?> targerClass,boolean useUnLoginDB) {
         this.setJsonParseType();
         if (params != null) {
             bodyParamStr = JSON.toJSONString(params);
@@ -345,7 +346,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, host + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        sendConnection(Method.POST, host + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,useUnLoginDB);
     }
 
 
@@ -355,7 +356,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,false);
     }
 
     public void sendConnection(String bizName, Map<String, String> paramMap, int where, boolean showDialog, Class<?> targerClass) {
@@ -365,7 +366,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,false);
     }
 
     /**
@@ -383,7 +384,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList,false);
     }
 
 
@@ -457,6 +458,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         private List<Part> filePartList;
         String url;
         private long timeStamp;
+        private boolean useUnLoginDB = false;
 
         public HttpCallBack(String url, Listener<T> listener, ErrorListener errorListener, int where, int method, Map<String, String> paramsMap, String paramsStr, List<Part> partList, Class<?> targerClass,long timeStamp) {
             super(method, url, listener, errorListener);
@@ -469,6 +471,10 @@ public class NetWorkHelper<T extends BaseEntity> {
             this.paramsStr = paramsStr;
             this.filePartList = partList;
             this.timeStamp = timeStamp;
+        }
+
+        public void setUseUnLoginDB(boolean useUnLoginDB) {
+            this.useUnLoginDB = useUnLoginDB;
         }
 
         @Override
@@ -589,8 +595,10 @@ public class NetWorkHelper<T extends BaseEntity> {
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
-
-            if(url.contains("/api/get/host")) {
+            if(useUnLoginDB){
+                headerMap.put("X-Odoo-Db", Constant.UNLOGIN_DB);
+            }
+            else if(url.contains("/api/get/host")) {
                 headerMap.put("X-Odoo-Db", Constant.UNLOGIN_DB);
             }else{
                 if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")||SPUtils.isLoginConflict(context)

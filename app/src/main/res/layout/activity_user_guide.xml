@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/windowBackground"
+    android:orientation="vertical"
+    android:paddingBottom="12dp"
+    >
+    <include layout="@layout/common_title_bar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+            <RelativeLayout
+                android:id="@+id/rl_guide_pic"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/white_btn_selector"
+                android:layout_marginTop="12dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="18dp"
+                    android:text="图片教程"
+                    android:textColor="#3e3e3e"
+                    android:textSize="@dimen/bottom_tab_font_size"
+                    android:layout_toRightOf="@id/setItemIcon_1"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/itemlst_bigger"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#e8eae7"
+                    android:layout_marginLeft="18dp"
+                    android:layout_alignParentBottom="true"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rl_guide_video"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/white_btn_selector"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="18dp"
+                    android:text="视频教程"
+                    android:textColor="#3e3e3e"
+                    android:textSize="@dimen/bottom_tab_font_size"
+                    android:layout_toRightOf="@id/setItemIcon_6"
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_user_guide_expand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/itemlst_bigger"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#e8eae7"
+                    android:layout_marginLeft="18dp"
+                    android:layout_alignParentBottom="true"
+                    />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_user_guide_container"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true">
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

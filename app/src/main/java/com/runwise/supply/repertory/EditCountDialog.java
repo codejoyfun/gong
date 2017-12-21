@@ -73,6 +73,7 @@ public class EditCountDialog extends Dialog {
         //mTvTitle.setText(mInventoryProduct.getProduct().getName());
         mEtCount.setText(NumberUtil.getIOrD(mInventoryProduct.getEditNum()));
         mEtCount.selectAll();
+        mTvTitle.setText(mInventoryProduct.getProduct().getName());
         mTvButton.setOnClickListener(v->{
             String etValue = mEtCount.getText().toString();
             if(!TextUtils.isEmpty(etValue)){
@@ -82,7 +83,8 @@ public class EditCountDialog extends Dialog {
             }
             dismiss();
         });
-       showInputMethod();
+        mIvClose.setOnClickListener(v->dismiss());
+        showInputMethod();
     }
 
 

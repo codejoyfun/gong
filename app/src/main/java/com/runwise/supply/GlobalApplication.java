@@ -12,6 +12,8 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.ImagePipelineConfigFactory;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.runwise.supply.message.MessageFragment;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.commonsdk.UMConfigure;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,6 +50,8 @@ public class GlobalApplication extends MultiDexApplication {
         if (!EventBus.getDefault().isRegistered(this)){
             EventBus.getDefault().register(this);
         }
+        //umeng
+        UMConfigure.init(this, "5a38c8148f4a9d723c00007b", "default", UMConfigure.DEVICE_TYPE_PHONE, "");
     }
 
     public static GlobalApplication getInstance() {

@@ -1,12 +1,15 @@
 package com.kids.commonframe.base;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.kids.commonframe.R;
 
@@ -15,7 +18,7 @@ public class WebViewActivity extends BaseActivity {
     public static String WEB_URL = "web_url";
 
     private ProgressBar progressBar;
-    private WebView x5WebView;
+    protected WebView x5WebView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,22 +64,25 @@ public class WebViewActivity extends BaseActivity {
         webSetting.setJavaScriptEnabled(true);
         webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
         webSetting.setAllowFileAccess(true);
-        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webSetting.setSupportZoom(true);
-        webSetting.setBuiltInZoomControls(true);
+//        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+//        webSetting.setSupportZoom(true);
+//        webSetting.setBuiltInZoomControls(true);
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(true);
         webSetting.setDisplayZoomControls(false);
         //webSetting.setLoadWithOverviewMode(true);
         webSetting.setAppCacheEnabled(true);
-        //webSetting.setDatabaseEnabled(true);
+        webSetting.setDatabaseEnabled(true);
         webSetting.setDomStorageEnabled(true);
         webSetting.setGeolocationEnabled(true);
         webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
         // webSetting.setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
-        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
+        webSetting.setPluginState(WebSettings.PluginState.ON);
         //webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
         webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSetting.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
     }
 
     public void registerInterface(WebView x5WebView) {

@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
@@ -38,6 +39,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.ReceiveDetailActivity;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.CheckOrderResponse;
@@ -62,7 +64,9 @@ import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.TransferOutActivity;
+import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.repertory.InventoryActivity;
+import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
@@ -79,6 +83,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.runwise.supply.R.id.lqLL;
+import static com.runwise.supply.ReceiveDetailActivity.INTENT_KEY_ORDER_ID;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_CANCEL;
 import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_OUTPUT_CONFIRM;
@@ -108,6 +113,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_READ = 11;
     private static final int REQUEST_CANCEL_INVENTORY = 12;
     private static final int REQUEST_INVENTORY_LIST = 13;
+    private static final int REQUEST_RECEIVE_AGAIN = 14;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -145,6 +151,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private List<TempOrderManager.TempOrder> mTempOrders;//本地保存的提交中的订单的数据
     //需求为点击关闭后，下次进入需要重新显示，所以用成员变量标记是否被用户关闭
     private boolean isNoticeClose = false;//是否点击关闭了盘点中提示，防止每次刷到数据都重新显示
+    private OrderResponse.ListBean mReceiveAgainOrder;//记录重新收货的订单
 
     public LoginedFirstFragment() {
     }
@@ -248,9 +255,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 //根据点击的position，确定是退货还是正常订单
                 int realPosition = (int) l;
                 if (adapter.getItemViewType(realPosition) == adapter.TYPE_ORDER) {
+                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
+                    if(!TextUtils.isEmpty(bean.getReceiveError())){//收货失败
+                        Intent intent = new Intent(getActivity(),ReceiveDetailActivity.class);
+                        intent.putExtra(INTENT_KEY_ORDER_ID,bean.getOrderID());
+                        startActivity(intent);
+                        return;
+                    }
                     Intent intent = new Intent(mContext, OrderDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
                     setOrderRead(bean);
                     bundle.putParcelable("order", bean);
                     intent.putExtras(bundle);
@@ -442,6 +455,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 }
                 inventoryRequesting = false;
                 checkSuccess();
+                break;
+            case REQUEST_RECEIVE_AGAIN:
+                intent = new Intent(mContext, ReceiveSuccessActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order", mReceiveAgainOrder);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                EventBus.getDefault().post(new UpdateRepertory());
+                EventBus.getDefault().post(new OrderUpdateEvent());
                 break;
         }
     }
@@ -647,6 +669,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 intent.putExtras(bundle);
                 startActivity(intent);
                 break;
+            case RECEIVE_AGAIN://收货失败，重新收货
+                mReceiveAgainOrder = (OrderResponse.ListBean) adapter.getItem(position);
+                StringBuffer sb = new StringBuffer("/gongfu/order/");
+                sb.append(mReceiveAgainOrder.getOrderID()).append("/receive/again");
+                Object request = null;
+                sendConnection(sb.toString(), request, REQUEST_RECEIVE_AGAIN, true, BaseEntity.ResultBean.class);
+                break;
             case SETTLERECEIVE:
                 //点货，计入结算单位
                 Intent sIntent = new Intent(mContext, ReceiveActivity.class);
@@ -809,6 +838,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         //同时查订单和退货单
         Object requestOrder = null;
         sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
+//        sendConnection(Request.Method.POST,"http://rap2api.taobao.org/app/mock/2108/POST/haha", new String[]{}, new String[]{}, FROMORDER, false, OrderResponse.class);
+
     }
 
     private void requestLB() {

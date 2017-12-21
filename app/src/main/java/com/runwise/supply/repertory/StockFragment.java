@@ -148,7 +148,7 @@ public class StockFragment extends NetWorkFragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
-                viewPager.setCurrentItem(position);
+                viewPager.setCurrentItem(position,false);
                 mTypeWindow.dismiss();
 
                 //刷新当前fragment

@@ -45,7 +45,7 @@ public abstract class NetWorkActivity extends BaseActivity implements NetWorkHel
 	}
 	public  void sendConnection(int method , String url, String[] argsKeys,
 			String[] argsValues, int where, boolean showDialog ,Class<BaseEntity> targerClass) {
-		netWorkHelper.sendConnection(method, url, argsKeys, argsValues, where, showDialog, targerClass,null);
+		netWorkHelper.sendConnection(method, url, argsKeys, argsValues, where, showDialog, targerClass,null,false);
 	}
 
 	/**
@@ -64,8 +64,8 @@ public abstract class NetWorkActivity extends BaseActivity implements NetWorkHel
 	/**
 	 * json请求接口
 	 */
-	public void sendConnection(String host,String bizName,Object params, int where, boolean showDialog, Class<?> targerClass) {
-		netWorkHelper.sendConnection(host,bizName, params , where, showDialog, targerClass);
+	public void sendConnection(String host,String bizName,Object params, int where, boolean showDialog, Class<?> targerClass, boolean useUnLoginDB) {
+		netWorkHelper.sendConnection(host,bizName, params , where, showDialog, targerClass,useUnLoginDB);
 	}
 
 	public void sendConnection(String bizName, int where, boolean showDialog, Class<?> targerClass) {
