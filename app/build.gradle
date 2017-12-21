@@ -76,7 +76,7 @@ android {
         applicationId "com.runwise.supply"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 20171218
+        versionCode 20171219
         versionName "V1.2.2"
         multiDexEnabled true
         ndk {

@@ -39,6 +39,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.ReceiveDetailActivity;
 import com.runwise.supply.TransferDetailActivity;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.CheckOrderResponse;
@@ -55,7 +56,6 @@ import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
-import com.runwise.supply.firstpage.entity.ReceiveResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.mine.ProcurementLimitActivity;
 import com.runwise.supply.mine.entity.ChannelPandian;
@@ -64,7 +64,6 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
-import com.runwise.supply.repertory.EditCountDialog;
 import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.InventoryCacheManager;
@@ -83,6 +82,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.runwise.supply.R.id.lqLL;
+import static com.runwise.supply.ReceiveDetailActivity.INTENT_KEY_ORDER_ID;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_CANCEL;
 import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_OUTPUT_CONFIRM;
@@ -250,9 +250,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 //根据点击的position，确定是退货还是正常订单
                 int realPosition = (int) l;
                 if (adapter.getItemViewType(realPosition) == adapter.TYPE_ORDER) {
+                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
+                    if(!TextUtils.isEmpty(bean.getReceiveError())){//收货失败
+                        Intent intent = new Intent(getActivity(),ReceiveDetailActivity.class);
+                        intent.putExtra(INTENT_KEY_ORDER_ID,bean.getOrderID());
+                        startActivity(intent);
+                        return;
+                    }
                     Intent intent = new Intent(mContext, OrderDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
                     setOrderRead(bean);
                     bundle.putParcelable("order", bean);
                     intent.putExtras(bundle);
@@ -813,8 +819,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
         //同时查订单和退货单
         Object requestOrder = null;
-//        sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
-        sendConnection(Request.Method.POST,"http://rap2api.taobao.org/app/mock/2108/POST/haha", new String[]{}, new String[]{}, FROMORDER, false, OrderResponse.class);
+        sendConnection("/gongfu/v2/order/undone_orders/", request, FROMORDER, false, OrderResponse.class);
+//        sendConnection(Request.Method.POST,"http://rap2api.taobao.org/app/mock/2108/POST/haha", new String[]{}, new String[]{}, FROMORDER, false, OrderResponse.class);
 
     }
 
