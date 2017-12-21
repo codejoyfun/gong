@@ -26,22 +26,22 @@ public class GuideResponse implements Serializable{
 
     public static class GuideItem implements Parcelable,Serializable{
         private String name;
-        private String url;
+        private String URL;
 
         public String getName() {
             return name;
         }
 
-        public String getUrl() {
-            return url;
+        public String getURL() {
+            return URL;
         }
 
         public void setName(String name) {
             this.name = name;
         }
 
-        public void setUrl(String url) {
-            this.url = url;
+        public void setURL(String URL) {
+            this.URL = URL;
         }
 
 
@@ -53,7 +53,7 @@ public class GuideResponse implements Serializable{
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeString(this.name);
-            dest.writeString(this.url);
+            dest.writeString(this.URL);
         }
 
         public GuideItem() {
@@ -61,7 +61,7 @@ public class GuideResponse implements Serializable{
 
         protected GuideItem(Parcel in) {
             this.name = in.readString();
-            this.url = in.readString();
+            this.URL = in.readString();
         }
 
         public static final Creator<GuideItem> CREATOR = new Creator<GuideItem>() {

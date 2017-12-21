@@ -2,40 +2,34 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.util.ArrayMap;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.WebViewActivity;
-import com.kids.commonframe.base.bean.UserLoginEvent;
-import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.StorageUtils;
-import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.view.CustomBottomDialog;
+import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
-import com.runwise.supply.IWebViewActivity;
-import com.runwise.supply.InfoActivity;
-import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.business.entity.UserGuideRequest;
 import com.runwise.supply.entity.GuideResponse;
-import com.runwise.supply.mine.entity.UrlResult;
+import com.runwise.supply.entity.RemUser;
+import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.UmengUtil;
-import com.umeng.analytics.MobclickAgent;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.kids.commonframe.base.WebViewActivity.WEB_TITLE;
 import static com.kids.commonframe.base.WebViewActivity.WEB_URL;
@@ -67,8 +61,16 @@ public class UserGuideActivity extends NetWorkActivity {
      * 请求用户手册
      */
     private void requestGuide(){
-        Object request = null;
-        sendConnection("/test",REQUEST_USER_GUIDE,false,GuideResponse.class);
+        UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+        DbUtils mDb = MyDbUtil.create(this);
+        try{
+            RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
+//            List<RemUser> userList = mDb.findAll(Selector.from(RemUser.class).orderBy("id", true));
+            UserGuideRequest request = new UserGuideRequest(rem.getCompany());
+            sendConnection(Constant.UNLOGIN_URL,"/api/user/guide",request,REQUEST_USER_GUIDE,false,GuideResponse.class,true);
+        }catch (DbException e){
+            e.printStackTrace();
+        }
     }
 
     @OnClick({R.id.rl_guide_pic,R.id.rl_guide_video})
@@ -91,7 +93,7 @@ public class UserGuideActivity extends NetWorkActivity {
         for(final GuideResponse.GuideItem guideItem:mGuideResponse.getList()){
             View guideView = inflater.inflate(R.layout.item_video_guide,mLlContainer,false);
             ((TextView)guideView.findViewById(R.id.tv_guide_name)).setText(guideItem.getName());
-            guideView.setOnClickListener(v->gotoWebview(guideItem.getName(),guideItem.getUrl()));
+            guideView.setOnClickListener(v->gotoWebview(guideItem.getName(),guideItem.getURL()));
             mLlContainer.addView(guideView);
         }
     }
@@ -123,7 +125,7 @@ public class UserGuideActivity extends NetWorkActivity {
                 mGuideResponse.setList(new ArrayList<>());
                 GuideResponse.GuideItem item = new GuideResponse.GuideItem();
                 item.setName("下蛋教程");
-                item.setUrl("http://v.youku.com/v_show/id_XMzI0MjY5MjM4OA==.html?spm=a2hww.20027244.m_250036.5~5!2~5~5~5~1!2~3~A&f=51392393d");
+                item.setURL("http://v.youku.com/v_show/id_XMzI0MjY5MjM4OA==.html?spm=a2hww.20027244.m_250036.5~5!2~5~5~5~1!2~3~A&f=51392393d");
                 mGuideResponse.getList().add(item);
                 inflateGuideView();
                 break;
