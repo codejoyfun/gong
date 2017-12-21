@@ -274,7 +274,7 @@ public class OrderAdapter extends IBaseAdapter {
             //背景色
             if(bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())){
                 viewHolder.mmRlRoot.setBackgroundColor(mColorPink);
-                viewHolder.stateTv.setText("配送失败");
+                viewHolder.stateTv.setText("收货失败");
                 viewHolder.stateTv.setTextColor(mColorRed);
                 viewHolder.mmViewArrowArea.setVisibility(View.GONE);
             }else{

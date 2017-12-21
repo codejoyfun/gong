@@ -438,8 +438,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 checkSuccess();
                 break;
             case REQUEST_RECEIVE_AGAIN:
-                requestReturnList();
-
                 intent = new Intent(mContext, ReceiveSuccessActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("order", mReceiveAgainOrder);
