@@ -143,19 +143,19 @@ public class InventoryCacheManager {
      */
     public boolean checkIsInventory(Context context){
         if(isInventoryInProgress()){
-            Toast.makeText(context,"当前有未完成的盘点，请盘点完再进行次操作",Toast.LENGTH_LONG).show();
+            Toast.makeText(context,"当前门店仓库盘点中，请先完成或取消！",Toast.LENGTH_LONG).show();
             return true;
         }
         return false;
     }
 
     boolean shouldShow = false;
-    public void setShouldShow(boolean shouldShow){
+    public void shouldShowInventoryInProgress(boolean shouldShow){
         EventBus.getDefault().post(new ShowInventoryNoticeEvent(shouldShow));
         this.shouldShow = shouldShow;
     }
 
-    public boolean shouldShow(){
+    public boolean shouldShowInventoryInProgress(){
         return shouldShow;
     }
 

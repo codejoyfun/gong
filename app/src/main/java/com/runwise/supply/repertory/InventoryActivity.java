@@ -1,6 +1,5 @@
 package com.runwise.supply.repertory;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -8,10 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -43,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
-import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.repertory.EditRepertoryAddActivity.INTENT_FILTER;
@@ -97,7 +91,7 @@ public class InventoryActivity extends NetWorkActivity {
         super.onStop();
         if(!isSubmitted) {
             InventoryCacheManager.getInstance(this).saveInventory(mInventoryBean);
-            InventoryCacheManager.getInstance(this).setShouldShow(true);
+            InventoryCacheManager.getInstance(this).shouldShowInventoryInProgress(true);
         }
     }
 
@@ -135,7 +129,7 @@ public class InventoryActivity extends NetWorkActivity {
 //                }
                 //计算盘点后数量
                 EditRepertoryFinishActivity.start(this,total,mInventoryTotal);
-                InventoryCacheManager.getInstance(this).setShouldShow(false);
+                InventoryCacheManager.getInstance(this).shouldShowInventoryInProgress(false);
                 finish();
                 break;
         }

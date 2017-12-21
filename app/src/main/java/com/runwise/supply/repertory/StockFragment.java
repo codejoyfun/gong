@@ -27,7 +27,6 @@ import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.firstpage.OrderDetailActivity;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.mine.entity.SearchKeyAct;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
@@ -79,7 +78,7 @@ public class StockFragment extends NetWorkFragment {
         if(isLogin) {
             requestCategory();
             //展示盘点中
-            if(InventoryCacheManager.getInstance(getActivity()).shouldShow()){
+            if(InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress()){
                 showNotice(new ShowInventoryNoticeEvent(true));
             }
         }

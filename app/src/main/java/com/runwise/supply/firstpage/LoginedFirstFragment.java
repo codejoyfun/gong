@@ -18,7 +18,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
@@ -429,7 +428,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 //本地删除，刷新页面
                 ToastUtil.show(mContext, "取消成功");
                 InventoryCacheManager.getInstance(getActivity()).removeInventory(mCancelInventory.getInventoryID());
-                InventoryCacheManager.getInstance(getActivity()).setShouldShow(false);
+                InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(false);
                 adapter.getList().remove(mCancelInventory);
                 adapter.notifyDataSetChanged();
                 break;
@@ -448,9 +447,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
                     //如果是当前用户盘点中，需要展示提示
                     if(isInProgresss && GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
-                        InventoryCacheManager.getInstance(getActivity()).setShouldShow(true);
+                        InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(true);
                     }else{
-                        InventoryCacheManager.getInstance(getActivity()).setShouldShow(false);
+                        InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(false);
                     }
                 }
                 inventoryRequesting = false;
