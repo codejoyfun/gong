@@ -68,11 +68,8 @@ public class ReceiveDetailActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_async_receive);
-//        if (AndroidWorkaround.checkDeviceHasNavigationBar(this)){
-//            AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
-//        }
         setTitleText(true, "收货清单");
-        setTitleLeftIcon(true, R.drawable.nav_back);
+        showBackBtn();
         Bundle bundle = getIntent().getExtras();
         orderId = bundle.getInt(INTENT_KEY_ORDER_ID, 0);
 
@@ -130,6 +127,14 @@ public class ReceiveDetailActivity extends NetWorkActivity {
         for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
             map.put(category, new ArrayList<OrderResponse.ListBean.LinesBean>());
+        }
+        for (OrderResponse.ListBean.LinesBean linesBean : bean.getLines()) {
+            ArrayList<OrderResponse.ListBean.LinesBean> linesBeanList = map.get(linesBean.getCategory());
+            if (linesBeanList == null) {
+                linesBeanList = new ArrayList<>();
+                map.put(linesBean.getCategory(), linesBeanList);
+            }
+            linesBeanList.add(linesBean);
         }
 
         for (String category : categoryRespone.getCategoryList()) {
