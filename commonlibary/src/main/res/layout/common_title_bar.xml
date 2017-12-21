@@ -24,6 +24,14 @@
             android:visibility="gone"
             />
 
+        <ImageView
+            android:id="@+id/title_iv_left2"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            android:visibility="gone"
+            />
+
         <TextView
             android:id="@+id/title_tv_left"
             android:layout_width="0dp"
