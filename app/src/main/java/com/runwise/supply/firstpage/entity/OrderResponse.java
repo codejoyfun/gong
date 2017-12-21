@@ -108,6 +108,7 @@ public class OrderResponse {
         private boolean canAlter;
         private boolean isAsyncOrder;
         private String orderUserIDs;
+        private String receiveError;//是否收货失败
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -171,6 +172,7 @@ public class OrderResponse {
             canAlter = in.readByte() != 0;
             isAsyncOrder = in.readByte() != 0;
             orderUserIDs = in.readString();
+            receiveError = in.readString();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -465,6 +467,14 @@ public class OrderResponse {
             this.returnOrders = returnOrders;
         }
 
+        public String getReceiveError() {
+            return receiveError;
+        }
+
+        public void setReceiveError(String receiveError) {
+            this.receiveError = receiveError;
+        }
+
         /**
          * 是否是调拨单
          * @return
@@ -569,6 +579,7 @@ public class OrderResponse {
             dest.writeByte((byte) (canAlter ? 1:0));
             dest.writeByte((byte) (isAsyncOrder ? 1:0));
             dest.writeString(orderUserIDs);
+            dest.writeString(receiveError);
         }
 
         public static class StoreBean {
