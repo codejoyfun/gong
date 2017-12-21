@@ -671,7 +671,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                     && bean.getOrderSettleName().contains("单次结算")) {
                 setUpPaymenInstrument();
             }
-            if (bean.getState().equals(OrderState.DRAFT.getName())) {
+            if (bean.isCanAlter()/*bean.getState().equals(OrderState.DRAFT.getName())*/) {
                 setTitleRightText(true, "修改");
                 isModifyOrder = true;
             } else if (!bean.isUnApplyService() && (bean.getState().equals("rated") || bean.getState().equals("done"))) {

@@ -29,7 +29,6 @@
                     style="@style/MyCustomTabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
-                    android:layout_marginRight="30dp"
                     android:background="@color/white"
                     app:tabMode="scrollable" />
 
@@ -40,6 +39,7 @@
                     android:layout_alignParentRight="true"
                     android:background="@drawable/tab_shadow"
                     android:padding="15dp"
+                    android:visibility="gone"
                     android:src="@drawable/arrow" />
             </RelativeLayout>
 

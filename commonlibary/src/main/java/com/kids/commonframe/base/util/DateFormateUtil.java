@@ -10,6 +10,8 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
+import com.facebook.drawee.view.SimpleDraweeView;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -563,5 +565,28 @@ public class DateFormateUtil {
 			return "";
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		return dateFormat.format(date);
+	}
+
+	public static long getDaysToExpire(String timeStr) {
+		if(TextUtils.isEmpty(timeStr)) {
+			return 0;
+		}
+		//2017-10-03 11:25:03
+		final Calendar calendar = dateFormatFromString(timeStr, DateFormateUtil.FORMAT_FULL_DATE_TIME_WITH_SYMBOL);
+		calendar.set(Calendar.AM_PM,Calendar.AM);
+		calendar.set(Calendar.HOUR,8);
+		calendar.set(Calendar.MINUTE,0);
+		calendar.set(Calendar.SECOND,0);
+		calendar.set(Calendar.MILLISECOND,0);
+		Calendar today = Calendar.getInstance();
+		today.set(Calendar.AM_PM,Calendar.AM);
+		today.set(Calendar.HOUR,8);
+		today.set(Calendar.MINUTE,0);
+		today.set(Calendar.SECOND,0);
+		today.set(Calendar.MILLISECOND,0);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Log.d("haha","calendar:"+sdf.format(new Date(calendar.getTimeInMillis()))+" "+sdf.format(new Date(today.getTimeInMillis())) +
+		 " diff:"+(calendar.getTimeInMillis() - today.getTimeInMillis()));
+		return (calendar.getTimeInMillis() - today.getTimeInMillis())/(1000 * 60 * 60 * 24);
 	}
 }

@@ -1,5 +1,6 @@
 package com.runwise.supply.repertory.entity;
 
+import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.io.Serializable;
@@ -137,7 +138,17 @@ public class PandianResult implements Serializable{
             private boolean checked;
             private int type;
             private double editNum;
+            private String uom;
             private ProductBasicList.ListBean product;
+            private List<InventoryResponse.InventoryLot> lotList;
+
+            public List<InventoryResponse.InventoryLot> getLotList() {
+                return lotList;
+            }
+
+            public void setLotList(List<InventoryResponse.InventoryLot> lotList) {
+                this.lotList = lotList;
+            }
 
             public ProductBasicList.ListBean getProduct() {
                 return product;
@@ -249,6 +260,14 @@ public class PandianResult implements Serializable{
 
             public void setProductID(int productID) {
                 this.productID = productID;
+            }
+
+            public String getUom() {
+                return uom;
+            }
+
+            public void setUom(String uom) {
+                this.uom = uom;
             }
         }
     }

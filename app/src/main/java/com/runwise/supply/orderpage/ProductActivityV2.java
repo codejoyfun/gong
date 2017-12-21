@@ -26,18 +26,16 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CartCache;
+import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.AddedProduct;
-import com.runwise.supply.orderpage.entity.CategoryResponseV2;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -48,6 +46,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,12 +57,19 @@ import java.util.Set;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
+import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_FIRST;
 
 /**
  * 分页/二级分类的商品选择页
  * 注意要区分有含有二级分类和完全没有二级分类两种显示
+ *
+ * 加载策略：
+ * 加载每个父类别的fragment，以及父类别的第一个子类别fragment，且不会查商品列表接口
+ * 当父类别fragment被选中时，才查第一个子类别的商品列表接口
+ * 当选择其它的子类别时，才加载其它的子类别fragment，同时查询接口
  *
  * Created by Dong on 2017/7/3.
  */
@@ -95,7 +102,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     protected ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
     protected ProductTypePopup mTypeWindow;//商品类型弹出框
 
-    CategoryResponseV2 categoryResponse;
+    CategoryRespone categoryResponse;
     public static final String INTENT_KEY_BACKAP = "backap";
 
     protected Map<ProductData.ListBean, Integer> mMapCount = new HashMap<>();
@@ -145,7 +152,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 //                }else{
 //                    bean.setInvalid(false);
 //                }
-                mMapCount.put(bean,bean.getCacheCount());
+
+                mMapCount.put(bean,bean.getActualQty());
 
                 if(bean.isCacheSelected())mmSelected.add(bean.getProductID());
             }
@@ -190,17 +198,17 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         ///gongfu/v3/shop/product/list
         GetCategoryRequest request = new GetCategoryRequest();
         request.setUser_id(Integer.valueOf(GlobalApplication.getInstance().getUid()));
-        sendConnection("/api/v2/product/category", request, REQUEST_CATEGORY, true, CategoryResponseV2.class);
+        sendConnection("/api/v3/product/category", request, REQUEST_CATEGORY, true, CategoryRespone.class);
     }
 
     protected void setupViewPager() {
         List<ProductCategoryFragment> categoryFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        for (CategoryResponseV2.Category category : categoryResponse.getCategoryList()) {
-            titles.add(category.getCategoryParent());
+        for (String category : categoryResponse.getCategoryList()) {
+            titles.add(category);
             categoryFragmentList.add(newCategoryFragment(category));
         }
-
+        categoryFragmentList.get(0).getArguments().putBoolean(INTENT_KEY_FIRST, true);
         initUI(titles, categoryFragmentList);
         initPopWindow((ArrayList<String>) titles);
     }
@@ -210,10 +218,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * @param category
      * @return
      */
-    protected ProductCategoryFragment newCategoryFragment(CategoryResponseV2.Category category) {
+    protected ProductCategoryFragment newCategoryFragment(String category) {
         ProductCategoryFragment productCategoryFragment = new ProductCategoryFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(INTENT_KEY_CATEGORY, category);
+        bundle.putString(INTENT_KEY_CATEGORY, category);
         productCategoryFragment.setArguments(bundle);
         return productCategoryFragment;
     }
@@ -221,9 +229,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     /**
      * 供子fragment共享设置商品数量
      */
-    public Map<ProductData.ListBean,Integer> getCountMap(){
-        return mMapCount;
-    }
+//    public Map<ProductData.ListBean,Integer> getCountMap(){
+//        return mMapCount;
+//    }
 
     protected void initPopWindow(ArrayList<String> typeList) {
         final int[] location = new int[2];
@@ -279,29 +287,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
         });
 
-        //如果有二级分类，不显示下拉按钮
-        boolean hasSubcategory = false;
-        for(CategoryResponseV2.Category category: categoryResponse.getCategoryList()){
-            if(category.getCategoryChild()!=null && category.getCategoryChild().length>0){
-                hasSubcategory = true;
-                break;
-            }
-        }
-        if(hasSubcategory){//有二级分类，不显示
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams();
-            params.rightMargin = 0;
-            ivOpen.setVisibility(View.GONE);
-        }
-        else if (titles.size() <= TAB_EXPAND_COUNT) {
+        //统一不不显示下拉
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        } else {
-            ivOpen.setVisibility(View.VISIBLE);
-            smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
-
-        //手动选择第一个类别fragment
-        repertoryEntityFragmentList.get(0).onSelected();
     }
 
     /**
@@ -418,6 +408,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             return;
         }
         Intent intent = new Intent(this,OrderSubmitActivity.class);
+        //判断是否是自助下单
+        intent.putExtra(INTENT_KEY_SELF_HELP,getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false));
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mMapCount.keySet()){
             if(!mmSelected.contains(bean.getProductID()))continue;//木有在购物车中打勾，跳过
@@ -473,7 +465,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         switch (where) {
             case REQUEST_CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
-                categoryResponse = (CategoryResponseV2) resultBean1.getData();
+                categoryResponse = (CategoryRespone) resultBean1.getData();
                 setupViewPager();
                 break;
             default:
@@ -525,6 +517,12 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         public int getCount() {
             return titleList.size();
         }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            super.setPrimaryItem(container, position, object);
+//            fragmentList.get(position).onSelected();
+        }
     }
 
     /**
@@ -554,7 +552,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     /**
      * ************* 以下为弹出的购物车框 ******************
      */
-    List<ProductData.ListBean> mmProductList;//购物车显示用的数据，包含有效和无效商品
+    List<ProductData.ListBean> mmProductList = new ArrayList<>();//购物车显示用的数据，包含有效和无效商品
     @ViewInject(R.id.rv_cart)
     RecyclerView mmRvCart;
     CartAdapter mmCartAdapter;
@@ -628,10 +626,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      */
     protected void initProductListData(){
         mmProductList = new ArrayList<>();
-        //mmProductList.addAll(mMapCount.keySet());//TODO:很重要，必须与mMapCount保持一直
+        //mmProductList.addAll(mMapCount.keySet());
         for(ProductData.ListBean bean:mMapCount.keySet()){//先加入合法商品
             if(!bean.isInvalid())mmProductList.add(bean);
         }
+        //按照添加先后排序
+        Collections.sort(mmProductList, (p1,p2)->(int)(p2.getCartAddedTime() - p1.getCartAddedTime()));
+
         if(mSetInvalid.size()>0){
             mmProductList.add(new ProductData.ListBean());//加入头部
             for(ProductData.ListBean bean:mSetInvalid){//加入失效商品
@@ -678,10 +679,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             holder.listBean = mmProductList.get(position);
             holder.mmTvName.setText(holder.listBean.getName());
             int count = mMapCount.containsKey(holder.listBean)?mMapCount.get(holder.listBean):0;
-            holder.mmTvCount.setText(count+holder.listBean.getProductUom());
+            holder.mmTvCount.setText(count+holder.listBean.getUom());
             StringBuilder sb = new StringBuilder();
             if(GlobalApplication.getInstance().getCanSeePrice()){
-                sb.append("￥"+df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getProductUom()).append(" ");
+                sb.append("￥"+df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getUom()).append(" ");
             }
             sb.append(holder.listBean.getUnit());
             holder.mmTvContent.setText(sb.toString());
@@ -766,16 +767,18 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     int count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
                     mMapCount.put(listBean,++count);
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean,count));
-                    mmTvCount.setText(count+listBean.getProductUom());
+                    mmTvCount.setText(count+listBean.getUom());
                     mmCbCheck.setChecked(true);
                     break;
                 case R.id.iv_item_cart_minus://减少
-                    count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
-                    mMapCount.put(listBean,--count);
+//                    count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
+//                    mMapCount.put(listBean,--count);
+                    count = mCountSetter.getCount(listBean);
+                    mCountSetter.setCount(listBean,--count);
                     if(count==0){
                         //从购物车中删除
-                        mmProductList.remove(listBean);
-                        mMapCount.remove(listBean);
+//                        mmProductList.remove(listBean);
+//                        mMapCount.remove(listBean);
                         mSetInvalid.remove(listBean);
                         if(mSetInvalid.size()==0){
                             initProductListData();
@@ -785,7 +788,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                         mmCbCheck.setChecked(true);
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean,count));
-                    mmTvCount.setText(count+listBean.getProductUom());
+                    mmTvCount.setText(count+listBean.getUom());
                     break;
             }
         }
@@ -837,7 +840,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     }
 
     /**
-     * 初始化全选
+     * 初始化全选按钮
      */
     protected void initSelectAll(){
         for(ProductData.ListBean listBean:mMapCount.keySet()){
@@ -845,4 +848,38 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
     }
 
+    ProductCountSetter mCountSetter = new ProductCountSetter() {
+        @Override
+        public void setCount(ProductData.ListBean bean, int count) {
+            if(count==0){
+                bean.setCartAddedTime(0);
+                mMapCount.remove(bean);
+            }
+            else{
+                //设置加入购物车的时间
+                if(!mMapCount.containsKey(bean))bean.setCartAddedTime(System.currentTimeMillis());
+                mMapCount.put(bean,count);
+            }
+        }
+
+        @Override
+        public int getCount(ProductData.ListBean bean) {
+            return mMapCount.get(bean)==null?0:mMapCount.get(bean);
+        }
+    };
+
+    /**
+     * 供子fragment统一设置商品数量
+     */
+    public ProductCountSetter getProductCountSetter(){
+        return mCountSetter;
+    }
+
+    /**
+     * 供子fragment统一设置商品数量,隐藏细节
+     */
+    public interface ProductCountSetter {
+        void setCount(ProductData.ListBean bean, int count);
+        int getCount(ProductData.ListBean bean);
+    }
 }

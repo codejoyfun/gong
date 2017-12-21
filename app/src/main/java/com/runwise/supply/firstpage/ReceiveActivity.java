@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,6 +51,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.entity.ReceiveBeanList;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
@@ -71,6 +74,8 @@ import com.runwise.supply.view.ProductTypePopup;
 import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;
+import com.socketmobile.capture.events.DataDecodedEvent;
+import com.socketmobile.capture.events.DeviceAvailabilityEvent;
 //import com.socketmobile.capture.events.DataDecodedEvent;
 //import com.socketmobile.capture.events.DeviceAvailabilityEvent;
 //import com.socketmobile.capture.types.DecodedData;
@@ -107,6 +112,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private static final int BEGIN_TALLY = 400;           //开始点货
     private static final int END_TALLY = 500;           //退出点货
     private static final int PRODUCT_DETAIL = 600;
+    private static final int ORDER_DETAIL = 700;
     @ViewInject(R.id.indicator)
     private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -169,6 +175,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     private ProductBasicHelper productBasicHelper;
 
+    CategoryRespone categoryRespone;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,9 +188,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         lbean = bundle.getParcelable("order");
         isSettle = lbean.isIsTwoUnit();
         setTitleLeftIcon(true, R.drawable.nav_back);
-        if (lbean != null && lbean.getLines() != null) {
-            datas.addAll(lbean.getLines());
-        }
         mode = bundle.getInt("mode");
         if (mode == 1) {
             setTitleText(true, "点货");
@@ -195,6 +200,20 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //        mClient = new CaptureClient();
 //        mClient.setListener(this);
 //        mClient.connect();
+        if(lbean.getLines()==null || lbean.getLines().isEmpty()){
+            requestOrderDetail();//没有传商品列表，需要查询订单详情
+        }else{
+            initUI();
+        }
+    }
+
+    /**
+     * 获取到商品列表后更新界面
+     */
+    private void initUI(){
+        if (lbean != null && lbean.getLines() != null) {
+            datas.addAll(lbean.getLines());
+        }
         if (mode == 1) {
             //开始点货
             String userName = GlobalApplication.getInstance().getUserName();
@@ -202,10 +221,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startOrEndTally(true);
             }
         }
-//        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-//        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
-//        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-//        getReceiveInfoFromDB();
         productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
         if (lbean.isNewType() && productBasicHelper.check(lbean.getLines())) {//新版订单不用查商品信息
             getCategory();
@@ -214,6 +229,16 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             productBasicHelper.requestDetail(PRODUCT_DETAIL);
         }
         setUpSearch();
+    }
+
+    /**
+     * 需要查详情拿商品列表
+     */
+    private void requestOrderDetail(){
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+        sb.append(lbean.getOrderID()).append("/");
+        sendConnection(sb.toString(), request, ORDER_DETAIL, true, OrderDetailResponse.class);
     }
 
     private void updateUI(){
@@ -963,11 +988,14 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         return true;
     }
 
-    CategoryRespone categoryRespone;
-
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
+            case ORDER_DETAIL:
+                OrderDetailResponse orderDetailResponse = (OrderDetailResponse) result.getResult().getData();
+                lbean = orderDetailResponse.getOrder();
+                initUI();
+                break;
             case RECEIVE:
                 Intent intent = new Intent(mContext, ReceiveSuccessActivity.class);
                 Bundle bundle = new Bundle();
@@ -1132,6 +1160,16 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             },200);
+            View dialogRoot = dialogView2.findViewById(R.id.dialog_main);
+            dialogRoot.setVisibility(View.GONE);
+            edEt.postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    Animation animation = AnimationUtils.loadAnimation(getActivityContext(),R.anim.fade_in);
+                    dialogRoot.setVisibility(View.VISIBLE);
+                    dialogRoot.startAnimation(animation);
+                }
+            },400);
             //更新进度条
             updatePbProgress();
             //更新fragment列表内容
@@ -1217,6 +1255,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 ////            }
 //        }
 //    }
+
 //
 //    private void updateDeviceState(DeviceAvailabilityEvent event) {
 //        String string;

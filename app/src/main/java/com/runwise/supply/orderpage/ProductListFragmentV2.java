@@ -1,62 +1,32 @@
 package com.runwise.supply.orderpage;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.bean.ProductCountChangeEvent;
-import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProductListRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductData;
-import com.runwise.supply.view.NoWatchEditText;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+
 
 /**
  * 商品按照类别分页显示
  *
  * 所有的已选数据保存在父Activity的map中
- * TODO;use setUserVisibleHint
  *
  */
 public class ProductListFragmentV2 extends NetWorkFragment {
@@ -80,7 +50,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
 
-    boolean isFirstLoaded = false;
     boolean hasOtherSub;//是否有其它子分类，用于区分子项的layout
 
     @Override
@@ -88,7 +57,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         mSubCategory = getArguments().getString(INTENT_KEY_SUB_CATEGORY);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
-        hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,true);
+        hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,false);
         mProductAdapter = new ProductAdapter(getActivity(),hasOtherSub);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setPullToRefreshOverScrollEnabled(false);
@@ -108,10 +77,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             }
         });
 
-        if(getArguments()!=null && getArguments().getBoolean("firstLoad")){
-            isFirstLoaded = true;
-            refresh(true);
-        }
+        refresh(true);
     }
 
     /**
@@ -123,24 +89,15 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         super.onActivityCreated(savedInstanceState);
         FragmentActivity parentActivity = getActivity();
         if(parentActivity instanceof ProductActivityV2){
-            mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
-            mProductAdapter.setCountMap(mCountMap);
+//            mCountMap = ((ProductActivityV2) parentActivity).getCountMap();
+//            mProductAdapter.setCountMap(mCountMap);
+            mProductAdapter.setProductCountSetter(((ProductActivityV2)parentActivity).getProductCountSetter());
         }
     }
 
     @Override
     protected int createViewByLayoutId() {
         return R.layout.fragment_products;
-    }
-
-    /**
-     * 懒加载，只有当第一次展示给用户的时候才开始查接口
-     */
-    protected void show(){
-        if(!isFirstLoaded){
-            isFirstLoaded = true;
-            refresh(true);
-        }
     }
 
     /**

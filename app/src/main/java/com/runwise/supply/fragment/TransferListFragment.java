@@ -112,7 +112,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 mPullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_CANCEL_TRANSFER:
-                //refresh
+                //requestChildCategory
                 page = 1;
                 requestData(false, REQUEST_REFRESH, page, 10);
                 break;

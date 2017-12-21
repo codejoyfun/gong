@@ -22,7 +22,6 @@ import com.runwise.supply.orderpage.entity.ProductData;
 import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
-import java.util.Map;
 
 /**
  * Created by Dong on 2017/11/28.
@@ -32,7 +31,8 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
     DecimalFormat df = new DecimalFormat("#.##");
     Context mContext;
     boolean canSeePrice = false;
-    Map<ProductData.ListBean,Integer> mCountMap;
+//    Map<ProductData.ListBean,Integer> mCountMap;
+    ProductActivityV2.ProductCountSetter productCountSetter;
     boolean hasOtherSub = false;
 
     public ProductAdapter(@NonNull Context context, boolean hasOtherSub){
@@ -41,8 +41,12 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         this.hasOtherSub = hasOtherSub;
     }
 
-    public void setCountMap(Map<ProductData.ListBean,Integer> countMap){
-        mCountMap = countMap;
+//    public void setCountMap(Map<ProductData.ListBean,Integer> countMap){
+//        mCountMap = countMap;
+//    }
+
+    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter){
+        this.productCountSetter = productCountSetter;
     }
 
     @Override
@@ -67,8 +71,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
             viewHolder.tvProductTag.setVisibility(View.VISIBLE);
         }
 
-        final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-        viewHolder.tvCount.setText(count+bean.getProductUom());
+//        final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
+        int count = productCountSetter.getCount(bean);
+        viewHolder.tvCount.setText(count+bean.getUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
             viewHolder.tvCount.setVisibility(View.VISIBLE);
@@ -87,15 +92,17 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 
             @Override
             public void onClick(View v) {
-                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
+//                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
+                int currentNum = productCountSetter.getCount(bean);
                 if (currentNum > 0) {
-                    viewHolder.tvCount.setText(--currentNum + bean.getProductUom());
-                    mCountMap.put(bean, currentNum);
+                    viewHolder.tvCount.setText(--currentNum + bean.getUom());
+//                    mCountMap.put(bean, currentNum);
+                    productCountSetter.setCount(bean,currentNum);
                     if (currentNum == 0) {
                         v.setVisibility(View.INVISIBLE);
                         viewHolder.tvCount.setVisibility(View.INVISIBLE);
                         viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-                        mCountMap.remove(bean);
+//                        mCountMap.remove(bean);
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
                 }
@@ -110,9 +117,11 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 
             @Override
             public void onClick(View v) {
-                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                viewHolder.tvCount.setText(++currentNum + bean.getProductUom());
-                mCountMap.put(bean, currentNum);
+//                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
+                int currentNum = productCountSetter.getCount(bean);
+                viewHolder.tvCount.setText(++currentNum + bean.getUom());
+//                mCountMap.put(bean, currentNum);
+                productCountSetter.setCount(bean,currentNum);
                 if (currentNum == 1) {//0变到1
                     viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                     viewHolder.tvCount.setVisibility(View.VISIBLE);
@@ -128,24 +137,26 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         viewHolder.tvCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int currentCount = mCountMap.get(bean)==null?0:mCountMap.get(bean);
+//                int currentCount = mCountMap.get(bean)==null?0:mCountMap.get(bean);
+                int currentCount = productCountSetter.getCount(bean);
                 new ProductValueDialog(mContext, bean.getName(), currentCount, new ProductValueDialog.IProductDialogCallback() {
                     @Override
                     public void onInputValue(int value) {
 
+                        productCountSetter.setCount(bean,value);
                         if (value == 0) {
                             viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
                             viewHolder.tvCount.setVisibility(View.INVISIBLE);
                             viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
-                            mCountMap.remove(bean);
+//                            mCountMap.remove(bean);
                         }else{
                             viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                             viewHolder.tvCount.setVisibility(View.VISIBLE);
-                            viewHolder.tvCount.setText(value+bean.getProductUom());
+                            viewHolder.tvCount.setText(value+bean.getUom());
                             viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
-                            mCountMap.put(bean,value);
+//                            mCountMap.put(bean,value);
                         }
-                        viewHolder.tvCount.setText(value + bean.getProductUom());
+                        viewHolder.tvCount.setText(value + bean.getUom());
                         EventBus.getDefault().post(new ProductCountUpdateEvent(bean,value));
                     }
                 }).show();

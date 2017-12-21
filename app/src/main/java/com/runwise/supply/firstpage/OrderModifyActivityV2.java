@@ -38,6 +38,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setProductID(lb.getProductID());
             listBean.setTracking(lb.getTracking());
             listBean.setProductUom(lb.getProductUom());
+            listBean.setUom(lb.getProductUom());
             listBean.setUnit(lb.getUnit());
             //新建的单都是newtype了
             listBean.setPrice(lb.getProductPrice());

@@ -38,4 +38,16 @@
 
     <color name="color4bb400">#4bb400</color>
     <color name="color999999">#999999</color>
+    <color name="colorffe7e0">#ffe7e0</color>
+    <color name="colore64340">#e64340</color>
+    <color name="color333333">#333333</color>
+    <color name="color2e2e2e">#2e2e2e</color>
+    <color name="translucent">#77000000</color>
+    <color name="inventory_expire_bg">#14FF3B30</color>
+    <color name="inventory_expire">#FF3B30</color>
+    <color name="stock_3_days">#FF7B00</color>
+    <color name="stock_3_days_bg">#14FF9F00</color>
+    <color name="stock_4_days">#999999</color>
+    <color name="stock_4_days_bg">#FFF5F5F5</color>
+    <color name="inventory_changed_bg">#FFF3FBED</color>
 </resources>

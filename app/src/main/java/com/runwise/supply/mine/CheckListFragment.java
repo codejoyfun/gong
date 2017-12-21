@@ -18,18 +18,27 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.repertory.EditRepertoryListActivity;
+import com.runwise.supply.repertory.InventoryActivity;
+import com.runwise.supply.repertory.entity.PandianResult;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
+
+import java.util.ArrayList;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.R.id.moneySum;
 
@@ -117,7 +126,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
             default:
                 request.setDate_type(0);
         }
-        sendConnection("/api/inventory/list",request,where,showDialog,CheckResult.class);
+        sendConnection("/api/v2/inventory/list",request,where,showDialog,CheckResult.class);
     }
     private void channelPandian(int id) {
         ChannelPandian request = new ChannelPandian();
@@ -153,6 +162,8 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                 break;
             case REQUEST_CHANNEL:
                 ToastUtil.show(mContext,"盘点已取消");
+                adapter.getList().remove(mCancelBean);
+                adapter.notifyDataSetChanged();
                 requestData(false, REQUEST_MAIN, page, 10);
                 break;
         }
@@ -167,10 +178,22 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         CheckResult.ListBean bean = (CheckResult.ListBean)parent.getAdapter().getItem(position);
-        if ("confirm".equals(bean.getState()) && bean.getCreateUser().equals(mName)) {
-            Intent intent = new Intent(mContext, EditRepertoryListActivity.class);
-            intent.putExtra("checkBean", bean);
+        if ("confirm".equals(bean.getState())) {
+            if(!bean.getCreateUser().equals(mName)){//不是本用户盘点的，弹提示
+                ToastUtil.show(getActivity(),"当前"+bean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
+                return;
+            }
+            //检查是否有缓存
+            InventoryResponse.InventoryBean inventoryBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(bean.getInventoryID());
+            if(inventoryBean==null){//没有缓存
+                inventoryBean = toInventoryBean(bean);//转换对象
+            }
+            Intent intent = new Intent(getActivity(), InventoryActivity.class);
+            intent.putExtra(InventoryActivity.INTENT_KEY_INVENTORY_BEAN,inventoryBean);
             startActivity(intent);
+//            Intent intent = new Intent(mContext, EditRepertoryListActivity.class);
+//            intent.putExtra("checkBean", bean);
+//            startActivity(intent);
         }
         else {
             Intent intent = new Intent(mContext, CheckDetailActivity.class);
@@ -193,7 +216,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         requestData(false, REQUEST_MAIN, page, 10);
     }
 
-
+    public CheckResult.ListBean mCancelBean;
     public class CarInfoListAdapter extends IBaseAdapter<CheckResult.ListBean> {
         @Override
         protected View getExView(int position, View convertView,
@@ -218,6 +241,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                     @Override
                     public void onClick(View v) {
                         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        mCancelBean = bean;
                         channelPandian(bean.getInventoryID());
                     }
                 });
@@ -239,7 +263,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                     }
                 }
                 else{
-                    holder.money.setText(bean.getNum()+"");
+                    holder.money.setText(NumberUtil.getIOrD(bean.getNum()));
                     if(bean.getNum() >= 0) {
                         holder.money.setTextColor(Color.parseColor("#9cb62e"));
                     }
@@ -263,5 +287,34 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
             @ViewInject(R.id.handlerBtn)
             TextView handlerBtn;
         }
+    }
+
+    public InventoryResponse.InventoryBean toInventoryBean(CheckResult.ListBean checkResultBean){
+        InventoryResponse.InventoryBean bean = new InventoryResponse.InventoryBean();
+        bean.setInventoryID(checkResultBean.getInventoryID());
+        bean.setCreateUser(checkResultBean.getCreateUser());
+        bean.setCreateDate(checkResultBean.getCreateDate());
+        bean.setName(checkResultBean.getName());
+        bean.setNum(checkResultBean.getNum());
+        bean.setState(checkResultBean.getState());
+        bean.setLines(new ArrayList<>());
+        for(PandianResult.InventoryBean.LinesBean linesBean:checkResultBean.getLines()){
+            InventoryResponse.InventoryProduct product = new InventoryResponse.InventoryProduct();
+            product.setLotList(linesBean.getLotList());
+            product.setProduct(linesBean.getProduct());
+            product.setProductID(linesBean.getProductID());
+            product.setActualQty(linesBean.getActualQty());
+            product.setCode(linesBean.getCode());
+            product.setDiff((int)linesBean.getDiff());
+            product.setInventoryLineID(linesBean.getInventoryLineID());
+            product.setLifeEndDate(linesBean.getLifeEndDate());
+            product.setLotID(linesBean.getLotID());
+            product.setLotNum(linesBean.getLotNum());
+            product.setTheoreticalQty(linesBean.getTheoreticalQty());
+            product.setUnitPrice(linesBean.getUnitPrice());
+            product.setUom(linesBean.getUom());
+            bean.getLines().add(product);
+        }
+        return bean;
     }
 }

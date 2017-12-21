@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -9,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -27,12 +29,14 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.firstpage.entity.ChangeOrderRequest;
 import com.runwise.supply.firstpage.entity.EvaluateLineRequest;
 import com.runwise.supply.firstpage.entity.EvaluateRequest;
@@ -49,6 +53,7 @@ import com.runwise.supply.view.AutoLinefeedLayout;
 import com.runwise.supply.view.YourScrollableViewPager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +63,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import io.vov.vitamio.utils.Log;
 
 import static com.runwise.supply.R.id.cb1;
 import static com.runwise.supply.R.id.cb2;
@@ -73,7 +78,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
  */
 
 public class EvaluateActivity extends NetWorkActivity {
-
+    private static final int REQUEST_ORDER_DETAIL = 200;
     @BindView(R.id.title_iv_left)
     ImageView mTitleIvLeft;
     @BindView(R.id.title_tv_left)
@@ -172,6 +177,8 @@ public class EvaluateActivity extends NetWorkActivity {
     float mDeliveryRating;
     float mProductRating;
 
+    CategoryRespone categoryRespone;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -183,11 +190,29 @@ public class EvaluateActivity extends NetWorkActivity {
         setTitleLeftIcon(true, R.drawable.nav_back);
 //        mDragLayout.setOverDrag(false);
 //        mDragLayout.setTouchMode(false);
-        setDefaultDatas();
+
+        Bundle bundle = getIntent().getExtras();
+        bean = bundle.getParcelable("order");
+
+        //没有传商品列表，查询订单详情获取商品列表
+        if(bean.getLines()==null || bean.getLines().isEmpty()){
+            requestOrderDetail();
+        }else{
+            setDefaultDatas();
+        }
+
         mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
     }
 
-    CategoryRespone categoryRespone;
+    /**
+     * 需要查详情拿商品列表
+     */
+    private void requestOrderDetail(){
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+        sb.append(bean.getOrderID()).append("/");
+        sendConnection(sb.toString(), request, REQUEST_ORDER_DETAIL, true, OrderDetailResponse.class);
+    }
 
     private void getCategory() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
@@ -204,8 +229,6 @@ public class EvaluateActivity extends NetWorkActivity {
     private void setDefaultDatas() {
         getCategory();
         getTags();
-        Bundle bundle = getIntent().getExtras();
-        bean = bundle.getParcelable("order");
         if (bean != null) {
             orderId = bean.getOrderID();
             for (OrderResponse.ListBean.LinesBean lb : bean.getLines()) {
@@ -449,6 +472,11 @@ public class EvaluateActivity extends NetWorkActivity {
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
+            case REQUEST_ORDER_DETAIL:
+                OrderDetailResponse orderDetailResponse = (OrderDetailResponse) result.getResult().getData();
+                bean = orderDetailResponse.getOrder();
+                setDefaultDatas();
+                break;
             case ORDERREQUST:
                 flag++;
                 break;
@@ -631,5 +659,18 @@ public class EvaluateActivity extends NetWorkActivity {
                 mTvOpen.setImageResource(R.drawable.arrow);
             }
         });
+    }
+
+    //点空白收起键盘
+    @OnClick({R.id.top_view})
+    public void t(View v){
+        hideKeyboard();
+    }
+
+    InputMethodManager imm;
+    private void hideKeyboard(){
+        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        View v = getCurrentFocus();
+        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 }
