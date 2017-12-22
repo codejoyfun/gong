@@ -2,6 +2,7 @@ package com.runwise.supply.message.entity;
 
 import com.kids.commonframe.base.BaseEntity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class DetailResult extends BaseEntity.ResultBean{
         this.list = list;
     }
 
-    public static class ListBean {
+    public static class ListBean implements Serializable{
         /**
          * body : 各门店请注意，“拍黄瓜”将会从6月8号到7月1号期间暂停供应，请留意，不便之处敬请原谅。
          * id : 14047
@@ -85,7 +86,7 @@ public class DetailResult extends BaseEntity.ResultBean{
             this.author_id = author_id;
         }
 
-        public static class AuthorIdBean {
+        public static class AuthorIdBean implements Serializable{
             /**
              * avatar_url :
              * id : 3

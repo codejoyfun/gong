@@ -35,14 +35,17 @@ import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.entity.PageRequest;
+import com.runwise.supply.event.PlatformNotificationEvent;
 import com.runwise.supply.message.entity.MessageListEntity;
 import com.runwise.supply.message.entity.MessageResult;
+import com.runwise.supply.tools.PlatformNotificationManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.SystemUpgradeLayout;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -158,8 +161,10 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                 intent.addCategory("com.runwise.supply");
                 JSONObject jsonObject = new JSONObject();
                 try{
-                    jsonObject.put("type","update");
-                    jsonObject.put("dataid","1508394075.0-1508747938.0");
+                    jsonObject.put("type","platform");
+                    jsonObject.put("message","测试"+System.currentTimeMillis());
+                    jsonObject.put("id",System.currentTimeMillis());
+                    jsonObject.put("date","xxx");
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -255,6 +260,18 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         List<MessageListEntity> messageList = new ArrayList<>();
         List<MessageResult.OrderBean> orderList = endResult.getOrder();
         List<MessageResult.ChannelBean> channelList = endResult.getChannel();
+
+        //加入平台通知
+        MessageResult.ChannelBean.LastMessageBeanX beanX = PlatformNotificationManager.getInstance(getContext()).getLastMessageX();
+        if(beanX!=null){
+            if(channelList==null)channelList = new ArrayList<>();
+            MessageResult.ChannelBean platformChannelBean = new MessageResult.ChannelBean();
+            platformChannelBean.setName("平台通知");
+            platformChannelBean.setLast_message(beanX);
+            platformChannelBean.setRead(beanX.isSeen());
+            channelList.add(platformChannelBean);
+        }
+
         if(channelList != null) {
             for( int i = 0; i< channelList.size(); i++) {
                 MessageResult.ChannelBean channelBean = channelList.get(i);
@@ -284,6 +301,20 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
         loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
+
+    /**
+     * 收到平台通知推送
+     * @param event
+     */
+    @Subscribe
+    public void refresh(PlatformNotificationEvent event){
+        if(firstLaunch && isLogin) {
+            page = 1;
+            pullListView.setRefreshing();
+        }
+        firstLaunch = true;
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
@@ -291,6 +322,12 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
         if(isLogin) {
             MessageListEntity bean = (MessageListEntity)parent.getAdapter().getItem(position);
             if(bean.getType() == 1) {
+                if("平台通知".equals(bean.getChannelBean().getName())){
+                    PlatformNotificationManager.getInstance(getContext()).setLatestRead();
+                    Intent intent = new Intent(mContext,PlatformMsgDetailActivity.class);
+                    startActivity(intent);
+                    return;
+                }
                 Intent dealIntent = new Intent(mContext,SystemMsgDetailActivity.class);
                 dealIntent.putExtra("id",bean.getChannelBean().getId()+"");
                 dealIntent.putExtra("name",bean.getChannelBean().getName());
@@ -386,7 +423,10 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     }
                     MessageResult.ChannelBean channelBean = bean.getChannelBean();
                     viewHolder.msgName.setText(channelBean.getName());
-                    if("缺货通知".equals(channelBean.getName())) {
+                    if("平台通知".equals(channelBean.getName())){
+                        viewHolder.msgIcon.setImageResource(R.drawable.message_icon_notify);
+                    }
+                    else if("缺货通知".equals(channelBean.getName())) {
                         viewHolder.msgIcon.setImageResource(R.drawable.notify_stockout);
                     }
                     else if("系统升级".equals(channelBean.getName()) || "系统维护".equals(channelBean.getName())) {

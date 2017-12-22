@@ -32,6 +32,7 @@ import com.runwise.supply.entity.UnReadData;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.firstpage.entity.VersionRequest;
 import com.runwise.supply.message.MessageFragment;
+import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -39,6 +40,7 @@ import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.MainRepertoryFragment;
 import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.PlatformNotificationManager;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -288,7 +290,8 @@ public class MainActivity extends NetWorkActivity {
                 break;
             case REQUEST_UNREAD:
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
-                if (unReadData.getUnread()) {
+                DetailResult.ListBean bean = PlatformNotificationManager.getInstance(this).getLastMessage();
+                if (unReadData.getUnread() || !bean.isSeen()) {
                     mMsgHite.setVisibility(View.VISIBLE);
                 } else {
                     mMsgHite.setVisibility(View.GONE);
