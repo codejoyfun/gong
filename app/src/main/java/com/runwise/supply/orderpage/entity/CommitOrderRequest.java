@@ -58,6 +58,7 @@ public class CommitOrderRequest {
 
         private int qty;
         private int product_id;
+        private String remark;
 
         public int getQty() {
             return qty;
@@ -73,6 +74,14 @@ public class CommitOrderRequest {
 
         public void setProduct_id(int product_id) {
             this.product_id = product_id;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
         }
     }
 }

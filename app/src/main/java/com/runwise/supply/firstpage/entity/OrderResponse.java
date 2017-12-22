@@ -919,6 +919,7 @@ public class OrderResponse {
             private String tracking;
             private String unit;
             private int unloadAmount;
+            private String remark;//备注
 
             //自定义字段
             private boolean isChanged;
@@ -1143,6 +1144,14 @@ public class OrderResponse {
                 this.tracking = tracking;
             }
 
+            public String getRemark() {
+                return remark;
+            }
+
+            public void setRemark(String remark) {
+                this.remark = remark;
+            }
+
             public static class LotListBean implements Parcelable {
                 /**
                  * lotPk : 82242
@@ -1294,7 +1303,8 @@ public class OrderResponse {
                 dest.writeInt(settleUomId);;
                 dest.writeString(tracking);
                 dest.writeString(unit);;
-                dest.writeInt(unloadAmount);;
+                dest.writeInt(unloadAmount);
+                dest.writeString(remark);
             }
 
             public LinesBean() {
@@ -1329,6 +1339,7 @@ public class OrderResponse {
                 tracking = in.readString();
                 unit = in.readString();
                 unloadAmount = in.readInt();
+                remark = in.readString();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

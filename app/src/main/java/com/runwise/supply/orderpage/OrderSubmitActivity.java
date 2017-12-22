@@ -362,6 +362,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 continue;
             }
             pBean.setQty(qty);
+            pBean.setRemark(bean.getRemark());
             cList.add(pBean);
         }
         if (cList.size() == 0) {
@@ -421,6 +422,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 continue;
             }
             pBean.setQty(qty);
+            pBean.setRemark(bean.getRemark());
             cList.add(pBean);
         }
         request.setProducts(cList);
