@@ -56,7 +56,6 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
         mEtRemark.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(s.toString().length()>=20) ToastUtil.show(context,"只能输入20个字~");
             }
 
             @Override
@@ -66,7 +65,11 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if(s.toString().length()>20){
+                    mEtRemark.setText(s.subSequence(0,20));
+                    ToastUtil.show(context,"只能输入20个数字~");
+                    mEtRemark.setSelection(20);
+                }
             }
         });
         if(initValue>0){

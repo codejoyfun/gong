@@ -80,6 +80,7 @@
         android:layout_toRightOf="@id/sdv_product"
         android:layout_below="@+id/tv_product_price"
         android:layout_toLeftOf="@+id/tv_product_count"
+        android:textColor="@color/textColorThird"
         android:layout_marginTop="7dp"/>
 
 </RelativeLayout>

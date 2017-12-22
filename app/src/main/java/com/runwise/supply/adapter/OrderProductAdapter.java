@@ -126,7 +126,9 @@ public class OrderProductAdapter extends BaseAdapter {
                     sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getPrice()))).append("元/").append(bean.getProductUom());
                 }
             }
-            if(!TextUtils.isEmpty(bean.getRemark()))sb.append("\n备注：").append(bean.getRemark());
+            if(!TextUtils.isEmpty(bean.getRemark())){
+                sb.append("\n备注：").append(bean.getRemark());
+            }
             vh.unit1.setText(bean.getProductUom());
             vh.content.setText(sb.toString());
             if (isTwoUnit){
