@@ -106,6 +106,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     public static final String INTENT_KEY_BACKAP = "backap";
 
     protected Map<ProductData.ListBean, Integer> mMapCount = new HashMap<>();
+    protected Map<ProductData.ListBean, String> mMapRemarks = new HashMap<>();
     protected Set<ProductData.ListBean> mSetInvalid = new HashSet<>();
 
     DecimalFormat df = new DecimalFormat("#.##");
@@ -154,7 +155,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 //                }
 
                 mMapCount.put(bean,bean.getActualQty());
-
+                mMapRemarks.put(bean,bean.getRemark());
                 if(bean.isCacheSelected())mmSelected.add(bean.getProductID());
             }
         }
@@ -169,20 +170,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             CartManager.getInstance(this).clearCart();
             return;
         }
-        CartManager.getInstance(this).saveCart(mMapCount,mmSelected);
-//        if(mMapCount.size()==0){
-//            SPUtils.put(this,SP_KEY_CART,"");
-//            return;
-//        }
-//        ArrayList<ProductData.ListBean> list = new ArrayList<>();
-//        for(ProductData.ListBean bean:mMapCount.keySet()){
-//            bean.setCacheCount(mMapCount.get(bean));
-//        }
-//        list.addAll(mMapCount.keySet());
-//        CartCache cartCache = new CartCache();
-//        cartCache.setListBeans(list);
-//        cartCache.setSelected(mmSelected);
-//        SPUtils.saveObject(this,SP_KEY_CART,cartCache);
+        CartManager.getInstance(this).saveCart(mMapRemarks,mMapCount,mmSelected);
     }
 
     @Override
@@ -415,6 +403,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if(!mmSelected.contains(bean.getProductID()))continue;//木有在购物车中打勾，跳过
             if(bean.isInvalid() || mMapCount.get(bean)==0)continue;
             bean.setActualQty(mMapCount.get(bean));
+            bean.setRemark(mMapRemarks.get(bean));
             list.add(bean);
         }
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
@@ -701,6 +690,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 holder.mmTvTag.setVisibility(View.VISIBLE);
             }
 
+            String remark = mMapRemarks.get(holder.listBean);
+            if(TextUtils.isEmpty(remark)){
+                holder.mmTvRemark.setVisibility(View.GONE);
+            }else{
+                holder.mmTvRemark.setVisibility(View.VISIBLE);
+                holder.mmTvRemark.setText("备注："+remark);
+            }
+
             holder.mmCbCheck.setChecked(mmSelected.contains(holder.listBean.getProductID()));
         }
 
@@ -738,6 +735,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         TextView mmTvContent;
         TextView mmTvInvalide;
         TextView mmTvTag;
+        TextView mmTvRemark;
         public ViewHolder(View itemView) {
             super(itemView);
             mmTvName = (TextView) itemView.findViewById(R.id.tv_item_cart_name);
@@ -747,6 +745,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mmTvContent = (TextView)itemView.findViewById(R.id.tv_item_cart_content);
             mmTvInvalide = (TextView)itemView.findViewById(R.id.tv_invalid);
             mmTvTag = (TextView)itemView.findViewById(R.id.tv_item_cart_sale);
+            mmTvRemark = (TextView)itemView.findViewById(R.id.tv_cart_remark);
             itemView.findViewById(R.id.iv_item_cart_add).setOnClickListener(this);
             itemView.findViewById(R.id.iv_item_cart_minus).setOnClickListener(this);
         }
@@ -848,6 +847,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * 供子fragment统一设置商品数量的接口，向子fragment隐藏实现
+     */
     ProductCountSetter mCountSetter = new ProductCountSetter() {
         @Override
         public void setCount(ProductData.ListBean bean, int count) {
@@ -866,6 +868,16 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         public int getCount(ProductData.ListBean bean) {
             return mMapCount.get(bean)==null?0:mMapCount.get(bean);
         }
+
+        @Override
+        public void setRemark(ProductData.ListBean bean) {
+            mMapRemarks.put(bean,bean.getRemark());
+        }
+
+        @Override
+        public String getRemark(ProductData.ListBean bean) {
+            return mMapRemarks.get(bean);
+        }
     };
 
     /**
@@ -880,6 +892,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      */
     public interface ProductCountSetter {
         void setCount(ProductData.ListBean bean, int count);
+        void setRemark(ProductData.ListBean bean);
         int getCount(ProductData.ListBean bean);
+        String getRemark(ProductData.ListBean bean);
     }
 }
