@@ -129,12 +129,11 @@ public class OrderAdapter extends IBaseAdapter {
         if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
             //未读红点
-            if(bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid())){
+            boolean unread = bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid());
+            if(unread){
                 viewHolder.ivUnread.setVisibility(View.VISIBLE);
-                viewHolder.mmRlRoot.setBackgroundColor(Color.parseColor("#FFFAFEF6"));
             }else{
                 viewHolder.ivUnread.setVisibility(View.GONE);
-                viewHolder.mmRlRoot.setBackgroundColor(Color.WHITE);
             }
 
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
@@ -272,13 +271,17 @@ public class OrderAdapter extends IBaseAdapter {
             }
 
             //背景色
-            if(bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())){
+            if(bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())){//收货失败
                 viewHolder.mmRlRoot.setBackgroundColor(mColorPink);
                 viewHolder.stateTv.setText("收货失败");
                 viewHolder.stateTv.setTextColor(mColorRed);
                 viewHolder.mmViewArrowArea.setVisibility(View.GONE);
-            }else{
-                viewHolder.mmRlRoot.setBackgroundColor(mColorWhite);
+            }else{//正常
+                if(unread){//未读
+                    viewHolder.mmRlRoot.setBackgroundColor(Color.parseColor("#FFFAFEF6"));
+                }else{//已读
+                    viewHolder.mmRlRoot.setBackgroundColor(mColorWhite);
+                }
                 viewHolder.stateTv.setTextColor(Color.BLACK);
                 viewHolder.mmViewArrowArea.setVisibility(View.VISIBLE);
             }
