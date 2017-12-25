@@ -66,9 +66,10 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                         EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
                     }
                     if(TYPE_PLATFORM_NOTICE.equals(type)){//平台通知
-                        String body = jsonObject.optString("message");
-                        int id = jsonObject.optInt("id");
-                        PlatformNotificationManager.getInstance(context).addMsg(id,body,"");
+                        JSONObject aps = jsonObject.optJSONObject("APS");
+                        String msg = aps.optString("alerts");
+                        long id = System.currentTimeMillis();
+                        PlatformNotificationManager.getInstance(context).addMsg(id,msg,"");
                         EventBus.getDefault().post(new PlatformNotificationEvent());
                     }
                 } catch (JSONException e) {

@@ -162,9 +162,9 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                 JSONObject jsonObject = new JSONObject();
                 try{
                     jsonObject.put("type","platform");
-                    jsonObject.put("message","测试"+System.currentTimeMillis());
-                    jsonObject.put("id",System.currentTimeMillis());
-                    jsonObject.put("date","xxx");
+                    JSONObject aps = new JSONObject();
+                    aps.put("alerts","测试消息"+System.currentTimeMillis());
+                    jsonObject.put("APS",aps);
                 }catch (JSONException e){
                     e.printStackTrace();
                 }

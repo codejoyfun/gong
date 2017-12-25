@@ -30,7 +30,7 @@ import java.util.Map;
  */
 
 public class PlatformNotificationManager {
-    private static final String PREF_NAME = "platform_notification2_";
+    private static final String PREF_NAME = "platform_notification3_";
     private static final String KEY_LATEST = "latest";
     private static PlatformNotificationManager sInstance;
     private SharedPreferences mPrefs;
@@ -114,7 +114,7 @@ public class PlatformNotificationManager {
      * @param message
      * @param date
      */
-    public void addMsg(int id,String message,String date){
+    public void addMsg(long id,String message,String date){
         DetailResult.ListBean bean = new DetailResult.ListBean();
         bean.setId(id);
         bean.setBody(message);
