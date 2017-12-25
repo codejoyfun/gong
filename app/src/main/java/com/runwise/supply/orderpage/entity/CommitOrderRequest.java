@@ -58,7 +58,7 @@ public class CommitOrderRequest {
 
         private int qty;
         private int product_id;
-        private String remark;
+        private String remark = "";
 
         public int getQty() {
             return qty;
