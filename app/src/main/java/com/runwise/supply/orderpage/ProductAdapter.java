@@ -186,7 +186,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         }
 
         if(bean.getImage()!=null){
-            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
+            FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, bean.getImage().getImageSmall());
         }
 
         return convertView;

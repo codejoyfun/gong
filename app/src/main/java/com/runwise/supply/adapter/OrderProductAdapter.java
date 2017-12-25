@@ -100,7 +100,7 @@ public class OrderProductAdapter extends BaseAdapter {
         int pId = bean.getProductID();
         final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
         if (basicBean != null && basicBean.getImage() != null){
-            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+            FrecoFactory.getInstance(context).displayWithoutHost(vh.productImage, basicBean.getImage().getImageSmall());
         }
         int puq = (int)bean.getProductUomQty();
         int dq = (int)bean.getDeliveredQty();

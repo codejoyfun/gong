@@ -300,7 +300,7 @@ public class TransferInActivity extends NetWorkActivity {
         View vSubtract = dialogView.findViewById(R.id.btn_transfer_in_subtract);
         final TextView tvActual = (TextView) dialogView.findViewById(R.id.et_product_count);
         View vSubmit = dialogView.findViewById(R.id.btn_confirm);
-        FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + linesBean.getProductImage());
+        FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, linesBean.getProductImage());
         name.setText(linesBean.getProductName());
         StringBuffer sb = new StringBuffer(linesBean.getProductCode());
         sb.append("  ").append(linesBean.getProductUnit());
@@ -413,7 +413,7 @@ public class TransferInActivity extends NetWorkActivity {
             final int pId = bean.getProductID();
             ViewHolder vh = holder;
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
-            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+bean.getProductImage());
+            FrecoFactory.getInstance(context).displayWithoutHost(vh.productImage, bean.getProductImage());
 
             if (basicBean != null){
                 vh.name.setText(bean.getProductName());
