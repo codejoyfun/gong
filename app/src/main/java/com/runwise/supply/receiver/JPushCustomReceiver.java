@@ -11,6 +11,8 @@ import com.kids.commonframe.base.bean.ReceiverLogoutEvent;
 import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.runwise.supply.event.OrderStatusChangeEvent;
+import com.runwise.supply.event.PlatformNotificationEvent;
+import com.runwise.supply.tools.PlatformNotificationManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -30,6 +32,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TYPE_LOGIN_CONFICT = "login_confict";
     public static final String TYPE_SYSTEM_UPGRADE = "update";
     public static final String TYPE_ORDER = "sale.order";
+    public static final String TYPE_PLATFORM_NOTICE = "platform";//平台通知
 
     private static final int REQUEST_LOGINOUT = 1 << 0;
     @Override
@@ -61,6 +64,13 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                         String dataid = jsonObject.optString("dataid");
                         SystemUpgradeHelper.getInstance(context).create(dataid);
                         EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
+                    }
+                    if(TYPE_PLATFORM_NOTICE.equals(type)){//平台通知
+                        JSONObject aps = jsonObject.optJSONObject("APS");
+                        String msg = aps.optString("alerts");
+                        long id = System.currentTimeMillis();
+                        PlatformNotificationManager.getInstance(context).addMsg(id,msg,"");
+                        EventBus.getDefault().post(new PlatformNotificationEvent());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
