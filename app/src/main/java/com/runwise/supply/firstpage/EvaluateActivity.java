@@ -1,6 +1,7 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -23,6 +24,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -31,6 +33,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.adapter.ProductTypeAdapter;
@@ -487,7 +490,9 @@ public class EvaluateActivity extends NetWorkActivity {
                 dismissIProgressDialog();
                 EventBus.getDefault().post(new OrderUpdateEvent());
                 ToastUtil.show(mContext, "评价成功");
-                finish();
+                ActivityManager.getInstance().finishAll();
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
 //                Intent intent = new Intent(getActivityContext(),EvaluateSuccessActivity.class);
 //                intent.putExtra("orderid",orderId);
 //                startActivity(intent);
