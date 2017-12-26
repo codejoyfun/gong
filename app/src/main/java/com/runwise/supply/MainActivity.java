@@ -351,6 +351,7 @@ public class MainActivity extends NetWorkActivity {
             //查询系统更新
             long currentTime = System.currentTimeMillis();
             UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+            if(userInfo==null)return;
             DbUtils db = MyDbUtil.create(this);
             try{
                 RemUser rem = db.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
