@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -53,25 +55,34 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
         mTvName.setText(name);
         mEtValue = (EditText)findViewById(R.id.et_dialog_product_count);
         mEtRemark = (EditText)findViewById(R.id.et_product_remarks);
-        mEtRemark.addTextChangedListener(new TextWatcher() {
+        mEtRemark.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20){
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                CharSequence cs = super.filter(source, start, end, dest, dstart, dend);
+                int length = (source==null?0:source.length()) + (dest==null?0:dest.length());
+                if(length>20)ToastUtil.show(context,"只能输入20个字哦~");
+                return cs;
             }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(s.toString().length()>20){
-                    mEtRemark.setText(s.subSequence(0,20));
-                    ToastUtil.show(context,"只能输入20个数字~");
-                    mEtRemark.setSelection(20);
-                }
-            }
-        });
+        }});
+//        mEtRemark.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if(s.toString().length()>20){
+//                    mEtRemark.setText(s.subSequence(0,20));
+//                    ToastUtil.show(context,"只能输入20个数字~");
+//                    mEtRemark.setSelection(20);
+//                }
+//            }
+//        });
         if(initValue>0){
             mEtValue.setText(String.valueOf(initValue));
             //mEtValue.selectAll();
