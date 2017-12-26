@@ -2,8 +2,12 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.util.ArrayMap;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -26,6 +30,7 @@ import com.runwise.supply.InfoActivity;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.UrlResult;
+import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.ScoreUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -45,10 +50,16 @@ public class SettingActivity extends NetWorkActivity {
     private TextView setItemName_4;
     @ViewInject(R.id.setItemName_5)
     private TextView setItemName_5;
+    @ViewInject(R.id.rl_config_fingerprint)
+    private RelativeLayout mRlFingerprint;
+    @ViewInject(R.id.sc_config_fingerprint)
+    private SwitchCompat mScFingerprint;
 
     private final int REQUEST_HELP = 1;
 
     private boolean isLogin;
+    private FingerprintHelper mFingerprintHelper;
+
     @ViewInject(R.id.exit_user)
     private View exitButton;
     @Override
@@ -70,6 +81,33 @@ public class SettingActivity extends NetWorkActivity {
         }
 
         setItemName_5.setText(CommonUtils.getVersionName(this));
+
+        mFingerprintHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
+        if(mFingerprintHelper.isSupported()){
+            mRlFingerprint.setVisibility(View.GONE);
+        }else{
+            mScFingerprint.setChecked(FingerprintHelper.isFingerprintEnabled(this));
+            mScFingerprint.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+                        FingerprintDialog fragment = new FingerprintDialog();
+                        fragment.setFingerprintHelper(new FingerprintHelper(SettingActivity.this,
+                                FingerprintManagerCompat.from(SettingActivity.this)));
+                        fragment.setCallback(new FingerprintManagerCompat.AuthenticationCallback() {
+                            @Override
+                            public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
+                                fragment.dismiss();
+                                FingerprintHelper.setFingerprintEnabled(getActivityContext(),true);
+                            }
+                        });
+                        fragment.show(getSupportFragmentManager(),"tag");
+                    }else{
+                        FingerprintHelper.setFingerprintEnabled(getActivityContext(),false);
+                    }
+                }
+            });
+        }
     }
 
 
