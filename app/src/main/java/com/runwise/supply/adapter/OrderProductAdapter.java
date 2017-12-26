@@ -26,6 +26,8 @@ import com.runwise.supply.tools.UserUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.Log;
+
 import static com.kids.commonframe.config.Constant.ORDER_STATE_DRAFT;
 import static com.kids.commonframe.config.Constant.ORDER_STATE_PEISONG;
 import static com.kids.commonframe.config.Constant.ORDER_STATE_SALE;
@@ -89,80 +91,79 @@ public class OrderProductAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder vh;
-        if (convertView == null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.orderdetail_list_item,parent,false);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.orderdetail_list_item, parent, false);
             vh = new ViewHolder(convertView);
             vh.oldPriceTv.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             convertView.setTag(vh);
         }
-        vh  = (ViewHolder) convertView.getTag();
+        vh = (ViewHolder) convertView.getTag();
         final OrderResponse.ListBean.LinesBean bean = productList.get(position);
         int pId = bean.getProductID();
+
+        String imageUrl = bean.getImageMedium();
         final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
-        if (basicBean != null && basicBean.getImage() != null){
-            FrecoFactory.getInstance(context).displayWithoutHost(vh.productImage, basicBean.getImage().getImageSmall());
+        if(TextUtils.isEmpty(bean.getImageMedium()) && basicBean!=null && basicBean.getImage()!=null){
+            imageUrl = basicBean.getImage().getImageSmall();
         }
-        int puq = (int)bean.getProductUomQty();
-        int dq = (int)bean.getDeliveredQty();
-        if((Constant.ORDER_STATE_DONE.equals(status)||Constant.ORDER_STATE_RATED.equals(status)) && bean.getDeliveredQty() != bean.getProductUomQty()) {
-            vh.oldPriceTv.setText("x"+puq);
-            vh.nowPriceTv.setText("x"+dq);
+        FrecoFactory.getInstance(context).displayWithoutHost(vh.productImage, imageUrl);
+        int puq = (int) bean.getProductUomQty();
+        int dq = (int) bean.getDeliveredQty();
+        if ((Constant.ORDER_STATE_DONE.equals(status) || Constant.ORDER_STATE_RATED.equals(status)) && bean.getDeliveredQty() != bean.getProductUomQty()) {
+            vh.oldPriceTv.setText("x" + puq);
+            vh.nowPriceTv.setText("x" + dq);
             vh.oldPriceTv.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             vh.oldPriceTv.setVisibility(View.GONE);
-            vh.nowPriceTv.setText("x"+puq);
+            vh.nowPriceTv.setText("x" + puq);
         }
 
-        if (basicBean != null){
-            vh.name.setText(basicBean.getName());
-            StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-            sb.append(" | ").append(basicBean.getUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-            if (canSeePrice){
-                if (isTwoUnit){
-                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getSettlePrice()))).append("元/").append(basicBean.getSettleUomId());
-                }else{
-                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getPrice()))).append("元/").append(bean.getProductUom());
-                }
+        vh.name.setText(bean.getName());
+        StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+        sb.append(" | ").append(bean.getUnit());
+        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        if (canSeePrice) {
+            if (isTwoUnit) {
+                sb.append("\n").append(UserUtils.formatPrice(String.valueOf(bean.getProductSettlePrice()))).append("元/").append(bean.getSettleUomId());
+            } else {
+                sb.append("\n").append(UserUtils.formatPrice(String.valueOf(bean.getProductPrice()))).append("元/").append(bean.getProductUom());
             }
-            if(!TextUtils.isEmpty(bean.getRemark())){
-                sb.append("\n备注：").append(bean.getRemark());
-            }
-            vh.unit1.setText(bean.getProductUom());
-            vh.content.setText(sb.toString());
-            if (isTwoUnit){
-                vh.weightTv.setText(bean.getSettleAmount()+basicBean.getSettleUomId());
-                vh.weightTv.setVisibility(View.VISIBLE);
-            }else{
-                vh.weightTv.setVisibility(View.INVISIBLE);
-            }
-        }else{
-            vh.name.setText("");
         }
+        if (!TextUtils.isEmpty(bean.getRemark())) {
+            sb.append("\n备注：").append(bean.getRemark());
+        }
+        vh.unit1.setText(bean.getProductUom());
+        vh.content.setText(sb.toString());
+        if (isTwoUnit) {
+            vh.weightTv.setText(bean.getSettleAmount() + bean.getSettleUomId() +"");
+            vh.weightTv.setVisibility(View.VISIBLE);
+        } else {
+            vh.weightTv.setVisibility(View.INVISIBLE);
+        }
+
         //发货状态订单
 //        if("peisong".equals(status)) {
         vh.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String deliveryType = mListBean.getDeliveryType();
-                if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD)||deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
-                        ||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH)||deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)){
-                    if(!status.equals("peisong")&&!status.equals("done")&&!status.equals("rated")){
+                if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD) || deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+                        || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH) || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)) {
+                    if (!status.equals("peisong") && !status.equals("done") && !status.equals("rated")) {
                         return;
                     }
                 }
-                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)){
-                    if((status.equals("done")||status.equals("rated"))&&(bean.getLotList()!=null&&bean.getLotList().size() == 0)) {
+                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY) || deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)) {
+                    if ((status.equals("done") || status.equals("rated")) && (bean.getLotList() != null && bean.getLotList().size() == 0)) {
                         ToastUtil.show(v.getContext(), "该产品无批次追踪");
                         return;
                     }
-                    if (status.equals(ORDER_STATE_PEISONG)||status.equals(ORDER_STATE_DRAFT)||status.equals(ORDER_STATE_SALE)){
+                    if (status.equals(ORDER_STATE_PEISONG) || status.equals(ORDER_STATE_DRAFT) || status.equals(ORDER_STATE_SALE)) {
                         return;
                     }
                 }
                 Intent intent = new Intent(context, LotListActivity.class);
-                intent.putExtra("title",basicBean.getName());
+                intent.putExtra("title", bean.getName());
                 intent.putExtra("bean", (Parcelable) bean);
                 context.startActivity(intent);
             }
@@ -170,7 +171,8 @@ public class OrderProductAdapter extends BaseAdapter {
 //        }
         return convertView;
     }
-    public static class  ViewHolder{
+
+    public static class ViewHolder {
         public SimpleDraweeView productImage;
         public TextView name;
         public TextView content;
@@ -179,15 +181,16 @@ public class OrderProductAdapter extends BaseAdapter {
         public TextView weightTv;
         public TextView unit1;
         public View rootView;
+
         public ViewHolder(View itemView) {
             rootView = itemView;
             productImage = (SimpleDraweeView) itemView.findViewById(R.id.productImage);
             name = (TextView) itemView.findViewById(R.id.name);
-            content = (TextView)itemView.findViewById(R.id.content);
-            oldPriceTv = (TextView)itemView.findViewById(R.id.oldPriceTv);
-            nowPriceTv = (TextView)itemView.findViewById(R.id.nowPriceTv);
-            weightTv = (TextView)itemView.findViewById(R.id.weightTv);
-            unit1 = (TextView)itemView.findViewById(R.id.unit1);
+            content = (TextView) itemView.findViewById(R.id.content);
+            oldPriceTv = (TextView) itemView.findViewById(R.id.oldPriceTv);
+            nowPriceTv = (TextView) itemView.findViewById(R.id.nowPriceTv);
+            weightTv = (TextView) itemView.findViewById(R.id.weightTv);
+            unit1 = (TextView) itemView.findViewById(R.id.unit1);
         }
     }
 }
