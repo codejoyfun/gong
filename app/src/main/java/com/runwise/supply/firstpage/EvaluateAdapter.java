@@ -101,6 +101,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
                     //将当前星级信息给父activity
                     if (callback != null){
                         callback.rateChanged(lineId,Integer.valueOf((int)rating));
+                        map.put(lineId,(int)rating);
                     }
                 }
             }
