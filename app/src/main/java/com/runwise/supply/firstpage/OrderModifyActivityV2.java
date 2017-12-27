@@ -58,7 +58,9 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setCategory(lb.getCategory());
             listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
+            listBean.setRemark(lb.getRemark());
             mMapCount.put(listBean,(int) lb.getProductUomQty());
+            mMapRemarks.put(listBean,lb.getRemark());
         }
         initSelectAll();
         super.onCreate(savedInstanceState);
@@ -84,6 +86,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         for(ProductData.ListBean bean:mMapCount.keySet()){
             if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
             bean.setActualQty(mMapCount.get(bean));
+            bean.setRemark(mMapRemarks.get(bean));
             list.add(bean);
         }
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);

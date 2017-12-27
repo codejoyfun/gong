@@ -42,6 +42,7 @@ public class OrderAgainActivity extends ProductActivityV2 {
             listBean.setTracking(lb.getTracking());
             listBean.setProductUom(lb.getProductUom());
             listBean.setUnit(lb.getUnit());
+            listBean.setRemark(lb.getRemark());
             if(mOrder.isNewType()){
                 listBean.setPrice(lb.getProductPrice());
                 listBean.setSettlePrice(lb.getProductSettlePrice()+"");
@@ -59,6 +60,7 @@ public class OrderAgainActivity extends ProductActivityV2 {
             listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
             mMapCount.put(listBean,(int) lb.getProductUomQty());
+            mMapRemarks.put(listBean,lb.getRemark());
         }
     }
 
