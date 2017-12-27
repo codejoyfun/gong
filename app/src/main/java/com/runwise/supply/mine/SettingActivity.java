@@ -44,6 +44,7 @@ import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.mine.entity.UrlResult;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.ScoreUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -100,7 +101,8 @@ public class SettingActivity extends NetWorkActivity {
             mRlFingerprint.setVisibility(View.GONE);
         }else{
             mFingerprintHelper.init();
-            mScFingerprint.setChecked(FingerprintHelper.isFingerprintEnabled(this));
+            UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+            mScFingerprint.setChecked(FingerprintHelper.isUserFingerprintEnabled(this,userInfo.getLogin()));
             mScFingerprint.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -115,11 +117,12 @@ public class SettingActivity extends NetWorkActivity {
                                     ToastUtil.show(SettingActivity.this,"您已成功开启指纹登录");
                                     mScFingerprint.setChecked(true);
                                     //记录用户密码
-                                    UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
                                     DbUtils mDb = MyDbUtil.create(SettingActivity.this);
                                     try{
-                                        RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
-                                        //TODO:
+                                        RemUser rem = mDb.findFirst(Selector.from(RemUser.class).
+                                                where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
+                                        FingerprintHelper.setFingerprintEnabled(SettingActivity.this,
+                                                true,rem.getUserName(),rem.getCompany());
                                     }catch (DbException e){
                                         e.printStackTrace();
                                     }
@@ -131,8 +134,7 @@ public class SettingActivity extends NetWorkActivity {
                         fragment.setText("轻触指纹键验证手机指纹进行登录");
                         fragment.show(getSupportFragmentManager(),"tag");
                     }else{
-                        FingerprintHelper.setFingerprintEnabled(getActivityContext(),false);
-                        ToastUtil.show(SettingActivity.this,"您已成功关闭指纹登录");
+                        FingerprintHelper.setFingerprintEnabled(getActivityContext(),false,null,null);
                     }
                 }
             });

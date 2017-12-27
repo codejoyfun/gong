@@ -48,6 +48,7 @@ import com.runwise.supply.mine.FingerprintDialog;
 import com.runwise.supply.mine.SettingActivity;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -143,14 +144,20 @@ public class LoginActivity extends NetWorkActivity {
         showFirstUserFromDB();
 
         //指纹登录
-        if(FingerprintHelper.isFingerprintEnabled(this)){
+        mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
+        if(mFgHelper.isSupported() && FingerprintHelper.isFingerprintEnabled(this)){
+            mFgHelper.init();
             FingerprintDialog fragment = new FingerprintDialog();
-            fragment.setFingerprintHelper(new FingerprintHelper(this, FingerprintManagerCompat.from(this)));
+            fragment.setFingerprintHelper(mFgHelper);
             fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
                 @Override
                 public void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
                     if(isSuccess){
-
+                        mPhone.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,""));
+                        mPassword.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,""));
+                        mCetCompany.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_COMPANY,""));
+                        onLogin(null);
+                        fragment.dismiss();
                     }
                 }
             });
@@ -312,6 +319,7 @@ public class LoginActivity extends NetWorkActivity {
                         newRem.setPassword("");
                     }
                     newRem.setCompany(mCetCompany.getText().toString());
+                    SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,loginRequest.getPassword());//TODO:encrypt
                     mDb.save(newRem);
                 } catch (Exception e) {
                     e.printStackTrace();

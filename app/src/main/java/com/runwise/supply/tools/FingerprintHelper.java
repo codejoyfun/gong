@@ -12,6 +12,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.os.CancellationSignal;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
+import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.mine.SettingActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -255,11 +259,59 @@ public class FingerprintHelper {
         }
     }
 
+    /**
+     * 对于整个app，是否开启指纹识别
+     * @param context
+     * @return
+     */
     public static boolean isFingerprintEnabled(Context context){
-        return (boolean)SPUtils.get(context,"",false);
+        return (boolean)SPUtils.get(context,SP_CONSTANTS.SP_FG_ENABLED,false);
     }
 
-    public static void setFingerprintEnabled(Context context,boolean enabled){
-        SPUtils.put(context,"",enabled);
+    /**
+     * 对于这个用户，是否开启指纹识别，用于开关按钮
+     * 考虑一种情况：
+     * APP是打开指纹识别的，但是用户登录了另外一个账号，这时这个账号的指纹识别按钮应该是关闭的
+     * 当这时重新打开按钮，重新验证指纹，那么会更新指纹对应的账号
+     * @param context
+     * @return
+     */
+    public static boolean isUserFingerprintEnabled(Context context,String login){
+        if(isFingerprintEnabled(context)){
+            String fgUser = (String)SPUtils.get(context,SP_CONSTANTS.SP_FG_USER,"");
+            if(!TextUtils.isEmpty(fgUser) && fgUser.equals(login)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 打开/关闭指纹识别
+     * @param context
+     * @param enabled
+     */
+    public static void setFingerprintEnabled(Context context,boolean enabled,String username,String company){
+
+        SPUtils.put(context, SP_CONSTANTS.SP_FG_ENABLED, enabled);
+        if(enabled){
+            SPUtils.put(context, SP_CONSTANTS.SP_FG_COMPANY,company);
+            SPUtils.put(context, SP_CONSTANTS.SP_FG_USER,username);
+            String password = (String) SPUtils.get(context,SP_CONSTANTS.SP_CUR_PW,"");
+            SPUtils.put(context,SP_CONSTANTS.SP_PW,password);
+        }else{
+            SPUtils.remove(context, SP_CONSTANTS.SP_FG_COMPANY);
+            SPUtils.remove(context, SP_CONSTANTS.SP_FG_USER);
+            SPUtils.remove(context,SP_CONSTANTS.SP_PW);
+            ToastUtil.show(context,"您已成功关闭指纹登录");
+        }
+    }
+
+    public static boolean needPrompt(Context context,String userId){
+        return (Boolean)SPUtils.get(context,"needFgPrompt"+userId,true);
+    }
+
+    public static void setPrompted(Context context,String userId){
+        SPUtils.put(context,"needFgPrompt"+userId,false);
     }
 }
