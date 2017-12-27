@@ -12,6 +12,8 @@ import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.os.CancellationSignal;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 /**
  * Created by Dong on 2017/12/26.
@@ -96,11 +99,27 @@ public class FingerprintHelper {
             throw new RuntimeException("Failed to get an instance of Cipher", e);
         }
 
+        SecretKey key = null;
+        try{
+            mKeyStore.load(null);
+            key = (SecretKey) mKeyStore.getKey(DEFAULT_KEY_NAME, null);
+            Log.d("haha","key is null:"+(key==null));
+        }catch(KeyStoreException e){
+            e.printStackTrace();
+        }catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+        }catch (UnrecoverableKeyException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }catch (CertificateException e){
+            e.printStackTrace();
+        }
+
         createKey(DEFAULT_KEY_NAME, true);
 //        createKey(KEY_NAME_NOT_INVALIDATED, false);
 
         if (initCipher(defaultCipher, DEFAULT_KEY_NAME)) {
-
             mCryptoObject = new FingerprintManagerCompat.CryptoObject(defaultCipher);
             // Show the fingerprint dialog. The user has the option to use the fingerprint with
             // crypto, or you can fall back to using a server-side verified password.
@@ -170,20 +189,62 @@ public class FingerprintHelper {
             SecretKey key = (SecretKey) mKeyStore.getKey(keyName, null);
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return true;
-        } catch (KeyPermanentlyInvalidatedException e) {
+        }
+        catch (KeyPermanentlyInvalidatedException e) {
+            e.printStackTrace();
             return false;
         } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException
                 | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException("Failed to init Cipher", e);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
     }
 
     @TargetApi(23)
-    public void startListening(FingerprintManagerCompat.AuthenticationCallback callback) {
+    public void startListening(OnAuthenticateListener listener) {
+        authenticateListener = listener;
         mCancellationSignal = new CancellationSignal();
         // The line below prevents the false positive inspection from Android Studio
         // noinspection ResourceType
         mFingerprintManager.authenticate(mCryptoObject,  0 /* flags */, mCancellationSignal, callback, null);
+        try{
+            Log.d("haha", Base64.encodeToString(mCryptoObject.getCipher().doFinal("test test".getBytes()),Base64.DEFAULT));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 回调
+     */
+    private FingerprintManagerCompat.AuthenticationCallback callback = new FingerprintManagerCompat.AuthenticationCallback() {
+        @Override
+        public void onAuthenticationError(int errMsgId, CharSequence errString) {
+            super.onAuthenticationError(errMsgId, errString);
+            if(authenticateListener!=null)authenticateListener.onAuthenticate(false,mCryptoObject);
+        }
+
+        @Override
+        public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
+            super.onAuthenticationSucceeded(result);
+            if(authenticateListener!=null)authenticateListener.onAuthenticate(true,mCryptoObject);
+        }
+
+        @Override
+        public void onAuthenticationFailed() {
+            super.onAuthenticationFailed();
+            if(authenticateListener!=null)authenticateListener.onAuthenticate(false,mCryptoObject);
+        }
+    };
+
+    private OnAuthenticateListener authenticateListener;
+    public interface OnAuthenticateListener{
+        void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject);
+    }
+    public void setAuthenticateListener(OnAuthenticateListener listener){
+        authenticateListener = listener;
     }
 
     @TargetApi(23)

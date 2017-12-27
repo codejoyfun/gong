@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
@@ -14,6 +16,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
@@ -22,15 +25,25 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.StorageUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomBottomDialog;
+import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.ChangePwdActivity;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.InfoActivity;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.business.entity.UserGuideRequest;
+import com.runwise.supply.entity.GuideResponse;
+import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.mine.entity.UrlResult;
 import com.runwise.supply.tools.FingerprintHelper;
+import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.ScoreUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -83,27 +96,43 @@ public class SettingActivity extends NetWorkActivity {
         setItemName_5.setText(CommonUtils.getVersionName(this));
 
         mFingerprintHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
-        if(mFingerprintHelper.isSupported()){
+        if(!mFingerprintHelper.isSupported()){
             mRlFingerprint.setVisibility(View.GONE);
         }else{
+            mFingerprintHelper.init();
             mScFingerprint.setChecked(FingerprintHelper.isFingerprintEnabled(this));
-            mScFingerprint.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            mScFingerprint.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){
+                public void onClick(View v) {
+                    if(mScFingerprint.isChecked()){
                         FingerprintDialog fragment = new FingerprintDialog();
-                        fragment.setFingerprintHelper(new FingerprintHelper(SettingActivity.this,
-                                FingerprintManagerCompat.from(SettingActivity.this)));
-                        fragment.setCallback(new FingerprintManagerCompat.AuthenticationCallback() {
+                        fragment.setFingerprintHelper(mFingerprintHelper);
+                        fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
                             @Override
-                            public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
+                            public void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
                                 fragment.dismiss();
-                                FingerprintHelper.setFingerprintEnabled(getActivityContext(),true);
+                                if(isSuccess){
+                                    ToastUtil.show(SettingActivity.this,"您已成功开启指纹登录");
+                                    mScFingerprint.setChecked(true);
+                                    //记录用户密码
+                                    UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+                                    DbUtils mDb = MyDbUtil.create(SettingActivity.this);
+                                    try{
+                                        RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
+                                        //TODO:
+                                    }catch (DbException e){
+                                        e.printStackTrace();
+                                    }
+                                }else{
+                                    mScFingerprint.setChecked(false);
+                                }
                             }
                         });
+                        fragment.setText("轻触指纹键验证手机指纹进行登录");
                         fragment.show(getSupportFragmentManager(),"tag");
                     }else{
                         FingerprintHelper.setFingerprintEnabled(getActivityContext(),false);
+                        ToastUtil.show(SettingActivity.this,"您已成功关闭指纹登录");
                     }
                 }
             });

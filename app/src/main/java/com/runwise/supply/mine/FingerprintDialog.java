@@ -39,6 +39,7 @@ public class FingerprintDialog  extends DialogFragment {
     private String msg;
     private TextView mTvMessage;
     private FingerprintHelper mFingerprintHelper;
+    private FingerprintHelper.OnAuthenticateListener authenticateListener;
 
     public void setFingerprintHelper(FingerprintHelper fingerprintHelper){
         mFingerprintHelper = fingerprintHelper;
@@ -71,7 +72,7 @@ public class FingerprintDialog  extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        mFingerprintHelper.startListening(callback);
+        mFingerprintHelper.startListening(authenticateListener);
     }
 
     @Override
@@ -80,31 +81,15 @@ public class FingerprintDialog  extends DialogFragment {
         mFingerprintHelper.stopListening();
     }
 
-    public void setCallback(FingerprintManagerCompat.AuthenticationCallback callback){
-        this.callback = callback;
+    public void setCallback(FingerprintHelper.OnAuthenticateListener callback){
+        this.authenticateListener = callback;
     }
 
     public void setText(String text){
         msg = text;
     }
 
-    /**
-     * 回调
-     */
-    private FingerprintManagerCompat.AuthenticationCallback callback = new FingerprintManagerCompat.AuthenticationCallback() {
-        @Override
-        public void onAuthenticationError(int errMsgId, CharSequence errString) {
-            super.onAuthenticationError(errMsgId, errString);
-        }
 
-        @Override
-        public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
-            super.onAuthenticationSucceeded(result);
-        }
 
-        @Override
-        public void onAuthenticationFailed() {
-            super.onAuthenticationFailed();
-        }
-    };
+
 }

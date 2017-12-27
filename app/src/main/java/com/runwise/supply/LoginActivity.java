@@ -2,6 +2,7 @@ package com.runwise.supply;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -43,6 +44,9 @@ import com.runwise.supply.entity.GetHostRequest;
 import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
+import com.runwise.supply.mine.FingerprintDialog;
+import com.runwise.supply.mine.SettingActivity;
+import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 
@@ -94,6 +98,7 @@ public class LoginActivity extends NetWorkActivity {
     private LoginRequest loginRequest;
 
     private DbUtils mDb;
+    private FingerprintHelper mFgHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -136,6 +141,22 @@ public class LoginActivity extends NetWorkActivity {
             }
         });
         showFirstUserFromDB();
+
+        //指纹登录
+        if(FingerprintHelper.isFingerprintEnabled(this)){
+            FingerprintDialog fragment = new FingerprintDialog();
+            fragment.setFingerprintHelper(new FingerprintHelper(this, FingerprintManagerCompat.from(this)));
+            fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
+                @Override
+                public void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                    if(isSuccess){
+
+                    }
+                }
+            });
+            fragment.setText("通过验证手机指纹进行登录");
+            fragment.show(getSupportFragmentManager(),"tag");
+        }
     }
 
     public void showFirstUserFromDB() {
