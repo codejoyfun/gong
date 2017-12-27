@@ -173,7 +173,7 @@ public class OneKeyAdapter extends IBaseAdapter {
         if (basicBean != null) {
             viewHolder.nameTv.setText(basicBean.getName());
             if (basicBean.getImage() != null)
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
+                FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sdv, basicBean.getImage().getImageSmall());
             StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
             sb.append(" | ").append(basicBean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();

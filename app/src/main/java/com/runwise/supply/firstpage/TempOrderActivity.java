@@ -74,7 +74,7 @@ public class TempOrderActivity extends NetWorkActivity {
             vh  = (ViewHolder) holder;
             final ProductData.ListBean bean = mTempOrder.getProductList().get(position);
             int pId = bean.getProductID();
-            FrecoFactory.getInstance(getActivityContext()).disPlay(vh.productImage, Constant.BASE_URL+bean.getImage().getImageSmall());
+            FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(vh.productImage, bean.getImage().getImageSmall());
 
             vh.nowPriceTv.setText("x"+bean.getActualQty());
 

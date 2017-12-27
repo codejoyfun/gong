@@ -54,6 +54,7 @@
             android:textSize="14sp"
             android:text="盘点商品数量"
             android:layout_marginTop="4dp"
+            android:visibility="gone"
             />
     </LinearLayout>
 

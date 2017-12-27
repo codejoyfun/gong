@@ -179,77 +179,77 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
     }
 
     @Deprecated
-    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean> {
-        @Override
-        protected View getExView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder = null;
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                convertView = View.inflate(mContext, R.layout.repertory_layout_item, null);
-                ViewUtils.inject(viewHolder, convertView);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-            final RepertoryEntity.ListBean bean = mList.get(position);
-            ProductBasicList.ListBean productBean = bean.getProduct();
-            if (productBean != null) {
-                if (!TextUtils.isEmpty(mKeyword)) {
-                    int index = productBean.getName().indexOf(mKeyword);
-                    if (index != -1) {
-                        SpannableString spannStr = new SpannableString(productBean.getName());
-                        spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#6bb400")), index, index + mKeyword.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        viewHolder.name.setText(spannStr);
-                    }
-                } else {
-                    viewHolder.name.setText(productBean.getName());
-                }
-                viewHolder.number.setText(productBean.getDefaultCode() + " | ");
-                viewHolder.content.setText(productBean.getUnit());
-                if (productBean.getImage() !=null){
-                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
-                }
-            }
-            viewHolder.value.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())));
-            viewHolder.uom.setText(bean.getUom());
-            if (TextUtils.isEmpty(bean.getUom())){
-                ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(bean.getProductID()));
-                if (listBean!=null){
-                    viewHolder.uom.setText(listBean.getProductUom());
-                }
-            }
-            if (TextUtils.isEmpty(bean.getLotNum())){
-                viewHolder.dateNumber.setVisibility(View.INVISIBLE);
-            }else{
-                viewHolder.dateNumber.setText(bean.getLotNum());
-                viewHolder.dateNumber.setVisibility(View.VISIBLE);
-            }
-            viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLifeEndDate()));
-            if (bean.getImageId() != 0){
-                viewHolder.sDv.setImageResource(bean.getImageId());
-            }
-            return convertView;
-        }
-
-        class ViewHolder {
-            @ViewInject(R.id.name)
-            TextView name;
-            @ViewInject(R.id.productImage)
-            SimpleDraweeView sDv;
-            @ViewInject(R.id.number)
-            TextView number;
-            @ViewInject(R.id.content)
-            TextView content;
-            @ViewInject(R.id.value)
-            TextView value;
-            @ViewInject(R.id.uom)
-            TextView uom;
-            @ViewInject(R.id.dateNumber)
-            TextView dateNumber;
-            @ViewInject(R.id.dateLate)
-            TextView dateLate;
-        }
-    }
+//    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean> {
+//        @Override
+//        protected View getExView(int position, View convertView, ViewGroup parent) {
+//            ViewHolder viewHolder = null;
+//            if (convertView == null) {
+//                viewHolder = new ViewHolder();
+//                convertView = View.inflate(mContext, R.layout.repertory_layout_item, null);
+//                ViewUtils.inject(viewHolder, convertView);
+//                convertView.setTag(viewHolder);
+//            } else {
+//                viewHolder = (ViewHolder) convertView.getTag();
+//            }
+//            final RepertoryEntity.ListBean bean = mList.get(position);
+//            ProductBasicList.ListBean productBean = bean.getProduct();
+//            if (productBean != null) {
+//                if (!TextUtils.isEmpty(mKeyword)) {
+//                    int index = productBean.getName().indexOf(mKeyword);
+//                    if (index != -1) {
+//                        SpannableString spannStr = new SpannableString(productBean.getName());
+//                        spannStr.setSpan(new ForegroundColorSpan(Color.parseColor("#6bb400")), index, index + mKeyword.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                        viewHolder.name.setText(spannStr);
+//                    }
+//                } else {
+//                    viewHolder.name.setText(productBean.getName());
+//                }
+//                viewHolder.number.setText(productBean.getDefaultCode() + " | ");
+//                viewHolder.content.setText(productBean.getUnit());
+//                if (productBean.getImage() !=null){
+//                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
+//                }
+//            }
+//            viewHolder.value.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())));
+//            viewHolder.uom.setText(bean.getUom());
+//            if (TextUtils.isEmpty(bean.getUom())){
+//                ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(bean.getProductID()));
+//                if (listBean!=null){
+//                    viewHolder.uom.setText(listBean.getProductUom());
+//                }
+//            }
+//            if (TextUtils.isEmpty(bean.getLotNum())){
+//                viewHolder.dateNumber.setVisibility(View.INVISIBLE);
+//            }else{
+//                viewHolder.dateNumber.setText(bean.getLotNum());
+//                viewHolder.dateNumber.setVisibility(View.VISIBLE);
+//            }
+//            viewHolder.dateLate.setText(DateFormateUtil.getLaterFormat(bean.getLifeEndDate()));
+//            if (bean.getImageId() != 0){
+//                viewHolder.sDv.setImageResource(bean.getImageId());
+//            }
+//            return convertView;
+//        }
+//
+//        class ViewHolder {
+//            @ViewInject(R.id.name)
+//            TextView name;
+//            @ViewInject(R.id.productImage)
+//            SimpleDraweeView sDv;
+//            @ViewInject(R.id.number)
+//            TextView number;
+//            @ViewInject(R.id.content)
+//            TextView content;
+//            @ViewInject(R.id.value)
+//            TextView value;
+//            @ViewInject(R.id.uom)
+//            TextView uom;
+//            @ViewInject(R.id.dateNumber)
+//            TextView dateNumber;
+//            @ViewInject(R.id.dateLate)
+//            TextView dateLate;
+//        }
+//    }
 
 
     /**
@@ -354,9 +354,8 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
             viewHolder.mmTvTitle.setText(inventoryProduct.getProduct().getName());
             viewHolder.mmTvCode.setText(inventoryProduct.getProduct().getDefaultCode());
             viewHolder.mmTvUnit.setText(inventoryProduct.getProduct().getUnit());
-            //TODO:图片
             if(inventoryProduct.getProduct().getImage()!=null){
-                FrecoFactory.getInstance(getActivity()).disPlay(viewHolder.mmSdvImage,Constant.BASE_URL+inventoryProduct.getProduct().getImage().getImage());
+                FrecoFactory.getInstance(getActivity()).displayWithoutHost(viewHolder.mmSdvImage,inventoryProduct.getProduct().getImage().getImage());
             }
             return convertView;
         }

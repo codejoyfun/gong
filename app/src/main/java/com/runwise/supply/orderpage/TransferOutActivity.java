@@ -302,7 +302,7 @@ public class TransferOutActivity extends NetWorkActivity {
         ImageView iv_reduce = (ImageView) dialogViewNoBatch.findViewById(R.id.iv_reduce);
         ImageView iv_add = (ImageView) dialogViewNoBatch.findViewById(R.id.iv_add);
         final NoWatchEditText et_count = (NoWatchEditText) dialogViewNoBatch.findViewById(R.id.et_count);
-        FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + transferBatchLine.getProductImage());
+        FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, transferBatchLine.getProductImage());
         ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
         if (listBean != null) {
             name.setText(listBean.getName());
@@ -397,7 +397,7 @@ public class TransferOutActivity extends NetWorkActivity {
         TextView tv_count = (TextView) dialogView.findViewById(R.id.tv_count);
         TextView tv_submit = (TextView) dialogView.findViewById(R.id.tv_submit);
         MaxHeightListView lv_batch = (MaxHeightListView) dialogView.findViewById(R.id.lv_batch);
-        FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + transferBatchLine.getProductImage());
+        FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, transferBatchLine.getProductImage());
         ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
         if (listBean != null) {
             name.setText(listBean.getName());
@@ -476,7 +476,7 @@ public class TransferOutActivity extends NetWorkActivity {
             }
             TransferOutDetailResponse.TransferBatchLine transferBatchLine = (TransferOutDetailResponse.TransferBatchLine) mList.get(position);
             viewHolder = (ViewHolder) convertView.getTag();
-            FrecoFactory.getInstance(getActivityContext()).disPlay(viewHolder.mProductImage, Constant.BASE_URL + transferBatchLine.getProductImage());
+            FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(viewHolder.mProductImage, transferBatchLine.getProductImage());
             viewHolder.mName.setText(transferBatchLine.getProductName());
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
             if (listBean != null) {
