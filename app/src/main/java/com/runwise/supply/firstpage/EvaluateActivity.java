@@ -497,7 +497,7 @@ public class EvaluateActivity extends NetWorkActivity {
 //                Intent intent = new Intent(getActivityContext(),EvaluateSuccessActivity.class);
 //                intent.putExtra("orderid",orderId);
 //                startActivity(intent);
-                break;
+                return;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
