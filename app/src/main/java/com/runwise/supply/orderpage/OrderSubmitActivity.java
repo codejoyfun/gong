@@ -36,6 +36,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.tools.UmengUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -251,6 +252,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        UmengUtil.reportError("OrderSubmitActivity",errMsg);
         if (mCustomProgressDialog != null) {
             mCustomProgressDialog.dismiss();
         }
