@@ -7,50 +7,68 @@
         android:background="@drawable/dialog_bg">
 
         <TextView
-            android:id="@+id/tv_dialog_product_title"
+            android:id="@+id/tv_dialog_product_sub_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:gravity="center"
             android:lineSpacingExtra="9dp"
-            android:text="请输入商品数量"
+            android:text="玉米"
             android:textColor="#2e2e2e"
             android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/tv_dialog_product_sub_title"
+        <LinearLayout
+            android:id="@+id/ll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_dialog_product_title"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginTop="2dp"
-            android:textColor="#999999"
-            android:gravity="center"
-            android:text="新鲜香甜玉米"
-            android:textSize="13sp" />
+            android:layout_height="40dp"
+            android:layout_below="@+id/tv_dialog_product_sub_title"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="11dp"
+            android:paddingRight="11dp"
+            android:background="#f5f5f5">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:text="数量"/>
+
+            <EditText
+                android:id="@+id/et_dialog_product_count"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left|center_vertical"
+                android:inputType="number"
+                android:selectAllOnFocus="true"
+                android:background="#f5f5f5"
+                android:layout_marginLeft="12dp"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <EditText
-            android:id="@+id/et_dialog_product_count"
+            android:id="@+id/et_product_remarks"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_dialog_product_sub_title"
-            android:layout_marginBottom="12dp"
-            android:layout_marginLeft="17dp"
-            android:layout_marginRight="17dp"
-            android:layout_marginTop="17dp"
-            android:textColor="#999999"
-            android:background="@color/white"
-            android:gravity="center"
-            android:inputType="number"
-            android:selectAllOnFocus="true"
-            android:textSize="16sp" />
+            android:layout_height="80dp"
+            android:layout_below="@+id/ll"
+            android:background="#f5f5f5"
+            android:padding="10dp"
+            android:hint="可添加备注，少于20字"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="16sp"
+            android:gravity="left|top"
+            android:layout_marginTop="10dp"/>
 
         <View
             android:id="@+id/hline"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_below="@+id/et_dialog_product_count"
+            android:layout_below="@+id/et_product_remarks"
             android:background="#d4d4d4" />
 
         <LinearLayout

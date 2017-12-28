@@ -2,15 +2,19 @@ package com.runwise.supply.tools;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.runwise.supply.R;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
+ * 注意推送的单位为millisecond/1000，所以这个储存的也是这个单位
+ *
  * Created by Dong on 2017/10/19.
  */
 
@@ -42,6 +46,25 @@ public class SystemUpgradeHelper {
                 .putLong(KEY_START_TIMESTAMP,startTimeStamp)
                 .putLong(KEY_END_TIMESTAMP,endTimeStamp)
                 .apply();
+    }
+
+    public void create(String startDate,String endDate){
+        if(TextUtils.isEmpty(startDate) || TextUtils.isEmpty(endDate)){
+            preferences.edit().clear().apply();
+            return;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss",Locale.getDefault());
+        try{
+            long startTime = sdf.parse(startDate).getTime()/1000;
+            long endTime = sdf.parse(endDate).getTime()/1000;
+            preferences.edit().clear()
+                    .putString(KEY_DATAID,startTime+"-"+endTime)
+                    .putLong(KEY_START_TIMESTAMP,startTime)
+                    .putLong(KEY_END_TIMESTAMP,endTime)
+                    .apply();
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
     }
 
     private String getLongString(String str){

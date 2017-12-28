@@ -49,6 +49,7 @@ import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
+import static com.runwise.supply.firstpage.entity.OrderState.PEISONG;
 
 /**
  * Created by libin on 2017/7/14.
@@ -78,6 +79,9 @@ public class OrderAdapter extends IBaseAdapter {
     private int returnCount;            //退货单数量
     private int orderCount;             //正常订单数量
     private DecimalFormat df = new DecimalFormat("#.##");
+    private int mColorWhite = Color.parseColor("#ffffff");
+    private int mColorPink = Color.parseColor("#FFEBE4");
+    private int mColorRed = Color.parseColor("#E64340");
 
     public void setReturnCount(int returnCount) {
         this.returnCount = returnCount;
@@ -125,12 +129,11 @@ public class OrderAdapter extends IBaseAdapter {
         if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
             //未读红点
-            if(bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid())){
+            boolean unread = bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid());
+            if(unread){
                 viewHolder.ivUnread.setVisibility(View.VISIBLE);
-                viewHolder.mmRlRoot.setBackgroundColor(Color.parseColor("#FFFAFEF6"));
             }else{
                 viewHolder.ivUnread.setVisibility(View.GONE);
-                viewHolder.mmRlRoot.setBackgroundColor(Color.WHITE);
             }
 
             viewHolder.arrowBtn.setOnClickListener(new View.OnClickListener() {
@@ -184,7 +187,7 @@ public class OrderAdapter extends IBaseAdapter {
             StringBuffer etSb = new StringBuffer();
             if (bean.getState().equals(OrderState.DRAFT.getName()) || bean.getState().equals(OrderState.SALE.getName())) {
                 etSb.append("预计").append(formatTimeStr(bean.getEstimatedDate())).append("送达");
-            } else if (bean.getState().equals(OrderState.PEISONG.getName())) {
+            } else if (bean.getState().equals(PEISONG.getName())) {
                 etSb.append("预计").append(formatTimeStr(bean.getEstimatedDate())).append("送达");
             } else {
                 etSb.append(bean.getDoneDatetime()).append("已送达");
@@ -226,13 +229,20 @@ public class OrderAdapter extends IBaseAdapter {
             }
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
+
+            //图标
             StringBuffer drawableSb = new StringBuffer("state_restaurant_");
             drawableSb.append(bean.getState());
-            if (getResIdByDrawableName(drawableSb.toString()) == 0) {
+            if(!TextUtils.isEmpty(bean.getReceiveError()) && PEISONG.getName().equals(bean.getState())){//收货失败
+                viewHolder.imgIv.setImageResource(R.drawable.state_restaurant_goosfailed);
+            }
+            else if (getResIdByDrawableName(drawableSb.toString()) == 0) {
                 viewHolder.imgIv.setImageResource(R.drawable.state_restaurant_draft);
             } else {
                 viewHolder.imgIv.setImageResource(getResIdByDrawableName(drawableSb.toString()));
             }
+
+            //按钮
             String doString = OrderActionUtils.getDoBtnTextByState(bean);
             if (!TextUtils.isEmpty(doString)) {
                 if (doString.equals("已评价")) {
@@ -258,6 +268,22 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.tvToPay.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.tvToPay.setVisibility(View.GONE);
+            }
+
+            //背景色
+            if(bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())){//收货失败
+                viewHolder.mmRlRoot.setBackgroundColor(mColorPink);
+                viewHolder.stateTv.setText("收货失败");
+                viewHolder.stateTv.setTextColor(mColorRed);
+                viewHolder.mmViewArrowArea.setVisibility(View.GONE);
+            }else{//正常
+                if(unread){//未读
+                    viewHolder.mmRlRoot.setBackgroundColor(Color.parseColor("#FFFAFEF6"));
+                }else{//已读
+                    viewHolder.mmRlRoot.setBackgroundColor(mColorWhite);
+                }
+                viewHolder.stateTv.setTextColor(Color.BLACK);
+                viewHolder.mmViewArrowArea.setVisibility(View.VISIBLE);
             }
         } else {
             final ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) mList.get(position);
@@ -402,6 +428,8 @@ public class OrderAdapter extends IBaseAdapter {
         ImageView ivUnread;
         @ViewInject(R.id.rl_firstpage_order_item_root)
         RelativeLayout mmRlRoot;
+        @ViewInject(R.id.arrowArea)
+        View mmViewArrowArea;
     }
 
     private void setTimeLineContent(List<String> stList, RecyclerView recyclerView) {

@@ -108,6 +108,7 @@ public class OrderResponse {
         private boolean canAlter;
         private boolean isAsyncOrder;
         private String orderUserIDs;
+        private String receiveError;//是否收货失败
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -171,6 +172,7 @@ public class OrderResponse {
             canAlter = in.readByte() != 0;
             isAsyncOrder = in.readByte() != 0;
             orderUserIDs = in.readString();
+            receiveError = in.readString();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -465,6 +467,14 @@ public class OrderResponse {
             this.returnOrders = returnOrders;
         }
 
+        public String getReceiveError() {
+            return receiveError;
+        }
+
+        public void setReceiveError(String receiveError) {
+            this.receiveError = receiveError;
+        }
+
         /**
          * 是否是调拨单
          * @return
@@ -569,6 +579,7 @@ public class OrderResponse {
             dest.writeByte((byte) (canAlter ? 1:0));
             dest.writeByte((byte) (isAsyncOrder ? 1:0));
             dest.writeString(orderUserIDs);
+            dest.writeString(receiveError);
         }
 
         public static class StoreBean {
@@ -908,6 +919,7 @@ public class OrderResponse {
             private String tracking;
             private String unit;
             private int unloadAmount;
+            private String remark;//备注
 
             //自定义字段
             private boolean isChanged;
@@ -1132,6 +1144,14 @@ public class OrderResponse {
                 this.tracking = tracking;
             }
 
+            public String getRemark() {
+                return remark;
+            }
+
+            public void setRemark(String remark) {
+                this.remark = remark;
+            }
+
             public static class LotListBean implements Parcelable {
                 /**
                  * lotPk : 82242
@@ -1283,7 +1303,8 @@ public class OrderResponse {
                 dest.writeInt(settleUomId);;
                 dest.writeString(tracking);
                 dest.writeString(unit);;
-                dest.writeInt(unloadAmount);;
+                dest.writeInt(unloadAmount);
+                dest.writeString(remark);
             }
 
             public LinesBean() {
@@ -1318,6 +1339,7 @@ public class OrderResponse {
                 tracking = in.readString();
                 unit = in.readString();
                 unloadAmount = in.readInt();
+                remark = in.readString();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

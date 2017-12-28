@@ -78,7 +78,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         if (count > 0) {
             viewHolder.tvCount.setVisibility(View.VISIBLE);
             viewHolder.inputMBtn.setVisibility(View.VISIBLE);
-            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+            viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
         } else {
             viewHolder.tvCount.setVisibility(View.INVISIBLE);
             viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
@@ -101,7 +101,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                     if (currentNum == 0) {
                         v.setVisibility(View.INVISIBLE);
                         viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                        viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                        mCountMap.remove(bean);
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
@@ -125,7 +125,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                 if (currentNum == 1) {//0变到1
                     viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                     viewHolder.tvCount.setVisibility(View.VISIBLE);
-                    viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                    viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
                 EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
             }
@@ -139,21 +139,23 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
             public void onClick(View view) {
 //                int currentCount = mCountMap.get(bean)==null?0:mCountMap.get(bean);
                 int currentCount = productCountSetter.getCount(bean);
-                new ProductValueDialog(mContext, bean.getName(), currentCount, new ProductValueDialog.IProductDialogCallback() {
+                new ProductValueDialog(mContext, bean.getName(), currentCount, productCountSetter.getRemark(bean),new ProductValueDialog.IProductDialogCallback() {
                     @Override
-                    public void onInputValue(int value) {
+                    public void onInputValue(int value,String remark) {
 
                         productCountSetter.setCount(bean,value);
+                        bean.setRemark(remark);
+                        productCountSetter.setRemark(bean);
                         if (value == 0) {
                             viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
                             viewHolder.tvCount.setVisibility(View.INVISIBLE);
-                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_green);
+                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                            mCountMap.remove(bean);
                         }else{
                             viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                             viewHolder.tvCount.setVisibility(View.VISIBLE);
                             viewHolder.tvCount.setText(value+bean.getUom());
-                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+                            viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
 //                            mCountMap.put(bean,value);
                         }
                         viewHolder.tvCount.setText(value + bean.getUom());
@@ -184,7 +186,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         }
 
         if(bean.getImage()!=null){
-            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
+            FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, bean.getImage().getImageSmall());
         }
 
         return convertView;

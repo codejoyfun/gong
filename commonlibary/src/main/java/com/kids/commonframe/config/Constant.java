@@ -17,7 +17,6 @@ public class Constant {
 
     public static String RELEASE_URL = "http://erp.runwise.cn";
 
-
 //    public static String UNLOGIN_URL = "http://lbz.prd.runwise.cn";
 //    public static String UNLOGIN_DB = "LBZ-Golive-Test-0001";
     public static String UNLOGIN_URL = "http://gethost.runwise.cn";
@@ -55,5 +54,5 @@ public class Constant {
     public static final String ORDER_STATE_DONE = "done";
     public static final String ORDER_STATE_RATED = "rated";
 
-    public static final String SP_KEY_CART = "cart_cache9";
+    public static final String SP_KEY_CART = "cart_cache10";//每次productdata有改变都要更新
 }

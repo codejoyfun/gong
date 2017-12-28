@@ -10,6 +10,7 @@
         <activity android:name=".base.WebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
+            android:hardwareAccelerated="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
         <!-- 分享相关的页面（ShareSDK需要调用到的） -->

@@ -45,6 +45,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginBottom="8dp"/>
     <LinearLayout
+        android:id="@+id/ll_item_cart_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/tv_item_cart_name"
@@ -74,14 +75,29 @@
             android:ellipsize="end"
             android:textSize="11sp"
             android:layout_marginRight="16dp"
-            android:text="asdasdgasdgasdgasgeagaegddddddddddddddddddddddddddddddddd"/>
+            android:text="asdf"/>
     </LinearLayout>
+    <TextView
+        android:id="@+id/tv_cart_remark"
+        android:layout_below="@+id/ll_item_cart_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_item_cart_name"
+        android:layout_toLeftOf="@+id/iv_item_cart_minus"
+        android:textColor="@color/color999999"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="11sp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:layout_marginBottom="12dp"/>
     <ImageView
         android:id="@+id/iv_item_cart_add"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_alignParentRight="true"
-        android:src="@drawable/order_btn_add_green"
+        android:src="@drawable/ic_order_btn_add_green_part"
         android:layout_alignBottom="@+id/sdv_cart_product_image"
         android:layout_marginRight="16dp"/>
     <TextView
@@ -93,6 +109,7 @@
         android:gravity="center"
         android:textSize="14sp"
         android:textColor="#2e2e2e"
+        android:background="@drawable/order_input_mid"
         android:text="0"
         />
     <ImageView
@@ -101,5 +118,5 @@
         android:layout_height="25dp"
         android:layout_toLeftOf="@+id/tv_item_cart_count"
         android:layout_alignBottom="@+id/sdv_cart_product_image"
-        android:src="@drawable/order_btn_reduce"/>
+        android:src="@drawable/ic_order_btn_minus_part"/>
 </RelativeLayout>

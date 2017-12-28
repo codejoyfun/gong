@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:text="234234asdgasdgasgaegagasdgawegaegasdgawegawegaegawegaewga尾巴"
-            android:maxLines="1"
             android:singleLine="true"
             android:marqueeRepeatLimit="marquee_forever"
             android:ellipsize="marquee"

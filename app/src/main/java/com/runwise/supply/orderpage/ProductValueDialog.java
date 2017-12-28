@@ -4,7 +4,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.R;
 
 import java.util.logging.Handler;
@@ -26,15 +31,18 @@ import java.util.logging.Handler;
 public class ProductValueDialog extends Dialog implements View.OnClickListener{
     String name;
     int initValue;
+    String remark;
     IProductDialogCallback callback;
     EditText mEtValue;
+    EditText mEtRemark;
     TextView mTvName;
 
-    public ProductValueDialog(@NonNull Context context, String name, int initValue, IProductDialogCallback callback ){
+    public ProductValueDialog(@NonNull Context context, String name, int initValue, String remark,IProductDialogCallback callback ){
         super(context);
         this.name = name;
         this.initValue = initValue;
         this.callback = callback;
+        this.remark = remark;
         setContentView(R.layout.dialog_product_input);
         Window window = getWindow();
         window.getAttributes().gravity = Gravity.CENTER;
@@ -46,10 +54,42 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
         mTvName = (TextView)findViewById(R.id.tv_dialog_product_sub_title);
         mTvName.setText(name);
         mEtValue = (EditText)findViewById(R.id.et_dialog_product_count);
+        mEtRemark = (EditText)findViewById(R.id.et_product_remarks);
+        mEtRemark.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20){
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                CharSequence cs = super.filter(source, start, end, dest, dstart, dend);
+                int length = (source==null?0:source.length()) + (dest==null?0:dest.length());
+                if(length>20)ToastUtil.show(context,"只能输入20个字哦~");
+                return cs;
+            }
+        }});
+//        mEtRemark.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if(s.toString().length()>20){
+//                    mEtRemark.setText(s.subSequence(0,20));
+//                    ToastUtil.show(context,"只能输入20个数字~");
+//                    mEtRemark.setSelection(20);
+//                }
+//            }
+//        });
         if(initValue>0){
             mEtValue.setText(String.valueOf(initValue));
             //mEtValue.selectAll();
             mEtValue.requestFocus();
+        }
+        if(!TextUtils.isEmpty(remark)){
+            mEtRemark.setText(remark);
         }
     }
 
@@ -60,7 +100,7 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
     }
 
     public interface IProductDialogCallback{
-        void onInputValue(int value);
+        void onInputValue(int value,String remark);
     }
 
     @Override
@@ -69,9 +109,10 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
         switch (view.getId()){
             case R.id.dialog_product_input_ok:
                 String strValue = mEtValue.getText().toString();
+                String strRemark = mEtRemark.getText().toString();
                 if(!TextUtils.isEmpty(mEtValue.getText().toString()) && TextUtils.isDigitsOnly(strValue)){
                     if(callback!=null) {
-                        callback.onInputValue(Integer.valueOf(strValue));
+                        callback.onInputValue(Integer.valueOf(strValue),strRemark);
                         dismiss();
                     }
                 }

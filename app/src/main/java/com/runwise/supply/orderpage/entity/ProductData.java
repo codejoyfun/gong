@@ -59,6 +59,7 @@ public class ProductData implements Serializable{
         private boolean isInvalid;
         private boolean cacheSelected;
         private long cartAddedTime;//加入购物车时间,用于排序
+        private String remark;//备注
 
         public String getProductUom() {
             return productUom;
@@ -235,6 +236,14 @@ public class ProductData implements Serializable{
             this.cartAddedTime = cartAddedTime;
         }
 
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -278,6 +287,7 @@ public class ProductData implements Serializable{
             dest.writeString(this.productUom);
             dest.writeString(this.productTag);
             dest.writeByte(this.isInvalid ? (byte) 1 : (byte) 0);
+            dest.writeString(this.remark);
         }
 
         public ListBean() {
@@ -304,6 +314,7 @@ public class ProductData implements Serializable{
             this.productUom = in.readString();
             this.productTag = in.readString();
             this.isInvalid = in.readByte() != 0;
+            this.remark = in.readString();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {

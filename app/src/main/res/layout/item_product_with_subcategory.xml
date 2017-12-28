@@ -116,19 +116,20 @@
             android:id="@+id/iv_product_reduce"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:background="@drawable/order_btn_reduce"/>
+            android:background="@drawable/ic_order_btn_minus_part"/>
         <TextView
             android:id="@+id/tv_product_count"
             android:layout_width="45dp"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:gravity="center"
             android:textSize="14sp"
+            android:background="@drawable/order_input_mid"
             android:textColor="#2e2e2e"/>
 
         <ImageButton
             android:id="@+id/iv_product_add"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
-            android:background="@drawable/order_btn_add_gray" />
+            android:background="@drawable/ic_order_btn_add_green_part" />
     </LinearLayout>
 </LinearLayout>

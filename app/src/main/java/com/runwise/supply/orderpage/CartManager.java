@@ -50,11 +50,12 @@ public class CartManager {
      * @param mapCount
      * @param selected 勾选状态，只有勾选了才会去下单，否则一直保留
      */
-    public void saveCart(Map<ProductData.ListBean,Integer> mapCount, HashSet<Integer> selected){
+    public void saveCart(Map<ProductData.ListBean,String> mapRemarks,Map<ProductData.ListBean,Integer> mapCount, HashSet<Integer> selected){
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mapCount.keySet()){
             bean.setActualQty(mapCount.get(bean));
-            bean.setCacheSelected(selected.contains(bean.getProductID()));
+            bean.setRemark(mapRemarks.get(bean));
+            bean.setCacheSelected(selected.contains(bean.getProductID()));//在购物车中是否被选中
         }
         list.addAll(mapCount.keySet());
         CartCache cartCache = new CartCache();

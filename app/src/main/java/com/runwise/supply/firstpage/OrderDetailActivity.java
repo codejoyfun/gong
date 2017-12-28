@@ -54,6 +54,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
@@ -88,7 +89,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
-    private OrderDtailAdapter adapter;
+//    private OrderDtailAdapter adapter;
     @ViewInject(R.id.dateTv)
     private TextView dateTv;
     @ViewInject(R.id.orderStateTv)
@@ -173,7 +174,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         setTitleText(true, "订单详情");
         setTitleLeftIcon(true, R.drawable.nav_back);
         Bundle bundle = getIntent().getExtras();
-        adapter = new OrderDtailAdapter(mContext);
+//        adapter = new OrderDtailAdapter(mContext);
         orderId = bundle.getInt("orderid", 0);
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (!canSeePrice) {
@@ -437,7 +438,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean = result.getResult();
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
-                adapter.setStatus(bean.getName(), bean.getState(), bean);
+//                adapter.setStatus(bean.getName(), bean.getState(), bean);
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
@@ -530,6 +531,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         returnTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(InventoryCacheManager.getInstance(OrderDetailActivity.this).checkIsInventory(OrderDetailActivity.this))return;
                 //跳转到退换流程：如果超过7天,不支持退货
                 if (isMoreThanReturnData()) {
                     dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");
@@ -600,7 +602,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private void updateUI() {
         if (bean != null) {
             if (bean.getHasReturn() != 0) {
-                adapter.setHasReturn(true);
+//                adapter.setHasReturn(true);
                 returnLL.setVisibility(View.VISIBLE);
                 //可能有多个退货单。
                 if (bean.getReturnOrders().size() > 0) {
@@ -609,7 +611,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
             }
             if (bean.isIsTwoUnit()) {
-                adapter.setTwoUnit(true);
+//                adapter.setTwoUnit(true);
             }
             String state = "";
             String tip = "";

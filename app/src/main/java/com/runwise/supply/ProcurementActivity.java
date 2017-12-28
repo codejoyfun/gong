@@ -17,6 +17,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.entity.ProcurementRequest;
 import com.runwise.supply.mine.ProcurementAddActivity;
 import com.runwise.supply.mine.ProcurementFragment;
+import com.runwise.supply.tools.InventoryCacheManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class ProcurementActivity extends NetWorkActivity {
 
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
+        if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
         startActivity(new Intent(ProcurementActivity.this,ProcurementAddActivity.class));
     }
 

@@ -134,7 +134,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 	private void getHost(String companyName) {
 		GetHostRequest getHostRequest = new GetHostRequest();
 		getHostRequest.setCompanyName(companyName);
-		sendConnection(Constant.UNLOGIN_URL, "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class);
+		sendConnection(Constant.UNLOGIN_URL, "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class,true);
 	}
 	HostResponse mHostResponse;
 	String mHost;
@@ -235,7 +235,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 		}
 		FindPwdRequest paramBean = new FindPwdRequest(code,phonNumber,password);
 		if (!TextUtils.isEmpty(mHost)){
-			this.sendConnection(mHost,"/gongfu/reset_password",paramBean ,FIND_PASSWORD, true, null);
+			this.sendConnection(mHost,"/gongfu/reset_password",paramBean ,FIND_PASSWORD, true, null,false);
 		}else{
 			this.sendConnection("/gongfu/reset_password",paramBean ,FIND_PASSWORD, true, null);
 		}
@@ -260,7 +260,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 		}
 		GetCodeRequest paramBean = new GetCodeRequest(phonNumber);
 		if (!TextUtils.isEmpty(mHost)){
-			this.sendConnection(mHost,"/gongfu/get_captcha",paramBean ,GET_CODE, true, null);
+			this.sendConnection(mHost,"/gongfu/get_captcha",paramBean ,GET_CODE, true, null,false);
 		}else{
 			this.sendConnection("/gongfu/get_captcha",paramBean ,GET_CODE, true, null);
 		}

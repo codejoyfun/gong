@@ -51,6 +51,7 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         holder.mTvProductCount.setText(String.valueOf(listBean.getActualQty()));
         holder.mTvProductName.setText(listBean.getName());
         holder.mTvProductUnit.setText(listBean.getProductUom());
+        holder.mTvRemark.setText(listBean.getRemark()==null?"":"备注："+listBean.getRemark());
         StringBuilder sb = new StringBuilder();
         if(canSeePrice)sb.append("¥").append(NumberUtil.getIOrD(listBean.getPrice())).append("/").append(listBean.getProductUom()).append(" | ");
         sb.append(listBean.getUnit());
@@ -80,6 +81,8 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         TextView mTvProductCount;
         @BindView(R.id.tv_product_unit)
         TextView mTvProductUnit;
+        @BindView(R.id.tv_item_order_submit_remark)
+        TextView mTvRemark;
 
         public ViewHolder(View itemView) {
             super(itemView);

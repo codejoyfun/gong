@@ -340,7 +340,7 @@ public class InventoryFragment extends NetWorkFragment {
             viewHolder.mmTvCode.setText(inventoryProduct.getCode());
             viewHolder.mmTvUnit.setText(inventoryProduct.getProduct().getUnit());
             if(inventoryProduct.getProduct().getImage()!=null){
-                FrecoFactory.getInstance(getActivity()).disPlay(viewHolder.mmSdvImage, Constant.BASE_URL+inventoryProduct.getProduct().getImage().getImage());
+                FrecoFactory.getInstance(getActivity()).displayWithoutHost(viewHolder.mmSdvImage, inventoryProduct.getProduct().getImage().getImage());
             }
             return convertView;
         }
