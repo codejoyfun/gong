@@ -2,6 +2,7 @@ package com.runwise.supply;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -43,7 +44,11 @@ import com.runwise.supply.entity.GetHostRequest;
 import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
+import com.runwise.supply.mine.FingerprintDialog;
+import com.runwise.supply.mine.SettingActivity;
+import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -94,6 +99,7 @@ public class LoginActivity extends NetWorkActivity {
     private LoginRequest loginRequest;
 
     private DbUtils mDb;
+    private FingerprintHelper mFgHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -136,6 +142,28 @@ public class LoginActivity extends NetWorkActivity {
             }
         });
         showFirstUserFromDB();
+
+        //指纹登录
+        mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
+        if(mFgHelper.isSupported() && FingerprintHelper.isFingerprintEnabled(this)){
+            mFgHelper.init();
+            FingerprintDialog fragment = new FingerprintDialog();
+            fragment.setFingerprintHelper(mFgHelper);
+            fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
+                @Override
+                public void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                    if(isSuccess){
+                        mPhone.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,""));
+                        mPassword.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,""));
+                        mCetCompany.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_COMPANY,""));
+                        onLogin(null);
+                        fragment.dismiss();
+                    }
+                }
+            });
+            fragment.setText("通过验证手机指纹进行登录");
+            fragment.show(getSupportFragmentManager(),"tag");
+        }
     }
 
     public void showFirstUserFromDB() {
@@ -291,6 +319,7 @@ public class LoginActivity extends NetWorkActivity {
                         newRem.setPassword("");
                     }
                     newRem.setCompany(mCetCompany.getText().toString());
+                    SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,loginRequest.getPassword());//TODO:encrypt
                     mDb.save(newRem);
                 } catch (Exception e) {
                     e.printStackTrace();

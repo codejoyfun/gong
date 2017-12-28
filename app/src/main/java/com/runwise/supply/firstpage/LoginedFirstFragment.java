@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -66,8 +67,10 @@ import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
+import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.runwise.supply.view.FingerprintPromptDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -300,6 +303,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
+
+        //指纹识别
+        FingerprintHelper fingerprintHelper = new FingerprintHelper(getActivity(), FingerprintManagerCompat.from(getActivity()));
+        if(fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(),GlobalApplication.getInstance().getUid())){
+            FingerprintHelper.setPrompted(getActivity(),GlobalApplication.getInstance().getUid());
+            Dialog dialog = new FingerprintPromptDialog(getActivity());
+            dialog.show();
+        }
     }
 
     public void getProcurement() {
