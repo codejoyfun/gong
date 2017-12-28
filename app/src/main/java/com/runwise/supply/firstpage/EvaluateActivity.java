@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.ActivityManager;
@@ -496,7 +497,7 @@ public class EvaluateActivity extends NetWorkActivity {
 //                Intent intent = new Intent(getActivityContext(),EvaluateSuccessActivity.class);
 //                intent.putExtra("orderid",orderId);
 //                startActivity(intent);
-                break;
+                return;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
@@ -572,6 +573,7 @@ public class EvaluateActivity extends NetWorkActivity {
 
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
         mViewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
+        mViewpager.setOffscreenPageLimit(orderProductFragmentList.size());
         mTablayout.setupWithViewPager(mViewpager);//将TabLayout和ViewPager关联起来
         mTablayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -612,7 +614,7 @@ public class EvaluateActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        Toast.makeText(this,errMsg,Toast.LENGTH_LONG).show();
     }
 
 

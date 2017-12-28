@@ -2,14 +2,22 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.util.ArrayMap;
+import android.support.v7.widget.SwitchCompat;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
@@ -18,14 +26,26 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.StorageUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomBottomDialog;
+import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.ChangePwdActivity;
+import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.InfoActivity;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.business.entity.UserGuideRequest;
+import com.runwise.supply.entity.GuideResponse;
+import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.mine.entity.UrlResult;
+import com.runwise.supply.tools.FingerprintHelper;
+import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.ScoreUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
@@ -36,6 +56,9 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.List;
 
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
+
 /**
  * 设置
  */
@@ -45,10 +68,16 @@ public class SettingActivity extends NetWorkActivity {
     private TextView setItemName_4;
     @ViewInject(R.id.setItemName_5)
     private TextView setItemName_5;
+    @ViewInject(R.id.rl_config_fingerprint)
+    private RelativeLayout mRlFingerprint;
+    @ViewInject(R.id.sc_config_fingerprint)
+    private SwitchCompat mScFingerprint;
 
     private final int REQUEST_HELP = 1;
 
     private boolean isLogin;
+    private FingerprintHelper mFingerprintHelper;
+
     @ViewInject(R.id.exit_user)
     private View exitButton;
     @Override
@@ -70,6 +99,58 @@ public class SettingActivity extends NetWorkActivity {
         }
 
         setItemName_5.setText(CommonUtils.getVersionName(this));
+
+        mFingerprintHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
+        if(!mFingerprintHelper.isSupported()){
+            mRlFingerprint.setVisibility(View.GONE);
+        }else{
+            mFingerprintHelper.init();
+            UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+            mScFingerprint.setChecked(FingerprintHelper.isUserFingerprintEnabled(this,userInfo.getLogin()));
+            mScFingerprint.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mScFingerprint.isChecked()){
+                        String password = (String) SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_CUR_PW,"");
+                        if(TextUtils.isEmpty(password)){
+                            //登录的时候没有记录下密码
+                            ToastUtil.show(SettingActivity.this,"请先重新登录");
+                            return;
+                        }
+                        FingerprintDialog fragment = new FingerprintDialog();
+                        fragment.setFingerprintHelper(mFingerprintHelper);
+                        fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
+                            @Override
+                            public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                                fragment.dismiss();
+                                if(isSuccess==STATUS_SUCCEED){
+                                    ToastUtil.show(SettingActivity.this,"您已成功开启指纹登录");
+                                    mScFingerprint.setChecked(true);
+                                    //记录用户密码
+                                    DbUtils mDb = MyDbUtil.create(SettingActivity.this);
+                                    try{
+                                        RemUser rem = mDb.findFirst(Selector.from(RemUser.class).
+                                                where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
+                                        FingerprintHelper.setFingerprintEnabled(SettingActivity.this,
+                                                true,rem.getUserName(),rem.getCompany());
+                                    }catch (DbException e){
+                                        e.printStackTrace();
+                                    }
+                                }else if(isSuccess==STATUS_FAILED){
+                                    ToastUtil.show(SettingActivity.this,"指纹验证失败");
+                                }else{
+                                    mScFingerprint.setChecked(false);
+                                }
+                            }
+                        });
+                        fragment.setText("轻触指纹键验证手机指纹进行登录");
+                        fragment.show(getSupportFragmentManager(),"tag");
+                    }else{
+                        FingerprintHelper.setFingerprintEnabled(getActivityContext(),false,null,null);
+                    }
+                }
+            });
+        }
     }
 
 

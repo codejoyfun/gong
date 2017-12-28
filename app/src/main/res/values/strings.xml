@@ -11,4 +11,5 @@
     <string name="system_upgrading_toast">系统更新中，%1$s后才能使用哦!</string>
     <string name="return_order_request_success">订单编号：%1$s\n申请类型：退货</string>
     <string name="inventory_notice">当前门店仓库盘点中，请尽快完成！</string>
+    <string name="fingerprint_notice0">"供鲜生" 的指纹识别</string>
 </resources>
