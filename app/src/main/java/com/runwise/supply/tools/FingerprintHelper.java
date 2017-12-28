@@ -227,25 +227,30 @@ public class FingerprintHelper {
         @Override
         public void onAuthenticationError(int errMsgId, CharSequence errString) {
             super.onAuthenticationError(errMsgId, errString);
-            if(authenticateListener!=null)authenticateListener.onAuthenticate(false,mCryptoObject);
+            //取消的时候调用
+            if(authenticateListener!=null)authenticateListener.onAuthenticate(STATUS_CANCEL,mCryptoObject);
         }
 
         @Override
         public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
             super.onAuthenticationSucceeded(result);
-            if(authenticateListener!=null)authenticateListener.onAuthenticate(true,mCryptoObject);
+            if(authenticateListener!=null)authenticateListener.onAuthenticate(STATUS_SUCCEED,mCryptoObject);
         }
 
         @Override
         public void onAuthenticationFailed() {
             super.onAuthenticationFailed();
-            if(authenticateListener!=null)authenticateListener.onAuthenticate(false,mCryptoObject);
+            //验证失败的时候
+            if(authenticateListener!=null)authenticateListener.onAuthenticate(STATUS_FAILED,mCryptoObject);
         }
     };
 
     private OnAuthenticateListener authenticateListener;
+    public static final int STATUS_SUCCEED = 0;
+    public static final int STATUS_FAILED = 1;
+    public static final int STATUS_CANCEL = 2;
     public interface OnAuthenticateListener{
-        void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject);
+        void onAuthenticate(int status, FingerprintManagerCompat.CryptoObject cryptoObject);
     }
     public void setAuthenticateListener(OnAuthenticateListener listener){
         authenticateListener = listener;

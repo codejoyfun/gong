@@ -42,6 +42,7 @@ public class FingerprintPromptDialog extends Dialog {
 		okBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				dismiss();
 				Intent intent = new Intent(getContext(), SettingActivity.class);
 				activity.startActivity(intent);
 			}

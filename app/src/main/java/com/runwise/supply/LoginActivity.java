@@ -61,6 +61,8 @@ import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
 import static com.kids.commonframe.base.util.SPUtils.get;
 import static com.runwise.supply.FindPasswordActivity.INTENT_KEY_COMPANY_NAME;
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
 
 
 public class LoginActivity extends NetWorkActivity {
@@ -142,6 +144,8 @@ public class LoginActivity extends NetWorkActivity {
             }
         });
         showFirstUserFromDB();
+        remPassword.setChecked((Boolean)SPUtils.get(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,true));
+        remPassword.setOnCheckedChangeListener((v,isChecked)->SPUtils.put(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,isChecked));
 
         //指纹登录
         mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
@@ -151,13 +155,15 @@ public class LoginActivity extends NetWorkActivity {
             fragment.setFingerprintHelper(mFgHelper);
             fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
                 @Override
-                public void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
-                    if(isSuccess){
+                public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                    if(isSuccess==STATUS_SUCCEED){
                         mPhone.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,""));
                         mPassword.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,""));
                         mCetCompany.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_COMPANY,""));
                         onLogin(null);
                         fragment.dismiss();
+                    }else if(isSuccess==STATUS_FAILED){
+                        ToastUtil.show(LoginActivity.this,"指纹验证失败");
                     }
                 }
             });

@@ -10,4 +10,5 @@ public class SP_CONSTANTS {
     public static final String SP_FG_USER = "sp_fg_user";
     public static final String SP_FG_COMPANY = "sp_fg_company";
     public static final String SP_FG_ENABLED = "sp_fg_enabled_";
+    public static final String SP_CB_REMEMBER_PW = "sp_cb_remember_pw";
 }

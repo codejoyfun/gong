@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SwitchCompat;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -54,6 +55,9 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.List;
+
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
 
 /**
  * 设置
@@ -107,13 +111,19 @@ public class SettingActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     if(mScFingerprint.isChecked()){
+                        String password = (String) SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_CUR_PW,"");
+                        if(TextUtils.isEmpty(password)){
+                            //登录的时候没有记录下密码
+                            ToastUtil.show(SettingActivity.this,"请先重新登录");
+                            return;
+                        }
                         FingerprintDialog fragment = new FingerprintDialog();
                         fragment.setFingerprintHelper(mFingerprintHelper);
                         fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
                             @Override
-                            public void onAuthenticate(boolean isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                            public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
                                 fragment.dismiss();
-                                if(isSuccess){
+                                if(isSuccess==STATUS_SUCCEED){
                                     ToastUtil.show(SettingActivity.this,"您已成功开启指纹登录");
                                     mScFingerprint.setChecked(true);
                                     //记录用户密码
@@ -126,6 +136,8 @@ public class SettingActivity extends NetWorkActivity {
                                     }catch (DbException e){
                                         e.printStackTrace();
                                     }
+                                }else if(isSuccess==STATUS_FAILED){
+                                    ToastUtil.show(SettingActivity.this,"指纹验证失败");
                                 }else{
                                     mScFingerprint.setChecked(false);
                                 }
