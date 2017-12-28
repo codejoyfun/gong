@@ -428,6 +428,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 //本地删除，刷新页面
                 ToastUtil.show(mContext, "取消成功");
                 InventoryCacheManager.getInstance(getActivity()).removeInventory(mCancelInventory.getInventoryID());
+                InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
                 InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(false);
                 adapter.getList().remove(mCancelInventory);
                 adapter.notifyDataSetChanged();
@@ -451,6 +452,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     }else{
                         InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(false);
                     }
+                }else{//没有记录
+                    InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
+                    InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(false);
                 }
                 inventoryRequesting = false;
                 checkSuccess();
