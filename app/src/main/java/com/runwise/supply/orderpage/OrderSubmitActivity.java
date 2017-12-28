@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -21,6 +22,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
@@ -346,6 +348,11 @@ public class OrderSubmitActivity extends NetWorkActivity {
      * 下单
      */
     private void submitOrder() {
+        //检查网络连接状态
+        if(!CommonUtils.isNetworkConnected(this)){
+            Toast.makeText(this,R.string.network_error,Toast.LENGTH_LONG).show();
+            return;
+        }
         //禁用下单按钮
         mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
         mBtnSubmit.setEnabled(false);

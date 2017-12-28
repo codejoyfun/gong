@@ -60,7 +60,7 @@ public class OrderFragmentV2 extends NetWorkFragment {
         return R.layout.fragment_tab_order;
     }
 
-    @OnClick({R.id.rl_tab_order_always,R.id.rl_tab_order_intelligent,R.id.rl_tab_order_self_help})
+    @OnClick({R.id.rl_tab_order_always,R.id.rl_tab_order_intelligent,R.id.rl_tab_order_self_help,R.id.rl_tab_order_fragment})
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.rl_tab_order_always:
