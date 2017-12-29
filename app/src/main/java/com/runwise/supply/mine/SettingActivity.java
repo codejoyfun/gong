@@ -110,6 +110,8 @@ public class SettingActivity extends NetWorkActivity {
             mScFingerprint.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    FingerprintDialog fragment = new FingerprintDialog();
+                    fragment.setFingerprintHelper(mFingerprintHelper);
                     if(mScFingerprint.isChecked()){
                         String password = (String) SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_CUR_PW,"");
                         if(TextUtils.isEmpty(password)){
@@ -117,8 +119,6 @@ public class SettingActivity extends NetWorkActivity {
                             ToastUtil.show(SettingActivity.this,"请先重新登录");
                             return;
                         }
-                        FingerprintDialog fragment = new FingerprintDialog();
-                        fragment.setFingerprintHelper(mFingerprintHelper);
                         fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
                             @Override
                             public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
@@ -143,11 +143,24 @@ public class SettingActivity extends NetWorkActivity {
                                 }
                             }
                         });
-                        fragment.setText("轻触指纹键验证手机指纹进行登录");
-                        fragment.show(getSupportFragmentManager(),"tag");
                     }else{
-                        FingerprintHelper.setFingerprintEnabled(getActivityContext(),false,null,null);
+                        //关闭也要验证指纹
+                        fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
+                            @Override
+                            public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                                if(isSuccess==STATUS_SUCCEED){
+                                    fragment.dismiss();
+                                    FingerprintHelper.setFingerprintEnabled(getActivityContext(),false,null,null);
+                                }else if(isSuccess==STATUS_FAILED){
+                                    ToastUtil.show(SettingActivity.this,"指纹验证失败");
+                                }else{
+                                    mScFingerprint.setChecked(true);
+                                }
+                            }
+                        });
                     }
+                    fragment.setText("轻触指纹键验证手机指纹进行登录");
+                    fragment.show(getSupportFragmentManager(),"fingerprint");
                 }
             });
         }
