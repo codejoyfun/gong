@@ -46,6 +46,7 @@ import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.mine.FingerprintDialog;
 import com.runwise.supply.mine.SettingActivity;
+import com.runwise.supply.tools.AESCrypt;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.SP_CONSTANTS;
@@ -53,9 +54,11 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
+import io.vov.vitamio.utils.Crypto;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
@@ -157,8 +160,16 @@ public class LoginActivity extends NetWorkActivity {
                 @Override
                 public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
                     if(isSuccess==STATUS_SUCCEED){
-                        mPhone.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,""));
-                        mPassword.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,""));
+                        String loginUser = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,"");
+                        String cipher = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,"");
+                        mPhone.setText(loginUser);
+                        try{
+                            mPassword.setText(AESCrypt.decrypt(loginUser,cipher));
+                        }catch (GeneralSecurityException e){
+                            e.printStackTrace();
+                            ToastUtil.show(LoginActivity.this,"指纹验证失败");
+                            return;
+                        }
                         mCetCompany.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_COMPANY,""));
                         onLogin(null);
                         fragment.dismiss();
@@ -325,7 +336,8 @@ public class LoginActivity extends NetWorkActivity {
                         newRem.setPassword("");
                     }
                     newRem.setCompany(mCetCompany.getText().toString());
-                    SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,loginRequest.getPassword());//TODO:encrypt
+                    SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,
+                            AESCrypt.encrypt(loginRequest.getLogin(),loginRequest.getPassword()));
                     mDb.save(newRem);
                 } catch (Exception e) {
                     e.printStackTrace();

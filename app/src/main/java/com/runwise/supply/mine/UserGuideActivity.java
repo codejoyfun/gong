@@ -120,7 +120,6 @@ public class UserGuideActivity extends NetWorkActivity {
         //TODO:test
         switch (where){
             case REQUEST_USER_GUIDE:
-                UmengUtil.reportError(errMsg);
                 mGuideResponse = new GuideResponse();
                 mGuideResponse.setList(new ArrayList<>());
                 GuideResponse.GuideItem item = new GuideResponse.GuideItem();

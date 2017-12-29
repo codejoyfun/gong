@@ -16,18 +16,16 @@ import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 
 /**
- * 智能下单，继承自手动下单
+ * 常购订单，类似智能下单的逻辑，继承自手动下单
  *
  * Created by Dong on 2017/11/23.
  */
-public class OneKeyActivityV2 extends ProductActivityV2 {
+public class AlwaysOrderActivity extends ProductActivityV2 {
 
-    public static final int REQUEST_PRESET = 20000;
-    private double predict_sale_amount;
-    private double yongliang_factor;
+    public static final int REQUEST_ALWAYS = 20000;
     private Handler mHandler = new Handler();
     @ViewInject(R.id.ttt)
-    protected View ttt;
+    protected View mViewAnim;
     @ViewInject(R.id.loadingImg)
     protected ImageView loadingImg;
     @ViewInject(R.id.rl_bottom_bar)
@@ -49,10 +47,8 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        predict_sale_amount = getIntent().getDoubleExtra("predict_sale_amount", 0);
-        yongliang_factor = getIntent().getDoubleExtra("yongliang_factor", 0) / 100;
         super.onCreate(savedInstanceState);
-        setTitleText(true,"智能下单");
+        setTitleText(true,"常购清单");
         ViewUtils.inject(this);
         initLoadingImgs();
     }
@@ -65,25 +61,26 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
         requestPresent();
     }
 
+    /**
+     * 请求预设数据
+     */
     private void requestPresent(){
         //开始动画
-        ttt.setVisibility(View.VISIBLE);
+        mViewAnim.setVisibility(View.VISIBLE);
         mRlBottomBar.setVisibility(View.GONE);
         mHandler.post(runnable);
-        OneKeyRequest request = new OneKeyRequest();
-        request.setPredict_sale_amount(predict_sale_amount);
-        request.setYongliang_factor(yongliang_factor);
-        sendConnection("/gongfu/v2/shop/preset/product/list", request, REQUEST_PRESET, false, PresetProductData.class);
+        Object request = null;
+        sendConnection("/api/shop/always_buy/product/list",REQUEST_ALWAYS,false,PresetProductData.class);
     }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
         super.onSuccess(result,where);
         switch (where){
-            case REQUEST_PRESET:
+            case REQUEST_ALWAYS:
                 //停止动画
                 mHandler.removeCallbacks(runnable);
-                ttt.setVisibility(View.GONE);
+                mViewAnim.setVisibility(View.GONE);
                 mRlBottomBar.setVisibility(View.VISIBLE);
                 BaseEntity.ResultBean resultBean = result.getResult();
                 PresetProductData data = (PresetProductData) resultBean.getData();
@@ -107,10 +104,10 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
     public void onFailure(String errMsg, BaseEntity result, int where) {
         super.onFailure(errMsg,result,where);
         switch (where){
-            case REQUEST_PRESET:
+            case REQUEST_ALWAYS:
                 //停止动画
                 mHandler.removeCallbacks(runnable);
-                ttt.setVisibility(View.GONE);
+                mViewAnim.setVisibility(View.GONE);
                 mRlBottomBar.setVisibility(View.VISIBLE);
                 requestCategory();
                 updateBottomBar();

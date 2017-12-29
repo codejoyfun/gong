@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
@@ -46,10 +46,13 @@ import java.util.List;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 
 /**
- * Created by libin on 2017/6/29.
+ * 智能下单
+ *
+ * Created by Dong on 2017/12/27.
  */
-@Deprecated
-public class OrderFragment extends NetWorkFragment {
+
+public class SmartOrderActivity extends NetWorkActivity {
+
     private static final int LASTBUY = 1;
     @ViewInject(R.id.lastBuyTv)
     private TextView lastBuyTv;
@@ -70,97 +73,13 @@ public class OrderFragment extends NetWorkFragment {
     private OptionsPickerView opv;
     private List<String> safeArr = new ArrayList<>();
     private int selectedIndex = 109;                              //最近一次所选,默认在+10上
-    private boolean isBackFirstPage = false;
-    @Override
-    protected int createViewByLayoutId() {
-        return R.layout.order_fragment_layout;
-    }
-    @OnClick({R.id.dayWeekTv,R.id.sureBtn,R.id.selfHelpBtn,R.id.safeValueTv})
-    public void btnClick(View view){
-        switch (view.getId()){
-            case R.id.dayWeekTv:
-                if (popupWindow  == null){
-                    popupWindow = new ListPopupWindow(mContext);
-                    popupWindow.setAdapter(new ArrayAdapter<String>(mContext,R.layout.pop_item,times));
-                    popupWindow.setAnchorView(view);
-                    popupWindow.setDropDownGravity(Gravity.CENTER);
-                    popupWindow.setWidth(CommonUtils.dip2px(mContext,81));
-                    popupWindow.setHeight(CommonUtils.dip2px(mContext,93));
-                    popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            dwTv.setText(adapterView.getAdapter().getItem(i).toString());
-                            popupWindow.dismiss();
-
-                        }
-                    });
-                    popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(mContext,R.drawable.order_whitebg));
-                }
-                if(popupWindow.isShowing()){
-                    popupWindow.dismiss();
-                }else{
-                    popupWindow.show();
-                }
-                break;
-            case R.id.sureBtn:
-                if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                if(!SPUtils.isLogin(getActivity())){
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
-                    return;
-                }
-                //跳转到智能下单页面
-//                Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
-                Intent intent = new Intent(mContext,OneKeyActivityV2.class);
-                intent.putExtra("yongliang_factor",Double.valueOf(safeArr.get(selectedIndex)));
-                intent.putExtra("predict_sale_amount",Double.valueOf(editText.getText().toString()));
-                startActivity(intent);
-                break;
-            case R.id.selfHelpBtn:
-                if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
-                if (SPUtils.isLogin(mContext)){
-                    //Intent intent2 = new Intent(mContext,SelfHelpOrderActivity.class);
-                    Intent intent2 = new Intent(mContext,ProductActivityV2.class);
-                    intent2.putExtra(INTENT_KEY_SELF_HELP,true);//自助下单
-                    startActivity(intent2);
-                }else{
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
-                }
-                break;
-            case R.id.safeValueTv:
-                if (opv == null){
-                    opv = new OptionsPickerView.Builder(mContext,new OptionsPickerView.OnOptionsSelectListener(){
-
-                        @Override
-                        public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                            if (safeArr.size() > options1){
-                                selectedIndex = options1;
-                               String selectStr = safeArr.get(options1);
-                                safeValueTv.setText(selectStr +" %");
-                            }
-                        }
-                    }).setTitleText("选择安全系数")
-                            .setTitleBgColor(Color.parseColor("#F3F9EF"))
-                            .setTitleSize(16)
-                            .setSubCalSize(14)
-                            .setContentTextSize(23)
-                            .setCancelColor(Color.parseColor("#2E2E2E"))
-                            .setSubmitColor(Color.parseColor("#2E2E2E"))
-                            .build();
-                    opv.setPicker(safeArr);
-                }
-                opv.setSelectOptions(selectedIndex);
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if(imm!=null)imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                opv.show(true);
-                break;
-        }
-
-
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_smart_order);
+        setTitleText(true,"智能下单");
+        showBackBtn();
         for (int i = -99; i<=99; i++){
             String str = i < 0 ? String.valueOf(i) : ("+"+i);
             safeArr.add(str);
@@ -214,14 +133,76 @@ public class OrderFragment extends NetWorkFragment {
         mLayoutUpgradeNotice.setPageName("下单功能");
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (isBackFirstPage){
-            isBackFirstPage = false;
-            MainActivity ma = (MainActivity) getActivity();
-            ma.gotoTabByIndex(0);
+    @OnClick({R.id.dayWeekTv,R.id.sureBtn,R.id.safeValueTv})
+    public void btnClick(View view){
+        switch (view.getId()){
+            case R.id.dayWeekTv:
+                if (popupWindow  == null){
+                    popupWindow = new ListPopupWindow(mContext);
+                    popupWindow.setAdapter(new ArrayAdapter<String>(mContext,R.layout.pop_item,times));
+                    popupWindow.setAnchorView(view);
+                    popupWindow.setDropDownGravity(Gravity.CENTER);
+                    popupWindow.setWidth(CommonUtils.dip2px(mContext,81));
+                    popupWindow.setHeight(CommonUtils.dip2px(mContext,93));
+                    popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            dwTv.setText(adapterView.getAdapter().getItem(i).toString());
+                            popupWindow.dismiss();
+
+                        }
+                    });
+                    popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(mContext,R.drawable.order_whitebg));
+                }
+                if(popupWindow.isShowing()){
+                    popupWindow.dismiss();
+                }else{
+                    popupWindow.show();
+                }
+                break;
+            case R.id.sureBtn:
+                if(!SystemUpgradeHelper.getInstance(this).check(this))return;
+                if(!SPUtils.isLogin(this)){
+                    startActivity(new Intent(this, LoginActivity.class));
+                    return;
+                }
+                //跳转到智能下单页面
+//                Intent intent = new Intent(mContext,OneKeyOrderActivity.class);
+                Intent intent = new Intent(mContext,OneKeyActivityV2.class);
+                intent.putExtra("yongliang_factor",Double.valueOf(safeArr.get(selectedIndex)));
+                intent.putExtra("predict_sale_amount",Double.valueOf(editText.getText().toString()));
+                startActivity(intent);
+                break;
+            case R.id.safeValueTv:
+                if (opv == null){
+                    opv = new OptionsPickerView.Builder(mContext,new OptionsPickerView.OnOptionsSelectListener(){
+
+                        @Override
+                        public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                            if (safeArr.size() > options1){
+                                selectedIndex = options1;
+                                String selectStr = safeArr.get(options1);
+                                safeValueTv.setText(selectStr +" %");
+                            }
+                        }
+                    }).setTitleText("选择安全系数")
+                            .setTitleBgColor(Color.parseColor("#F3F9EF"))
+                            .setTitleSize(16)
+                            .setSubCalSize(14)
+                            .setContentTextSize(23)
+                            .setCancelColor(Color.parseColor("#2E2E2E"))
+                            .setSubmitColor(Color.parseColor("#2E2E2E"))
+                            .build();
+                    opv.setPicker(safeArr);
+                }
+                opv.setSelectOptions(selectedIndex);
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm!=null)imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                opv.show(true);
+                break;
         }
+
+
     }
 
     @Override
@@ -239,11 +220,6 @@ public class OrderFragment extends NetWorkFragment {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void getOrderSuccessEvent(OrderSuccessEvent event){
-        isBackFirstPage = true;
 
     }
 
