@@ -44,6 +44,7 @@ import com.runwise.supply.view.ProductTypePopup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -772,16 +773,19 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     break;
                 case R.id.iv_item_cart_add://增加
                     double count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
-                    mMapCount.put(listBean,++count);
+                    count = BigDecimal.valueOf(count).add(BigDecimal.ONE).doubleValue();
+                    mMapCount.put(listBean,count);
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean,count));
-                    mmTvCount.setText(count+listBean.getUom());
+                    mmTvCount.setText(NumberUtil.getIOrD(count)+listBean.getUom());
                     mmCbCheck.setChecked(true);
                     break;
                 case R.id.iv_item_cart_minus://减少
 //                    count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
 //                    mMapCount.put(listBean,--count);
                     count = mCountSetter.getCount(listBean);
-                    mCountSetter.setCount(listBean,--count);
+                    count = BigDecimal.valueOf(count).subtract(BigDecimal.ONE).doubleValue();
+                    if(count<0)count = 0;
+                    mCountSetter.setCount(listBean,count);
                     if(count==0){
                         //从购物车中删除
 //                        mmProductList.remove(listBean);
@@ -795,7 +799,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                         mmCbCheck.setChecked(true);
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean,count));
-                    mmTvCount.setText(count+listBean.getUom());
+                    mmTvCount.setText(NumberUtil.getIOrD(count)+listBean.getUom());
                     break;
             }
         }
