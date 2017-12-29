@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
@@ -105,7 +107,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     CategoryRespone categoryResponse;
     public static final String INTENT_KEY_BACKAP = "backap";
 
-    protected Map<ProductData.ListBean, Integer> mMapCount = new HashMap<>();
+    protected Map<ProductData.ListBean, Double> mMapCount = new HashMap<>();
     protected Map<ProductData.ListBean, String> mMapRemarks = new HashMap<>();
     protected Set<ProductData.ListBean> mSetInvalid = new HashSet<>();
 
@@ -427,7 +429,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mTvCartCount.setVisibility(View.VISIBLE);
             //计算总价,总量
             double totalMoney = 0;
-            int totalPieces = 0;
+            double totalPieces = 0;
             for(ProductData.ListBean bean:mMapCount.keySet()){
                 if(!mmSelected.contains(bean.getProductID()))continue;//只计算勾选的
                 totalMoney = totalMoney + mMapCount.get(bean) * bean.getPrice();
@@ -435,7 +437,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
 
             if(totalPieces!=0){
-                mTvCartCount.setText(totalPieces+"");
+                mTvCartCount.setText(NumberUtil.getIOrD(totalPieces));
                 mTvCartCount.setVisibility(View.VISIBLE);
                 mTvOrderCommit.setEnabled(true);
             }else{
@@ -673,8 +675,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             ViewHolder holder = (ViewHolder)viewholder;
             holder.listBean = mmProductList.get(position);
             holder.mmTvName.setText(holder.listBean.getName());
-            int count = mMapCount.containsKey(holder.listBean)?mMapCount.get(holder.listBean):0;
-            holder.mmTvCount.setText(count+holder.listBean.getUom());
+            double count = mMapCount.containsKey(holder.listBean)?mMapCount.get(holder.listBean):0;
+            holder.mmTvCount.setText(NumberUtil.getIOrD(count)+holder.listBean.getUom());
             StringBuilder sb = new StringBuilder();
             if(GlobalApplication.getInstance().getCanSeePrice()){
                 sb.append("￥"+df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getUom()).append(" ");
@@ -769,7 +771,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     notifySelectAll();
                     break;
                 case R.id.iv_item_cart_add://增加
-                    int count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
+                    double count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
                     mMapCount.put(listBean,++count);
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean,count));
                     mmTvCount.setText(count+listBean.getUom());
@@ -829,9 +831,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
          * 删除全部无效商品，并更新购物车列表
          */
         private void clearInvalid(){
-            Iterator<Map.Entry<ProductData.ListBean, Integer>> it = mMapCount.entrySet().iterator();
+            Iterator<Map.Entry<ProductData.ListBean, Double>> it = mMapCount.entrySet().iterator();
             while(it.hasNext()){
-                Map.Entry<ProductData.ListBean, Integer> entry = it.next();
+                Map.Entry<ProductData.ListBean, Double> entry = it.next();
                 if(entry.getKey().isInvalid()){
                     it.remove();
                 }
@@ -858,7 +860,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      */
     ProductCountSetter mCountSetter = new ProductCountSetter() {
         @Override
-        public void setCount(ProductData.ListBean bean, int count) {
+        public void setCount(ProductData.ListBean bean, double count) {
             if(count==0){
                 bean.setCartAddedTime(0);
                 mMapCount.remove(bean);
@@ -871,7 +873,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
 
         @Override
-        public int getCount(ProductData.ListBean bean) {
+        public double getCount(ProductData.ListBean bean) {
             return mMapCount.get(bean)==null?0:mMapCount.get(bean);
         }
 
@@ -897,9 +899,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * 供子fragment统一设置商品数量,隐藏细节
      */
     public interface ProductCountSetter {
-        void setCount(ProductData.ListBean bean, int count);
+        void setCount(ProductData.ListBean bean, double count);
         void setRemark(ProductData.ListBean bean);
-        int getCount(ProductData.ListBean bean);
+        double getCount(ProductData.ListBean bean);
         String getRemark(ProductData.ListBean bean);
     }
 }

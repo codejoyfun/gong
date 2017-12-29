@@ -22,6 +22,8 @@ import com.runwise.supply.R;
 
 import java.util.logging.Handler;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * 商品列表页输入数量对话框
  *
@@ -30,14 +32,14 @@ import java.util.logging.Handler;
 
 public class ProductValueDialog extends Dialog implements View.OnClickListener{
     String name;
-    int initValue;
+    double initValue;
     String remark;
     IProductDialogCallback callback;
     EditText mEtValue;
     EditText mEtRemark;
     TextView mTvName;
 
-    public ProductValueDialog(@NonNull Context context, String name, int initValue, String remark,IProductDialogCallback callback ){
+    public ProductValueDialog(@NonNull Context context, String name, double initValue, String remark,IProductDialogCallback callback ){
         super(context);
         this.name = name;
         this.initValue = initValue;
@@ -64,30 +66,37 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
                 return cs;
             }
         }});
-//        mEtRemark.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if(s.toString().length()>20){
-//                    mEtRemark.setText(s.subSequence(0,20));
-//                    ToastUtil.show(context,"只能输入20个数字~");
-//                    mEtRemark.setSelection(20);
-//                }
-//            }
-//        });
-        if(initValue>0){
-            mEtValue.setText(String.valueOf(initValue));
-            //mEtValue.selectAll();
-            mEtValue.requestFocus();
-        }
+
+       mEtValue.addTextChangedListener(new TextWatcher() {
+           @Override
+           public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+           }
+
+           @Override
+           public void onTextChanged(CharSequence s, int start, int before, int count) {
+               String strSource = s.toString();
+               int dotIndex = strSource.indexOf(".");
+               if(dotIndex>=0){
+                   int length = strSource.substring(dotIndex,strSource.length()-1).length();
+                   if(length>2){
+                       String dest = strSource.substring(0,dotIndex+3);
+                       mEtValue.setText(dest);
+                       mEtValue.setSelection(dest.length());
+                   }
+               }
+           }
+
+           @Override
+           public void afterTextChanged(Editable s) {
+
+           }
+       });
+
+        mEtValue.setText(NumberUtil.getIOrD(initValue));
+        //mEtValue.selectAll();
+        mEtValue.requestFocus();
+
         if(!TextUtils.isEmpty(remark)){
             mEtRemark.setText(remark);
         }
@@ -100,7 +109,7 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
     }
 
     public interface IProductDialogCallback{
-        void onInputValue(int value,String remark);
+        void onInputValue(double value,String remark);
     }
 
     @Override
@@ -110,9 +119,9 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
             case R.id.dialog_product_input_ok:
                 String strValue = mEtValue.getText().toString();
                 String strRemark = mEtRemark.getText().toString();
-                if(!TextUtils.isEmpty(mEtValue.getText().toString()) && TextUtils.isDigitsOnly(strValue)){
+                if(!TextUtils.isEmpty(mEtValue.getText().toString())){
                     if(callback!=null) {
-                        callback.onInputValue(Integer.valueOf(strValue),strRemark);
+                        callback.onInputValue(Double.valueOf(strValue),strRemark);
                         dismiss();
                     }
                 }

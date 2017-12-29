@@ -47,6 +47,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
 import static java.lang.System.currentTimeMillis;
@@ -366,7 +367,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         for (ProductData.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
-            int qty = bean.getActualQty();
+            double qty = bean.getActualQty();
             if (qty == 0) {
                 continue;
             }
@@ -426,7 +427,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         for (ProductData.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
-            int qty = bean.getActualQty();
+            double qty = bean.getActualQty();
             if (qty == 0) {
                 continue;
             }
@@ -551,7 +552,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
      */
     protected void updateBottomBar() {
         double totalMoney = 0;
-        int totalNum = 0;
+        double totalNum = 0;
         for (ProductData.ListBean bean : mProductList) {
             totalMoney = totalMoney + bean.getPrice() * bean.getActualQty();
             totalNum = totalNum + bean.getActualQty();
@@ -563,6 +564,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
         } else {
             mTvTotalMoney.setVisibility(View.GONE);
         }
-        mTvProductNum.setText("共" + totalNum + "件");
+        mTvProductNum.setText("共" + NumberUtil.getIOrD(totalNum) + "件");
     }
 }

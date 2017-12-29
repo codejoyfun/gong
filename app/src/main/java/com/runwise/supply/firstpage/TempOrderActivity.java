@@ -25,6 +25,8 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.UserUtils;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * 首页的提交中订单的商品列表
  *
@@ -76,7 +78,7 @@ public class TempOrderActivity extends NetWorkActivity {
             int pId = bean.getProductID();
             FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(vh.productImage, bean.getImage().getImageSmall());
 
-            vh.nowPriceTv.setText("x"+bean.getActualQty());
+            vh.nowPriceTv.setText("x"+ NumberUtil.getIOrD(bean.getActualQty()));
 
             vh.name.setText(bean.getName());
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());

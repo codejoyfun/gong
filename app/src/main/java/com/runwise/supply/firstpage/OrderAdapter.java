@@ -225,7 +225,7 @@ public class OrderAdapter extends IBaseAdapter {
             if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
                 sb.append((int) bean.getDeliveredQty()).append("件商品");
             } else {
-                sb.append((int) bean.getAmount()).append("件商品");
+                sb.append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
             }
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));

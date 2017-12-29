@@ -36,7 +36,7 @@ public class ProductData implements Serializable{
          * uom : 条
          */
 
-        private int actualQty;
+        private double actualQty;
         private boolean isTwoUnit;
         private int presetQty;
         private String settlePrice;
@@ -117,11 +117,11 @@ public class ProductData implements Serializable{
             this.category = category;
         }
 
-        public int getActualQty() {
+        public double getActualQty() {
             return actualQty;
         }
 
-        public void setActualQty(int actualQty) {
+        public void setActualQty(double actualQty) {
             this.actualQty = actualQty;
         }
 
@@ -267,7 +267,7 @@ public class ProductData implements Serializable{
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.actualQty);
+            dest.writeDouble(this.actualQty);
             dest.writeByte(this.isTwoUnit ? (byte) 1 : (byte) 0);
             dest.writeInt(this.presetQty);
             dest.writeString(this.settlePrice);
@@ -294,7 +294,7 @@ public class ProductData implements Serializable{
         }
 
         protected ListBean(Parcel in) {
-            this.actualQty = in.readInt();
+            this.actualQty = in.readDouble();
             this.isTwoUnit = in.readByte() != 0;
             this.presetQty = in.readInt();
             this.settlePrice = in.readString();

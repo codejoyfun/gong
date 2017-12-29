@@ -56,15 +56,15 @@ public class CommitOrderRequest {
          * product_id : 101
          */
 
-        private int qty;
+        private double qty;
         private int product_id;
         private String remark = "";
 
-        public int getQty() {
+        public double getQty() {
             return qty;
         }
 
-        public void setQty(int qty) {
+        public void setQty(double qty) {
             this.qty = qty;
         }
 
