@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.CheckUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -26,9 +27,13 @@ import com.runwise.supply.entity.FindPwdRequest;
 import com.runwise.supply.entity.GetCodeRequest;
 import com.runwise.supply.entity.GetHostRequest;
 import com.runwise.supply.entity.HostResponse;
+import com.runwise.supply.tools.AESCrypt;
+import com.runwise.supply.tools.FingerprintHelper;
+import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import java.io.Serializable;
+import java.security.GeneralSecurityException;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.isLogin;
@@ -149,6 +154,22 @@ public class FindPasswordActivity extends NetWorkActivity {
 				break;
 			case FIND_PASSWORD:
 				ToastUtil.show(mContext, "密码修改成功");
+				//更新指纹识别
+				if(isLogin(this)){
+					UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+					String password = mPassword.getText().toString();
+					String cipher = null;
+					try{
+						cipher = AESCrypt.encrypt(userInfo.getLogin(),password);
+					}catch (GeneralSecurityException e){
+						e.printStackTrace();
+					}
+					SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,cipher);
+					if(FingerprintHelper.isUserFingerprintEnabled(this,userInfo.getLogin())){
+						SPUtils.put(this,SP_CONSTANTS.SP_PW,cipher);
+					}
+				}
+
 				this.finish();
 				break;
 			case GET_HOST:
