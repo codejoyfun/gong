@@ -58,7 +58,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 	private static final int GET_HOST = 3;
 	private static final int REQUEST_LOGINOUT = 4;
 	@ViewInject(R.id.teacher_reg_phone)
-	private EditText mPhonenNmber;
+	private TextView mPhonenNmber;
 	@ViewInject(R.id.teacher_reg_getcode)
 	private TextView mGetCode;
 	@ViewInject(R.id.teacher_reg_code)
@@ -87,6 +87,9 @@ public class FindPasswordActivity extends NetWorkActivity {
 		this.setTitleText(true,"重置密码");
 		this.setTitleLeftIcon(true,R.drawable.marking);
 		String phoneNum = getIntent().getStringExtra("phoneNumber");
+		if(TextUtils.isEmpty(phoneNum)){
+		    phoneNum = GlobalApplication.getInstance().loadUserInfo().getMobile();
+        }
 		if (!isLogin(getActivityContext())){
 			String company = getIntent().getStringExtra(INTENT_KEY_COMPANY_NAME);
 			getHost(company);
@@ -118,31 +121,31 @@ public class FindPasswordActivity extends NetWorkActivity {
 				}
 			}
 		});
-		mPhonenNmber.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
+//		mPhonenNmber.addTextChangedListener(new TextWatcher() {
+//			@Override
+//			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//			}
+//
+//			@Override
+//			public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//			}
+//
+//			@Override
+//			public void afterTextChanged(Editable s) {
+//				if ( s != null ) {
+//					String phoneNum = s.toString();
+//					if ( CheckUtil.isMobileNumber(phoneNum) && !holdCode) {
+//						mGetCode.setEnabled(true);
+//					}
+//					else {
+//						mGetCode.setEnabled(false);
+//					}
+//				}
+//			}
+//		});
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-				if ( s != null ) {
-					String phoneNum = s.toString();
-					if ( CheckUtil.isMobileNumber(phoneNum) && !holdCode) {
-						mGetCode.setEnabled(true);
-					}
-					else {
-						mGetCode.setEnabled(false);
-					}
-				}
-			}
-		});
-
-		mPhonenNmber.addTextChangedListener(new TextWatchListener());
+//		mPhonenNmber.addTextChangedListener(new TextWatchListener());
 		mCode.addTextChangedListener(new TextWatchListener());
 		mPassword.addTextChangedListener(new TextWatchListener());
 		mPasswordrg.addTextChangedListener(new TextWatchListener());
@@ -236,18 +239,18 @@ public class FindPasswordActivity extends NetWorkActivity {
 		String phonNumber = mPhonenNmber.getText().toString().trim();
 		if (TextUtils.isEmpty(phonNumber)) {
 			dialog.setModel(CustomDialog.LEFT);
-			dialog.setLeftBtnListener("知道啦", null);
-			dialog.setMessage("请输入手机号码");
+			dialog.setLeftBtnListener("确定", null);
+			dialog.setMessage("手机号不存在");
 			dialog.show();
 			return;
 		}
-		else if (!CheckUtil.isMobileNumber(phonNumber)) {
-			dialog.setModel(CustomDialog.LEFT);
-			dialog.setLeftBtnListener("知道啦", null);
-			dialog.setMessage("请输入手机号码格式不正确哦");
-			dialog.show();
-			return;
-		}
+//		else if (!CheckUtil.isMobileNumber(phonNumber)) {
+//			dialog.setModel(CustomDialog.LEFT);
+//			dialog.setLeftBtnListener("知道啦", null);
+//			dialog.setMessage("请输入手机号码格式不正确哦");
+//			dialog.show();
+//			return;
+//		}
 		if (TextUtils.isEmpty(code)) {
 			dialog.setModel(CustomDialog.LEFT);
 			dialog.setMessage("请输入验证码");
