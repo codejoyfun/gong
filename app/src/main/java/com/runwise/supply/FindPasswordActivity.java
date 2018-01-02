@@ -1,5 +1,6 @@
 package com.runwise.supply;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -8,14 +9,17 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CheckUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -27,16 +31,22 @@ import com.runwise.supply.entity.FindPwdRequest;
 import com.runwise.supply.entity.GetCodeRequest;
 import com.runwise.supply.entity.GetHostRequest;
 import com.runwise.supply.entity.HostResponse;
+import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.tools.AESCrypt;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
 
+import cn.jpush.android.api.JPushInterface;
+
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.isLogin;
+import static com.runwise.supply.MainActivity.INTENT_KEY_SKIP_TO_LOGIN;
 
 
 /**
@@ -46,6 +56,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 	private static final int GET_CODE = 1;
 	private static final int FIND_PASSWORD = 2;
 	private static final int GET_HOST = 3;
+	private static final int REQUEST_LOGINOUT = 4;
 	@ViewInject(R.id.teacher_reg_phone)
 	private EditText mPhonenNmber;
 	@ViewInject(R.id.teacher_reg_getcode)
@@ -169,8 +180,9 @@ public class FindPasswordActivity extends NetWorkActivity {
 						SPUtils.put(this,SP_CONSTANTS.SP_PW,cipher);
 					}
 				}
-
-				this.finish();
+				//修改完成，退出登录 http://jira-lab.runwise.co/browse/MRGONG-401
+                Object param = null;
+                sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
 				break;
 			case GET_HOST:
 				mHostResponse = (HostResponse) result.getResult().getData();
@@ -181,6 +193,30 @@ public class FindPasswordActivity extends NetWorkActivity {
 				}
 				SPUtils.put(getActivityContext(),FILE_KEY_DB_NAME,mHostResponse.getDbName());
 				break;
+            case REQUEST_LOGINOUT:
+                SPUtils.loginOut(mContext);
+                MessageFragment.isLogin = false;
+                GlobalApplication.getInstance().cleanUesrInfo();
+                JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
+
+                CustomDialog customDialog = new CustomDialog(this);
+                customDialog.setMessage("您的密码已修改，请重新登录！");
+                customDialog.setModel(CustomDialog.RIGHT);
+                customDialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        //退出登录
+                        ActivityManager.getInstance().finishAll();
+                        EventBus.getDefault().post(new UserLogoutEvent());
+                        Intent intent = new Intent(FindPasswordActivity.this, MainActivity.class);
+                        intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
+                        startActivity(intent);
+                        customDialog.dismiss();
+                    }
+                });
+                customDialog.setCancelable(false);
+                customDialog.show();
+                break;
 		}
 	}
 
