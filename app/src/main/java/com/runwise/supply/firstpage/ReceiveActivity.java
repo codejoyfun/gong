@@ -85,6 +85,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -93,6 +94,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.vov.vitamio.utils.Log;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_ENTITIES;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
@@ -289,14 +291,14 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
-                    receiveBean.setCount((int) linesBean.getProductUomQty());
+                    receiveBean.setCount(linesBean.getProductUomQty());
                     final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
                     receiveBean.setTracking(basicBean.getTracking());
                     if (basicBean.getTracking().equals("lot")) {
                         List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
                         ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
                         lotBean.setLot_name("");
-                        lotBean.setHeight((int) linesBean.getProductUomQty());
+                        lotBean.setHeight(linesBean.getProductUomQty());
                         lotBean.setQty((int) linesBean.getProductUomQty());
                         lotBean.setProduce_datetime(TimeUtils.getYMD(new Date()));
                         lot_list.add(lotBean);
@@ -335,48 +337,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
     }
-
-    private void getReceiveInfoFromDB() {
-        for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
-            List<ReceiveInfo> receiveInfoList = ProductBasicUtils.getReceiveInfo(getActivityContext(), lbean.getOrderID(), linesBean.getProductID());
-            if (receiveInfoList != null && receiveInfoList.size() > 0) {
-                ReceiveInfo receiveInfo = receiveInfoList.get(0);
-                ReceiveBean receiveBean = new ReceiveBean();
-                receiveBean.setProductId(receiveInfo.getProductId());
-                String countListString = receiveInfo.getCountList();
-                String[] countListArr = null;
-                int count = 0;
-                if (!TextUtils.isEmpty(countListString)) {
-                    countListArr = countListString.split(SEPARATOR);
-                    for (int i = 0; i < countListArr.length; i++) {
-                        count += Integer.parseInt(countListArr[i]);
-                    }
-                }
-                String batchNumberListString = receiveInfo.getBatchNumberList();
-                String[] batchNumberListArr = batchNumberListString.split(SEPARATOR);
-
-                receiveBean.setCount(count);
-                final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
-                receiveBean.setTracking(basicBean.getTracking());
-                if (basicBean.getTracking().equals("lot")) {
-                    List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
-
-                    for (int i = 0; i < batchNumberListArr.length; i++) {
-                        ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
-                        lotBean.setLot_name(batchNumberListArr[i]);
-                        lotBean.setHeight(Integer.parseInt(countListArr[i]));
-                        lotBean.setQty(Integer.parseInt(countListArr[i]));
-                        lotBean.setLife_datetime("");
-                        lotBean.setProduce_datetime("");
-                        lot_list.add(lotBean);
-                    }
-                    receiveBean.setLot_list(lot_list);
-                }
-                countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
-            }
-        }
-    }
-
 
     private void setUpDataForViewPage() {
         List<Fragment> receiveFragmentList = new ArrayList<>();
@@ -480,7 +440,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         RelativeLayout rl = (RelativeLayout) dialogView.findViewById(R.id.dialog_main);
         mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
         mPopWindow.setContentView(dialogView);
-        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow.setFocusable(true);
         mPopWindow.setOutsideTouchable(true);
@@ -566,11 +526,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             public void onClick(View v) {
                 String pId = String.valueOf(bottomData.getProductId());
                 String productAmountString = mEtProductAmount.getText().toString();
-                int count;
+                double count;
                 if (TextUtils.isEmpty(productAmountString)) {
                     count = 0;
                 } else {
-                    count = Integer.valueOf(mEtProductAmount.getText().toString());
+                    count = Double.valueOf(mEtProductAmount.getText().toString());
                 }
                 bottomData.setCount(count);
 //                bottomData.setLot_name(mEtBatchNumber.getText().toString());
@@ -598,7 +558,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         RelativeLayout rl = (RelativeLayout) dialogView2.findViewById(R.id.dialog_main);
         mPopWindow2 = new PopupWindow(dialogView2, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
         mPopWindow2.setContentView(dialogView2);
-        mPopWindow2.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mPopWindow2.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mPopWindow2.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow2.setFocusable(true);
         mPopWindow2.setOutsideTouchable(true);
@@ -627,21 +587,22 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         input_minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int count = Integer.valueOf(edEt.getText().toString());
+                double count = Double.valueOf(edEt.getText().toString());
                 if (count > 0) {
-                    count--;
-                    edEt.setText(String.valueOf(count));
-                    edEt.setSelection(String.valueOf(String.valueOf(count)).length());
+                    count = BigDecimal.valueOf(count).subtract(BigDecimal.ONE).doubleValue();
+                    if(count<0)count = 0;
+                    edEt.setText(NumberUtil.getIOrD(count));
                 }
             }
         });
         input_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int count = Integer.valueOf(edEt.getText().toString());
-                count++;
-                edEt.setText(String.valueOf(count));
-                edEt.setSelection(String.valueOf(String.valueOf(count)).length());
+                double count = Double.valueOf(edEt.getText().toString());
+                count = BigDecimal.valueOf(count).add(BigDecimal.ONE).doubleValue();
+                if(count<0)count = 0;
+                edEt.setText(NumberUtil.getIOrD(count));
+//                edEt.setSelection(String.valueOf(String.valueOf(count)).length());
             }
         });
         Button sureBtn = (Button) dialogView2.findViewById(R.id.btn_confirm);
@@ -653,7 +614,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     return;
                 }
                 String pId = String.valueOf(bottomData.getProductId());
-                int count = Integer.valueOf(edEt.getText().toString());
+                double count = Double.valueOf(edEt.getText().toString());
                 bottomData.setCount(count);
                 countMap.put(pId, bottomData);
                 mPopWindow2.dismiss();
@@ -920,7 +881,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 receiveInfo.setCountList(countList.toString());
                 receiveInfo.setBatchNumberList(batchNumberList.toString());
             } else {
-                receiveInfo.setCount(bean.getCount());
+                receiveInfo.setCount((int)bean.getCount());
             }
             try {
                 dbUtils.saveOrUpdate(receiveInfo);
@@ -1071,7 +1032,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             receiveBean.setName(basicBean.getName());
             receiveBean.setTracking(basicBean.getTracking());
 //                        receiveBean.setCount((int)bean.getProductUomQty());
-            int count = 0;
+            double count = 0;
             List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
             for (BatchEntity batchEntity : batchEntities) {
                 count += Integer.parseInt(batchEntity.getProductCount());
@@ -1133,7 +1094,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(bottomData.getProductId()));
             if (listBean != null) {
-                FrecoFactory.getInstance(getActivityContext()).disPlay(productImage, Constant.BASE_URL + listBean.getImage().getImageSmall());
+                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, listBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
                 sb.append("  ").append(listBean.getUnit());
                 boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
@@ -1148,8 +1109,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 mTvUnit.setText(listBean.getUom());
             }
             titleTv.setText(bottomData.getName());
-            edEt.setText(String.valueOf(bottomData.getCount()));
-            mTvStockCount.setText(String.valueOf(bottomData.getProductUomQty()));
+            edEt.setText(NumberUtil.getIOrD(bottomData.getCount()));
+            mTvStockCount.setText(NumberUtil.getIOrD(bottomData.getProductUomQty()));
             edEt.setSelectAllOnFocus(true);
             mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
             edEt.requestFocus();
