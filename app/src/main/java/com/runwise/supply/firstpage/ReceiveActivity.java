@@ -1035,10 +1035,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             double count = 0;
             List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
             for (BatchEntity batchEntity : batchEntities) {
-                count += Integer.parseInt(batchEntity.getProductCount());
+                count += Double.parseDouble(batchEntity.getProductCount());
                 ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
-                lotBean.setHeight(Integer.parseInt(batchEntity.getProductCount()));
-                lotBean.setQty(Integer.parseInt(batchEntity.getProductCount()));
+                lotBean.setHeight(Double.parseDouble(batchEntity.getProductCount()));
+                lotBean.setQty(Double.parseDouble(batchEntity.getProductCount()));
                 if (batchEntity.isProductDate()) {
                     lotBean.setProduce_datetime(batchEntity.getProductDate());
                 } else {

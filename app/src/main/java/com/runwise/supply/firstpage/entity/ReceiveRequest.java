@@ -116,7 +116,7 @@ public class ReceiveRequest {
                 return jsonObject.toString();
             }
 
-            public void setQty(int qty) {
+            public void setQty(double qty) {
                 this.qty = qty;
             }
 

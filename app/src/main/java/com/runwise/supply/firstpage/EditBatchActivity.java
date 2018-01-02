@@ -40,6 +40,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoWatchEditText;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,6 +48,7 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.vov.vitamio.utils.NumberUtil;
 
 public class EditBatchActivity extends NetWorkActivity {
 
@@ -104,7 +106,7 @@ public class EditBatchActivity extends NetWorkActivity {
         mLvBatch.addFooterView(addBatchView);
         mLvBatch.setAdapter(batchListAdapter);
         mBean = getIntent().getParcelableExtra(INTENT_KEY_PRODUCT);
-        mTvCount.setText(String.valueOf((int) mBean.getProductUomQty()));
+        mTvCount.setText(NumberUtil.getIOrD(mBean.getProductUomQty()));
         mTvUnit1.setText(mBean.getProductUom());
         String pId = String.valueOf(mBean.getProductID());
         final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
@@ -324,7 +326,16 @@ public class EditBatchActivity extends NetWorkActivity {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    String strSource = s.toString();
+                    int dotIndex = strSource.indexOf(".");
+                    if(dotIndex>=0){
+                        int length = strSource.substring(dotIndex,strSource.length()-1).length();
+                        if(length>2){
+                            String dest = strSource.substring(0,dotIndex+3);
+                            viewHolder.etProductCount.setText(dest);
+                            viewHolder.etProductCount.setSelection(dest.length());
+                        }
+                    }
                 }
 
                 @Override
@@ -352,10 +363,10 @@ public class EditBatchActivity extends NetWorkActivity {
                     if (TextUtils.isEmpty(productCountStr)) {
                         productCountStr = "0";
                     }
-                    int productCount = Integer.parseInt(productCountStr);
-                    productCount++;
-                    mBatchEntities.get(position).setProductCount(String.valueOf(productCount));
-                    viewHolder.etProductCount.setText(String.valueOf(productCount));
+                    double productCount = Double.parseDouble(productCountStr);
+                    productCount = BigDecimal.valueOf(productCount).add(BigDecimal.ONE).doubleValue();
+                    mBatchEntities.get(position).setProductCount(NumberUtil.getIOrD(productCount));
+                    viewHolder.etProductCount.setText(NumberUtil.getIOrD(productCount));
                 }
             });
             viewHolder.ivReduce.setOnClickListener(new View.OnClickListener() {
@@ -365,10 +376,11 @@ public class EditBatchActivity extends NetWorkActivity {
                     if (TextUtils.isEmpty(productCountStr) || productCountStr.equals("0")) {
                         return;
                     }
-                    int productCount = Integer.parseInt(productCountStr);
-                    productCount--;
-                    mBatchEntities.get(position).setProductCount(String.valueOf(productCount));
-                    viewHolder.etProductCount.setText(String.valueOf(productCount));
+                    double productCount = Double.parseDouble(productCountStr);
+                    productCount = BigDecimal.valueOf(productCount).subtract(BigDecimal.ONE).doubleValue();
+                    if(productCount<0)productCount = 0;
+                    mBatchEntities.get(position).setProductCount(NumberUtil.getIOrD(productCount));
+                    viewHolder.etProductCount.setText(NumberUtil.getIOrD(productCount));
                 }
             });
 
