@@ -566,8 +566,8 @@ public class OrderAdapter extends IBaseAdapter {
         viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
         viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
         viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + transferEntity.getTotalNum() + "件商品");
-        else viewHolder.mmTvPrice.setText(transferEntity.getTotalNum() + "件商品");
+        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
+        else viewHolder.mmTvPrice.setText(NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
         viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
         viewHolder.mmTvStatus.setText(transferEntity.getPickingState());

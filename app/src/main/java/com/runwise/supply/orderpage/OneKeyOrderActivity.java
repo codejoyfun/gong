@@ -662,7 +662,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 bottom_bar.setVisibility(View.VISIBLE);
                 for (AddedProduct pro : backList) {
                     Integer proId = Integer.valueOf(pro.getProductId());
-                    Integer count = pro.getCount();
+                    Integer count = (int)pro.getCount();
                     DefaultPBean bean = new DefaultPBean();
                     bean.setProductID(proId);
                     newList.add(bean);

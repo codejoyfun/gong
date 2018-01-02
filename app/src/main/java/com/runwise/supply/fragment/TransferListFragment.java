@@ -35,6 +35,8 @@ import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import java.text.DecimalFormat;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 
 /**
@@ -211,8 +213,8 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
             viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
             viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
             viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-            if(canSeePrice)viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + transferEntity.getTotalNum() + "件商品");
-            else viewHolder.mmTvPrice.setText(transferEntity.getTotalNum() + "件商品");
+            if(canSeePrice)viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
+            else viewHolder.mmTvPrice.setText(NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
             viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
             viewHolder.mmTvStatus.setText(transferEntity.getPickingState());

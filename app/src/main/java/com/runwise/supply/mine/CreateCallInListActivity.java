@@ -46,6 +46,7 @@ import com.runwise.supply.tools.DataClickListener;
 import com.runwise.supply.tools.DataTextWatch;
 import com.runwise.supply.view.NoWatchEditText;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +98,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
     public static final int REQUEST_CODE_GET_PRODUCT = 1 << 0;
     private boolean canSeePrice = true;             //默认价格中可见
     //选中数量map
-    private HashMap<String, Integer> countMap = new HashMap<>();
+    private HashMap<String, Double> countMap = new HashMap<>();
     ProductAdapter mProductAdapter;
     boolean mEditMode = false;
     ArrayList<String> mStoreNameList = new ArrayList<>();
@@ -129,7 +130,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     ProductData.ListBean bean = (ProductData.ListBean) mProductAdapter.getList().get(i);
                     AddedProduct ap = new AddedProduct();
                     ap.setProductId(String.valueOf(bean.getProductID()));
-                    int count = countMap.get(bean.getProductID()+"");
+                    double count = countMap.get(bean.getProductID()+"");
                     ap.setCount(count);
                     addedList.add(ap);
                 }
@@ -178,7 +179,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 CreateCallInListRequest createCallInListRequest = new CreateCallInListRequest();
                 createCallInListRequest.setMenDianID(String.valueOf(mStoreResponse.getList().get(selectShopIndex).getShopID()));
                 List<CreateCallInListRequest.Product> products = new ArrayList<>();
-                for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+                for (Map.Entry<String, Double> entry : countMap.entrySet()) {
                     CreateCallInListRequest.Product product = new CreateCallInListRequest.Product();
                     product.setProductID(Integer.parseInt(entry.getKey()));
                     product.setQty(entry.getValue());
@@ -317,16 +318,16 @@ public class CreateCallInListActivity extends NetWorkActivity {
     }
 
     private void refreshTotalCountAndMoney() {
-        int totalCount = 0;
+        double totalCount = 0;
         double totalMoney = 0;
         String removeId = "";
-        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+        for (Map.Entry<String, Double> entry : countMap.entrySet()) {
             totalCount += entry.getValue();
             if (entry.getValue() == 0) {
                 removeId = entry.getKey();
             }
         }
-        mTvCount.setText(totalCount + " 件");
+        mTvCount.setText(NumberUtil.getIOrD(totalCount) + " 件");
         if (!TextUtils.isEmpty(removeId)) {
             countMap.remove(removeId);
             ProductData.ListBean listBean = null;
@@ -344,7 +345,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
         }
         for (Object object : mProductAdapter.getList()) {
             ProductData.ListBean bean = (ProductData.ListBean) object;
-            int count = countMap.get(String.valueOf(bean.getProductID()));
+            double count = countMap.get(String.valueOf(bean.getProductID()));
             totalMoney += bean.getPrice() * count;
         }
         mTvTotalMoney.setText("¥" + NumberUtil.getIOrD(totalMoney));
@@ -356,7 +357,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
 
         if(!canSeePrice){
             mTvNoPrice.setVisibility(View.VISIBLE);
-            mTvNoPrice.setText(totalCount + " 件");
+            mTvNoPrice.setText(NumberUtil.getIOrD(totalCount) + " 件");
         }
     }
 
@@ -459,7 +460,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     int position = (int) viewHolder.editText.getTag();
                     ProductData.ListBean listBean = (ProductData.ListBean) mList.get(position);
                     if (!TextUtils.isEmpty(s.toString())) {
-                        int count = Integer.parseInt(s.toString());
+                        double count = Double.parseDouble(s.toString());
                         countMap.put(String.valueOf(listBean.getProductID()), count);
                         refreshTotalCountAndMoney();
                     }
@@ -472,9 +473,10 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     ProductData.ListBean listBean = (ProductData.ListBean) mObject;
-                    int currentNum = countMap.get(String.valueOf(listBean.getProductID()));
+                    double currentNum = countMap.get(String.valueOf(listBean.getProductID()));
                     if (currentNum > 0) {
-                        --currentNum;
+                        currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
+                        if(currentNum<0)currentNum = 0;
                         countMap.put(String.valueOf(listBean.getProductID()), currentNum);
                         NoWatchEditText noWatchEditText = (NoWatchEditText) mSecondObject;
                         noWatchEditText.setText(String.valueOf(currentNum));
@@ -490,13 +492,13 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     ProductData.ListBean listBean = (ProductData.ListBean) mObject;
-                    int currentNum = countMap.get(String.valueOf(listBean.getProductID()));
-                    currentNum++;
+                    double currentNum = countMap.get(String.valueOf(listBean.getProductID()));
+                    currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
                     countMap.put(String.valueOf(listBean.getProductID()), currentNum);
                     NoWatchEditText noWatchEditText = (NoWatchEditText) mSecondObject;
 //                    dataTextWatch.setChange(false);
 //                    noWatchEditText.removeTextChangedListener();
-                    noWatchEditText.setText(String.valueOf(currentNum));
+                    noWatchEditText.setText(NumberUtil.getIOrD(currentNum));
 //                    dataTextWatch.setChange(true);
 //                    noWatchEditText.addTextChangedListener(dataTextWatch);
                     refreshTotalCountAndMoney();
@@ -531,7 +533,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                     viewHolder.tv_price.setText("");
                 }
 
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
+                if(basicBean.getImage()!=null)FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, basicBean.getImage().getImageSmall());
             }
             viewHolder.unit1.setText(bean.getUom());
             viewHolder.tv_count.setText(String.valueOf(countMap.get(String.valueOf(bean.getProductID()))));
@@ -552,7 +554,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     ProductData.ListBean listBean = (ProductData.ListBean) mObject;
-                    countMap.put(String.valueOf(listBean.getProductID()), 0);
+                    countMap.put(String.valueOf(listBean.getProductID()), 0d);
                     refreshTotalCountAndMoney();
                 }
             };

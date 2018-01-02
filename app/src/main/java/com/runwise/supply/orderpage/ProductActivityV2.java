@@ -331,31 +331,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 });
                 dialog.show();
                 break;
-            case R.id.addBtn://TODO:deprecated
-                //回值给调用的页面
-                Intent intent = new Intent();
-                Bundle bundle = new Bundle();
-                //当前选中的商品信息
-                ArrayList<AddedProduct> addedList = new ArrayList<>();
-                HashMap<String, Integer> countMap = ProductListFragment.getCountMap();
-                Iterator iter = countMap.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Map.Entry<String, Integer> entry = (Map.Entry) iter.next();
-                    String key = entry.getKey();
-                    Integer count = entry.getValue();
-                    Parcel parcel = Parcel.obtain();
-                    AddedProduct pro = AddedProduct.CREATOR.createFromParcel(parcel);
-                    if (count != 0) {
-                        pro.setCount(count);
-                        pro.setProductId(key);
-                        addedList.add(pro);
-                    }
-                }
-                bundle.putParcelableArrayList(INTENT_KEY_BACKAP, addedList);
-                intent.putExtras(bundle);
-                setResult(RESULT_OK, intent);
-                finish();
-                break;
             case R.id.iv_open:
                 if (mTypeWindow == null) {
                     return;

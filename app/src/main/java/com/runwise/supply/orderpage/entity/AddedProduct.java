@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class AddedProduct implements Parcelable {
     private String productId;       //当前购物车里面产品id
-    private int count;              //当前购物车里面件数
+    private double count;              //当前购物车里面件数
 
     public String getProductId() {
         return productId;
@@ -19,15 +19,15 @@ public class AddedProduct implements Parcelable {
         this.productId = productId;
     }
 
-    public int getCount() {
+    public double getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(double count) {
         this.count = count;
     }
 
-    public AddedProduct(String id, int count){
+    public AddedProduct(String id, double count){
         productId = id;
         this.count = count;
     }
@@ -36,13 +36,13 @@ public class AddedProduct implements Parcelable {
 
     protected AddedProduct(Parcel in) {
         productId = in.readString();
-        count = in.readInt();
+        count = in.readDouble();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(productId);
-        dest.writeInt(count);
+        dest.writeDouble(count);
     }
 
     @Override

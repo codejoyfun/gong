@@ -694,7 +694,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
             if (backList != null) {
                 for (AddedProduct pro : backList) {
                     Integer proId = Integer.valueOf(pro.getProductId());
-                    Integer count = pro.getCount();
+                    Integer count = (int)pro.getCount();
                     DefaultPBean bean = new DefaultPBean();
                     bean.setProductID(proId);
                     newList.add(bean);

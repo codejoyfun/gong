@@ -39,10 +39,13 @@ import com.runwise.supply.view.NoWatchEditText;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.fragment.OrderProductFragment.BUNDLE_KEY_LIST;
 
@@ -60,14 +63,14 @@ public class ProductListFragment extends NetWorkFragment {
     public DataType type;
     private ArrayList<AddedProduct> addedPros;
     //选中数量map
-    private static HashMap<String, Integer> countMap = new HashMap<>();
+    private static HashMap<String, Double> countMap = new HashMap<>();
     //缓存全部商品列表
     private ArrayList<ProductData.ListBean> arrayList;
 
     public ProductListFragment() {
     }
 
-    public static HashMap<String, Integer> getCountMap() {
+    public static HashMap<String, Double> getCountMap() {
         return countMap;
     }
 
@@ -102,9 +105,9 @@ public class ProductListFragment extends NetWorkFragment {
         }
         //先统计一次id,个数
         for (ProductData.ListBean bean : arrayList) {
-            countMap.put(String.valueOf(bean.getProductID()), Integer.valueOf(0));
+            countMap.put(String.valueOf(bean.getProductID()), 0d);
             //同时根据上个页面传值更新一次
-            int count = existInLastPager(bean);
+            double count = existInLastPager(bean);
             countMap.put(String.valueOf(bean.getProductID()), count);
         }
 
@@ -173,17 +176,22 @@ public class ProductListFragment extends NetWorkFragment {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    //检查特殊字符
-                    if (!TextUtils.isDigitsOnly(s)) {
-                        viewHolder.editText.setText(mmStrPrevious);
-                        return;
+                    String strSource = s.toString();
+                    int dotIndex = strSource.indexOf(".");
+                    if(dotIndex>=0){
+                        int length = strSource.substring(dotIndex,strSource.length()-1).length();
+                        if(length>2){
+                            String dest = strSource.substring(0,dotIndex+3);
+                            viewHolder.editText.setText(dest);
+                            viewHolder.editText.setSelection(dest.length());
+                        }
                     }
 
                     int position = (int) viewHolder.editText.getTag();
                     ProductData.ListBean listBean = (ProductData.ListBean) mList.get(position);
-                    int changedNum = 0;
+                    double changedNum = 0;
                     if (!TextUtils.isEmpty(s)) {
-                        changedNum = Integer.valueOf(s.toString());
+                        changedNum = Double.valueOf(s.toString());
                     }
                     countMap.put(String.valueOf(listBean.getProductID()), changedNum);
                 }
@@ -216,8 +224,9 @@ public class ProductListFragment extends NetWorkFragment {
                     view.setVisibility(View.INVISIBLE);
                     unit1.setVisibility(View.INVISIBLE);
                     ll.setVisibility(View.VISIBLE);
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
-                    editText.setText(++currentNum + "");
+                    double currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
+                    editText.setText(NumberUtil.getIOrD(currentNum));
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
                 }
             });
@@ -226,9 +235,11 @@ public class ProductListFragment extends NetWorkFragment {
                 @Override
                 public void onClick(View v) {
                     clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    double currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     if (currentNum > 0) {
-                        editText.setText(--currentNum + "");
+                        currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
+                        if(currentNum<0)currentNum = 0;
+                        editText.setText(NumberUtil.getIOrD(currentNum ));
                         countMap.put(String.valueOf(bean.getProductID()), currentNum);
                         if (currentNum == 0) {
                             addBtn.setVisibility(View.VISIBLE);
@@ -244,8 +255,9 @@ public class ProductListFragment extends NetWorkFragment {
                 @Override
                 public void onClick(View v) {
                     clearFocus();//点击加减的时候，去掉所有edittext的focus，关闭软键盘
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
-                    editText.setText(++currentNum + "");
+                    double currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
+                    editText.setText(NumberUtil.getIOrD(currentNum));
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
                 }
             });
@@ -337,7 +349,7 @@ public class ProductListFragment extends NetWorkFragment {
         }
     }
 
-    private int existInLastPager(ProductData.ListBean bean) {
+    private double existInLastPager(ProductData.ListBean bean) {
         if (addedPros != null) {
             for (AddedProduct product : addedPros) {
                 if (product.getProductId().equals(String.valueOf(bean.getProductID()))) {
@@ -367,7 +379,7 @@ public class ProductListFragment extends NetWorkFragment {
         if (TextUtils.isEmpty(tmpStr) || Integer.valueOf(tmpStr) == 0) {
             ToastUtil.show(getActivity(), "数量超出范围");
             editText.setText("1");
-            countMap.put(beanId, 1);
+            countMap.put(beanId, 1d);
             return;
         }
         if (tmpStr.startsWith("0")) {
