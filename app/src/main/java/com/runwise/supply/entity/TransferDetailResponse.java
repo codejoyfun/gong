@@ -112,7 +112,7 @@ public class TransferDetailResponse {
             this.priceUnit = priceUnit;
         }
 
-        public void setActualOutputNum(int actualOutputNum) {
+        public void setActualOutputNum(double actualOutputNum) {
             this.actualOutputNum = actualOutputNum;
         }
 

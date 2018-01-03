@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * Created by libin on 2017/7/22.
  */
@@ -102,14 +104,14 @@ public class ReturnFragment extends BaseFragment {
                         ReturnBean rb = new ReturnBean();
                         rb.setName(basicBean.getName());
                         rb.setpId(bean.getProductID());
-                        int max = (int) bean.getDeliveredQty() - (int) bean.getReturnAmount();
+                        double max = bean.getDeliveredQty() - bean.getReturnAmount();
                         rb.setMaxReturnCount(max);
                         callback.returnBtnClick(rb);
                     }
                 }
             });
             if (countMap != null && countMap.containsKey(String.valueOf(pId))) {
-                viewHolder.doBtn.setText("退货(" + countMap.get(String.valueOf(pId)).getReturnCount() + ")");
+                viewHolder.doBtn.setText("退货(" + NumberUtil.getIOrD(countMap.get(String.valueOf(pId)).getReturnCount()) + ")");
             } else {
                 viewHolder.doBtn.setText("退货");
             }

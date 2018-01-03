@@ -26,6 +26,8 @@ import com.runwise.supply.tools.UserUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 import static com.kids.commonframe.config.Constant.ORDER_STATE_DRAFT;
 import static com.kids.commonframe.config.Constant.ORDER_STATE_PEISONG;
 import static com.kids.commonframe.config.Constant.ORDER_STATE_SALE;
@@ -102,11 +104,11 @@ public class ReturnProductAdapter extends BaseAdapter {
         if (basicBean != null && basicBean.getImage() != null){
             FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
         }
-        int puq = (int)bean.getProductUomQty();
-        int dq = (int)bean.getDeliveredQty();
+        double puq = bean.getProductUomQty();
+        double dq = bean.getDeliveredQty();
         if((Constant.ORDER_STATE_DONE.equals(status)||Constant.ORDER_STATE_RATED.equals(status)) && bean.getDeliveredQty() != bean.getProductUomQty()) {
-            vh.oldPriceTv.setText("x"+puq);
-            vh.nowPriceTv.setText("x"+dq);
+            vh.oldPriceTv.setText("x"+ NumberUtil.getIOrD(puq));
+            vh.nowPriceTv.setText("x"+NumberUtil.getIOrD(dq));
             vh.oldPriceTv.setVisibility(View.VISIBLE);
         }
         else{

@@ -105,17 +105,17 @@ public class TransferOutDetailResponse implements Serializable {
         private String productTracking;
         private String productName;
         private int priceUnit;
-        private int productUomQty;
+        private double productUomQty;
 
-        public int getActualQty() {
+        public double getActualQty() {
             return actualQty;
         }
 
-        public void setActualQty(int actualQty) {
+        public void setActualQty(double actualQty) {
             this.actualQty = actualQty;
         }
 
-        private int actualQty;
+        private double actualQty;
         private List<TransferBatchLot> productLotInfo;
 
         public String getProductUom() {
@@ -142,11 +142,11 @@ public class TransferOutDetailResponse implements Serializable {
             this.productUnit = productUnit;
         }
 
-        public int getProductUomQty() {
+        public double getProductUomQty() {
             return productUomQty;
         }
 
-        public void setProductUomQty(int productUomQty) {
+        public void setProductUomQty(double productUomQty) {
             this.productUomQty = productUomQty;
         }
 
@@ -187,16 +187,16 @@ public class TransferOutDetailResponse implements Serializable {
         }
 
         private String lotIDID;
-        private int quantQty;
+        private double quantQty;
 
         //本地数据
-        private int usedQty;
+        private double usedQty;
 
         public String getLotID() {
             return lotID;
         }
 
-        public int getQuantQty() {
+        public double getQuantQty() {
             return quantQty;
         }
 
@@ -204,15 +204,15 @@ public class TransferOutDetailResponse implements Serializable {
             this.lotID = lotID;
         }
 
-        public void setQuantQty(int quantQty) {
+        public void setQuantQty(double quantQty) {
             this.quantQty = quantQty;
         }
 
-        public int getUsedQty() {
+        public double getUsedQty() {
             return usedQty;
         }
 
-        public void setUsedQty(int usedQty) {
+        public void setUsedQty(double usedQty) {
             this.usedQty = usedQty;
         }
 
@@ -222,8 +222,8 @@ public class TransferOutDetailResponse implements Serializable {
 
         protected TransferBatchLot(Parcel in) {
             this.lotID = in.readString();
-            this.quantQty = in.readInt();
-            this.usedQty = in.readInt();
+            this.quantQty = in.readDouble();
+            this.usedQty = in.readDouble();
         }
 
     }

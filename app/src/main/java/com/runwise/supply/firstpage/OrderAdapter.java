@@ -297,7 +297,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.stateTv.setTextColor(Color.parseColor("#FA694D"));
             viewHolder.timeTv.setText(TimeUtils.getMMddHHmm(bean.getCreateDate()));
             StringBuffer sb = new StringBuffer("共");
-            sb.append((int) bean.getAmount()).append("件商品");
+            sb.append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
@@ -641,6 +641,7 @@ public class OrderAdapter extends IBaseAdapter {
                     @Override
                     public void onClick(View view) {
                         if(!SystemUpgradeHelper.getInstance(context).check(context))return;
+                        if(InventoryCacheManager.getInstance(context).checkIsInventory(context))return;
                         Intent intent = new Intent(context, TransferInActivity.class);
                         intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
                         context.startActivity(intent);
@@ -678,6 +679,7 @@ public class OrderAdapter extends IBaseAdapter {
                     @Override
                     public void onClick(View view) {
                         if(!SystemUpgradeHelper.getInstance(context).check(context))return;
+                        if(InventoryCacheManager.getInstance(context).checkIsInventory(context))return;
                         int realPosition = (int) view.getTag();
                         if (realPosition == position) {
                             if(callback!=null){

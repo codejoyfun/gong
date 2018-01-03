@@ -40,6 +40,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,22 +177,23 @@ public class ProductListFragment extends NetWorkFragment {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String strSource = s.toString();
-                    int dotIndex = strSource.indexOf(".");
-                    if(dotIndex>=0){
-                        int length = strSource.substring(dotIndex,strSource.length()-1).length();
-                        if(length>2){
-                            String dest = strSource.substring(0,dotIndex+3);
-                            viewHolder.editText.setText(dest);
-                            viewHolder.editText.setSelection(dest.length());
-                        }
-                    }
+//                    String strSource = s.toString();
+//                    int dotIndex = strSource.indexOf(".");
+//                    if(dotIndex>=0){
+//                        int length = strSource.substring(dotIndex,strSource.length()-1).length();
+//                        if(length>2){
+//                            String dest = strSource.substring(0,dotIndex+3);
+//                            viewHolder.editText.setText(dest);
+//                            viewHolder.editText.setSelection(dest.length());
+//                        }
+//                    }
 
                     int position = (int) viewHolder.editText.getTag();
                     ProductData.ListBean listBean = (ProductData.ListBean) mList.get(position);
                     double changedNum = 0;
                     if (!TextUtils.isEmpty(s)) {
-                        changedNum = Double.valueOf(s.toString());
+//                        changedNum = Double.valueOf(s.toString());
+                        changedNum = new BigDecimal(s.toString()).setScale(2, RoundingMode.HALF_UP).doubleValue();
                     }
                     countMap.put(String.valueOf(listBean.getProductID()), changedNum);
                 }

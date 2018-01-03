@@ -20,6 +20,9 @@ import android.widget.TextView;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.R;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Locale;
 import java.util.logging.Handler;
 
 import io.vov.vitamio.utils.NumberUtil;
@@ -75,16 +78,16 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
 
            @Override
            public void onTextChanged(CharSequence s, int start, int before, int count) {
-               String strSource = s.toString();
-               int dotIndex = strSource.indexOf(".");
-               if(dotIndex>=0){
-                   int length = strSource.substring(dotIndex,strSource.length()-1).length();
-                   if(length>2){
-                       String dest = strSource.substring(0,dotIndex+3);
-                       mEtValue.setText(dest);
-                       mEtValue.setSelection(dest.length());
-                   }
-               }
+//               String strSource = s.toString();
+//               int dotIndex = strSource.indexOf(".");
+//               if(dotIndex>=0){
+//                   int length = strSource.substring(dotIndex,strSource.length()-1).length();
+//                   if(length>2){
+//                       String dest = strSource.substring(0,dotIndex+3);
+//                       mEtValue.setText(dest);
+//                       mEtValue.setSelection(dest.length());
+//                   }
+//               }
            }
 
            @Override
@@ -121,7 +124,7 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
                 String strRemark = mEtRemark.getText().toString();
                 if(!TextUtils.isEmpty(mEtValue.getText().toString())){
                     if(callback!=null) {
-                        callback.onInputValue(Double.valueOf(strValue),strRemark);
+                        callback.onInputValue(new BigDecimal(strValue).setScale(2, RoundingMode.HALF_UP).doubleValue(),strRemark);
                         dismiss();
                     }
                 }

@@ -129,11 +129,12 @@ public class SettingActivity extends NetWorkActivity {
                                     //记录用户密码
                                     DbUtils mDb = MyDbUtil.create(SettingActivity.this);
                                     try{
-                                        RemUser rem = mDb.findFirst(Selector.from(RemUser.class).
-                                                where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
+                                        RemUser rem = mDb.findFirst(Selector.from(RemUser.class)
+                                                .where(WhereBuilder.b("userName", "=", userInfo.getLogin())
+                                                        .or("userName","=",userInfo.getMobile())));
                                         FingerprintHelper.setFingerprintEnabled(SettingActivity.this,
                                                 true,rem.getUserName(),rem.getCompany());
-                                    }catch (DbException e){
+                                    }catch (Exception e){
                                         e.printStackTrace();
                                     }
                                 }else if(isSuccess==STATUS_FAILED){

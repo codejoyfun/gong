@@ -87,8 +87,11 @@ public class FindPasswordActivity extends NetWorkActivity {
 		this.setTitleText(true,"重置密码");
 		this.setTitleLeftIcon(true,R.drawable.marking);
 		String phoneNum = getIntent().getStringExtra("phoneNumber");
-		if(TextUtils.isEmpty(phoneNum)){
+		if(isLogin(this)){
 		    phoneNum = GlobalApplication.getInstance().loadUserInfo().getMobile();
+		    mPhonenNmber.setEnabled(false);
+		    mPhonenNmber.setTextColor(getResources().getColor(android.R.color.black));
+		    mPhonenNmber.setHint("未设置手机号");
         }
 		if (!isLogin(getActivityContext())){
 			String company = getIntent().getStringExtra(INTENT_KEY_COMPANY_NAME);

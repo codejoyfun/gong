@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
@@ -208,7 +209,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 }
             }
             StringBuffer sb = new StringBuffer("退货商品：");
-            sb.append((int)bean.getAmount()).append("件");
+            sb.append(NumberUtil.getIOrD(bean.getAmount())).append("件");
 //                    .append(" 共").append(bean.getAmountTotal()).append("元");
             tipTv.setText(sb.toString());
             orderNumTv.setText(bean.getName());
@@ -218,7 +219,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
 
 
 //            recyclerView.getLayoutParams().height = list.size() * CommonUtils.dip2px(mContext, 86);
-            countTv.setText((int) bean.getAmount() + "件");
+            countTv.setText(NumberUtil.getIOrD(bean.getAmount()) + "件");
             ygMoneyTv.setText(bean.getAmountTotal() + "元");
 
             String deliveryType = bean.getDeliveryType();
@@ -335,7 +336,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
         gridView.setAdapter(mProductTypeAdapter);
         mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()), true);
         mProductTypeWindow.setContentView(dialog);
-        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mProductTypeWindow.setFocusable(false);

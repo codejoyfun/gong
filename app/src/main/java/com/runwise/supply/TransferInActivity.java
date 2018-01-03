@@ -32,11 +32,15 @@ import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.TransferSuccessActivity.INTENT_KEY_TRANSFER_ID;
 
@@ -70,7 +74,7 @@ public class TransferInActivity extends NetWorkActivity {
     private TransferEntity mTransferEntity;
 
     private Map<String,TransferDetailResponse.LinesBean> mBatchDataMap;//商品ID对应批次对象
-    private Map<String,Integer> mTransferCountMap = new HashMap<>();//商品ID对应入库数量
+    private Map<String,Double> mTransferCountMap = new HashMap<>();//商品ID对应入库数量
 
     private View dialogView;
     private PopupWindow mPopWindow;
@@ -148,7 +152,7 @@ public class TransferInActivity extends NetWorkActivity {
                 }
                 reqProductDataList.add(reqProductData);
             }else{//非批次
-                int qty = mTransferCountMap.get(linesBean.getProductID()+"");
+                double qty = mTransferCountMap.get(linesBean.getProductID()+"");
                 if(qty<=0)continue;
                 TransferInRequest.ProductDataNoLot reqProductData = new TransferInRequest.ProductDataNoLot();
                 reqProductData.setProductID(linesBean.getProductID());
@@ -167,11 +171,11 @@ public class TransferInActivity extends NetWorkActivity {
      */
     private void setupSummaryUI(){
         if(mTransferCountMap ==null)return;
-        int total = 0;
+        double total = 0;
         for(String id: mTransferCountMap.keySet()){
             total = total + mTransferCountMap.get(id);
         }
-        mTvTransferInCount.setText(""+total);
+        mTvTransferInCount.setText(NumberUtil.getIOrD(total));
         double totalMoney = 0;
         for(String productId: mTransferCountMap.keySet()){
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(productId);
@@ -180,7 +184,7 @@ public class TransferInActivity extends NetWorkActivity {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         mTvTransferInMoney.setText(decimalFormat.format(totalMoney));
         if(!canSeePrice){//简单粗暴直接盖着价格
-            mTvNoPriceCount.setText(total+"件");
+            mTvNoPriceCount.setText(NumberUtil.getIOrD(total)+"件");
             mTvNoPriceCount.setVisibility(View.VISIBLE);
         }
     }
@@ -211,20 +215,20 @@ public class TransferInActivity extends NetWorkActivity {
 
                     if(!line.isLotTracking()){
                         //不是批次商品
-                        mTransferCountMap.put(line.getProductID()+"",(int)line.getActualOutputNum());
+                        mTransferCountMap.put(line.getProductID()+"",line.getActualOutputNum());
                         continue;
                     }
 
                     mBatchDataMap.put(line.getProductID()+"",line);
                     //初始化接收信息，默认全部收到
-                    int total = 0;
+                    double total = 0;
                     //usedQty表示实际发送的批次
                     //根据批次信息设置初始收货数量,过滤掉usedQty为0的,0为未发出批次
                     List<TransferBatchLot> actualTransferOutList = new ArrayList<>();
                     if(line.getProductLotInfo()!=null){
                         for(TransferBatchLot transferBatchLot:line.getProductLotInfo()){
                             if(transferBatchLot.getUsedQty()==0)continue;
-                            transferBatchLot.setActualQty((int)transferBatchLot.getUsedQty());
+                            transferBatchLot.setActualQty(transferBatchLot.getUsedQty());
                             total = total + transferBatchLot.getActualQty();
                             actualTransferOutList.add(transferBatchLot);
                         }
@@ -269,7 +273,7 @@ public class TransferInActivity extends NetWorkActivity {
             TransferDetailResponse.LinesBean batchLine = data.getParcelableExtra(TransferInBatchActivity.INTENT_KEY_TRANSFER_BATCH);
             mBatchDataMap.put(batchLine.getProductID()+"",batchLine);
             //cal total transfer in
-            int total = 0;
+            double total = 0;
             for(TransferBatchLot lot:batchLine.getProductLotInfo()){
                 total = total + lot.getActualQty();
             }
@@ -284,7 +288,7 @@ public class TransferInActivity extends NetWorkActivity {
         dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_transferin_set_count, null);
         mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         mPopWindow.setContentView(dialogView);
-        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow.setFocusable(true);
         mPopWindow.setOutsideTouchable(true);
@@ -316,13 +320,15 @@ public class TransferInActivity extends NetWorkActivity {
         }
         content.setText(sb.toString());
 
-        tvCount.setText(String.valueOf((int)linesBean.getActualOutputNum()));
-        tvActual.setText(String.valueOf(mTransferCountMap.get(linesBean.getProductID()+"")));
+        tvCount.setText(NumberUtil.getIOrD(linesBean.getActualOutputNum()));
+        tvActual.setText(NumberUtil.getIOrD(mTransferCountMap.get(linesBean.getProductID()+"")));
 
         vSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTransferCountMap.put(linesBean.getProductID()+"", Integer.valueOf(tvActual.getText().toString()));
+
+                mTransferCountMap.put(linesBean.getProductID()+"",
+                        new BigDecimal(tvActual.getText().toString()).setScale(2, RoundingMode.HALF_UP).doubleValue());
                 mProductAdapter.notifyDataSetChanged();
                 mPopWindow.dismiss();
                 setupSummaryUI();
@@ -332,13 +338,13 @@ public class TransferInActivity extends NetWorkActivity {
         vAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int current = Integer.valueOf(tvActual.getText().toString());
+                double current = Double.valueOf(tvActual.getText().toString());
                 if(current + 1 > linesBean.getActualOutputNum()){
                     Toast.makeText(TransferInActivity.this,"不能超过发货数量",Toast.LENGTH_LONG).show();
                     return;
                 }
                 current = current + 1;
-                tvActual.setText(String.valueOf(current));
+                tvActual.setText(NumberUtil.getIOrD(current));
 
             }
         });
@@ -346,13 +352,13 @@ public class TransferInActivity extends NetWorkActivity {
         vSubtract.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int current = Integer.valueOf(tvActual.getText().toString());
+                double current = Double.valueOf(tvActual.getText().toString());
                 if(current - 1 < 0 ){
                     Toast.makeText(TransferInActivity.this,"不能小于0",Toast.LENGTH_LONG).show();
                     return;
                 }
                 current = current - 1;
-                tvActual.setText(String.valueOf(current));
+                tvActual.setText(NumberUtil.getIOrD(current));
             }
         });
 
@@ -422,8 +428,8 @@ public class TransferInActivity extends NetWorkActivity {
                 if(canSeePrice) sb.append("¥").append(basicBean.getPrice()).append("/").append(bean.getProductUom());
                 vh.content.setText(sb.toString());
 
-                vh.actualTransferIn.setText(""+ mTransferCountMap.get(bean.getProductID()+""));
-                vh.heightTransferIn.setText("/"+(int)bean.getActualOutputNum()+bean.getProductUom());
+                vh.actualTransferIn.setText(NumberUtil.getIOrD(mTransferCountMap.get(bean.getProductID()+"")));
+                vh.heightTransferIn.setText("/"+NumberUtil.getIOrD(bean.getActualOutputNum())+bean.getProductUom());
                 vh.rootView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

@@ -57,11 +57,15 @@ import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
@@ -84,7 +88,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
     private PopupWindow mPopWindow;
     //存放退货对应数据记录productId -----> ReturnBean
     private Map<String, ReturnBean> countMap = new HashMap<>();
-    private int currentEditCount = 0;            //当前弹窗的写入的可退数量
+    private double currentEditCount = 0;            //当前弹窗的写入的可退数量
     private ReturnBean currentRb;               //当前弹窗的rb
     private boolean isCountChange;              //用来避免，输入退货监听的再次执行
 
@@ -116,14 +120,13 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
     }
 
 
-
-    @OnClick({R.id.title_iv_left, R.id.commitBtn,R.id.iv_open})
+    @OnClick({R.id.title_iv_left, R.id.commitBtn, R.id.iv_open})
     public void btnClick(View v) {
         switch (v.getId()) {
             case R.id.iv_open:
-                if (mProductTypeWindow.isShowing()){
+                if (mProductTypeWindow.isShowing()) {
                     mProductTypeWindow.dismiss();
-                }else{
+                } else {
                     showPopWindow();
                 }
                 break;
@@ -153,7 +156,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         }
     }
 
-    private void showPopWindow(){
+    private void showPopWindow() {
         int y = findViewById(R.id.title_bg).getHeight() + smartTabLayout.getHeight();
         mProductTypeWindow.showAtLocation(getRootView(getActivityContext()), Gravity.NO_GRAVITY, 0, y);
         mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
@@ -215,14 +218,15 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             @Override
             public void onClick(View v) {
                 if (currentRb != null) {
-                    if (currentEditCount < currentRb.getMaxReturnCount()) {
-                        currentEditCount++;
+                    String strValue = editText.getText().toString();
+                    currentEditCount = TextUtils.isEmpty(strValue)?0:Double.valueOf(strValue);
+                    if (currentEditCount + 1 <= currentRb.getMaxReturnCount()) {
+                        currentEditCount = currentEditCount + 1;
                         isCountChange = true;
-                        editText.setText(currentEditCount + "");
+                        editText.setText(NumberUtil.subZeroAndDot(String.valueOf(currentEditCount)));
                         isCountChange = false;
-                        editText.setSelection(String.valueOf(currentEditCount).length());
                     } else {
-                        ToastUtil.show(mContext, "数量不能超过" + currentRb.getMaxReturnCount());
+                        ToastUtil.show(mContext, "数量不能超过" + NumberUtil.getIOrD(currentRb.getMaxReturnCount()));
                     }
                 }
             }
@@ -230,45 +234,40 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         input_minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentEditCount > 0) {
-                    currentEditCount--;
-                }
+                String strValue = editText.getText().toString();
+                currentEditCount = TextUtils.isEmpty(strValue)?0:Double.valueOf(strValue);
+                currentEditCount = currentEditCount - 1;
+                if (currentEditCount < 0) currentEditCount = 0;
                 isCountChange = true;
-                editText.setText(currentEditCount + "");
+                editText.setText(NumberUtil.subZeroAndDot(String.valueOf(currentEditCount)));
                 isCountChange = false;
-                editText.setSelection(String.valueOf(currentEditCount).length());
+                //editText.setSelection(NumberUtil.getIOrD(currentEditCount).length());
             }
         });
         editText.addTextChangedListener(new TextWatcher() {
+            String previousText;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                previousText = s.toString();
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!isCountChange) {
-                    int maxCanReturnCount = currentRb.getMaxReturnCount();
-                    int currentCount = TextUtils.isEmpty(s.toString()) ? 0 : Integer.valueOf(s.toString());
-                    if (currentCount > maxCanReturnCount) {
-                        ToastUtil.show(mContext, "退货数量不能超过" + maxCanReturnCount);
-                        int beginCount;
-                        if (countMap.get(String.valueOf(currentRb.getpId())) != null) {
-                            beginCount = countMap.get(String.valueOf(currentRb.getpId())).getReturnCount();
-                        } else {
-                            beginCount = 0;
-                        }
-                        isCountChange = true;
-                        editText.setText(String.valueOf(beginCount));
-                        editText.setSelection(String.valueOf(beginCount).length());
-                        isCountChange = false;
-                        return;
+                double maxCanReturnCount = currentRb.getMaxReturnCount();
+                double currentCount = TextUtils.isEmpty(s.toString()) ? 0 : Double.valueOf(s.toString());
+                if (currentCount > maxCanReturnCount) {
+                    ToastUtil.show(mContext, "退货数量不能超过" + NumberUtil.getIOrD(maxCanReturnCount));
+                    double beginCount;
+                    if (countMap.get(String.valueOf(currentRb.getpId())) != null) {
+                        beginCount = countMap.get(String.valueOf(currentRb.getpId())).getReturnCount();
                     } else {
-                        isCountChange = true;
-                        editText.setText(String.valueOf(currentCount));
-                        editText.setSelection(String.valueOf(currentCount).length());
-                        isCountChange = false;
+                        beginCount = 0;
                     }
+                    editText.setText(previousText);
+//                    editText.setSelection(previousText.length());
+                    return;
                 }
+
             }
 
             @Override
@@ -323,12 +322,14 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             public void onClick(View v) {
                 if (currentRb != null) {
                     //这里有个删除的动作
-                    if (Integer.valueOf(editText.getText().toString()) == 0) {
+                    String strValue = editText.getText().toString();
+                    double value = TextUtils.isEmpty(strValue)?0:new BigDecimal(strValue).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                    if (value == 0) {
                         if (countMap.containsKey(String.valueOf(currentRb.getpId()))) {
                             countMap.remove(String.valueOf(currentRb.getpId()));
                         }
                     } else {
-                        currentRb.setReturnCount(Integer.valueOf(editText.getText().toString()));
+                        currentRb.setReturnCount(value);
                         currentRb.setNote(questionEt.getText().toString());
                         countMap.put(String.valueOf(currentRb.getpId()), currentRb);
                     }
@@ -338,7 +339,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 mPopWindow.dismiss();
             }
         });
-        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
     }
@@ -353,7 +354,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 //                finish();
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
                 FinishReturnResponse.ReturnOrder returnOrder = finishReturnResponse.getReturnOrder();
-                ReturnRequestSuccessActivity.start(this,returnOrder);
+                ReturnRequestSuccessActivity.start(this, returnOrder);
                 break;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
@@ -447,6 +448,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 
     private PopupWindow mProductTypeWindow;
     ProductTypeAdapter mProductTypeAdapter;
+
     private void initPopWindow(ArrayList<String> typeList) {
         View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
@@ -454,7 +456,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         gridView.setAdapter(mProductTypeAdapter);
         mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bg).getHeight() + smartTabLayout.getHeight()), true);
         mProductTypeWindow.setContentView(dialog);
-        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
         mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mProductTypeWindow.setFocusable(false);
@@ -465,10 +467,10 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 mProductTypeWindow.dismiss();
                 viewPager.setCurrentItem(position);
                 smartTabLayout.getTabAt(position).select();
-                for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
-                    mProductTypeAdapter.selectList.set(i,new Boolean(false));
+                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
+                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
                 }
-                mProductTypeAdapter.selectList.set(position,new Boolean(true));
+                mProductTypeAdapter.selectList.set(position, new Boolean(true));
                 mProductTypeAdapter.notifyDataSetChanged();
             }
         });
@@ -506,15 +508,15 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             CheckBox cb1 = (CheckBox) dialogView.findViewById(R.id.cb1);
             CheckBox cb2 = (CheckBox) dialogView.findViewById(R.id.cb2);
             CheckBox cb3 = (CheckBox) dialogView.findViewById(R.id.cb3);
-            tipTv.setText("最多可申请" + rb.getMaxReturnCount() + "件");
+            tipTv.setText("最多可申请" + NumberUtil.getIOrD(rb.getMaxReturnCount()) + "件");
             EditText et = (EditText) dialogView.findViewById(R.id.editText);
             if (countMap.containsKey(currentRb.getpId() + "")) {
                 currentEditCount = countMap.get(currentRb.getpId() + "").getReturnCount();
-                et.setText(String.valueOf(currentEditCount));
+                et.setText(NumberUtil.getIOrD(currentEditCount));
                 questionEt.setText(countMap.get(currentRb.getpId() + "").getNote());
             } else {
                 currentEditCount = 0;
-                et.setText(String.valueOf(currentEditCount));
+                et.setText(String.valueOf((int) currentEditCount));
                 questionEt.setText("");
             }
             cb1.setChecked(false);

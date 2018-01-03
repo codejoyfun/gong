@@ -147,7 +147,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private TextView mTvProductDate;
     private EditText mEtProductAmount;
     private SimpleDraweeView productImage;
-    private int totalQty;           //预计总的商品总数
+    private double totalQty;           //预计总的商品总数
     private OrderResponse.ListBean lbean;
 //    private CaptureClient mClient;
     TimePickerView pvCustomTime;
@@ -628,20 +628,20 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     }
 
     private void updatePbProgress() {
-        int pbNum = 0;
+        double pbNum = 0;
         for (ReceiveBean bean : countMap.values()) {
             pbNum += bean.getCount();
         }
-        mTvReceiveCount.setText(String.valueOf(pbNum));
-        mTvReceiveCountTag.setText("/" + totalQty + "件");
+        mTvReceiveCount.setText(NumberUtil.getIOrD(pbNum));
+        mTvReceiveCountTag.setText("/" + NumberUtil.getIOrD(totalQty) + "件");
     }
 
     private void setDefalutProgressBar() {
         for (OrderResponse.ListBean.LinesBean bean : datas) {
             totalQty += bean.getProductUomQty();
         }
-        mTvReceiveCount.setText(String.valueOf(totalQty));
-        mTvReceiveCountTag.setText("/" + totalQty + "件");
+        mTvReceiveCount.setText(NumberUtil.getIOrD(totalQty));
+        mTvReceiveCountTag.setText("/" + NumberUtil.getIOrD(totalQty) + "件");
     }
 
 //    private PopupWindow mProductTypeWindow;
