@@ -92,15 +92,13 @@ public class FindPasswordActivity extends NetWorkActivity {
 		    mPhonenNmber.setEnabled(false);
 		    mPhonenNmber.setTextColor(getResources().getColor(android.R.color.black));
 		    mPhonenNmber.setHint("未设置手机号");
+		    if(TextUtils.isEmpty(phoneNum))mGetCode.setEnabled(false);
         }
 		if (!isLogin(getActivityContext())){
 			String company = getIntent().getStringExtra(INTENT_KEY_COMPANY_NAME);
 			getHost(company);
 		}
 		mPhonenNmber.setText(phoneNum);
-		if (TextUtils.isEmpty(phoneNum)) {
-			mGetCode.setEnabled(false);
-		}
 		setFinishStatus();
 		mPasswordSee.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override

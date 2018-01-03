@@ -253,6 +253,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().startsWith("."))return;
                 double maxCanReturnCount = currentRb.getMaxReturnCount();
                 double currentCount = TextUtils.isEmpty(s.toString()) ? 0 : Double.valueOf(s.toString());
                 if (currentCount > maxCanReturnCount) {
