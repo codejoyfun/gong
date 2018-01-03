@@ -34,6 +34,8 @@ import com.runwise.supply.tools.UserUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * 消息订单详情列表
  */
@@ -204,7 +206,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
                 viewHolder.name.setText(productBean.getName());
                 viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
+                FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, productBean.getImage().getImageSmall());
                 if (GlobalApplication.getInstance().getCanSeePrice()) {
                     viewHolder.dateNumber.setVisibility(View.VISIBLE);
                     viewHolder.dateNumber.setText("¥"+ UserUtils.formatPrice(productBean.getPrice()+"")+"/"+bean.getProductUom());
@@ -215,7 +217,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
             } else{//本地数据没有，查接口
                 requestMissingInfo(bean.getProductID());
             }
-            viewHolder.uom.setText(bean.getProductUomQty()+"" + bean.getProductUom());
+            viewHolder.uom.setText(NumberUtil.getIOrD(bean.getProductUomQty())+"" + bean.getProductUom());
             return convertView;
         }
 

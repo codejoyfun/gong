@@ -38,13 +38,13 @@ public class ModifyTransferRequest {
     }
 
     public static class Product{
-        private int qty;
+        private double qty;
         private int productID;
-        public int getQty() {
+        public double getQty() {
             return qty;
         }
 
-        public void setQty(int qty) {
+        public void setQty(double qty) {
             this.qty = qty;
         }
 

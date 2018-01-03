@@ -89,7 +89,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
-    private OrderDtailAdapter adapter;
+//    private OrderDtailAdapter adapter;
     @ViewInject(R.id.dateTv)
     private TextView dateTv;
     @ViewInject(R.id.orderStateTv)
@@ -174,7 +174,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         setTitleText(true, "订单详情");
         setTitleLeftIcon(true, R.drawable.nav_back);
         Bundle bundle = getIntent().getExtras();
-        adapter = new OrderDtailAdapter(mContext);
+//        adapter = new OrderDtailAdapter(mContext);
         orderId = bundle.getInt("orderid", 0);
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (!canSeePrice) {
@@ -438,7 +438,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean = result.getResult();
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
-                adapter.setStatus(bean.getName(), bean.getState(), bean);
+//                adapter.setStatus(bean.getName(), bean.getState(), bean);
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
@@ -602,7 +602,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private void updateUI() {
         if (bean != null) {
             if (bean.getHasReturn() != 0) {
-                adapter.setHasReturn(true);
+//                adapter.setHasReturn(true);
                 returnLL.setVisibility(View.VISIBLE);
                 //可能有多个退货单。
                 if (bean.getReturnOrders().size() > 0) {
@@ -611,7 +611,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 }
             }
             if (bean.isIsTwoUnit()) {
-                adapter.setTwoUnit(true);
+//                adapter.setTwoUnit(true);
             }
             String state = "";
             String tip = "";

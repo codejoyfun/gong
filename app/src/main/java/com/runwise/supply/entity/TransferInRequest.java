@@ -74,13 +74,13 @@ public class TransferInRequest {
 
     public static class ProductLotData{
         private int lotIDID;
-        private int qtyDone;
+        private double qtyDone;
 
         public int getLotIDID() {
             return lotIDID;
         }
 
-        public int getQtyDone() {
+        public double getQtyDone() {
             return qtyDone;
         }
 
@@ -88,7 +88,7 @@ public class TransferInRequest {
             this.lotIDID = lotIDID;
         }
 
-        public void setQtyDone(int qtyDone) {
+        public void setQtyDone(double qtyDone) {
             this.qtyDone = qtyDone;
         }
     }

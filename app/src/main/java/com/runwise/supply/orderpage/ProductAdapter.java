@@ -21,7 +21,10 @@ import com.runwise.supply.orderpage.entity.ProductData;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 /**
  * Created by Dong on 2017/11/28.
@@ -72,8 +75,8 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         }
 
 //        final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-        int count = productCountSetter.getCount(bean);
-        viewHolder.tvCount.setText(count+bean.getUom());
+        double count = productCountSetter.getCount(bean);
+        viewHolder.tvCount.setText(NumberUtil.getIOrD(count)+bean.getUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
             viewHolder.tvCount.setVisibility(View.VISIBLE);
@@ -93,9 +96,13 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
             @Override
             public void onClick(View v) {
 //                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                int currentNum = productCountSetter.getCount(bean);
+                double currentNum = productCountSetter.getCount(bean);
                 if (currentNum > 0) {
-                    viewHolder.tvCount.setText(--currentNum + bean.getUom());
+                    //https://stackoverflow.com/questions/179427/how-to-resolve-a-java-rounding-double-issue
+                    //防止double的问题
+                    currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
+                    if(currentNum<0)currentNum = 0;
+                    viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getUom());
 //                    mCountMap.put(bean, currentNum);
                     productCountSetter.setCount(bean,currentNum);
                     if (currentNum == 0) {
@@ -118,8 +125,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
             @Override
             public void onClick(View v) {
 //                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                int currentNum = productCountSetter.getCount(bean);
-                viewHolder.tvCount.setText(++currentNum + bean.getUom());
+                double currentNum = productCountSetter.getCount(bean);
+                currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
+                viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getUom());
 //                mCountMap.put(bean, currentNum);
                 productCountSetter.setCount(bean,currentNum);
                 if (currentNum == 1) {//0变到1
@@ -138,10 +146,10 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
             @Override
             public void onClick(View view) {
 //                int currentCount = mCountMap.get(bean)==null?0:mCountMap.get(bean);
-                int currentCount = productCountSetter.getCount(bean);
+                double currentCount = productCountSetter.getCount(bean);
                 new ProductValueDialog(mContext, bean.getName(), currentCount, productCountSetter.getRemark(bean),new ProductValueDialog.IProductDialogCallback() {
                     @Override
-                    public void onInputValue(int value,String remark) {
+                    public void onInputValue(double value,String remark) {
 
                         productCountSetter.setCount(bean,value);
                         bean.setRemark(remark);
@@ -159,7 +167,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 //                            mCountMap.put(bean,value);
                         }
                         viewHolder.tvCount.setText(value + bean.getUom());
-                        EventBus.getDefault().post(new ProductCountUpdateEvent(bean,value));
+                        EventBus.getDefault().post(new ProductCountUpdateEvent(bean,(int)value));
                     }
                 }).show();
             }
@@ -186,7 +194,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         }
 
         if(bean.getImage()!=null){
-            FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
+            FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, bean.getImage().getImageSmall());
         }
 
         return convertView;

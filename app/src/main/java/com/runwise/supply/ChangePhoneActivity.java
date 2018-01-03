@@ -92,7 +92,7 @@ public class ChangePhoneActivity extends NetWorkActivity {
 		switch (where) {
 			//获取验证码
 			case GET_CODE:
-				ToastUtil.show(mContext, result.getMsg());
+				ToastUtil.show(mContext, "短信验证码已发送");
 				mGetCode.setEnabled(false);
 				new WaitTimer(60).start();
 				holdCode = true;

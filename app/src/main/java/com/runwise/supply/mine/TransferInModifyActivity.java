@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,6 +45,7 @@ import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.orderpage.entity.StoreResponse;
 import com.runwise.supply.view.NoWatchEditText;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,7 +97,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
     public static final int REQUEST_CODE_GET_PRODUCT = 1 << 0;
     private boolean canSeePrice = true;             //默认价格中可见
     //选中数量map
-    private HashMap<String, Integer> countMap = new HashMap<>();
+    private HashMap<String, Double> countMap = new HashMap<>();
     ProductAdapter mProductAdapter;
     boolean mEditMode = false;
     ArrayList<String> mStoreNameList = new ArrayList<>();
@@ -140,7 +142,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
             for (Object object : mProductAdapter.getList()) {
                 ProductData.ListBean listBean = (ProductData.ListBean) object;
                 if (addedProduct.getProductId().equals(String.valueOf(listBean.getProductID()))) {
-                    int count = countMap.get(String.valueOf(listBean.getProductID()));
+                    double count = countMap.get(String.valueOf(listBean.getProductID()));
                     count += addedProduct.getCount();
                     countMap.put(String.valueOf(listBean.getProductID()), count);
                     findIt = true;
@@ -205,7 +207,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 }
                 modifyTransferRequest.setPickingID(mTransferEntity.getPickingID());
                 List<ModifyTransferRequest.Product> products = new ArrayList<>();
-                for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+                for (Map.Entry<String, Double> entry : countMap.entrySet()) {
                     ModifyTransferRequest.Product product = new ModifyTransferRequest.Product();
                     product.setProductID(Integer.parseInt(entry.getKey()));
                     product.setQty(entry.getValue());
@@ -297,7 +299,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                         for (Object object : mProductAdapter.getList()) {
                             ProductData.ListBean listBean = (ProductData.ListBean) object;
                             if (addedProduct.getProductId().equals(String.valueOf(listBean.getProductID()))) {
-                                int count = countMap.get(String.valueOf(listBean.getProductID()));
+                                double count = countMap.get(String.valueOf(listBean.getProductID()));
                                 count += addedProduct.getCount();
                                 countMap.put(String.valueOf(listBean.getProductID()), count);
                                 findIt = true;
@@ -332,16 +334,16 @@ public class TransferInModifyActivity extends NetWorkActivity {
     }
 
     private void refreshTotalCountAndMoney() {
-        int totalCount = 0;
+        double totalCount = 0;
         double totalMoney = 0;
         String removeId = "";
-        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+        for (Map.Entry<String, Double> entry : countMap.entrySet()) {
             totalCount += entry.getValue();
             if (entry.getValue() == 0) {
                 removeId = entry.getKey();
             }
         }
-        mTvCount.setText(totalCount + " 件");
+        mTvCount.setText(NumberUtil.getIOrD(totalCount) + " 件");
         if (!TextUtils.isEmpty(removeId)) {
             countMap.remove(removeId);
             ProductData.ListBean listBean = null;
@@ -359,7 +361,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
         }
         for (Object object : mProductAdapter.getList()) {
             ProductData.ListBean bean = (ProductData.ListBean) object;
-            int count = countMap.get(String.valueOf(bean.getProductID()));
+            double count = countMap.get(String.valueOf(bean.getProductID()));
             totalMoney += bean.getPrice() * count;
         }
         mTvTotalMoney.setText("¥" + NumberUtil.getIOrD(totalMoney));
@@ -371,7 +373,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
 
         if(!canSeePrice){
             mTvNoPrice.setVisibility(View.VISIBLE);
-            mTvNoPrice.setText(totalCount + " 件");
+            mTvNoPrice.setText(NumberUtil.getIOrD(totalCount )+ " 件");
         }
     }
 
@@ -427,26 +429,40 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 convertView = View.inflate(mContext, R.layout.item_product_call_in, null);
                 ViewUtils.inject(viewHolder, convertView);
                 convertView.setTag(viewHolder);
-                viewHolder.editText.removeTextChangedListener();
-                viewHolder.editText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        refreshTotalCountAndMoney();
-                    }
-                });
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+
+            viewHolder.editText.removeTextChangedListener();
+            final EditText editText = viewHolder.editText;
+            viewHolder.editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    String strSource = s.toString();
+                    int dotIndex = strSource.indexOf(".");
+                    if(dotIndex>=0){
+                        int length = strSource.substring(dotIndex,strSource.length()-1).length();
+                        if(length>2){
+                            String dest = strSource.substring(0,dotIndex+3);
+                            editText.setText(dest);
+                            editText.setSelection(dest.length());
+                            countMap.put(bean.getProductID()+"",Double.valueOf(dest));
+                            return;
+                        }
+                    }
+                    countMap.put(bean.getProductID()+"",Double.valueOf(strSource));
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    refreshTotalCountAndMoney();
+                }
+            });
             //先根据集合里面对应个数初始化一次
             if (countMap.get(String.valueOf(bean.getProductID())) > 0) {
                 viewHolder.editLL.setVisibility(View.VISIBLE);
@@ -456,7 +472,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 viewHolder.unit1.setVisibility(View.VISIBLE);
             }
             ischange = true;
-            viewHolder.editText.setText(countMap.get(String.valueOf(bean.getProductID())) + "");
+            viewHolder.editText.setText(NumberUtil.getIOrD(countMap.get(String.valueOf(bean.getProductID()))));
             ischange = false;
             final LinearLayout ll = viewHolder.editLL;
             final TextView unit1 = viewHolder.unit1;
@@ -465,11 +481,12 @@ public class TransferInModifyActivity extends NetWorkActivity {
 
                 @Override
                 public void onClick(View v) {
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    double currentNum = countMap.get(String.valueOf(bean.getProductID()));
                     if (currentNum > 0) {
-                        --currentNum;
+                        currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
+                        if(currentNum<0)currentNum = 0;
                         countMap.put(String.valueOf(bean.getProductID()), currentNum);
-                        finalViewHolder.editText.setText(currentNum + "");
+                        finalViewHolder.editText.setText(NumberUtil.getIOrD(currentNum ));
                         if (currentNum == 0) {
                             unit1.setVisibility(View.VISIBLE);
                             ll.setVisibility(View.INVISIBLE);
@@ -483,10 +500,10 @@ public class TransferInModifyActivity extends NetWorkActivity {
 
                 @Override
                 public void onClick(View v) {
-                    int currentNum = countMap.get(String.valueOf(bean.getProductID()));
-                    currentNum++;
+                    double currentNum = countMap.get(String.valueOf(bean.getProductID()));
+                    currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
                     countMap.put(String.valueOf(bean.getProductID()), currentNum);
-                    finalViewHolder1.editText.setText(currentNum + "");
+                    finalViewHolder1.editText.setText(NumberUtil.getIOrD(currentNum));
                 }
             });
 
@@ -518,7 +535,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
             }
             viewHolder.unit1.setText(bean.getUom());
-            viewHolder.tv_count.setText(String.valueOf(countMap.get(String.valueOf(bean.getProductID()))));
+            viewHolder.tv_count.setText(NumberUtil.getIOrD(countMap.get(String.valueOf(bean.getProductID()))));
 
             viewHolder.iv_delete.setVisibility(mEditMode ? View.VISIBLE : View.GONE);
             if (mEditMode) {
@@ -536,7 +553,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 @Override
                 public void onClick(View v) {
                     mList.remove(position);
-                    countMap.put(String.valueOf(bean.getProductID()), 0);
+                    countMap.put(String.valueOf(bean.getProductID()), 0d);
                     notifyDataSetChanged();
                 }
             });

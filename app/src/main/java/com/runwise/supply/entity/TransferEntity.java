@@ -25,7 +25,7 @@ public class TransferEntity implements Parcelable{
     private String locationDestName;
     private List<String> stateTracker;
     private float totalPrice;//根据当前状态的数量，如提交则是订单数，已出库则是出库数，已入库则是实际完成数
-    private int totalNum;//same as totalPrice
+    private double totalNum;//same as totalPrice
     private int pickingStateNum;
     private boolean isConfirmed;//调出方是否已经点过“出库按钮”，即后台confirm接口是否已经被调用
 
@@ -65,7 +65,7 @@ public class TransferEntity implements Parcelable{
         return totalPrice;
     }
 
-    public int getTotalNum() {
+    public double getTotalNum() {
         return totalNum;
     }
 
@@ -105,7 +105,7 @@ public class TransferEntity implements Parcelable{
         this.totalPrice = totalPrice;
     }
 
-    public void setTotalNum(int totalNum) {
+    public void setTotalNum(double totalNum) {
         this.totalNum = totalNum;
     }
 
@@ -152,7 +152,7 @@ public class TransferEntity implements Parcelable{
 //        dest.writeTypedList(this.lines);
         dest.writeStringList(this.stateTracker);
         dest.writeFloat(this.totalPrice);
-        dest.writeInt(this.totalNum);
+        dest.writeDouble(this.totalNum);
         dest.writeInt(isConfirmed?1:0);
         dest.writeString(this.pickingStateFull);
     }
@@ -167,7 +167,7 @@ public class TransferEntity implements Parcelable{
 //        this.lines = in.createTypedArrayList(TransferDetailResponse.LinesBean.CREATOR);
         this.stateTracker = in.createStringArrayList();
         this.totalPrice = in.readFloat();
-        this.totalNum = in.readInt();
+        this.totalNum = in.readDouble();
         this.isConfirmed = in.readInt()==1;
         this.pickingStateFull = in.readString();
     }

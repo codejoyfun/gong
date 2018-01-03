@@ -36,9 +36,9 @@ public class ProductData implements Serializable{
          * uom : 条
          */
 
-        private int actualQty;
+        private double actualQty;
         private boolean isTwoUnit;
-        private int presetQty;
+        private double presetQty;
         private String settlePrice;
         private int productID;
         private String priceID;
@@ -117,11 +117,11 @@ public class ProductData implements Serializable{
             this.category = category;
         }
 
-        public int getActualQty() {
+        public double getActualQty() {
             return actualQty;
         }
 
-        public void setActualQty(int actualQty) {
+        public void setActualQty(double actualQty) {
             this.actualQty = actualQty;
         }
 
@@ -133,11 +133,11 @@ public class ProductData implements Serializable{
             this.isTwoUnit = isTwoUnit;
         }
 
-        public int getPresetQty() {
+        public double getPresetQty() {
             return presetQty;
         }
 
-        public void setPresetQty(int presetQty) {
+        public void setPresetQty(double presetQty) {
             this.presetQty = presetQty;
         }
 
@@ -247,7 +247,7 @@ public class ProductData implements Serializable{
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (o == null || !(o instanceof ListBean)) return false;
 
             ListBean listBean = (ListBean) o;
 
@@ -267,9 +267,9 @@ public class ProductData implements Serializable{
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.actualQty);
+            dest.writeDouble(this.actualQty);
             dest.writeByte(this.isTwoUnit ? (byte) 1 : (byte) 0);
-            dest.writeInt(this.presetQty);
+            dest.writeDouble(this.presetQty);
             dest.writeString(this.settlePrice);
             dest.writeInt(this.productID);
             dest.writeString(this.priceID);
@@ -294,9 +294,9 @@ public class ProductData implements Serializable{
         }
 
         protected ListBean(Parcel in) {
-            this.actualQty = in.readInt();
+            this.actualQty = in.readDouble();
             this.isTwoUnit = in.readByte() != 0;
-            this.presetQty = in.readInt();
+            this.presetQty = in.readDouble();
             this.settlePrice = in.readString();
             this.productID = in.readInt();
             this.priceID = in.readString();

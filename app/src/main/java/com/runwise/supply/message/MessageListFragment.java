@@ -45,6 +45,8 @@ import com.runwise.supply.message.entity.MsgSendRequest;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 
+import io.vov.vitamio.utils.NumberUtil;
+
 /**
  * 聊天信息
  */
@@ -99,10 +101,10 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
         chatName.setText(orderBean.getName());
         chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));
         if(GlobalApplication.getInstance().getCanSeePrice()) {
-            chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
+            chatContext.setText("共"+ NumberUtil.getIOrD(orderBean.getAmount())+"件商品,¥"+ orderBean.getAmount_total());
         }
         else {
-            chatContext.setText("共"+orderBean.getAmount()+"件商品");
+            chatContext.setText("共" + NumberUtil.getIOrD(orderBean.getAmount())+"件商品");
         }
 
         pullListView.setPullToRefreshOverScrollEnabled(false);

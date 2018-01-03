@@ -42,9 +42,9 @@ public class UserGuidActivity extends BaseActivity {
 
 		inflater = LayoutInflater.from(this);
 		List<Integer> viewList = new ArrayList<Integer>();
-		viewList.add(R.drawable.restaurant_guide_1);
-		viewList.add(R.drawable.restaurant_guide_2);
-		viewList.add(R.drawable.restaurant_guide_3);
+		viewList.add(R.drawable.restaurant_onboarding_1);
+		viewList.add(R.drawable.restaurant_onboarding_2);
+		viewList.add(R.drawable.restaurant_onboarding_3);
 		 adapter = new NavAdapter(viewList);
 		viewPager.setAdapter(adapter);
 		viewPager.setOnPageChangeListener(new OnPageChangeListener() {

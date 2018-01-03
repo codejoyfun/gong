@@ -48,7 +48,7 @@ import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_H
 /**
  * Created by libin on 2017/6/29.
  */
-
+@Deprecated
 public class OrderFragment extends NetWorkFragment {
     private static final int LASTBUY = 1;
     @ViewInject(R.id.lastBuyTv)

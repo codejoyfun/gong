@@ -3,6 +3,7 @@ package com.runwise.supply.mine;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.OrderAgainActivity;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.PollingUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
@@ -406,6 +408,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                         }
                         switch (action) {
                             case RECEIVE://正常收货
+                                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
                                 Intent intent = new Intent(mContext, ReceiveActivity.class);
                                 Bundle bundle = new Bundle();
                                 bundle.putParcelable("order", bean);

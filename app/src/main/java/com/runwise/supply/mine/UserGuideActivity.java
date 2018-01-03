@@ -12,6 +12,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
@@ -117,18 +118,17 @@ public class UserGuideActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        //TODO:test
-        switch (where){
-            case REQUEST_USER_GUIDE:
-                UmengUtil.reportError(errMsg);
-                mGuideResponse = new GuideResponse();
-                mGuideResponse.setList(new ArrayList<>());
-                GuideResponse.GuideItem item = new GuideResponse.GuideItem();
-                item.setName("下蛋教程");
-                item.setURL("http://v.youku.com/v_show/id_XMzI0MjY5MjM4OA==.html?spm=a2hww.20027244.m_250036.5~5!2~5~5~5~1!2~3~A&f=51392393d");
-                mGuideResponse.getList().add(item);
-                inflateGuideView();
-                break;
-        }
+        ToastUtil.show(this,errMsg);
+//        switch (where){
+//            case REQUEST_USER_GUIDE:
+//                mGuideResponse = new GuideResponse();
+//                mGuideResponse.setList(new ArrayList<>());
+//                GuideResponse.GuideItem item = new GuideResponse.GuideItem();
+//                item.setName("下蛋教程");
+//                item.setURL("http://v.youku.com/v_show/id_XMzI0MjY5MjM4OA==.html?spm=a2hww.20027244.m_250036.5~5!2~5~5~5~1!2~3~A&f=51392393d");
+//                mGuideResponse.getList().add(item);
+//                inflateGuideView();
+//                break;
+//        }
     }
 }

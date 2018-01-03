@@ -42,7 +42,7 @@ public class FinishReturnResponse implements Serializable{
         private String name;
         private boolean returnThirdPartLog;
         private List<Lines> lines;
-        private int amount;
+        private double amount;
 
         public void setAmountTotal(double amountTotal) {
             this.amountTotal = amountTotal;
@@ -220,11 +220,11 @@ public class FinishReturnResponse implements Serializable{
             return lines;
         }
 
-        public void setAmount(int amount) {
+        public void setAmount(double amount) {
             this.amount = amount;
         }
 
-        public int getAmount() {
+        public double getAmount() {
             return amount;
         }
 

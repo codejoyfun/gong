@@ -335,6 +335,43 @@
                 />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/rl_config_fingerprint"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/white_btn_selector"
+            >
+
+            <ImageView
+                android:id="@+id/iv_config_fingerprint"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="14dp"
+                android:clickable="true"
+                android:src="@drawable/setting_ico_finger"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="指纹登录"
+                android:textColor="#3e3e3e"
+                android:textSize="@dimen/bottom_tab_font_size"
+                android:layout_toRightOf="@id/iv_config_fingerprint"
+                />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/sc_config_fingerprint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
 
     </LinearLayout>
 

@@ -19,6 +19,7 @@ import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
@@ -26,9 +27,15 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.entity.GuideResponse;
+import com.runwise.supply.entity.RemUser;
+import com.runwise.supply.entity.UpdateTimeRequest;
 import com.runwise.supply.entity.UnReadData;
+import com.runwise.supply.entity.UpdateTimeResponse;
 import com.runwise.supply.event.PlatformNotificationEvent;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
 import com.runwise.supply.firstpage.entity.VersionRequest;
@@ -36,6 +43,7 @@ import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
+import com.runwise.supply.orderpage.OrderFragmentV2;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -43,6 +51,7 @@ import com.runwise.supply.repertory.MainRepertoryFragment;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.PlatformNotificationManager;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -52,6 +61,7 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.Log;
+import io.vov.vitamio.utils.NumberUtil;
 
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
@@ -66,6 +76,8 @@ public class MainActivity extends NetWorkActivity {
     private static final int QUERY_ALL = 1;
     private final int REQUEST_UNREAD = 2;
     private final int REQUEST_UPLOAD_VERSION = 3;
+    private final int REQUEST_SYSTEM_UPGRADE_TIME = 4;
+    private static final int CHECK_UPGRADE_INTERVAL = 1000 * 60 * 10;//10分钟查询间隔
 
     //    private int devicesConnected = -1;
     private long mExitTime;
@@ -151,6 +163,7 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setStatusBarEnabled();
         setContentView(R.layout.activity_main);
         StatusBarUtil.StatusBarLightMode(this);
@@ -231,7 +244,7 @@ public class MainActivity extends NetWorkActivity {
 //        if (!isLogined()){
         mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
 //            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
-        mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
+        mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragmentV2.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);
@@ -300,6 +313,10 @@ public class MainActivity extends NetWorkActivity {
                 }
 //                LogUtils.e("onSuccessTime REQUEST_UNREAD "+String.valueOf(System.currentTimeMillis() - mTimeStartREQUEST_UNREAD));
                 break;
+            case REQUEST_SYSTEM_UPGRADE_TIME:
+                UpdateTimeResponse response = (UpdateTimeResponse)result.getResult().getData();
+                SystemUpgradeHelper.getInstance(this).create(response.getStartDate(),response.getEndDate());
+                break;
             default:
                 break;
         }
@@ -320,6 +337,8 @@ public class MainActivity extends NetWorkActivity {
         }
     }
 
+    private long lastSystemQuery = 0;//上次查询系统更新通知的时间
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -331,6 +350,25 @@ public class MainActivity extends NetWorkActivity {
             Object request = null;
             sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
             mTimeStartREQUEST_UNREAD = System.currentTimeMillis();
+
+            //查询系统更新
+            long currentTime = System.currentTimeMillis();
+            UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+            if(userInfo==null)return;
+            DbUtils db = MyDbUtil.create(this);
+            try{
+                RemUser rem = db.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
+                if(rem!=null && currentTime - lastSystemQuery > CHECK_UPGRADE_INTERVAL){//10 minutes
+                    lastSystemQuery = currentTime;
+                    //get company name
+                    Object systemUpdateTimeRequest = new UpdateTimeRequest(rem.getCompany());
+                    sendConnection(Constant.UNLOGIN_URL,"/api/system/update",systemUpdateTimeRequest,
+                            REQUEST_SYSTEM_UPGRADE_TIME,false,UpdateTimeResponse.class,true);
+                }
+            }catch (DbException e){
+                e.printStackTrace();
+            }
+
         }
     }
 
