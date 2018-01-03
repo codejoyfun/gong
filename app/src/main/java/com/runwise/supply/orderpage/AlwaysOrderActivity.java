@@ -88,7 +88,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
                     //Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
                 }else{
                     for(ProductData.ListBean pBean: data.getList()){
-                        mMapCount.put(pBean,(double)pBean.getPresetQty());
+                        mMapCount.put(pBean,pBean.getPresetQty());
                     }
                 }
                 requestCategory();
