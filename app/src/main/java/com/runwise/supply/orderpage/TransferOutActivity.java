@@ -364,7 +364,7 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("输入的数量不能为空");
                     return;
                 }
-                double actualQty = new BigDecimal(et_count.getText().toString()).setScale(2, RoundingMode.UP).doubleValue();
+                double actualQty = new BigDecimal(et_count.getText().toString()).setScale(2, RoundingMode.HALF_UP).doubleValue();
                 if (actualQty > transferBatchLine.getProductUomQty()) {
                     toast("总数量不能超过订单量");
                     return;

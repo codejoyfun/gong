@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -359,6 +362,30 @@ public class TransferInActivity extends NetWorkActivity {
                 }
                 current = current - 1;
                 tvActual.setText(NumberUtil.getIOrD(current));
+            }
+        });
+
+        tvActual.addTextChangedListener(new TextWatcher() {
+            String previous;
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                previous = s.toString();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!TextUtils.isEmpty(s)){
+                    double value = new BigDecimal(s.toString()).setScale(2,RoundingMode.HALF_UP).doubleValue();
+                    if(value > linesBean.getActualOutputNum()){
+                        Toast.makeText(TransferInActivity.this,"不能超过发货数量",Toast.LENGTH_LONG).show();
+                        tvActual.setText(previous);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
