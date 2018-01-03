@@ -178,7 +178,6 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
         }
     }
 
-    @Deprecated
 //    public class ProductAdapter extends IBaseAdapter<RepertoryEntity.ListBean> {
 //        @Override
 //        protected View getExView(int position, View convertView, ViewGroup parent) {

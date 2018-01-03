@@ -39,7 +39,7 @@ import rx.schedulers.Schedulers;
 
 public class TempOrderManager {
     private static TempOrderManager sInstance;
-    private static final String PREF_NAME_PREFIX = "temp_orders3_";
+    private static final String PREF_NAME_PREFIX = "temp_orders4_";
     private SharedPreferences mPrefs;
 
     public static TempOrderManager getInstance(Context context){
@@ -138,7 +138,7 @@ public class TempOrderManager {
         private String hashKey;//标记提交中的订单，由本地生成
         private boolean isFailed;//是否提交失败，后台返回
         private double totalMoney;
-        private int totalPieces;
+        private double totalPieces;
         private ArrayList<ProductData.ListBean> productList;
 
         public String getEstimateDate() {
@@ -185,7 +185,7 @@ public class TempOrderManager {
             return totalMoney;
         }
 
-        public int getTotalPieces() {
+        public double getTotalPieces() {
             return totalPieces;
         }
 
@@ -208,7 +208,7 @@ public class TempOrderManager {
             dest.writeString(this.hashKey);
             dest.writeByte(this.isFailed ? (byte) 1 : (byte) 0);
             dest.writeDouble(this.totalMoney);
-            dest.writeInt(this.totalPieces);
+            dest.writeDouble(this.totalPieces);
             dest.writeTypedList(this.productList);
         }
 
@@ -220,7 +220,7 @@ public class TempOrderManager {
             this.hashKey = in.readString();
             this.isFailed = in.readByte() != 0;
             this.totalMoney = in.readDouble();
-            this.totalPieces = in.readInt();
+            this.totalPieces = in.readDouble();
             this.productList = in.createTypedArrayList(ProductData.ListBean.CREATOR);
         }
 

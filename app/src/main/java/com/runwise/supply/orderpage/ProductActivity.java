@@ -268,12 +268,12 @@ public class ProductActivity extends NetWorkActivity {
                 Bundle bundle = new Bundle();
                 //当前选中的商品信息
                 ArrayList<AddedProduct> addedList = new ArrayList<>();
-                HashMap<String, Integer> countMap = ProductListFragment.getCountMap();
+                HashMap<String, Double> countMap = ProductListFragment.getCountMap();
                 Iterator iter = countMap.entrySet().iterator();
                 while (iter.hasNext()) {
-                    Map.Entry<String, Integer> entry = (Map.Entry) iter.next();
+                    Map.Entry<String, Double> entry = (Map.Entry) iter.next();
                     String key = entry.getKey();
-                    Integer count = entry.getValue();
+                    Double count = entry.getValue();
                     Parcel parcel = Parcel.obtain();
                     AddedProduct pro = AddedProduct.CREATOR.createFromParcel(parcel);
                     if (count != 0) {

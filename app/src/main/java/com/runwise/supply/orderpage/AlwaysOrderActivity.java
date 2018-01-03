@@ -12,7 +12,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 
 /**
@@ -70,7 +69,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
         mRlBottomBar.setVisibility(View.GONE);
         mHandler.post(runnable);
         Object request = null;
-        sendConnection("/api/shop/always_buy/product/list",REQUEST_ALWAYS,false,PresetProductData.class);
+        sendConnection("/api/shop/always_buy/product/list",request,REQUEST_ALWAYS,false,PresetProductData.class);
     }
 
     @Override
@@ -86,7 +85,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
                 PresetProductData data = (PresetProductData) resultBean.getData();
                 //init mCountMap;
                 if(data.getList()==null || data.getList().size()==0){
-                    Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
                 }else{
                     for(ProductData.ListBean pBean: data.getList()){
                         mMapCount.put(pBean,pBean.getPresetQty());

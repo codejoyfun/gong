@@ -61,6 +61,7 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.Log;
+import io.vov.vitamio.utils.NumberUtil;
 
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
@@ -162,6 +163,7 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setStatusBarEnabled();
         setContentView(R.layout.activity_main);
         StatusBarUtil.StatusBarLightMode(this);

@@ -859,7 +859,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private void requestLB() {
         Object request = null;
         LunboRequest lbRequest = new LunboRequest("餐户端");
-        sendConnection("/gongfu/blog/post/list/login", lbRequest, FROMLB, false, LunboResponse.class);
+        sendConnection("/api/viewpager/list/login", lbRequest, FROMLB, false, LunboResponse.class);
         mTimeStartFROMLB = System.currentTimeMillis();
     }
 
@@ -890,7 +890,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 ImagesBean bean = post_list.get(position);
                 if (bean != null && bean.getCover_url() != null) {
                     Intent intent = new Intent(mContext, PageDeatailActivity.class);
-                    intent.putExtra("url", Constant.BASE_URL + bean.getPost_url());
+                    intent.putExtra("url", bean.getPost_url());
                     startActivity(intent);
                 }
             }

@@ -323,7 +323,7 @@
                     android:textColor="#212121"
                     android:textSize="14sp"
                     android:layout_marginLeft="10dp"
-                    android:text="修改登陆密码"
+                    android:text="修改登录密码"
                     />
 
                 <ImageView

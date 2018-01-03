@@ -15,6 +15,7 @@ import com.runwise.supply.message.OrderMsgDetailActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.vov.vitamio.utils.NumberUtil;
 
 public class ReturnSuccessActivity extends BaseActivity {
 
@@ -44,7 +45,7 @@ public class ReturnSuccessActivity extends BaseActivity {
         String text;
         if(GlobalApplication.getInstance().getCanSeePrice()){
             text = "退货数量: " +
-                    finishReturnResponse.getReturnOrder().getAmount() +
+                    NumberUtil.getIOrD(finishReturnResponse.getReturnOrder().getAmount()) +
                     "件\n" +
                     "退货金额: " +
                     finishReturnResponse.getReturnOrder().getAmountTotal() +
@@ -52,7 +53,7 @@ public class ReturnSuccessActivity extends BaseActivity {
                     finishReturnResponse.getReturnOrder().getDoneDate();
         }else{
             text = "退货数量: " +
-                    finishReturnResponse.getReturnOrder().getAmount() +
+                    NumberUtil.getIOrD(finishReturnResponse.getReturnOrder().getAmount()) +
                     "件\n" +
                     "退货成功时间: " +
                     finishReturnResponse.getReturnOrder().getDoneDate();

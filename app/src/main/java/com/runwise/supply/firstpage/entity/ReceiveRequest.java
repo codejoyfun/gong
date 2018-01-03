@@ -28,7 +28,7 @@ public class ReceiveRequest {
          * product_id : 8
          * height : 3
          */
-        private int qty;
+        private double qty;
         private int product_id;
         private double height;
         private String tracking;
@@ -68,22 +68,22 @@ public class ReceiveRequest {
             this.tracking = tracking;
         }
 
-        public int getQty() {
+        public double getQty() {
             return qty;
         }
 
-        public void setQty(int qty) {
+        public void setQty(double qty) {
             this.qty = qty;
         }
 
 
         public static class LotBean implements Serializable{
 
-            private int qty;
+            private double qty;
             private String produce_datetime;
             private String life_datetime;
             private String lot_name;
-            private int height;
+            private double height;
             public LotBean(){
 
             }
@@ -116,11 +116,11 @@ public class ReceiveRequest {
                 return jsonObject.toString();
             }
 
-            public void setQty(int qty) {
+            public void setQty(double qty) {
                 this.qty = qty;
             }
 
-            public int getQty() {
+            public double getQty() {
                 return qty;
             }
 
@@ -148,11 +148,11 @@ public class ReceiveRequest {
                 return lot_name;
             }
 
-            public void setHeight(int height) {
+            public void setHeight(double height) {
                 this.height = height;
             }
 
-            public int getHeight() {
+            public double getHeight() {
                 return height;
             }
 

@@ -225,7 +225,7 @@ public class OrderAdapter extends IBaseAdapter {
             if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
                 sb.append((int) bean.getDeliveredQty()).append("件商品");
             } else {
-                sb.append((int) bean.getAmount()).append("件商品");
+                sb.append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
             }
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
@@ -297,7 +297,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.stateTv.setTextColor(Color.parseColor("#FA694D"));
             viewHolder.timeTv.setText(TimeUtils.getMMddHHmm(bean.getCreateDate()));
             StringBuffer sb = new StringBuffer("共");
-            sb.append((int) bean.getAmount()).append("件商品");
+            sb.append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
             viewHolder.countTv.setText(sb.toString());
             viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
             viewHolder.doBtn.setVisibility(View.INVISIBLE);
@@ -566,8 +566,8 @@ public class OrderAdapter extends IBaseAdapter {
         viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
         viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
         viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + transferEntity.getTotalNum() + "件商品");
-        else viewHolder.mmTvPrice.setText(transferEntity.getTotalNum() + "件商品");
+        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
+        else viewHolder.mmTvPrice.setText(NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
         viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
         viewHolder.mmTvStatus.setText(transferEntity.getPickingState());
@@ -641,6 +641,7 @@ public class OrderAdapter extends IBaseAdapter {
                     @Override
                     public void onClick(View view) {
                         if(!SystemUpgradeHelper.getInstance(context).check(context))return;
+                        if(InventoryCacheManager.getInstance(context).checkIsInventory(context))return;
                         Intent intent = new Intent(context, TransferInActivity.class);
                         intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
                         context.startActivity(intent);
@@ -678,6 +679,7 @@ public class OrderAdapter extends IBaseAdapter {
                     @Override
                     public void onClick(View view) {
                         if(!SystemUpgradeHelper.getInstance(context).check(context))return;
+                        if(InventoryCacheManager.getInstance(context).checkIsInventory(context))return;
                         int realPosition = (int) view.getTag();
                         if (realPosition == position) {
                             if(callback!=null){

@@ -18,6 +18,7 @@ import com.runwise.supply.view.NoWatchEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.vov.vitamio.utils.NumberUtil;
 
 /**
  * Created by mike on 2017/10/15.
@@ -25,14 +26,14 @@ import butterknife.ButterKnife;
 
 public class TransferOutBatchAdapter extends IBaseAdapter {
 
-    public void setTotalCount(int totalCount) {
+    public void setTotalCount(double totalCount) {
         mTotalCount = totalCount;
     }
 
-    int mTotalCount = 0;
+    double mTotalCount = 0;
 
     boolean checkCount(Context context) {
-        int actualCount = 0;
+        double actualCount = 0;
         for (Object o : mList) {
             TransferOutDetailResponse.TransferBatchLot transferBatchLot = (TransferOutDetailResponse.TransferBatchLot) o;
             actualCount += transferBatchLot.getUsedQty();
@@ -56,12 +57,12 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.mTvBatchName.setText(String.valueOf(transferBatchLot.getLotID()));
         viewHolder.mEtCount.removeTextChangedListener();
-        viewHolder.mEtCount.setText(String.valueOf(transferBatchLot.getUsedQty()));
-        viewHolder.mTvBatchCount.setText(String.valueOf(transferBatchLot.getQuantQty()));
+        viewHolder.mEtCount.setText(NumberUtil.getIOrD(transferBatchLot.getUsedQty()));
+        viewHolder.mTvBatchCount.setText(NumberUtil.getIOrD(transferBatchLot.getQuantQty()));
         viewHolder.mIvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int actualQty = transferBatchLot.getUsedQty() + 1;
+                double actualQty = transferBatchLot.getUsedQty() + 1d;
                 if (actualQty >transferBatchLot.getQuantQty()){
                     ToastUtil.show(parent.getContext(),"超过库存数量");
                     return;
@@ -74,7 +75,7 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
         viewHolder.mIvReduce.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int actualQty = transferBatchLot.getUsedQty() - 1;
+                double actualQty = transferBatchLot.getUsedQty() - 1d;
                 if (actualQty < 0) {
                     return;
                 }
@@ -100,7 +101,7 @@ public class TransferOutBatchAdapter extends IBaseAdapter {
                     notifyDataSetChanged();
                     return;
                 }
-                int actualQty = Integer.parseInt(s.toString());
+                double actualQty = Double.parseDouble(s.toString());
                 transferBatchLot.setUsedQty(actualQty);
                 if(actualQty>transferBatchLot.getQuantQty()){
                     ToastUtil.show(parent.getContext(),"超过库存数量");

@@ -37,15 +37,15 @@ public class TransferDetailResponse {
         public static final String TRACKING_LOT = "lot";
         private int productID;
         private int priceUnit;
-        private int actualOutputNum;
+        private double actualOutputNum;
         private String productName;
         private String productCode;
         private String productImage;
-        private int productQtyDone;
+        private double productQtyDone;
         private String productTracking;
         private String productUnit;
         private String productUom;
-        private int productUomQty;
+        private double productUomQty;
         private List<TransferBatchLot> productLotInfo;
 
         public List<TransferBatchLot> getProductLotInfo() {
@@ -72,7 +72,7 @@ public class TransferDetailResponse {
             return priceUnit;
         }
 
-        public int getActualOutputNum() {
+        public double getActualOutputNum() {
             return actualOutputNum;
         }
 
@@ -88,7 +88,7 @@ public class TransferDetailResponse {
             return productImage;
         }
 
-        public int getProductQtyDone() {
+        public double getProductQtyDone() {
             return productQtyDone;
         }
 
@@ -100,7 +100,7 @@ public class TransferDetailResponse {
             return productUom;
         }
 
-        public int getProductUomQty() {
+        public double getProductUomQty() {
             return productUomQty;
         }
 
@@ -112,7 +112,7 @@ public class TransferDetailResponse {
             this.priceUnit = priceUnit;
         }
 
-        public void setActualOutputNum(int actualOutputNum) {
+        public void setActualOutputNum(double actualOutputNum) {
             this.actualOutputNum = actualOutputNum;
         }
 
@@ -128,7 +128,7 @@ public class TransferDetailResponse {
             this.productImage = productImage;
         }
 
-        public void setProductQtyDone(int productQtyDone) {
+        public void setProductQtyDone(double productQtyDone) {
             this.productQtyDone = productQtyDone;
         }
 
@@ -140,7 +140,7 @@ public class TransferDetailResponse {
             this.productUom = productUom;
         }
 
-        public void setProductUomQty(int productUomQty) {
+        public void setProductUomQty(double productUomQty) {
             this.productUomQty = productUomQty;
         }
 
@@ -157,15 +157,15 @@ public class TransferDetailResponse {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(this.productID);
             dest.writeInt(this.priceUnit);
-            dest.writeInt(this.actualOutputNum);
+            dest.writeDouble(this.actualOutputNum);
             dest.writeString(this.productName);
             dest.writeString(this.productCode);
             dest.writeString(this.productImage);
-            dest.writeInt(this.productQtyDone);
+            dest.writeDouble(this.productQtyDone);
             dest.writeString(this.productTracking);
             dest.writeString(this.productUnit);
             dest.writeString(this.productUom);
-            dest.writeInt(this.productUomQty);
+            dest.writeDouble(this.productUomQty);
             dest.writeTypedList(this.productLotInfo);
         }
 
@@ -175,15 +175,15 @@ public class TransferDetailResponse {
         protected LinesBean(Parcel in) {
             this.productID = in.readInt();
             this.priceUnit = in.readInt();
-            this.actualOutputNum = in.readInt();
+            this.actualOutputNum = in.readDouble();
             this.productName = in.readString();
             this.productCode = in.readString();
             this.productImage = in.readString();
-            this.productQtyDone = in.readInt();
+            this.productQtyDone = in.readDouble();
             this.productTracking = in.readString();
             this.productUnit = in.readString();
             this.productUom = in.readString();
-            this.productUomQty = in.readInt();
+            this.productUomQty = in.readDouble();
             this.productLotInfo = in.createTypedArrayList(TransferBatchLot.CREATOR);
         }
 
