@@ -63,7 +63,7 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
         private WaybillBean waybill;
 
         private String deliveryType;
-        private int amount;
+        private double amount;
         private String end_unload_datetime;
         private boolean isThirdPartLog;
         private LastMessageBean last_message;
@@ -149,11 +149,11 @@ public class MessageResult extends BaseEntity.ResultBean implements Serializable
         }
 
 
-        public int getAmount() {
+        public double getAmount() {
             return amount;
         }
 
-        public void setAmount(int amount) {
+        public void setAmount(double amount) {
             this.amount = amount;
         }
 

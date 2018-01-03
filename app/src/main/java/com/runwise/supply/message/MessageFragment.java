@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 
 import cn.jpush.android.api.JPushInterface;
+import io.vov.vitamio.utils.NumberUtil;
 
 /**
  * Created by mychao on 2017/7/14.
@@ -390,10 +391,10 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     viewHolder.chatName.setText(orderBean.getName());
                     viewHolder.chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));
                     if(GlobalApplication.getInstance().getCanSeePrice()) {
-                        viewHolder.chatContext.setText("共"+orderBean.getAmount()+"件商品,¥"+ orderBean.getAmount_total());
+                        viewHolder.chatContext.setText("共"+ NumberUtil.getIOrD(orderBean.getAmount())+"件商品,¥"+ NumberUtil.getIOrD(orderBean.getAmount_total()));
                     }
                     else {
-                        viewHolder.chatContext.setText("共"+orderBean.getAmount()+"件商品");
+                        viewHolder.chatContext.setText("共"+ NumberUtil.getIOrD(orderBean.getAmount())+"件商品");
                     }
                     if(orderBean.getLast_message() != null && !TextUtils.isEmpty(orderBean.getLast_message().getBody())) {
                         viewHolder.chatMsg.setVisibility(View.VISIBLE);
