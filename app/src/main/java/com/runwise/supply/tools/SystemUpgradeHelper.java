@@ -53,7 +53,7 @@ public class SystemUpgradeHelper {
             preferences.edit().clear().apply();
             return;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss",Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm",Locale.getDefault());
         try{
             long startTime = sdf.parse(startDate).getTime()/1000;
             long endTime = sdf.parse(endDate).getTime()/1000;
