@@ -97,7 +97,7 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_alignParentRight="true"
-        android:src="@drawable/ic_order_btn_add_green_part"
+        android:src="@drawable/ic_btn_cart_add"
         android:layout_alignBottom="@+id/sdv_cart_product_image"
         android:layout_marginRight="16dp"/>
     <TextView
@@ -121,5 +121,5 @@
         android:layout_height="25dp"
         android:layout_toLeftOf="@+id/tv_item_cart_count"
         android:layout_alignBottom="@+id/sdv_cart_product_image"
-        android:src="@drawable/ic_order_btn_minus_part"/>
+        android:src="@drawable/ic_btn_cart_reduce"/>
 </RelativeLayout>
