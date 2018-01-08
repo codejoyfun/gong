@@ -8,10 +8,10 @@ import com.runwise.supply.orderpage.entity.ProductData;
 
 public class ProductCountUpdateEvent {
     public ProductCountUpdateEvent(){}
-    public ProductCountUpdateEvent(ProductData.ListBean listBean,int count){
+    public ProductCountUpdateEvent(ProductData.ListBean listBean,double count){
         this.bean = listBean;
         this.count = count;
     }
     public ProductData.ListBean bean;
-    public int count;
+    public double count;
 }

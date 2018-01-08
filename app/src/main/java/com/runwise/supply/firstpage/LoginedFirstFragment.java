@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -66,8 +67,10 @@ import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.orderpage.entity.OrderUpdateEvent;
 import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
+import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.runwise.supply.view.FingerprintPromptDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -300,6 +303,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
+
+        //指纹识别
+        FingerprintHelper fingerprintHelper = new FingerprintHelper(getActivity(), FingerprintManagerCompat.from(getActivity()));
+        if(fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(),GlobalApplication.getInstance().getUid())){
+            FingerprintHelper.setPrompted(getActivity(),GlobalApplication.getInstance().getUid());
+            Dialog dialog = new FingerprintPromptDialog(getActivity());
+            dialog.show();
+        }
     }
 
     public void getProcurement() {
@@ -848,7 +859,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private void requestLB() {
         Object request = null;
         LunboRequest lbRequest = new LunboRequest("餐户端");
-        sendConnection("/gongfu/blog/post/list/login", lbRequest, FROMLB, false, LunboResponse.class);
+        sendConnection("/api/viewpager/list/login", lbRequest, FROMLB, false, LunboResponse.class);
         mTimeStartFROMLB = System.currentTimeMillis();
     }
 
@@ -879,7 +890,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 ImagesBean bean = post_list.get(position);
                 if (bean != null && bean.getCover_url() != null) {
                     Intent intent = new Intent(mContext, PageDeatailActivity.class);
-                    intent.putExtra("url", Constant.BASE_URL + bean.getPost_url());
+                    intent.putExtra("url", bean.getPost_url());
                     startActivity(intent);
                 }
             }

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.TransferInActivity.INTENT_KEY_TRANSFER_ENTITY;
 import static com.runwise.supply.mine.TransferInModifyActivity.INTENT_KEY_TRANSFER;
@@ -126,7 +127,7 @@ public class TransferDetailActivity extends NetWorkActivity {
         mTvTransferState.setText("调拨单"+mTransferEntity.getPickingState());
         mTvTransferLocations.setText(mTransferEntity.getLocationName()+"\u2192"+mTransferEntity.getLocationDestName());
         mTvCreateTime.setText(mTransferEntity.getDate());
-        mTvCount.setText(mTransferEntity.getTotalNum()+"件");
+        mTvCount.setText(NumberUtil.getIOrD(mTransferEntity.getTotalNum())+"件");
         if(canSeePrice){
             DecimalFormat decimalFormat = new DecimalFormat("#.##");
             mTvEstimateMoney.setText("¥"+decimalFormat.format(mTransferEntity.getTotalPrice()));
@@ -242,7 +243,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                 intent1.putExtra(INTENT_KEY_TRANSFER,mTransferEntity);
                 ArrayList<AddedProduct> addedProducts = new ArrayList<AddedProduct>();
                 for(TransferDetailResponse.LinesBean linesBean:mTransferDetail.getLines()){
-                    addedProducts.add(new AddedProduct(linesBean.getProductID()+"",(int)linesBean.getProductUomQty()));
+                    addedProducts.add(new AddedProduct(linesBean.getProductID()+"",linesBean.getProductUomQty()));
                 }
                 intent1.putParcelableArrayListExtra(INTENT_KEY_BACKAP,addedProducts);
                 startActivity(intent1);
@@ -276,12 +277,6 @@ public class TransferDetailActivity extends NetWorkActivity {
             case REQUEST_DETAIL:
                 mTransferDetail = (TransferDetailResponse) result.getResult().getData();
                 mTransferEntity = mTransferDetail.getInfo();
-                if(mTransferDetail.getInfo().getStateTracker()==null || mTransferDetail.getInfo().getStateTracker().size()==0){
-                    //TODO:test
-                    List<String> list = new ArrayList<>();
-                    list.add("2017-10-17 13:46 调拨单已提交 4.0袋,共4.0元 刘志滑");
-                    mTransferDetail.getInfo().setStateTracker(list);
-                }
                 mTransferEntity.setStateTracker(mTransferDetail.getInfo().getStateTracker());
                 showUI();
                 //检查信息是否齐全
@@ -462,7 +457,7 @@ public class TransferDetailActivity extends NetWorkActivity {
                 //商品数量/预估金额
                 if(mTransferEntity==null)return;
                 DecimalFormat df = new DecimalFormat("#.##");
-                holder.mmTvNum.setText(mTransferEntity.getTotalNum()+"件");
+                holder.mmTvNum.setText(NumberUtil.getIOrD(mTransferEntity.getTotalNum())+"件");
                 if(canSeePrice){
                     holder.mmTvMoney.setText("¥" + df.format(mTransferEntity.getTotalPrice()));
                 }else {
@@ -479,7 +474,7 @@ public class TransferDetailActivity extends NetWorkActivity {
 //            }
             ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
 
-            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+bean.getProductImage());
+            FrecoFactory.getInstance(context).displayWithoutHost(vh.productImage, bean.getProductImage());
 
             //根据调入方，调出方，调拨单状态设置
             //已完成情况下，入库数量和单据数量不一样,显示有删除线的订单数量
@@ -487,28 +482,28 @@ public class TransferDetailActivity extends NetWorkActivity {
                 case TransferEntity.STATE_OUT:
                     //已出库情况下，出库与订单不一样, 展示删除的订单数量，和实际出库数量
                     if(bean.getActualOutputNum()!= bean.getProductUomQty()){
-                        vh.oldPriceTv.setText("x"+bean.getProductUomQty());//订单数量
+                        vh.oldPriceTv.setText("x"+NumberUtil.getIOrD(bean.getProductUomQty()));//订单数量
                         vh.oldPriceTv.setVisibility(View.VISIBLE);
-                        vh.nowPriceTv.setText("x"+bean.getActualOutputNum());//实际出库
+                        vh.nowPriceTv.setText("x"+NumberUtil.getIOrD(bean.getActualOutputNum()));//实际出库
                     }else{
                         vh.oldPriceTv.setVisibility(View.GONE);
-                        vh.nowPriceTv.setText("x"+bean.getActualOutputNum());
+                        vh.nowPriceTv.setText("x"+NumberUtil.getIOrD(bean.getActualOutputNum()));
                     }
                     break;
                 case TransferEntity.STATE_FINISH:
                     //已完成情况下，入库与订单不一样, 展示删除的订单数量，和实际入库数量
                     if(bean.getProductQtyDone()!= bean.getProductUomQty()){
-                        vh.oldPriceTv.setText("x"+bean.getProductUomQty());//订单数量
+                        vh.oldPriceTv.setText("x"+NumberUtil.getIOrD(bean.getProductUomQty()));//订单数量
                         vh.oldPriceTv.setVisibility(View.VISIBLE);
-                        vh.nowPriceTv.setText("x"+bean.getProductQtyDone());//实际入库
+                        vh.nowPriceTv.setText("x"+NumberUtil.getIOrD(bean.getProductQtyDone()));//实际入库
                     }else{
                         vh.oldPriceTv.setVisibility(View.GONE);
-                        vh.nowPriceTv.setText("x"+bean.getProductQtyDone());
+                        vh.nowPriceTv.setText("x"+NumberUtil.getIOrD(bean.getProductQtyDone()));
                     }
                     break;
                 case TransferEntity.STATE_SUBMIT:
                 default:
-                    vh.nowPriceTv.setText("x"+bean.getProductUomQty());//显示订单数量
+                    vh.nowPriceTv.setText("x"+NumberUtil.getIOrD(bean.getProductUomQty()));//显示订单数量
                     vh.oldPriceTv.setVisibility(View.GONE);
                     break;
             }

@@ -16,13 +16,20 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.ChangePwdRequest;
+import com.runwise.supply.tools.AESCrypt;
+import com.runwise.supply.tools.FingerprintHelper;
+import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
+
+import java.security.GeneralSecurityException;
 
 
 public class ChangePwdActivity extends NetWorkActivity {
@@ -143,6 +150,20 @@ public class ChangePwdActivity extends NetWorkActivity {
 //				EventBus.getDefault().post(loginEvent);
 				this.finish();
 				ToastUtil.show(mContext,"成功");
+
+				//更新指纹识别
+				UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+				String password = mPassword.getText().toString();
+				String cipher = null;
+				try{
+					cipher = AESCrypt.encrypt(userInfo.getLogin(),password);
+				}catch (GeneralSecurityException e){
+					e.printStackTrace();
+				}
+				SPUtils.put(this,SP_CONSTANTS.SP_CUR_PW,cipher);
+				if(FingerprintHelper.isUserFingerprintEnabled(this,userInfo.getLogin())){
+					SPUtils.put(this,SP_CONSTANTS.SP_PW,cipher);
+				}
 				break;
 		}
 	}

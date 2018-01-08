@@ -16,7 +16,7 @@ import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 
 /**
- * 只能下单，继承自手动下单
+ * 智能下单，继承自手动下单
  *
  * Created by Dong on 2017/11/23.
  */
@@ -144,5 +144,11 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
         ApplicationInfo appInfo = getApplicationInfo();
         int resID = getResources().getIdentifier(name, "drawable", appInfo.packageName);
         return resID;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(runnable);
     }
 }

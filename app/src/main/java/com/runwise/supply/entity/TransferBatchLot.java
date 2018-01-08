@@ -11,19 +11,19 @@ import android.os.Parcelable;
 
 public class TransferBatchLot implements Parcelable{
     private String lotID;
-    private int quantQty;
+    private double quantQty;
     private String lotDate;
     private int lotIDID;
     private float usedQty;
 
     //本地数据
-    private int actualQty;
+    private double actualQty;
 
     public String getLotID() {
         return lotID;
     }
 
-    public int getQuantQty() {
+    public double getQuantQty() {
         return quantQty;
     }
 
@@ -35,11 +35,11 @@ public class TransferBatchLot implements Parcelable{
         this.quantQty = quantQty;
     }
 
-    public int getActualQty() {
+    public double getActualQty() {
         return actualQty;
     }
 
-    public void setActualQty(int actualQty) {
+    public void setActualQty(double actualQty) {
         this.actualQty = actualQty;
     }
 
@@ -78,8 +78,8 @@ public class TransferBatchLot implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.lotID);
-        dest.writeInt(this.quantQty);
-        dest.writeInt(this.actualQty);
+        dest.writeDouble(this.quantQty);
+        dest.writeDouble(this.actualQty);
         dest.writeFloat(this.usedQty);
         dest.writeString(this.lotDate);
         dest.writeInt(this.lotIDID);
@@ -87,8 +87,8 @@ public class TransferBatchLot implements Parcelable{
 
     protected TransferBatchLot(Parcel in) {
         this.lotID = in.readString();
-        this.quantQty = in.readInt();
-        this.actualQty = in.readInt();
+        this.quantQty = in.readDouble();
+        this.actualQty = in.readDouble();
         this.usedQty = in.readFloat();
         this.lotDate = in.readString();
         this.lotIDID = in.readInt();

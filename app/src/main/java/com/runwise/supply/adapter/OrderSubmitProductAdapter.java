@@ -48,7 +48,7 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         if (listBean.getImage() != null){
             FrecoFactory.getInstance(holder.itemView.getContext()).disPlay(holder.mSdvProduct, Constant.BASE_URL+listBean.getImage().getImageSmall());
         }
-        holder.mTvProductCount.setText(String.valueOf(listBean.getActualQty()));
+        holder.mTvProductCount.setText(NumberUtil.getIOrD(listBean.getActualQty()));
         holder.mTvProductName.setText(listBean.getName());
         holder.mTvProductUnit.setText(listBean.getProductUom());
         holder.mTvRemark.setText(listBean.getRemark()==null?"":"备注："+listBean.getRemark());

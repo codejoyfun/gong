@@ -119,7 +119,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:hint=""
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:singleLine="true"
                 android:cursorVisible="true"
                 android:textColor="@color/black"

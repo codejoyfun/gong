@@ -131,7 +131,7 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/tv_receive_tag"
             android:gravity="center"
-            android:text="285"
+            android:text=""
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/third_title"/>
 
@@ -141,7 +141,7 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/tv_receive_count"
             android:gravity="center"
-            android:text="/280件"
+            android:text="/件"
             android:textColor="@color/second_color"
             android:textSize="@dimen/third_title"/>
 

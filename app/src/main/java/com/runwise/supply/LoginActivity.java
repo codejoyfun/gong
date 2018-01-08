@@ -2,6 +2,7 @@ package com.runwise.supply;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -43,19 +44,28 @@ import com.runwise.supply.entity.GetHostRequest;
 import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
+import com.runwise.supply.mine.FingerprintDialog;
+import com.runwise.supply.mine.SettingActivity;
+import com.runwise.supply.tools.AESCrypt;
+import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
+import io.vov.vitamio.utils.Crypto;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
 import static com.kids.commonframe.base.util.SPUtils.get;
 import static com.runwise.supply.FindPasswordActivity.INTENT_KEY_COMPANY_NAME;
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
+import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
 
 
 public class LoginActivity extends NetWorkActivity {
@@ -94,6 +104,7 @@ public class LoginActivity extends NetWorkActivity {
     private LoginRequest loginRequest;
 
     private DbUtils mDb;
+    private FingerprintHelper mFgHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -136,6 +147,40 @@ public class LoginActivity extends NetWorkActivity {
             }
         });
         showFirstUserFromDB();
+        remPassword.setChecked((Boolean)SPUtils.get(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,true));
+        remPassword.setOnCheckedChangeListener((v,isChecked)->SPUtils.put(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,isChecked));
+
+        //指纹登录
+        mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
+        if(mFgHelper.isSupported() && FingerprintHelper.isFingerprintEnabled(this)){
+            mFgHelper.init();
+            FingerprintDialog fragment = new FingerprintDialog();
+            fragment.setFingerprintHelper(mFgHelper);
+            fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
+                @Override
+                public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                    if(isSuccess==STATUS_SUCCEED){
+                        String loginUser = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,"");
+                        String cipher = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,"");
+                        mPhone.setText(loginUser);
+                        try{
+                            mPassword.setText(AESCrypt.decrypt(loginUser,cipher));
+                        }catch (GeneralSecurityException e){
+                            e.printStackTrace();
+                            ToastUtil.show(LoginActivity.this,"指纹验证失败");
+                            return;
+                        }
+                        mCetCompany.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_COMPANY,""));
+                        onLogin(null);
+                        fragment.dismiss();
+                    }else if(isSuccess==STATUS_FAILED){
+                        ToastUtil.show(LoginActivity.this,"指纹验证失败");
+                    }
+                }
+            });
+            fragment.setText("通过验证手机指纹进行登录");
+            fragment.show(getSupportFragmentManager(),"tag");
+        }
     }
 
     public void showFirstUserFromDB() {
@@ -291,6 +336,8 @@ public class LoginActivity extends NetWorkActivity {
                         newRem.setPassword("");
                     }
                     newRem.setCompany(mCetCompany.getText().toString());
+                    SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,
+                            AESCrypt.encrypt(loginRequest.getLogin(),loginRequest.getPassword()));
                     mDb.save(newRem);
                 } catch (Exception e) {
                     e.printStackTrace();

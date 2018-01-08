@@ -232,7 +232,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
     private void requestLB(){
         //只在首次加载轮播图+统计表
         LunboRequest lbRequest = new LunboRequest("访客端");
-        sendConnection("/gongfu/blog/post/list/",lbRequest,FROMLB,true,LunboResponse.class);
+        sendConnection("/api/viewpager/list/",lbRequest,FROMLB,true,LunboResponse.class);
 
     }
     private void requestData(boolean isStart) {
@@ -298,7 +298,7 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
                 ImagesBean bean = post_list.get(position);
                 if (bean != null && bean.getCover_url() != null){
                     Intent intent = new Intent(mContext,PageDeatailActivity.class);
-                    intent.putExtra("url", Constant.BASE_URL + bean.getPost_url());
+                    intent.putExtra("url", bean.getPost_url());
                     startActivity(intent);
                 }
             }

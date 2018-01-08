@@ -14,7 +14,7 @@ public class UmengUtil {
      * 由于需要用户名，所以放不了基类
      * @param errorMsg
      */
-    public static void reportError(String errorMsg){
-        MobclickAgent.reportError(GlobalApplication.getInstance(),GlobalApplication.getInstance().getUserName()+"--"+errorMsg);
+    public static void reportError(String tag,String errorMsg){
+        MobclickAgent.reportError(GlobalApplication.getInstance(),tag+"--"+GlobalApplication.getInstance().getUserName()+"--"+errorMsg);
     }
 }

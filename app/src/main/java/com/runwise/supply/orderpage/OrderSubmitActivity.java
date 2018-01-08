@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -21,6 +22,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
+import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
@@ -34,6 +36,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.tools.UmengUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -44,6 +47,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
 import static java.lang.System.currentTimeMillis;
@@ -249,6 +253,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        UmengUtil.reportError("OrderSubmitActivity",errMsg);
         if (mCustomProgressDialog != null) {
             mCustomProgressDialog.dismiss();
         }
@@ -346,6 +351,11 @@ public class OrderSubmitActivity extends NetWorkActivity {
      * 下单
      */
     private void submitOrder() {
+        //检查网络连接状态
+        if(!CommonUtils.isNetworkConnected(this)){
+            Toast.makeText(this,R.string.network_error,Toast.LENGTH_LONG).show();
+            return;
+        }
         //禁用下单按钮
         mBtnSubmit.setBackgroundColor(Color.parseColor("#7F9ACC35"));
         mBtnSubmit.setEnabled(false);
@@ -357,7 +367,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         for (ProductData.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
-            int qty = bean.getActualQty();
+            double qty = bean.getActualQty();
             if (qty == 0) {
                 continue;
             }
@@ -417,7 +427,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         for (ProductData.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
-            int qty = bean.getActualQty();
+            double qty = bean.getActualQty();
             if (qty == 0) {
                 continue;
             }
@@ -542,7 +552,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
      */
     protected void updateBottomBar() {
         double totalMoney = 0;
-        int totalNum = 0;
+        double totalNum = 0;
         for (ProductData.ListBean bean : mProductList) {
             totalMoney = totalMoney + bean.getPrice() * bean.getActualQty();
             totalNum = totalNum + bean.getActualQty();
@@ -554,6 +564,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
         } else {
             mTvTotalMoney.setVisibility(View.GONE);
         }
-        mTvProductNum.setText("共" + totalNum + "件");
+        mTvProductNum.setText("共" + NumberUtil.getIOrD(totalNum) + "件");
     }
 }

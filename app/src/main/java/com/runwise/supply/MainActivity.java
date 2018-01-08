@@ -43,6 +43,7 @@ import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.mine.MineFragment;
 import com.runwise.supply.orderpage.OrderFragment;
+import com.runwise.supply.orderpage.OrderFragmentV2;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -60,6 +61,7 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.Log;
+import io.vov.vitamio.utils.NumberUtil;
 
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
@@ -161,6 +163,7 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setStatusBarEnabled();
         setContentView(R.layout.activity_main);
         StatusBarUtil.StatusBarLightMode(this);
@@ -241,7 +244,7 @@ public class MainActivity extends NetWorkActivity {
 //        if (!isLogined()){
         mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), UnLoginedFirstFragment.class, null);
 //            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
-        mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragment.class, null);
+        mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragmentV2.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);

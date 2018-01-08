@@ -30,6 +30,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.R.id.recyclerView;
 
@@ -100,7 +101,7 @@ public class ReturnProductFragment extends BaseFragment {
             priceLL.setVisibility(View.GONE);
         }
 
-        countTv.setText((int) bean.getAmount() + "件");
+        countTv.setText(NumberUtil.getIOrD(bean.getAmount()) + "件");
         //商品数量/预估金额
         DecimalFormat df = new DecimalFormat("#.##");
         ygMoneyTv.setText("¥" + df.format(bean.getAmountTotal()));
@@ -139,7 +140,7 @@ public class ReturnProductFragment extends BaseFragment {
             if (!canSeePrice) {
                 view.findViewById(R.id.priceLL).setVisibility(View.GONE);
             }
-            ((TextView)view.findViewById(R.id.countTv)).setText((int) bean.getAmount() + "件");
+            ((TextView)view.findViewById(R.id.countTv)).setText(NumberUtil.getIOrD(bean.getAmount()) + "件");
             //商品数量/预估金额
             DecimalFormat df = new DecimalFormat("#.##");
             ((TextView)view.findViewById(R.id.ygMoneyTv)).setText("¥" + df.format(bean.getAmountTotal()));

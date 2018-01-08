@@ -26,8 +26,11 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.NoWatchEditText;
 
+import java.math.BigDecimal;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.vov.vitamio.utils.NumberUtil;
 
 /**
  * 入库 批次页
@@ -123,15 +126,17 @@ public class TransferInBatchActivity extends NetWorkActivity {
             viewHolder = (ViewHolder) convertView.getTag();
             final TransferBatchLot lot = getItem(position);
             viewHolder.tvBatch.setText(lot.getLotID());
-            viewHolder.tvDeliverCount.setText((int)lot.getUsedQty()+"");
-            viewHolder.etProductCount.setText(lot.getActualQty()+"");
+            viewHolder.tvDeliverCount.setText(NumberUtil.getIOrD(lot.getUsedQty()));
+            viewHolder.etProductCount.setText(NumberUtil.getIOrD(lot.getActualQty()));
             viewHolder.tvProductDateValue.setText(lot.getLotDate());
             //增加
             viewHolder.btnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int current = lot.getActualQty();
-                    lot.setActualQty(current+1);
+                    double current = lot.getActualQty();
+                    double newValue = BigDecimal.valueOf(current).add(BigDecimal.ONE).doubleValue();
+                    lot.setActualQty(newValue);
+
                     if(!checkTotal()){
                         Toast.makeText(TransferInBatchActivity.this,"总数量不能超过订单量",Toast.LENGTH_LONG).show();
                         lot.setActualQty(current);
@@ -144,8 +149,11 @@ public class TransferInBatchActivity extends NetWorkActivity {
             viewHolder.btnSubtract.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int current = lot.getActualQty();
-                    if(current-1>=0)lot.setActualQty(current-1);
+                    double current = lot.getActualQty();
+                    double newValue = BigDecimal.valueOf(current).subtract(BigDecimal.ONE).doubleValue();
+                    if(newValue<0)newValue = 0;
+                    lot.setActualQty(newValue);
+
                     if(!checkTotal()){
                         Toast.makeText(TransferInBatchActivity.this,"总数量不能超过订单量",Toast.LENGTH_LONG).show();
                         lot.setActualQty(current);
@@ -163,11 +171,11 @@ public class TransferInBatchActivity extends NetWorkActivity {
      * @return
      */
     private boolean checkTotal(){
-        int totalActual = 0;//实际数量
-        int totalExpected = 0;//订单量
+        double totalActual = 0;//实际数量
+        double totalExpected = 0;//订单量
         for(TransferBatchLot lot:mTransferBatchLine.getProductLotInfo()){
             totalActual = totalActual + lot.getActualQty();
-            totalExpected = totalExpected + (int)lot.getUsedQty();
+            totalExpected = totalExpected + lot.getUsedQty();
         }
         return totalActual <= totalExpected;
     }

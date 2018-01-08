@@ -59,7 +59,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
             listBean.setRemark(lb.getRemark());
-            mMapCount.put(listBean,(int) lb.getProductUomQty());
+            mMapCount.put(listBean,lb.getProductUomQty());
             mMapRemarks.put(listBean,lb.getRemark());
         }
         initSelectAll();

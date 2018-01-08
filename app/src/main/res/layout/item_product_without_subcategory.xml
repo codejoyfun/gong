@@ -129,6 +129,8 @@
                 android:gravity="center"
                 android:textSize="14sp"
                 android:background="@drawable/order_input_mid"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:textColor="#2e2e2e"/>
 
             <ImageButton

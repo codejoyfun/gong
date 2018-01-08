@@ -34,6 +34,8 @@ import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.MaxHeightListView;
 import com.runwise.supply.view.NoWatchEditText;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +45,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.R.id.tv_submit;
 
@@ -227,7 +230,7 @@ public class TransferOutActivity extends NetWorkActivity {
                     }
                     TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
                     lot.setLotIDID(transferBatchLot.getLotIDID());
-                    lot.setQty(String.valueOf(transferBatchLot.getUsedQty()));
+                    lot.setQty(NumberUtil.getIOrD(transferBatchLot.getUsedQty()));
                     lots.add(lot);
                     product.setLotsInfo(lots);
                 }
@@ -237,7 +240,7 @@ public class TransferOutActivity extends NetWorkActivity {
                 product.setProductID(Integer.parseInt(transferBatchLine.getProductID()));
                 TransferOutRequest.Lot lot = new TransferOutRequest.Lot();
                 lot.setLotIDID("");
-                lot.setQty(String.valueOf(transferBatchLine.getActualQty()));
+                lot.setQty(NumberUtil.getIOrD(transferBatchLine.getActualQty()));
                 product.setLotsInfo(lot);
                 products.add(product);
             }
@@ -255,7 +258,7 @@ public class TransferOutActivity extends NetWorkActivity {
         dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_transferout_batch_list, null);
         mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         mPopWindow.setContentView(dialogView);
-        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mPopWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mPopWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindow.setFocusable(true);
         mPopWindow.setOutsideTouchable(true);
@@ -265,7 +268,7 @@ public class TransferOutActivity extends NetWorkActivity {
         dialogViewNoBatch = LayoutInflater.from(this).inflate(R.layout.dialog_transferout_list, null);
         mPopWindowNoBatch = new PopupWindow(dialogViewNoBatch, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         mPopWindowNoBatch.setContentView(dialogViewNoBatch);
-        mPopWindowNoBatch.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+//        mPopWindowNoBatch.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
         mPopWindowNoBatch.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mPopWindowNoBatch.setFocusable(true);
         mPopWindowNoBatch.setOutsideTouchable(true);
@@ -319,8 +322,8 @@ public class TransferOutActivity extends NetWorkActivity {
             content.setText(sb.toString());
         }
 
-        tv_count.setText(String.valueOf(transferBatchLine.getProductUomQty()));
-        et_count.setText(String.valueOf(transferBatchLine.getActualQty()));
+        tv_count.setText(NumberUtil.getIOrD(transferBatchLine.getProductUomQty()));
+        et_count.setText(NumberUtil.getIOrD(transferBatchLine.getActualQty()));
 
         iv_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -329,13 +332,13 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("输入的数量不能为空");
                     return;
                 }
-                int actualQty = Integer.parseInt(et_count.getText().toString());
+                double actualQty = Double.parseDouble(et_count.getText().toString());
                 actualQty += 1;
                 if (actualQty > transferBatchLine.getProductUomQty()) {
                     toast("总数量不能超过订单量");
                     return;
                 }
-                et_count.setText(String.valueOf(actualQty));
+                et_count.setText(NumberUtil.getIOrD(actualQty));
             }
         });
         iv_reduce.setOnClickListener(new View.OnClickListener() {
@@ -345,12 +348,12 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("输入的数量不能为空");
                     return;
                 }
-                int actualQty = Integer.parseInt(et_count.getText().toString());
+                double actualQty = Double.parseDouble(et_count.getText().toString());
                 actualQty -= 1;
                 if (actualQty < 0) {
-                    return;
+                    actualQty = 0;
                 }
-                et_count.setText(String.valueOf(actualQty));
+                et_count.setText(NumberUtil.getIOrD(actualQty));
             }
         });
 
@@ -361,7 +364,7 @@ public class TransferOutActivity extends NetWorkActivity {
                     toast("输入的数量不能为空");
                     return;
                 }
-                int actualQty = Integer.parseInt(et_count.getText().toString());
+                double actualQty = new BigDecimal(et_count.getText().toString()).setScale(2, RoundingMode.HALF_UP).doubleValue();
                 if (actualQty > transferBatchLine.getProductUomQty()) {
                     toast("总数量不能超过订单量");
                     return;
@@ -413,7 +416,7 @@ public class TransferOutActivity extends NetWorkActivity {
             }
             content.setText(sb.toString());
         }
-        tv_count.setText(String.valueOf(transferBatchLine.getProductUomQty()));
+        tv_count.setText(NumberUtil.getIOrD(transferBatchLine.getProductUomQty()));
         TransferOutBatchAdapter transferOutBatchAdapter = new TransferOutBatchAdapter();
         transferOutBatchAdapter.setTotalCount(transferBatchLine.getProductUomQty());
         transferOutBatchAdapter.setData(transferBatchLine.getProductLotInfo());
@@ -492,8 +495,8 @@ public class TransferOutActivity extends NetWorkActivity {
                 }
                 viewHolder.mContent.setText(sb.toString());
             }
-            viewHolder.mUnit1.setText("/" + transferBatchLine.getProductUomQty() + transferBatchLine.getProductUom());
-            viewHolder.mTvCount.setText(String.valueOf(transferBatchLine.getActualQty()));
+            viewHolder.mUnit1.setText("/" + NumberUtil.getIOrD(transferBatchLine.getProductUomQty()) + transferBatchLine.getProductUom());
+            viewHolder.mTvCount.setText(NumberUtil.getIOrD(transferBatchLine.getActualQty()));
             viewHolder.mLlBatch.removeAllViews();
             if (transferBatchLine.getProductLotInfo() == null || transferBatchLine.getProductLotInfo().size() == 0) {
                 viewHolder.mLlBatch.setVisibility(View.GONE);
@@ -509,7 +512,7 @@ public class TransferOutActivity extends NetWorkActivity {
                     TextView tvName = (TextView) view.findViewById(R.id.tv_batch_name);
                     tvName.setText(transferBatchLot.getLotID());
                     TextView tvCount = (TextView) view.findViewById(R.id.tv_batch_count);
-                    tvCount.setText(String.valueOf(transferBatchLot.getUsedQty()));
+                    tvCount.setText(NumberUtil.getIOrD(transferBatchLot.getUsedQty()));
                     viewHolder.mLlBatch.addView(view);
                 }
             }

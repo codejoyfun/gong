@@ -59,7 +59,7 @@ public class OrderAgainActivity extends ProductActivityV2 {
             listBean.setCategory(lb.getCategory());
             listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
-            mMapCount.put(listBean,(int) lb.getProductUomQty());
+            mMapCount.put(listBean,lb.getProductUomQty());
             mMapRemarks.put(listBean,lb.getRemark());
         }
     }

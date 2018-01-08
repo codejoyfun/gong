@@ -29,6 +29,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.R.id.recyclerView;
 
@@ -97,9 +98,9 @@ public class OrderProductFragment extends BaseFragment {
         }
         //实收判断
         if ((Constant.ORDER_STATE_DONE.equals(listBean.getState()) || Constant.ORDER_STATE_RATED.equals(listBean.getState())) && listBean.getDeliveredQty() != listBean.getAmount()) {
-            countTv.setText((int) listBean.getDeliveredQty() + "件");
+            countTv.setText(NumberUtil.getIOrD(listBean.getDeliveredQty()) + "件");
         } else {
-            countTv.setText((int) listBean.getAmount() + "件");
+            countTv.setText(NumberUtil.getIOrD(listBean.getAmount()) + "件");
         }
         //商品数量/预估金额
         DecimalFormat df = new DecimalFormat("#.##");
@@ -120,9 +121,9 @@ public class OrderProductFragment extends BaseFragment {
             }
             //实收判断
             if ((Constant.ORDER_STATE_DONE.equals(listBean.getState()) || Constant.ORDER_STATE_RATED.equals(listBean.getState())) && listBean.getDeliveredQty() != listBean.getAmount()) {
-                ((TextView)view.findViewById(R.id.countTv)).setText((int) listBean.getDeliveredQty() + "件");
+                ((TextView)view.findViewById(R.id.countTv)).setText(NumberUtil.getIOrD(listBean.getDeliveredQty()) + "件");
             } else {
-                ((TextView)view.findViewById(R.id.countTv)).setText((int) listBean.getAmount() + "件");
+                ((TextView)view.findViewById(R.id.countTv)).setText(NumberUtil.getIOrD(listBean.getAmount()) + "件");
             }
             //商品数量/预估金额
             DecimalFormat df = new DecimalFormat("#.##");

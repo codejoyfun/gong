@@ -149,7 +149,7 @@ public class OrderCommitSuccessActivity extends BaseActivity {
                     boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
                     StringBuilder sb = new StringBuilder();
                     if(canSeePrice)sb.append("￥").append(NumberUtil.getIOrD(order.getAmountTotal())).append("，");
-                    sb.append((int)order.getAmount()).append("件商品");
+                    sb.append(NumberUtil.getIOrD(order.getAmount())).append("件商品");
                     holder.tvOrderDesc.setText(sb.toString());
                     return;
             }

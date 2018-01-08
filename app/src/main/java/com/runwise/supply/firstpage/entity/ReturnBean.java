@@ -6,8 +6,8 @@ package com.runwise.supply.firstpage.entity;
 
 public class ReturnBean {
     private int pId;        //商品id
-    private int returnCount;//退货数量
-    private int maxReturnCount;//最大可退货数量
+    private double returnCount;//退货数量
+    private double maxReturnCount;//最大可退货数量
     private String note;    //描述
     private String name;    //商品名称
 
@@ -19,19 +19,19 @@ public class ReturnBean {
         this.pId = pId;
     }
 
-    public int getReturnCount() {
+    public double getReturnCount() {
         return returnCount;
     }
 
-    public void setReturnCount(int returnCount) {
+    public void setReturnCount(double returnCount) {
         this.returnCount = returnCount;
     }
 
-    public int getMaxReturnCount() {
+    public double getMaxReturnCount() {
         return maxReturnCount;
     }
 
-    public void setMaxReturnCount(int maxReturnCount) {
+    public void setMaxReturnCount(double maxReturnCount) {
         this.maxReturnCount = maxReturnCount;
     }
 

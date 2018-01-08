@@ -96,7 +96,7 @@ public class OrderMsgDetail {
         private String loadingTime;
         private String name;
         private String estimatedTime;
-        private int amount;
+        private double amount;
         private String createDate;
         private String startUnloadDatetime;
         private String state;
@@ -294,11 +294,11 @@ public class OrderMsgDetail {
             this.estimatedTime = estimatedTime;
         }
 
-        public int getAmount() {
+        public double getAmount() {
             return amount;
         }
 
-        public void setAmount(int amount) {
+        public void setAmount(double amount) {
             this.amount = amount;
         }
 
@@ -602,18 +602,18 @@ public class OrderMsgDetail {
              */
 
             private String productUom;
-            private int unloadAmount;
+            private double unloadAmount;
             private int priceUnit;
             private int discount;
-            private int returnAmount;
-            private int deliveredQty;
-            private int priceSubtotal;
+            private double returnAmount;
+            private double deliveredQty;
+            private double priceSubtotal;
             private int productID;
-            private int tallyingAmount;
+            private double tallyingAmount;
             private int saleOrderProductID;
             private String stockType;
-            private int settleAmount;
-            private int productUomQty;
+            private double settleAmount;
+            private double productUomQty;
             private List<?> lotIDs;
             private List<?> lotList;
 
@@ -625,11 +625,11 @@ public class OrderMsgDetail {
                 this.productUom = productUom;
             }
 
-            public int getUnloadAmount() {
+            public double getUnloadAmount() {
                 return unloadAmount;
             }
 
-            public void setUnloadAmount(int unloadAmount) {
+            public void setUnloadAmount(double unloadAmount) {
                 this.unloadAmount = unloadAmount;
             }
 
@@ -649,23 +649,23 @@ public class OrderMsgDetail {
                 this.discount = discount;
             }
 
-            public int getReturnAmount() {
+            public double getReturnAmount() {
                 return returnAmount;
             }
 
-            public void setReturnAmount(int returnAmount) {
+            public void setReturnAmount(double returnAmount) {
                 this.returnAmount = returnAmount;
             }
 
-            public int getDeliveredQty() {
+            public double getDeliveredQty() {
                 return deliveredQty;
             }
 
-            public void setDeliveredQty(int deliveredQty) {
+            public void setDeliveredQty(double deliveredQty) {
                 this.deliveredQty = deliveredQty;
             }
 
-            public int getPriceSubtotal() {
+            public double getPriceSubtotal() {
                 return priceSubtotal;
             }
 
@@ -681,7 +681,7 @@ public class OrderMsgDetail {
                 this.productID = productID;
             }
 
-            public int getTallyingAmount() {
+            public double getTallyingAmount() {
                 return tallyingAmount;
             }
 
@@ -705,19 +705,19 @@ public class OrderMsgDetail {
                 this.stockType = stockType;
             }
 
-            public int getSettleAmount() {
+            public double getSettleAmount() {
                 return settleAmount;
             }
 
-            public void setSettleAmount(int settleAmount) {
+            public void setSettleAmount(double settleAmount) {
                 this.settleAmount = settleAmount;
             }
 
-            public int getProductUomQty() {
+            public double getProductUomQty() {
                 return productUomQty;
             }
 
-            public void setProductUomQty(int productUomQty) {
+            public void setProductUomQty(double productUomQty) {
                 this.productUomQty = productUomQty;
             }
 

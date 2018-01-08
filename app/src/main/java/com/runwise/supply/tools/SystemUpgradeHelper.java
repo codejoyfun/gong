@@ -6,7 +6,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.runwise.supply.R;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,10 +56,16 @@ public class SystemUpgradeHelper {
             preferences.edit().clear().apply();
             return;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss",Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm",Locale.getDefault());
         try{
             long startTime = sdf.parse(startDate).getTime()/1000;
             long endTime = sdf.parse(endDate).getTime()/1000;
+
+            if(preferences.getLong(KEY_START_TIMESTAMP,0)==startTime
+                    && preferences.getLong(KEY_END_TIMESTAMP,0)==endTime){
+                return;
+            }
+
             preferences.edit().clear()
                     .putString(KEY_DATAID,startTime+"-"+endTime)
                     .putLong(KEY_START_TIMESTAMP,startTime)
@@ -65,6 +74,7 @@ public class SystemUpgradeHelper {
         }catch (ParseException e){
             e.printStackTrace();
         }
+        EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
     }
 
     private String getLongString(String str){
