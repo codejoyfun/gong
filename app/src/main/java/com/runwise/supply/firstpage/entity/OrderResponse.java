@@ -109,6 +109,14 @@ public class OrderResponse {
         private boolean isAsyncOrder;
         private String orderUserIDs;
         private String receiveError;//是否收货失败
+        private boolean isActual;
+
+        public boolean isActual() {
+            return isActual;
+        }
+        public void setIsActual(boolean actual) {
+            isActual = actual;
+        }
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -173,6 +181,7 @@ public class OrderResponse {
             isAsyncOrder = in.readByte() != 0;
             orderUserIDs = in.readString();
             receiveError = in.readString();
+            isActual = in.readByte() != 0;
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -580,6 +589,7 @@ public class OrderResponse {
             dest.writeByte((byte) (isAsyncOrder ? 1:0));
             dest.writeString(orderUserIDs);
             dest.writeString(receiveError);
+            dest.writeByte((byte) (isActual ? 1:0));
         }
 
         public static class StoreBean {
