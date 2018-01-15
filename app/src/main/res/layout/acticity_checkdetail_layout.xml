@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/windowBackground"
-              android:orientation="vertical"
-
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/windowBackground"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/titleLayout"
-        layout="@layout/common_title_bar"/>
+        layout="@layout/common_title_bar" />
 
     <github.chenupt.dragtoplayout.DragTopLayout
         android:id="@+id/drag_layout"
@@ -26,74 +24,72 @@
             android:animateLayoutChanges="true"
             android:background="#ffff"
             android:orientation="horizontal"
-            android:padding="18dp"
-            >
+            android:padding="18dp">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/text1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12321"
+                    android:text="盘点人员："
                     android:textColor="#bababa"
-                    android:textSize="14sp"
-                    />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/text2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/text1"
                     android:layout_marginTop="4dp"
-                    android:text="12321"
+                    android:text="盘点单号:"
                     android:textColor="#bababa"
-                    android:textSize="14sp"
-
-                    />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/text3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="12321"
+                    android:text="盘点日期:"
                     android:textColor="#bababa"
-                    android:textSize="14sp"
-                    />
-            </LinearLayout>
+                    android:layout_below="@id/text2"
+                    android:textSize="14sp" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-
-                <TextView
-                    android:id="@+id/text4"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="盘点结果(元)"
-                    android:textColor="#bababa"
-                    android:textSize="14sp"
-                    />
+                    android:layout_alignTop="@id/text1"
+                    android:layout_alignBottom="@id/text3"
+                    android:layout_alignParentRight="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/text5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="1230"
-                    android:textColor="#fe3d2b"
-                    android:textSize="22sp"
-                    />
+                    <TextView
+                        android:id="@+id/text4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="盘点结果(元)"
+                        android:textColor="#bababa"
+                        android:textSize="14sp" />
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/text5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="..."
+                        android:textColor="#fe3d2b"
+                        android:textSize="22sp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
 
         </LinearLayout>
 
@@ -117,7 +113,8 @@
                     android:layout_height="40dp"
                     android:layout_marginRight="30dp"
                     android:background="@color/white"
-                    app:tabMode="scrollable"/>
+                    app:tabMode="scrollable" />
+
                 <ImageView
                     android:id="@+id/tv_open"
                     android:layout_width="40dp"
@@ -125,7 +122,7 @@
                     android:layout_alignParentRight="true"
                     android:background="@drawable/tab_shadow"
                     android:padding="15dp"
-                    android:src="@drawable/arrow"/>
+                    android:src="@drawable/arrow" />
 
             </RelativeLayout>
 
@@ -133,7 +130,7 @@
             <com.runwise.supply.view.YourScrollableViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"/>
+                android:layout_height="40dp" />
         </LinearLayout>
     </github.chenupt.dragtoplayout.DragTopLayout>
 </LinearLayout>

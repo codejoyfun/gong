@@ -23,6 +23,25 @@ public class DashBoardResponse {
     private double adventValue;
     private int totalNumber;
 
+    public int getOrderSum() {
+        return orderSum;
+    }
+
+    public void setOrderSum(int orderSum) {
+        this.orderSum = orderSum;
+    }
+
+    public int getInventorySum() {
+        return inventorySum;
+    }
+
+    public void setInventorySum(int inventorySum) {
+        this.inventorySum = inventorySum;
+    }
+
+    private int orderSum;
+    private int inventorySum;
+
     public int getMaturityNum() {
         return maturityNum;
     }

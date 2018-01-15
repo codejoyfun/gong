@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import io.vov.vitamio.utils.NumberUtil;
 
 import static com.runwise.supply.R.id.moneySum;
+import static com.runwise.supply.mine.CheckDetailActivity.INTENT_KEY_ID;
 
 /**
  * 盘点记录
@@ -126,7 +127,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
             default:
                 request.setDate_type(0);
         }
-        sendConnection("/api/v2/inventory/list",request,where,showDialog,CheckResult.class);
+        sendConnection("/api/v3/inventory/list",request,where,showDialog,CheckResult.class);
     }
     private void channelPandian(int id) {
         ChannelPandian request = new ChannelPandian();
@@ -197,7 +198,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         }
         else {
             Intent intent = new Intent(mContext, CheckDetailActivity.class);
-            intent.putExtra("id", bean.getInventoryID() + "");
+            intent.putExtra(INTENT_KEY_ID, bean.getInventoryID() + "");
             intent.putExtra("bean", bean);
             startActivity(intent);
         }

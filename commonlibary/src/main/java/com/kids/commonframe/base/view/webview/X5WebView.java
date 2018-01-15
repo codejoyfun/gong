@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsoluteLayout;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -79,7 +80,7 @@ public class X5WebView extends WebView {
 		 */
 		@Override
 		public void onShowCustomView(View view, IX5WebChromeClient.CustomViewCallback customViewCallback) {
-			FrameLayout normalView = (FrameLayout) ((Activity) getContext()).findViewById(R.id.x5WebView);
+			AbsoluteLayout normalView = (AbsoluteLayout) ((Activity) getContext()).findViewById(R.id.x5WebView);
 			ViewGroup viewGroup = (ViewGroup) normalView.getParent();
 			viewGroup.removeView(normalView);
 			viewGroup.addView(view);
