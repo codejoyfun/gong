@@ -199,17 +199,18 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 }else if(str.contains("已点货")){
                     content.append("点货员：").append(bean.getTallyingUserName());
                 }else if(str.contains("已发货")){
-                    content.append("车牌号：");
+
                     if (bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null ){
                         if (bean.getWaybill().getDeliverUser().getMobile() != null){
                             deliverPhone = bean.getWaybill().getDeliverUser().getMobile();
                         }
+                        content.append("车牌号：");
                         content.append(bean.getWaybill().getDeliverVehicle().getLicensePlate())
                                 .append("\n").append("配送员：").append(bean.getWaybill().getDeliverUser().getName()).append(" ")
                                 .append(bean.getWaybill().getDeliverUser().getMobile()).append("\n")
                                 .append("预计到达时间：").append(bean.getEstimatedTime());
                     }else{
-                        content.append("暂未分配");
+//                        content.append("暂未分配");
                     }
                 }else if(str.contains("已确认")){
                     content.append("正在为您挑拣商品");

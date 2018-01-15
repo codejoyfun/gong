@@ -865,7 +865,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     private void requestDashBoard() {
         Object request = null;
-        sendConnection("/gongfu/v2/shop/stock/dashboard", request, FROMDB, false, DashBoardResponse.class);
+        sendConnection("/api/sale/dashboard/detail", request, FROMDB, false, DashBoardResponse.class);
         mTimeStartFROMDB = System.currentTimeMillis();
     }
 
@@ -927,23 +927,16 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         if (canSeePrice) {
             DecimalFormat df = new DecimalFormat("#.##");
             lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()/10000));//万元单位
-            double adventNum = dbResponse.getAdventValue();
-            double maturityNum = dbResponse.getMaturityValue();
-            double adventValue = dbResponse.getAdventValue();
-            double maturityValue = dbResponse.getMaturityValue();
-            lastMonthBuy.setText(df.format(adventValue));
-            unPayAccount.setText(df.format(maturityValue));
         } else {
             lastWeekKey.setText("上周采购量(件)");
-            lqCountTv.setText("临期食材(件)");
-            dqCountTv.setText("到期食材(件)");
             lastWeekBuy.setText(String.valueOf(dbResponse.getTotalNumber()));
-            int adventNum = dbResponse.getAdventNum();
-            int maturityNum = dbResponse.getMaturityNum();
-            lastMonthBuy.setText(String.valueOf(adventNum));
-            unPayAccount.setText(String.valueOf(maturityNum));
-
         }
+        lqCountTv.setText("本周盘点数(次)");
+        dqCountTv.setText("待收货订单(张)");
+        int orderSum = dbResponse.getOrderSum();
+        int inventorySum = dbResponse.getInventorySum();
+        lastMonthBuy.setText(String.valueOf(orderSum));
+        unPayAccount.setText(String.valueOf(inventorySum));
 //        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
 //        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 //        lqCountTv.setText(ssLq);
