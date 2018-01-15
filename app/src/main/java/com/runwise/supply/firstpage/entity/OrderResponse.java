@@ -111,13 +111,6 @@ public class OrderResponse {
         private String receiveError;//是否收货失败
         private boolean isActual;
 
-        public boolean isActual() {
-            return isActual;
-        }
-        public void setIsActual(boolean actual) {
-            isActual = actual;
-        }
-
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
         public static final String TYPE_THIRD_PART_DELIVERY = "third_part_delivery";// 第三方物流订单
@@ -542,6 +535,13 @@ public class OrderResponse {
             isNewType = newType;
         }
 
+        public boolean isActual() {
+            return isActual;
+        }
+        public void setIsActual(boolean actual) {
+            isActual = actual;
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -591,6 +591,7 @@ public class OrderResponse {
             dest.writeString(receiveError);
             dest.writeByte((byte) (isActual ? 1:0));
         }
+
 
         public static class StoreBean {
             /**

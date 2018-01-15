@@ -20,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.jpush.android.api.JPushInterface;
-import io.vov.vitamio.utils.Log;
 
 /**
  * Created by mike on 2017/9/26.
@@ -33,6 +32,8 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TYPE_SYSTEM_UPGRADE = "update";
     public static final String TYPE_ORDER = "sale.order";
     public static final String TYPE_PLATFORM_NOTICE = "platform";//平台通知
+    public static final String TYPE_ORDER_STATUS = "type_order_status";//跳转去订单状态页面
+
 
     private static final int REQUEST_LOGINOUT = 1 << 0;
     @Override
@@ -71,6 +72,9 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                         long id = System.currentTimeMillis();
                         PlatformNotificationManager.getInstance(context).addMsg(id,msg,"");
                         EventBus.getDefault().post(new PlatformNotificationEvent());
+                    }
+                    if (TYPE_ORDER_STATUS.equals(type)){//跳去订单状态页面
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
