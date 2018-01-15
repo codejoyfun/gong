@@ -3,7 +3,6 @@ package com.runwise.supply.mine;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -521,7 +520,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             } else {
                 holder.returnTv.setVisibility(View.GONE);
             }
-            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && isShiShou(bean)) {
+            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.isActual()) {
                 holder.realTv.setVisibility(View.VISIBLE);
             } else {
                 holder.realTv.setVisibility(View.GONE);
@@ -530,18 +529,6 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             return convertView;
         }
 
-        /**
-         * 是否实收
-         * @return
-         */
-        private boolean isShiShou(OrderResponse.ListBean bean){
-            for (OrderResponse.ListBean.LinesBean linesBean:bean.getLines()){
-                if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()){
-                    return true;
-                }
-            }
-            return false;
-        }
 
         class ViewHolder {
             @ViewInject(R.id.payTitle)

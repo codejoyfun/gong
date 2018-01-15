@@ -692,7 +692,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 returnTv.setVisibility(View.VISIBLE);
             }
             //实收判断
-            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && isShiShou()) {
+            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.isActual()) {
                 receivtTv.setVisibility(View.VISIBLE);
                 countTv.setText((int) bean.getDeliveredQty() + "件");
             } else {
@@ -731,19 +731,6 @@ public class OrderDetailActivity extends NetWorkActivity {
         isModifyOrder = false;
     }
 
-    /**
-     * 是否实收
-     *
-     * @return
-     */
-    private boolean isShiShou() {
-        for (OrderResponse.ListBean.LinesBean linesBean : bean.getLines()) {
-            if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setBottom(View v) {
