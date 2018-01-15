@@ -3,7 +3,6 @@ package com.runwise.supply.mine;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -535,10 +534,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
          * @return
          */
         private boolean isShiShou(OrderResponse.ListBean bean){
-            for (OrderResponse.ListBean.LinesBean linesBean:bean.getLines()){
-                if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()){
-                    return true;
-                }
+            if(bean.getDeliveredQty() != bean.getAmount()){
+                return true;
             }
             return false;
         }
