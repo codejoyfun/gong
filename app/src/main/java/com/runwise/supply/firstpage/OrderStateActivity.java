@@ -289,11 +289,15 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
 
 
         List<OrderResponse.ListBean.ProductAlteredBean> productAlteredBeanList = orderBean.getProductAltered();
+        if (productAlteredBeanList == null||productAlteredBeanList.size() == 0){
+            return;
+        }
         for (int i = productAlteredBeanList.size() - 1; i >= 0; i--) {
             OrderResponse.ListBean.ProductAlteredBean productAlteredBean = productAlteredBeanList.get(i);
             OrderStateLine osl = new OrderStateLine();
             String state = "订单收货数量已被修改";
-            String timeSb = productAlteredBean.getAlterDate();
+           String alterDate = productAlteredBean.getAlterDate();
+            String timeSb = alterDate.substring(5);
             String content = "修改人:" + productAlteredBean.getAlterUserName();
             osl.setState(state);
             osl.setTime(timeSb);
