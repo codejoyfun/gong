@@ -81,9 +81,9 @@ public class JPushCustomReceiver extends BroadcastReceiver {
                 }
             }
         }
-
-
     }
+
+
     private void resetLoginStatus(Context context){
         //执行登出接口
         Object param = null;
