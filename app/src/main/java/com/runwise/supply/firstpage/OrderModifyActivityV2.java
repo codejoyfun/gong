@@ -2,14 +2,12 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.OrderSubmitActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
-import com.runwise.supply.orderpage.ProductBasicUtils;
-import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ImageBean;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 
 import java.util.ArrayList;
@@ -90,7 +88,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             list.add(bean);
         }
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
-        intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER,bean);
+        intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER, (Parcelable) bean);
         startActivity(intent);
     }
 }

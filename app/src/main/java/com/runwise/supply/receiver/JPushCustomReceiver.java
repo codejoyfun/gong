@@ -34,7 +34,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TYPE_SYSTEM_UPGRADE = "update";
     public static final String TYPE_ORDER = "sale.order";
     public static final String TYPE_PLATFORM_NOTICE = "platform";//平台通知
-    public static final String TYPE_ORDER_STATUS = "productAltered";//跳转到订单状态
+    public static final String TYPE_ORDER_STATUS = "order_status";//跳转到订单状态
 
     private static final int REQUEST_LOGINOUT = 1 << 0;
 
