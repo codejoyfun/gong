@@ -3,6 +3,7 @@ package com.runwise.supply.orderpage;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.ImageBean;
@@ -76,7 +77,7 @@ public class OrderAgainActivity extends ProductActivityV2 {
 
     public static void start(Activity activity, OrderResponse.ListBean order){
         Intent intent = new Intent(activity,OrderAgainActivity.class);
-        intent.putExtra(INTENT_KEY_ORDER_AGAIN,order);
+        intent.putExtra(INTENT_KEY_ORDER_AGAIN, (Parcelable) order);
         activity.startActivity(intent);
     }
 

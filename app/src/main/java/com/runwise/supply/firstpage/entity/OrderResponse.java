@@ -29,7 +29,7 @@ public class OrderResponse {
     /**
      * 由于首页需要混合显示SO单和调拨单，所以接口的列表返回两种对象，这里继承TransferEntity用于获取调拨单
      */
-    public static class ListBean extends TransferEntity implements Parcelable {
+    public static class ListBean extends TransferEntity implements Parcelable,Serializable {
         /**
          * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,
          * "deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,
@@ -110,6 +110,7 @@ public class OrderResponse {
         private String orderUserIDs;
         private String receiveError;//是否收货失败
         private boolean isActual;
+        private List<ProductAlteredBean> productAltered;
 
         public List<ProductAlteredBean> getProductAltered() {
             return productAltered;
@@ -119,7 +120,7 @@ public class OrderResponse {
             this.productAltered = productAltered;
         }
 
-        private List<ProductAlteredBean> productAltered;
+
 
         public boolean isActual() {
             return isActual;
@@ -193,6 +194,7 @@ public class OrderResponse {
             orderUserIDs = in.readString();
             receiveError = in.readString();
             isActual = in.readByte() != 0;
+            productAltered = in.createTypedArrayList(ProductAlteredBean.CREATOR);
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -604,13 +606,36 @@ public class OrderResponse {
             dest.writeString(orderUserIDs);
             dest.writeString(receiveError);
             dest.writeByte((byte) (isActual ? 1 : 0));
+            dest.writeTypedList(productAltered);
         }
 
 
-        public static class ProductAlteredBean {
+        public static class ProductAlteredBean implements Parcelable{
             String alterDate;
             String alterUserName;
             List<AlterProductBean> alterProducts;
+
+            public ProductAlteredBean(){
+
+            }
+
+            protected ProductAlteredBean(Parcel in) {
+                alterDate = in.readString();
+                alterUserName = in.readString();
+                alterProducts = in.createTypedArrayList(AlterProductBean.CREATOR);
+            }
+
+            public static final Creator<ProductAlteredBean> CREATOR = new Creator<ProductAlteredBean>() {
+                @Override
+                public ProductAlteredBean createFromParcel(Parcel in) {
+                    return new ProductAlteredBean(in);
+                }
+
+                @Override
+                public ProductAlteredBean[] newArray(int size) {
+                    return new ProductAlteredBean[size];
+                }
+            };
 
             public String getAlterDate() {
                 return alterDate;
@@ -636,13 +661,52 @@ public class OrderResponse {
                 this.alterProducts = alterProducts;
             }
 
-            public static class AlterProductBean {
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeString(alterDate);
+                dest.writeString(alterUserName);
+                dest.writeTypedList(alterProducts);
+            }
+
+            public static class AlterProductBean  implements Parcelable{
                 String name;
                 String defaultCode;
                 String unit;
                 String uom;
                 double originNum;
                 double alterNum;
+
+                public AlterProductBean(){
+
+                }
+
+                protected AlterProductBean(Parcel in) {
+                    name = in.readString();
+                    defaultCode = in.readString();
+                    unit = in.readString();
+
+                    uom = in.readString();
+                    originNum = in.readDouble();
+                    alterNum = in.readDouble();
+                }
+
+                public static final Creator<AlterProductBean> CREATOR = new Creator<AlterProductBean>() {
+                    @Override
+                    public AlterProductBean createFromParcel(Parcel in) {
+                        return new AlterProductBean(in);
+                    }
+
+                    @Override
+                    public AlterProductBean[] newArray(int size) {
+                        return new AlterProductBean[size];
+                    }
+                };
+
                 public String getName() {
                     return name;
                 }
@@ -689,6 +753,21 @@ public class OrderResponse {
 
                 public void setAlterNum(double alterNum) {
                     this.alterNum = alterNum;
+                }
+
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
+
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
+                    dest.writeString(name);
+                    dest.writeString(defaultCode);
+                    dest.writeString(unit);
+                    dest.writeString(uom);
+                    dest.writeDouble(originNum);
+                    dest.writeDouble(alterNum);
                 }
             }
 
