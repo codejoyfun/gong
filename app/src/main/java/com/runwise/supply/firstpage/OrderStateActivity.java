@@ -19,6 +19,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderStateLine;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
@@ -36,7 +37,8 @@ import me.shaohui.bottomdialog.BottomDialog;
  * Created by libin on 2017/7/16.
  */
 
-public class OrderStateActivity extends NetWorkActivity implements View.OnClickListener{
+public class OrderStateActivity extends NetWorkActivity implements View.OnClickListener {
+    private static final int REQUEST_ORDER_DETAIL = 1;
     @ViewInject(R.id.recyclerView)
     private RecyclerView recyclerView;
     private StateAdatper adatper;
@@ -45,7 +47,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
     private boolean isReturnMode;       //退货单模式,默认是处于订单模式下
     UserInfo userInfo;
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
-            .setViewListener(new BottomDialog.ViewListener(){
+            .setViewListener(new BottomDialog.ViewListener() {
                 @Override
                 public void bindView(View v) {
                     initDialogViews(v);
@@ -55,29 +57,51 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             .setDimAmount(0.5f);
     //不管是订单或是退货单，给这个bean赋值，便于调到,在线客服页面。
     private MessageResult.OrderBean orderBean = new MessageResult.OrderBean();
+    public static String INTENT_KEY_ORDER_ID = "intent_key_order_id";
+
+    private int mOrderId;
+    public static final int DEFAULT_INVALID_ORDER_ID = 0;
+    public static final int DEFAULT_INVALID_RECEIVE_INDEX = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.order_state_line_layout);
-        isReturnMode = getIntent().getBooleanExtra("mode",false);
-        if (isReturnMode){
-            setTitleText(true,"退货单状态");
-        }else{
-            setTitleText(true,"订单状态");
+        mOrderId = getIntent().getIntExtra(INTENT_KEY_ORDER_ID, DEFAULT_INVALID_ORDER_ID);
+        isReturnMode = getIntent().getBooleanExtra("mode", false);
+        if (isReturnMode) {
+            setTitleText(true, "退货单状态");
+        } else {
+            setTitleText(true, "订单状态");
         }
-        setTitleLeftIcon(true,R.drawable.nav_back);
-        setTitleRigthIcon(true,R.drawable.nav_service_message);
+        setTitleLeftIcon(true, R.drawable.nav_back);
+        setTitleRigthIcon(true, R.drawable.nav_service_message);
         //从上个页面获取数据
-        setOrderTracker();
+        if (mOrderId == DEFAULT_INVALID_ORDER_ID) {
+            Bundle bundle = getIntent().getExtras();
+            Object data = bundle.getParcelable("order");
+            setOrderTracker(data);
+        }else{
+            getOrderDetail(mOrderId);
+        }
         userInfo = GlobalApplication.getInstance().loadUserInfo();
     }
-    @OnClick({R.id.title_iv_rigth,R.id.title_iv_left})
-    private void btnClick(View view){
-        switch (view.getId()){
+
+    private void getOrderDetail(int orderId) {
+        Object request = null;
+        StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
+        sb.append(orderId).append("/");
+        sendConnection(sb.toString(), request, REQUEST_ORDER_DETAIL, false, OrderDetailResponse.class);
+    }
+
+
+    @OnClick({R.id.title_iv_rigth, R.id.title_iv_left})
+    private void btnClick(View view) {
+        switch (view.getId()) {
             case R.id.title_iv_rigth:
-                if (!bDialog.isVisible()){
+                if (!bDialog.isVisible()) {
                     bDialog.show();
                 }
                 break;
@@ -86,12 +110,13 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 break;
         }
     }
-    private void initDialogViews(View view){
+
+    private void initDialogViews(View view) {
         Button serviceBtn = (Button) view.findViewById(R.id.serviceBtn);
         Button deliverBtn = (Button) view.findViewById(R.id.deliverBtn);
         Button onlineServiceBtn = (Button) view.findViewById(R.id.onlineServiceBtn);
         Button cancleBtn = (Button) view.findViewById(R.id.cancleBtn);
-        if (TextUtils.isEmpty(deliverPhone)){
+        if (TextUtils.isEmpty(deliverPhone)) {
             deliverBtn.setVisibility(View.GONE);
         }
         serviceBtn.setOnClickListener(this);
@@ -99,12 +124,13 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
         cancleBtn.setOnClickListener(this);
         onlineServiceBtn.setOnClickListener(this);
     }
-    private void setOrderTracker() {
-        Bundle bundle = getIntent().getExtras();
-        if (isReturnMode){
-            ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) bundle.getParcelable("order");
+
+    private void setOrderTracker(Object data) {
+        int receivedIndex = DEFAULT_INVALID_RECEIVE_INDEX;
+        if (isReturnMode) {
+            ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) data;
             orderBean.setId(bean.getReturnOrderID());
-            orderBean.setAmount((int)bean.getAmount());
+            orderBean.setAmount((int) bean.getAmount());
             orderBean.setState(bean.getState());
             orderBean.setName(bean.getName());
             orderBean.setDeliveryType(bean.getDeliveryType());
@@ -120,9 +146,9 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 StringBuffer content = new StringBuffer();
                 if (pieces.length >= 3) {
                     state = pieces[2];
-                    if (pieces[0].length() == 10){
+                    if (pieces[0].length() == 10) {
                         timeSb.append(pieces[0].substring(5)).append(" ").append(pieces[1]);
-                    }else{
+                    } else {
                         timeSb.append(pieces[0]).append(" ").append(pieces[1]);
                     }
                 }
@@ -139,14 +165,14 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                         //订单已提交
                         content.append("退货单号：").append(bean.getName()).append("\n")
                                 .append("退货商品：").append(NumberUtil.getIOrD(bean.getAmount())).append("件");
-                        if (GlobalApplication.getInstance().getCanSeePrice()){
+                        if (GlobalApplication.getInstance().getCanSeePrice()) {
                             content.append("，共").append(bean.getAmountTotal()).append("元").append("\n");
                         }
                     }
                 } else {
                     //退货成功
                     content.append("退货商品：").append(NumberUtil.getIOrD(bean.getAmount())).append("件");
-                    if (GlobalApplication.getInstance().getCanSeePrice()){
+                    if (GlobalApplication.getInstance().getCanSeePrice()) {
                         content.append("，").append(bean.getAmountTotal()).append("元");
                     }
 
@@ -155,8 +181,8 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 datas.add(osl);
             }
 
-        }else{
-            OrderResponse.ListBean bean = bundle.getParcelable("order");
+        } else {
+            OrderResponse.ListBean bean = (OrderResponse.ListBean) data;
             orderBean.setId(bean.getOrderID());
             orderBean.setAmount((int) bean.getAmount());
             orderBean.setAmount_total(bean.getAmountTotal());
@@ -164,44 +190,45 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             orderBean.setName(bean.getName());
             orderBean.setEstimated_time(bean.getEstimatedTime());
             orderBean.setDeliveryType(bean.getDeliveryType());
-            if (bean.getWaybill() != null){
+            if (bean.getWaybill() != null) {
                 MessageResult.OrderBean.WaybillBean wb = new MessageResult.OrderBean.WaybillBean();
                 wb.setId(bean.getWaybill().getWaybillID());
                 orderBean.setWaybill(wb);
             }
             //从bean里面拼各种内容
-            if (bean == null){
-                ToastUtil.show(mContext,"网络异常，请退出重新加载");
+            if (bean == null) {
+                ToastUtil.show(mContext, "网络异常，请退出重新加载");
                 return;
             }
             ArrayList<String> trackers = (ArrayList<String>) bean.getStateTracker();
-            for (String str : trackers){
+            for (int i = 0; i < trackers.size(); i++) {
+                String str = trackers.get(i);
                 OrderStateLine osl = new OrderStateLine();
                 String[] pieces = str.split(" ");
                 StringBuffer timeSb = new StringBuffer();
                 String state = "";
                 StringBuffer content = new StringBuffer();
-                if (pieces.length >= 3){
+                if (pieces.length >= 3) {
                     state = pieces[2];
-                    if (pieces[0].length() == 10){
+                    if (pieces[0].length() == 10) {
                         timeSb.append(pieces[0].substring(5)).append(" ").append(pieces[1]);
-                    }else{
+                    } else {
                         timeSb.append(pieces[0]).append(" ").append(pieces[1]);
                     }
-
                 }
                 osl.setState(state);
                 osl.setTime(timeSb.toString());
-                if (str.contains("已评价")){
+                if (str.contains("已评价")) {
                     content.append("评价员：").append(bean.getAppraisalUserName());
-                }else if(str.contains("已收货")){
+                } else if (str.contains("已收货")) {
+                    receivedIndex = i;
                     content.append("收货员：").append(bean.getReceiveUserName());
-                }else if(str.contains("已点货")){
+                } else if (str.contains("已点货")) {
                     content.append("点货员：").append(bean.getTallyingUserName());
-                }else if(str.contains("已发货")){
+                } else if (str.contains("已发货")) {
 
-                    if (bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null ){
-                        if (bean.getWaybill().getDeliverUser().getMobile() != null){
+                    if (bean.getWaybill() != null && bean.getWaybill().getDeliverVehicle() != null) {
+                        if (bean.getWaybill().getDeliverUser().getMobile() != null) {
                             deliverPhone = bean.getWaybill().getDeliverUser().getMobile();
                         }
                         content.append("车牌号：");
@@ -209,46 +236,97 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                                 .append("\n").append("配送员：").append(bean.getWaybill().getDeliverUser().getName()).append(" ")
                                 .append(bean.getWaybill().getDeliverUser().getMobile()).append("\n")
                                 .append("预计到达时间：").append(bean.getEstimatedTime());
-                    }else{
+                    } else {
 //                        content.append("暂未分配");
                     }
-                }else if(str.contains("已确认")){
+                } else if (str.contains("已确认")) {
                     content.append("正在为您挑拣商品");
-                }else if(str.contains("已修改")){
+                } else if (str.contains("已修改")) {
                     content.append("共").append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
-                    if (GlobalApplication.getInstance().getCanSeePrice()){
+                    if (GlobalApplication.getInstance().getCanSeePrice()) {
                         content.append("，¥").append(bean.getAmountTotal());
                     }
-                }else if(str.contains("已提交")){
+                } else if (str.contains("已提交")) {
                     content.append("订单号：").append(bean.getName());
-                }else if(str.contains("已通知供应商")){
+                } else if (str.contains("已通知供应商")) {
                     content.append("已通知供应商发货，请耐心等待");
                 }
                 osl.setContent(content.toString());
                 datas.add(osl);
             }
         }
-
-        adatper = new StateAdatper(mContext,datas);
+        if (DEFAULT_INVALID_RECEIVE_INDEX != receivedIndex) {
+            insertProductAlteredStatus(datas, receivedIndex, (OrderResponse.ListBean) data);
+        }
+        adatper = new StateAdatper(mContext, datas);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adatper);
     }
 
+    private void insertProductAlteredStatus(List<OrderStateLine> datas, int insertIndex, OrderResponse.ListBean orderBean) {
+//測試數據
+//        OrderResponse.ListBean.ProductAlteredBean testProductAlteredBean = new OrderResponse.ListBean.ProductAlteredBean();
+//
+//        testProductAlteredBean.setAlterDate("01-16 15:36");
+//        testProductAlteredBean.setAlterUserName("宁锟");
+//
+//        List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts = new ArrayList<>();
+//
+//        OrderResponse.ListBean.ProductAlteredBean.AlterProductBean testAlterProductBean = new OrderResponse.ListBean.ProductAlteredBean.AlterProductBean();
+//        testAlterProductBean.setAlterNum(10);
+//        testAlterProductBean.setDefaultCode("3000000002");
+//        testAlterProductBean.setName("香糯汤圆黑芝麻口味");
+//        testAlterProductBean.setOriginNum(3);
+//        testAlterProductBean.setUnit("[满芬牌]100克/袋,10袋/盒");
+//
+//        alterProducts.add(testAlterProductBean);
+//
+//        testProductAlteredBean.setAlterProducts(alterProducts);
+//
+//        List< OrderResponse.ListBean.ProductAlteredBean> testProductAlteredBeanList = new ArrayList<>();
+//        testProductAlteredBeanList.add(testProductAlteredBean);
+//        orderBean.setProductAltered(testProductAlteredBeanList);
+
+
+        List<OrderResponse.ListBean.ProductAlteredBean> productAlteredBeanList = orderBean.getProductAltered();
+        for (int i = productAlteredBeanList.size() - 1; i >= 0; i--) {
+            OrderResponse.ListBean.ProductAlteredBean productAlteredBean = productAlteredBeanList.get(i);
+            OrderStateLine osl = new OrderStateLine();
+            String state = "订单收货数量已被修改";
+            String timeSb = productAlteredBean.getAlterDate();
+            String content = "修改人:" + productAlteredBean.getAlterUserName();
+            osl.setState(state);
+            osl.setTime(timeSb);
+            osl.setContent(content);
+            osl.setAlterProducts(productAlteredBean.getAlterProducts());
+            datas.add(insertIndex, osl);
+        }
+    }
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
-
+        switch (where) {
+            case REQUEST_ORDER_DETAIL:
+                BaseEntity.ResultBean resultBean = result.getResult();
+                OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
+                OrderResponse.ListBean orderBean = response.getOrder();
+                setOrderTracker(orderBean);
+                break;
+        }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
+
     CustomDialog dialog;
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.serviceBtn:
-                if (dialog == null){
+                if (dialog == null) {
                     dialog = new CustomDialog(getActivityContext());
                 }
                 String number = "";
@@ -284,8 +362,8 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 break;
             case R.id.onlineServiceBtn:
                 //跳转到在线客服
-                Intent dealIntent = new Intent(mContext,MessageDetailActivity.class);
-                dealIntent.putExtra("orderBean",orderBean);
+                Intent dealIntent = new Intent(mContext, MessageDetailActivity.class);
+                dealIntent.putExtra("orderBean", orderBean);
                 startActivity(dealIntent);
                 break;
         }
