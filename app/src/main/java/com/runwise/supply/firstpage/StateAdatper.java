@@ -1,6 +1,7 @@
 package com.runwise.supply.firstpage;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.runwise.supply.R;
+import com.runwise.supply.adapter.OrderStateProductAdapter;
+import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderStateLine;
 
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ public class StateAdatper extends RecyclerView.Adapter {
     private List<OrderStateLine> traceList = new ArrayList();
     private static final int TYPE_TOP = 0x0000;
     private static final int TYPE_NORMAL= 0x0001;
+
 
     public StateAdatper(Context context, List list) {
         inflater = LayoutInflater.from(context);
@@ -58,9 +62,21 @@ public class StateAdatper extends RecyclerView.Adapter {
         itemHolder.orderStateTv.setText(osl.getState());
         itemHolder.orderContentTv.setText(osl.getContent());
         itemHolder.stateTimeTv.setText(osl.getTime());
+        List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts  = osl.getAlterProducts();
+        if (alterProducts != null && alterProducts.size() > 0){
+            itemHolder.rvProductList.setVisibility(View.VISIBLE);
+            itemHolder.rvProductList.setLayoutManager(new LinearLayoutManager(context));
+            OrderStateProductAdapter orderStateProductAdapter = new OrderStateProductAdapter(alterProducts);
+            itemHolder.rvProductList.setAdapter(orderStateProductAdapter);
+        }else{
+            itemHolder.rvProductList.setVisibility(View.GONE);
+        }
+
     }
     @Override
     public int getItemViewType(int position) {
+        OrderStateLine osl = traceList.get(position);
+        List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts  = osl.getAlterProducts();
         if (position == 0) {
             return TYPE_TOP;
         }
@@ -77,6 +93,7 @@ public class StateAdatper extends RecyclerView.Adapter {
         public TextView stateTimeTv;
         public TextView tvTopLine, tvDot;
         public TextView tvDownLine;
+        public RecyclerView rvProductList;
         public ViewHolder(View itemView) {
             super(itemView);
             orderStateTv = (TextView) itemView.findViewById(R.id.orderStateTv);
@@ -85,6 +102,7 @@ public class StateAdatper extends RecyclerView.Adapter {
             tvTopLine = (TextView) itemView.findViewById(R.id.tvTopLine);
             tvDot = (TextView) itemView.findViewById(R.id.tvDot);
             tvDownLine = (TextView)itemView.findViewById(R.id.tvDownLine);
+            rvProductList = (RecyclerView)itemView.findViewById(R.id.rv_product_list);
         }
     }
 }
