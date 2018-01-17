@@ -290,6 +290,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //下拉刷新:只刷新列表内容
                 requestReturnList();
+                requestDashBoard();
             }
 
             @Override
@@ -323,6 +324,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         super.onResume();
         if (getUserVisibleHint()) {
             requestReturnList();
+            requestDashBoard();
 //            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
         } else {
 //            PollingUtil.getInstance().stopRequestOrder();

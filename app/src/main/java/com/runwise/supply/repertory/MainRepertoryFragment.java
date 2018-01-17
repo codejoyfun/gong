@@ -47,7 +47,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         this.setTitleText(true, "库存" );
         this.setTitleLeftIcon(true, R.drawable.searchbar_ico_search);
-        setTitleRightText(true,"盘点");
+        setTitleRightText(true,"开始盘点");
         FragmentManager manager = this.getActivity().getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.contextLayout,new StockFragment()).commitAllowingStateLoss();
 //        manager.beginTransaction().replace(R.id.contextLayout,new RepertoryFragment()).commitAllowingStateLoss();
