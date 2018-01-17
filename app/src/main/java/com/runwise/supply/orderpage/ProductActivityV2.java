@@ -366,7 +366,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 break;
             case R.id.iv_product_cart://点购物车按钮
             case R.id.rl_bottom_bar:
-                showCart(true);
+                saveCache();
+                getCache();
                 break;
             case R.id.tv_order_resume:
                 showCart(false);
@@ -480,6 +481,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     }
                 }
                 updateBottomBar();//更新底部bar
+                showCart(true);
                 break;
             default:
                 break;

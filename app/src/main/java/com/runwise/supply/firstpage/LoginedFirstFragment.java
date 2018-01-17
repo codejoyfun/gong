@@ -2,6 +2,7 @@ package com.runwise.supply.firstpage;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -83,7 +84,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import static com.runwise.supply.R.id.lqLL;
 import static com.runwise.supply.ReceiveDetailActivity.INTENT_KEY_ORDER_ID;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_CANCEL;
@@ -177,21 +177,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         loadingLayout = (LoadingLayout)headView.findViewById(R.id.loadingLayout);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
         mViewNotice = headView.findViewById(R.id.include_layout_notice);
-        headView.findViewById(R.id.lqLL).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity ma = (MainActivity) getActivity();
-                ma.gotoTabByIndex(2);
-            }
-        });
-        headView.findViewById(R.id.dqLL).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity ma = (MainActivity) getActivity();
-                ma.gotoTabByIndex(2);
-            }
-        });
-
         headView.findViewById(R.id.ll_procurement).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -304,12 +289,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
 
-        //指纹识别
-        FingerprintHelper fingerprintHelper = new FingerprintHelper(getActivity(), FingerprintManagerCompat.from(getActivity()));
-        if(fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(),GlobalApplication.getInstance().getUid())){
-            FingerprintHelper.setPrompted(getActivity(),GlobalApplication.getInstance().getUid());
-            Dialog dialog = new FingerprintPromptDialog(getActivity());
-            dialog.show();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            //指纹识别
+            FingerprintHelper fingerprintHelper = new FingerprintHelper(getActivity(), FingerprintManagerCompat.from(getActivity()));
+            if(fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(),GlobalApplication.getInstance().getUid())){
+                FingerprintHelper.setPrompted(getActivity(),GlobalApplication.getInstance().getUid());
+                Dialog dialog = new FingerprintPromptDialog(getActivity());
+                dialog.show();
+            }
         }
     }
 
@@ -782,7 +769,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         dialog.show();
     }
 
-    @OnClick({R.id.callIcon, lqLL, R.id.dqLL})
+    @OnClick({R.id.callIcon})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.callIcon:
@@ -803,11 +790,6 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     }
                 });
                 dialog.show();
-                break;
-            case lqLL:
-            case R.id.dqLL:
-                MainActivity ma = (MainActivity) getActivity();
-                ma.gotoTabByIndex(2);
                 break;
         }
     }
@@ -936,8 +918,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         lqCountTv.setText("待收货订单(张)");
         int orderSum = dbResponse.getOrderSum();
         int inventorySum = dbResponse.getInventorySum();
-        unPayAccount.setText(String.valueOf(orderSum));
-        lastMonthBuy.setText(String.valueOf(inventorySum));
+        unPayAccount.setText(String.valueOf(inventorySum));
+        lastMonthBuy.setText(String.valueOf(orderSum));
 //        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
 //        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 //        lqCountTv.setText(ssLq);
