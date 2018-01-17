@@ -2,6 +2,7 @@ package com.runwise.supply.mine;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +28,11 @@ import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.mine.entity.PandianDetail;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.ProductBasicHelper;
 
 import java.util.List;
 
@@ -42,6 +45,9 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
+    private static final int REQUEST_PRODUCT = 4;
+
+
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -49,6 +55,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
     private PullToRefreshListView pullListView;
     private PriceAdapter adapter;
     private PullToRefreshBase.OnRefreshListener2 mOnRefreshListener2;
+    ProductBasicHelper mProductBasicHelper;
 
     private int page = 1;
     public DataType type;
@@ -95,6 +102,9 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
         adapter.setData(typeList);
         loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
         pullListView.setMinimumHeight(DensityUtil.getScreenH(getActivity()));
+        mProductBasicHelper = new ProductBasicHelper(getActivity(),netWorkHelper);
+        mProductBasicHelper.checkInventory(typeList);
+        mProductBasicHelper.requestDetail(REQUEST_PRODUCT);
     }
 
     public void setData( List<PandianResult.InventoryBean.LinesBean> typeList) {
@@ -130,6 +140,11 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
                 }
                 else {
                     pullListView.onRefreshComplete(adapter.getCount());
+                }
+                break;
+            case REQUEST_PRODUCT:
+                if(mProductBasicHelper.onSuccess(result)){
+                    adapter.notifyDataSetChanged();
                 }
                 break;
         }
@@ -175,7 +190,7 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             final PandianResult.InventoryBean.LinesBean bean =  mList.get(position);
-            ProductBasicList.ListBean productBean = bean.getProduct();
+                ProductBasicList.ListBean productBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
             if (productBean != null){
                 viewHolder.name.setText(productBean.getName());
                 viewHolder.number.setText(productBean.getDefaultCode() + " | ");
@@ -183,7 +198,11 @@ public class CheckDetailListFragment extends NetWorkFragment implements AdapterV
                 if(productBean.getImage() != null)
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + productBean.getImage().getImageSmall());
             }
-            viewHolder.dateNumber.setText(bean.getLotNum());
+            if(TextUtils.isEmpty(bean.getLotNum())){
+                viewHolder.dateNumber.setVisibility(View.INVISIBLE);
+            }else{
+                viewHolder.dateNumber.setText(bean.getLotNum());
+            }
 
             if( bean.getDiff() == 0 || reading) {
                 viewHolder.value.setText("--");

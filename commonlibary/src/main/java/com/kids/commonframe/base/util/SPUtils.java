@@ -14,8 +14,6 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class SPUtils {
@@ -27,6 +25,7 @@ public class SPUtils {
     public static final String FILE_KEY_DB_NAME = "X-Odoo-Db";
     public static final String FILE_KEY_LOGIN_CONFLICT = "file_key_login_conflict";
     public static final String FILE_KEY_PLACE_ORDER_CACHE = "file_key_place_order_cache";
+    public static final String FILE_KEY_COMPANY_NAME = "file_key_company_name";
 
 
     /**

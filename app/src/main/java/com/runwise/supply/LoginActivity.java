@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -32,7 +31,6 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.ViewUtils;
@@ -45,7 +43,6 @@ import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.mine.FingerprintDialog;
-import com.runwise.supply.mine.SettingActivity;
 import com.runwise.supply.tools.AESCrypt;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
@@ -58,11 +55,10 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
-import io.vov.vitamio.utils.Crypto;
 
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_COMPANY_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
-import static com.kids.commonframe.base.util.SPUtils.get;
 import static com.runwise.supply.FindPasswordActivity.INTENT_KEY_COMPANY_NAME;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
@@ -385,6 +381,7 @@ public class LoginActivity extends NetWorkActivity {
                     SPUtils.put(getActivityContext(), FILE_KEY_HOST, mHostResponse.getHost() + ":" + mHostResponse.getPort());
                 }
                 SPUtils.put(getActivityContext(), FILE_KEY_DB_NAME, mHostResponse.getDbName());
+                SPUtils.put(getActivityContext(), FILE_KEY_COMPANY_NAME, mCetCompany.getText().toString());
                 login();
                 break;
         }

@@ -33,7 +33,6 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -46,9 +45,9 @@ import com.runwise.supply.business.entity.CheckOrderResponse;
 import com.runwise.supply.business.entity.FirstPageInventoryResult;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.entity.CheckOrderSuccessRequest;
-import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.PageRequest;
+import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.entity.TransferEntity;
 import com.runwise.supply.event.OrderStatusChangeEvent;
 import com.runwise.supply.firstpage.entity.CancleRequest;
@@ -291,6 +290,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //下拉刷新:只刷新列表内容
                 requestReturnList();
+                requestDashBoard();
             }
 
             @Override
@@ -324,6 +324,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         super.onResume();
         if (getUserVisibleHint()) {
             requestReturnList();
+            requestDashBoard();
 //            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
         } else {
 //            PollingUtil.getInstance().stopRequestOrder();
@@ -931,12 +932,12 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             lastWeekKey.setText("上周采购量(件)");
             lastWeekBuy.setText(String.valueOf(dbResponse.getTotalNumber()));
         }
-        lqCountTv.setText("本周盘点数(次)");
-        dqCountTv.setText("待收货订单(张)");
+        dqCountTv.setText("本周盘点数(次)");
+        lqCountTv.setText("待收货订单(张)");
         int orderSum = dbResponse.getOrderSum();
         int inventorySum = dbResponse.getInventorySum();
-        lastMonthBuy.setText(String.valueOf(orderSum));
-        unPayAccount.setText(String.valueOf(inventorySum));
+        unPayAccount.setText(String.valueOf(orderSum));
+        lastMonthBuy.setText(String.valueOf(inventorySum));
 //        SpannableString ssLq = new SpannableString("临期食材"+adventNum +"件");
 //        ssLq.setSpan(new ForegroundColorSpan(Color.parseColor("#333333")), 4,4+String.valueOf(adventNum).length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 //        lqCountTv.setText(ssLq);

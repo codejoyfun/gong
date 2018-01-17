@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,8 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -40,7 +37,6 @@ import com.runwise.supply.tools.UserUtils;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -259,7 +255,7 @@ public class OrderAdapter extends IBaseAdapter {
             } else {
                 viewHolder.returnTv.setVisibility(View.GONE);
             }
-            if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+            if (bean.isActual()) {
                 viewHolder.realTv.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.realTv.setVisibility(View.GONE);

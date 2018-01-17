@@ -21,7 +21,6 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -891,43 +890,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()),
                 typeList, 0);
         mTypeWindow.setViewPager(viewpager);
-//        mProductTypeWindow = new PopupWindow(this);
-//        View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
-//        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
-//        mProductTypeAdapter = new ProductTypeAdapter(typeList);
-//        gridView.setAdapter(mProductTypeAdapter);
-//        mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()), true);
-//        mProductTypeWindow.setContentView(dialog);
-//        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
-//        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
-//        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-//        mProductTypeWindow.setFocusable(false);
-//        mProductTypeWindow.setOutsideTouchable(false);
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                mProductTypeWindow.dismiss();
-//                viewpager.setCurrentItem(position);
-//                tablayout.getTabAt(position).select();
-//                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
-//                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
-//                }
-//                mProductTypeAdapter.selectList.set(position, new Boolean(true));
-//                mProductTypeAdapter.notifyDataSetChanged();
-//            }
-//        });
-//        dialog.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mProductTypeWindow.dismiss();
-//            }
-//        });
-        mTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                ivOpen.setImageResource(R.drawable.arrow);
-            }
-        });
+        mTypeWindow.setOnDismissListener(() -> ivOpen.setImageResource(R.drawable.arrow));
     }
 
     private void requestMissingInfo() {

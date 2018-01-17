@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import static com.runwise.supply.R.id.date;
-
 /**
  * @version 1.0
  * @Desc 工具类
@@ -31,6 +29,15 @@ public class TimeUtils {
     public static long getFormatTime(String time) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return format.parse(time).getTime();
+        } catch (Exception e) {
+            return 0l;
+        }
+    }
+
+    public static long getTimeStampByYMDHM(String time) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             return format.parse(time).getTime();
         } catch (Exception e) {
             return 0l;

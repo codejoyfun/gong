@@ -26,8 +26,11 @@ import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.message.MessageDetailActivity;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.TimeUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import io.vov.vitamio.utils.NumberUtil;
@@ -61,7 +64,6 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
 
     private int mOrderId;
     public static final int DEFAULT_INVALID_ORDER_ID = 0;
-    public static final int DEFAULT_INVALID_RECEIVE_INDEX = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +85,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             Bundle bundle = getIntent().getExtras();
             Object data = bundle.getParcelable("order");
             setOrderTracker(data);
-        }else{
+        } else {
             getOrderDetail(mOrderId);
         }
         userInfo = GlobalApplication.getInstance().loadUserInfo();
@@ -126,7 +128,6 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
     }
 
     private void setOrderTracker(Object data) {
-        int receivedIndex = DEFAULT_INVALID_RECEIVE_INDEX;
         if (isReturnMode) {
             ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) data;
             orderBean.setId(bean.getReturnOrderID());
@@ -218,10 +219,10 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 }
                 osl.setState(state);
                 osl.setTime(timeSb.toString());
+                osl.setTimeStamp(TimeUtils.getTimeStampByYMDHM(pieces[0] + " " + pieces[1]));
                 if (str.contains("已评价")) {
                     content.append("评价员：").append(bean.getAppraisalUserName());
                 } else if (str.contains("已收货")) {
-                    receivedIndex = i;
                     content.append("收货员：").append(bean.getReceiveUserName());
                 } else if (str.contains("已点货")) {
                     content.append("点货员：").append(bean.getTallyingUserName());
@@ -254,57 +255,55 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 osl.setContent(content.toString());
                 datas.add(osl);
             }
+            insertProductAlteredStatus(datas,(OrderResponse.ListBean) data);
         }
-        if (DEFAULT_INVALID_RECEIVE_INDEX != receivedIndex) {
-            insertProductAlteredStatus(datas, receivedIndex, (OrderResponse.ListBean) data);
-        }
-        adatper = new StateAdatper(mContext, datas);
+
+        adatper = new StateAdatper(mContext, sortStatusByTime(datas));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adatper);
     }
 
-    private void insertProductAlteredStatus(List<OrderStateLine> datas, int insertIndex, OrderResponse.ListBean orderBean) {
-//測試數據
-//        OrderResponse.ListBean.ProductAlteredBean testProductAlteredBean = new OrderResponse.ListBean.ProductAlteredBean();
-//
-//        testProductAlteredBean.setAlterDate("01-16 15:36");
-//        testProductAlteredBean.setAlterUserName("宁锟");
-//
-//        List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts = new ArrayList<>();
-//
-//        OrderResponse.ListBean.ProductAlteredBean.AlterProductBean testAlterProductBean = new OrderResponse.ListBean.ProductAlteredBean.AlterProductBean();
-//        testAlterProductBean.setAlterNum(10);
-//        testAlterProductBean.setDefaultCode("3000000002");
-//        testAlterProductBean.setName("香糯汤圆黑芝麻口味");
-//        testAlterProductBean.setOriginNum(3);
-//        testAlterProductBean.setUnit("[满芬牌]100克/袋,10袋/盒");
-//
-//        alterProducts.add(testAlterProductBean);
-//
-//        testProductAlteredBean.setAlterProducts(alterProducts);
-//
-//        List< OrderResponse.ListBean.ProductAlteredBean> testProductAlteredBeanList = new ArrayList<>();
-//        testProductAlteredBeanList.add(testProductAlteredBean);
-//        orderBean.setProductAltered(testProductAlteredBeanList);
-
-
+    private void insertProductAlteredStatus(List<OrderStateLine> datas, OrderResponse.ListBean orderBean) {
         List<OrderResponse.ListBean.ProductAlteredBean> productAlteredBeanList = orderBean.getProductAltered();
-        if (productAlteredBeanList == null||productAlteredBeanList.size() == 0){
+        if (productAlteredBeanList == null || productAlteredBeanList.size() == 0) {
             return;
         }
         for (int i = productAlteredBeanList.size() - 1; i >= 0; i--) {
             OrderResponse.ListBean.ProductAlteredBean productAlteredBean = productAlteredBeanList.get(i);
             OrderStateLine osl = new OrderStateLine();
             String state = "订单收货数量已被修改";
-           String alterDate = productAlteredBean.getAlterDate();
+            String alterDate = productAlteredBean.getAlterDate();
             String timeSb = alterDate.substring(5);
             String content = "修改人:" + productAlteredBean.getAlterUserName();
             osl.setState(state);
             osl.setTime(timeSb);
             osl.setContent(content);
+            osl.setTimeStamp(TimeUtils.getTimeStampByYMDHM(alterDate));
             osl.setAlterProducts(productAlteredBean.getAlterProducts());
-            datas.add(insertIndex, osl);
+            datas.add(osl);
         }
+    }
+
+    private List<OrderStateLine> sortStatusByTime(List<OrderStateLine> datas) {
+        OrderStateLine[] orderStateLineList = new OrderStateLine[datas.size()];
+        for (int i = 0; i < datas.size(); i++) {
+            OrderStateLine orderStateLine = datas.get(i);
+            orderStateLineList[i] = orderStateLine;
+        }
+        Arrays.sort(orderStateLineList, new Comparator<OrderStateLine>() {
+            @Override
+            public int compare(OrderStateLine o1, OrderStateLine o2) {
+                if (o1.getTimeStamp() == o2.getTimeStamp()){
+                    return 1;
+                }
+                return o1.getTimeStamp() < o2.getTimeStamp() ? 1 : -1;
+            }
+        });
+        datas.clear();
+        for (int j = 0;j < orderStateLineList.length;j++){
+            datas.add(orderStateLineList[j]);
+        }
+        return datas;
     }
 
     @Override
