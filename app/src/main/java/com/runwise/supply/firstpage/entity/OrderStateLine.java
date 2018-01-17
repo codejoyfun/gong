@@ -11,6 +11,7 @@ public class OrderStateLine {
     private String state;
     private String content;
     private String time;
+    private long timeStamp;
     List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts;
 
 
@@ -45,5 +46,13 @@ public class OrderStateLine {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

@@ -9,6 +9,7 @@ public class CheckVersionRequest {
     private String version_code;
     private String tag;
     private String version;
+    private String companyName;
 
     public String getVersion_name() {
         return version_name;
@@ -40,5 +41,12 @@ public class CheckVersionRequest {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 }
