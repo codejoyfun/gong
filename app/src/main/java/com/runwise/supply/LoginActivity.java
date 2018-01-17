@@ -1,6 +1,7 @@
 package com.runwise.supply;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Editable;
@@ -143,40 +144,43 @@ public class LoginActivity extends NetWorkActivity {
             }
         });
         showFirstUserFromDB();
-        remPassword.setChecked((Boolean)SPUtils.get(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,true));
-        remPassword.setOnCheckedChangeListener((v,isChecked)->SPUtils.put(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,isChecked));
+        remPassword.setChecked((Boolean) SPUtils.get(this, SP_CONSTANTS.SP_CB_REMEMBER_PW, true));
+        remPassword.setOnCheckedChangeListener((v, isChecked) -> SPUtils.put(this, SP_CONSTANTS.SP_CB_REMEMBER_PW, isChecked));
 
         //指纹登录
-        mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
-        if(mFgHelper.isSupported() && FingerprintHelper.isFingerprintEnabled(this)){
-            mFgHelper.init();
-            FingerprintDialog fragment = new FingerprintDialog();
-            fragment.setFingerprintHelper(mFgHelper);
-            fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
-                @Override
-                public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
-                    if(isSuccess==STATUS_SUCCEED){
-                        String loginUser = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,"");
-                        String cipher = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,"");
-                        mPhone.setText(loginUser);
-                        try{
-                            mPassword.setText(AESCrypt.decrypt(loginUser,cipher));
-                        }catch (GeneralSecurityException e){
-                            e.printStackTrace();
-                            ToastUtil.show(LoginActivity.this,"指纹验证失败");
-                            return;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
+                if (mFgHelper.isSupported() && FingerprintHelper.isFingerprintEnabled(this)) {
+                    mFgHelper.init();
+                    FingerprintDialog fragment = new FingerprintDialog();
+                    fragment.setFingerprintHelper(mFgHelper);
+                    fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
+                        @Override
+                        public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                            if (isSuccess == STATUS_SUCCEED) {
+                                String loginUser = (String) SPUtils.get(getActivityContext(), SP_CONSTANTS.SP_FG_USER, "");
+                                String cipher = (String) SPUtils.get(getActivityContext(), SP_CONSTANTS.SP_PW, "");
+                                mPhone.setText(loginUser);
+                                try {
+                                    mPassword.setText(AESCrypt.decrypt(loginUser, cipher));
+                                } catch (GeneralSecurityException e) {
+                                    e.printStackTrace();
+                                    ToastUtil.show(LoginActivity.this, "指纹验证失败");
+                                    return;
+                                }
+                                mCetCompany.setText((String) SPUtils.get(getActivityContext(), SP_CONSTANTS.SP_FG_COMPANY, ""));
+                                onLogin(null);
+                                fragment.dismiss();
+                            } else if (isSuccess == STATUS_FAILED) {
+                                ToastUtil.show(LoginActivity.this, "指纹验证失败");
+                            }
                         }
-                        mCetCompany.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_COMPANY,""));
-                        onLogin(null);
-                        fragment.dismiss();
-                    }else if(isSuccess==STATUS_FAILED){
-                        ToastUtil.show(LoginActivity.this,"指纹验证失败");
-                    }
+                    });
+                    fragment.setText("通过验证手机指纹进行登录");
+                    fragment.show(getSupportFragmentManager(), "tag");
                 }
-            });
-            fragment.setText("通过验证手机指纹进行登录");
-            fragment.show(getSupportFragmentManager(),"tag");
-        }
+            }
+
     }
 
     public void showFirstUserFromDB() {
@@ -204,7 +208,7 @@ public class LoginActivity extends NetWorkActivity {
     private void getHost(String companyName) {
         GetHostRequest getHostRequest = new GetHostRequest();
         getHostRequest.setCompanyName(companyName);
-        sendConnection(Constant.UNLOGIN_URL, "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class,true);
+        sendConnection(Constant.UNLOGIN_URL, "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class, true);
     }
 
     @OnClick(R.id.root_layout)
@@ -297,7 +301,7 @@ public class LoginActivity extends NetWorkActivity {
     @Override
     public void onResume() {
         super.onResume();
-        SPUtils.setLoginConflict(getActivityContext(),false);
+        SPUtils.setLoginConflict(getActivityContext(), false);
     }
 
     HostResponse mHostResponse;
@@ -333,7 +337,7 @@ public class LoginActivity extends NetWorkActivity {
                     }
                     newRem.setCompany(mCetCompany.getText().toString());
                     SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,
-                            AESCrypt.encrypt(loginRequest.getLogin(),loginRequest.getPassword()));
+                            AESCrypt.encrypt(loginRequest.getLogin(), loginRequest.getPassword()));
                     mDb.save(newRem);
                 } catch (Exception e) {
                     e.printStackTrace();
