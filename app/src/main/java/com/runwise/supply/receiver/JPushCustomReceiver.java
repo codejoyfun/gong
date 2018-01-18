@@ -33,7 +33,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TYPE_LOGIN_CONFICT = "login_confict";
     public static final String TYPE_SYSTEM_UPGRADE = "update";
     public static final String TYPE_ORDER = "sale.order";
-    public static final String TYPE_PLATFORM_NOTICE = "platform";//平台通知
+    public static final String TYPE_PLATFORM_NOTICE = "platform_notification";//平台通知
     public static final String TYPE_ORDER_STATUS = "order_status";//跳转到订单状态
 
     private static final int REQUEST_LOGINOUT = 1 << 0;
@@ -82,9 +82,8 @@ public class JPushCustomReceiver extends BroadcastReceiver {
             SystemUpgradeHelper.getInstance(context).create(dataid);
             EventBus.getDefault().post(new SystemUpgradeNoticeEvent());
         }
-        if (TYPE_PLATFORM_NOTICE.equals(type)) {//平台通知
-            JSONObject aps = jsonObject.optJSONObject("APS");
-            String msg = aps.optString("alerts");
+        if (TYPE_PLATFORM_NOTICE.equals("platform_notification")) {//平台通知
+            String msg = bundle.getString(JPushInterface.EXTRA_ALERT);
             long id = System.currentTimeMillis();
             PlatformNotificationManager.getInstance(context).addMsg(id, msg, "");
             EventBus.getDefault().post(new PlatformNotificationEvent());

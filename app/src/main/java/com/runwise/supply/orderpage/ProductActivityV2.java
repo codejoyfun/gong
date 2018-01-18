@@ -117,6 +117,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     DecimalFormat df = new DecimalFormat("#.##");
 
+    boolean mFirstGetShopCartCache = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,19 +149,20 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * 子类需要重写，否则会使用购物车的缓存
      */
     protected void getCache() {
+        mMapCount.clear();
         CartCache cartCache = CartManager.getInstance(this).loadCart();
         if (cartCache != null && cartCache.getListBeans() != null) {
             for (ProductData.ListBean bean : cartCache.getListBeans()) {
 //                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(bean.getProductID()+"");
 //                if(basicBean==null){
-//                    //记录失效
+//                    //记录下架
 //                    bean.setInvalid(true);
 //                    mSetInvalid.add(bean);
 //                }else{
 //                    bean.setInvalid(false);
 //                }
                 bean.setCartAddedTime(0);//用于排序，设置为0表示是读缓存的，永远排在新加的后边
-                mMapCount.put(bean, bean.getActualQty());//可能失效的商品也加进去
+                mMapCount.put(bean, bean.getActualQty());//可能下架的商品也加进去
                 mMapRemarks.put(bean, bean.getRemark());
                 if (bean.isCacheSelected()) mmSelected.add(bean.getProductID());
             }
@@ -366,7 +369,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 break;
             case R.id.iv_product_cart://点购物车按钮
             case R.id.rl_bottom_bar:
-                showCart(true);
+                saveCache();
+                getCache();
                 break;
             case R.id.tv_order_resume:
                 showCart(false);
@@ -397,6 +401,31 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             Toast.makeText(this, "请在购物车中勾选商品", Toast.LENGTH_LONG).show();
             return;
         }
+//        有下架商品 弹出提示
+        if(mSetInvalid.size() > 0){
+            dialog.setMessage("购物车存在下架商品\n请及时清空");
+            dialog.setMessageGravity();
+            dialog.setLeftBtnListener("去购物车看看", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    if (mTvResume.getVisibility() != View.VISIBLE) {
+                        showCart(true);
+                    }
+                }
+            });
+            dialog.setRightBtnListener("下一步", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    goToOrderSubmitActivity();
+                }
+            });
+            dialog.show();
+        }else{
+            goToOrderSubmitActivity();
+        }
+    }
+
+    void goToOrderSubmitActivity(){
         Intent intent = new Intent(this, OrderSubmitActivity.class);
         //判断是否是自助下单
         intent.putExtra(INTENT_KEY_SELF_HELP, getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP, false));
@@ -415,7 +444,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     /*
      * 更新底部汇总
      * 只计算勾选的
-     * 不计算失效的
+     * 不计算下架的
      */
     protected void updateBottomBar() {
         if (mMapCount.size() == 0) {
@@ -468,18 +497,23 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 if (listResult != null) {
                     for (int i = 0; i < listResult.size(); i++) {
                         ProductValidateResponse.ListBean resultItem = listResult.get(i);
-                        for(int j = 0;j < mListToCheck.size();j++){
+                        for (int j = 0; j < mListToCheck.size(); j++) {
                             ProductData.ListBean listBean = mListToCheck.get(j);
-                            if (listBean.getProductID() == resultItem.getProductID()){
+                            if (listBean.getProductID() == resultItem.getProductID()) {
                                 listBean.setInvalid(true);
                                 mSetInvalid.add(listBean);
-                            }else{
-                                listBean.setInvalid(false);
+                                break;
                             }
                         }
                     }
                 }
                 updateBottomBar();//更新底部bar
+                if (mFirstGetShopCartCache) {
+                    showCart(false);
+                    mFirstGetShopCartCache = false;
+                } else {
+                    showCart(true);
+                }
                 break;
             default:
                 break;
@@ -657,10 +691,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             else if (p1.getCartAddedTime() != 0 && p2.getCartAddedTime() == 0) return -1;
             return (int) (p2.getCartAddedTime() - p1.getCartAddedTime());
         });
-        //加入失效商品
+        //加入下架商品
         if (mSetInvalid.size() > 0) {
             mmProductList.add(new ProductData.ListBean());//加入头部
-            for (ProductData.ListBean bean : mSetInvalid) {//加入失效商品
+            for (ProductData.ListBean bean : mSetInvalid) {//加入下架商品
                 if (bean.isInvalid()) mmProductList.add(bean);
             }
         }
@@ -857,14 +891,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
 
         /**
-         * 点击清空失效按钮
+         * 点击清空下架按钮
          *
          * @param view
          */
         @Override
         public void onClick(View view) {
             CustomDialog customDialog = new CustomDialog(ProductActivityV2.this);
-            customDialog.setMessage("清空购物车中所有失效商品");
+            customDialog.setMessage("清空购物车中所有下架商品");
             customDialog.setRightBtnListener("清空", new CustomDialog.DialogListener() {
                 @Override
                 public void doClickButton(Button btn, CustomDialog dialog) {
