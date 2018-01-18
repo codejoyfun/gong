@@ -177,7 +177,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * 检查商品有效性
      */
     protected void checkValid(List<ProductData.ListBean> listToCheck) {
-        if (listToCheck == null || listToCheck.size() == 0) return;
+        if (listToCheck == null || listToCheck.size() == 0){
+            mFirstGetShopCartCache = false;
+            return;
+        }
         mListToCheck = listToCheck;
         List<Integer> requestList = new ArrayList<>();
         for (ProductData.ListBean bean : listToCheck) {
