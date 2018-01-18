@@ -371,6 +371,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             case R.id.rl_bottom_bar:
                 saveCache();
                 getCache();
+                mAdapterVp.fragmentList.get(mViewPagerCategoryFrags.getCurrentItem()).refresh();
                 break;
             case R.id.tv_order_resume:
                 showCart(false);
@@ -402,7 +403,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             return;
         }
 //        有下架商品 弹出提示
-        if(mSetInvalid.size() > 0){
+        if (mSetInvalid.size() > 0) {
             dialog.setMessage("购物车存在下架商品\n请及时清空");
             dialog.setMessageGravity();
             dialog.setLeftBtnListener("去购物车看看", new CustomDialog.DialogListener() {
@@ -420,12 +421,12 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 }
             });
             dialog.show();
-        }else{
+        } else {
             goToOrderSubmitActivity();
         }
     }
 
-    void goToOrderSubmitActivity(){
+    void goToOrderSubmitActivity() {
         Intent intent = new Intent(this, OrderSubmitActivity.class);
         //判断是否是自助下单
         intent.putExtra(INTENT_KEY_SELF_HELP, getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP, false));
@@ -492,7 +493,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 break;
             case REQUEST_VALIDATE:
                 ProductValidateResponse productValidateResponse = (ProductValidateResponse) result.getResult().getData();
+//                失效商品
                 List<ProductValidateResponse.ListBean> listResult = productValidateResponse.getList();
+//                有效商品
+                List<ProductValidateResponse.ListBean> products = productValidateResponse.getProducts();
                 //记录结果,注意：这里假设请求和结果的顺序一样
                 if (listResult != null) {
                     for (int i = 0; i < listResult.size(); i++) {
@@ -506,6 +510,20 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             }
                         }
                     }
+                }
+                if (products != null) {
+                    for (int i = 0; i < products.size(); i++) {
+                        ProductValidateResponse.ListBean listBean = products.get(i);
+                        if (!TextUtils.isEmpty(listBean.getProductTag())) {
+                            for (ProductData.ListBean listBean1 : mMapCount.keySet()) {
+                                if (listBean1.getProductID() == listBean.getProductID()) {
+                                    listBean1.setProductTag(listBean.getProductTag());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                 }
                 updateBottomBar();//更新底部bar
                 if (mFirstGetShopCartCache) {
@@ -763,6 +781,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 holder.mmTvAdd.setEnabled(true);
                 holder.mmTvReduce.setEnabled(true);
             }
+
 
             if (TextUtils.isEmpty(holder.listBean.getProductTag())) {
                 holder.mmTvTag.setVisibility(View.GONE);

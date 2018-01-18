@@ -11,11 +11,20 @@ import java.util.List;
 
 public class ProductValidateResponse {
     private List<ListBean> list;
+    private List<ListBean> products;
     public void setList(List<ListBean> list) {
         this.list = list;
     }
     public List<ListBean> getList() {
         return list;
+    }
+
+    public List<ListBean> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<ListBean> products) {
+        this.products = products;
     }
 
 
@@ -35,6 +44,8 @@ public class ProductValidateResponse {
         private String settleUomId;
         private int price;
         private String uom;
+        private String productTag;
+
         public void setProductUom(String productUom) {
             this.productUom = productUom;
         }
@@ -138,6 +149,14 @@ public class ProductValidateResponse {
         }
         public String getUom() {
             return uom;
+        }
+
+        public String getProductTag() {
+            return productTag;
+        }
+
+        public void setProductTag(String productTag) {
+            this.productTag = productTag;
         }
     }
     public class ImageBean {

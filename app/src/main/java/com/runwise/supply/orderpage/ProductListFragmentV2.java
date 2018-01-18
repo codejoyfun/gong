@@ -112,7 +112,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
      * 刷新
      * @param showLoadingLayout 是否显示loading layout
      */
-    protected void refresh(boolean showLoadingLayout){
+    public void refresh(boolean showLoadingLayout){
         if(showLoadingLayout)mLoadingLayout.setStatusLoading();
         mPz = 1;
         requestData(REQUEST_PRODUCT_REFRESH);
