@@ -11,7 +11,7 @@
         android:textSize="12sp"
         android:layout_marginLeft="15dp"
         android:textColor="@color/color999999"
-        android:text="失效商品"/>
+        android:text="下架商品"/>
     <TextView
         android:id="@+id/tv_item_cart_clear_invalid"
         android:layout_width="wrap_content"
@@ -21,5 +21,5 @@
         android:textSize="12sp"
         android:layout_alignParentRight="true"
         android:textColor="@color/color999999"
-        android:text="清空失效商品"/>
+        android:text="清空下架商品"/>
 </RelativeLayout>
