@@ -168,6 +168,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
             //检查购物车商品有效性
             checkValid(cartCache.getListBeans());
+        }else{
+            mFirstGetShopCartCache = false;
         }
     }
 
@@ -517,14 +519,12 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 if (products != null) {
                     for (int i = 0; i < products.size(); i++) {
                         ProductValidateResponse.ListBean listBean = products.get(i);
-                        if (!TextUtils.isEmpty(listBean.getProductTag())) {
                             for (ProductData.ListBean listBean1 : mMapCount.keySet()) {
                                 if (listBean1.getProductID() == listBean.getProductID()) {
                                     listBean1.setProductTag(listBean.getProductTag());
                                     break;
                                 }
                             }
-                        }
                     }
 
                 }
