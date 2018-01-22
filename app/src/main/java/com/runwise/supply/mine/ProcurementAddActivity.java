@@ -1,5 +1,6 @@
 package com.runwise.supply.mine;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import com.bigkoo.pickerview.listener.OnDismissListener;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.bean.ReceiveProEvent;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
@@ -45,14 +47,15 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.fragment.SearchListFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProcurementAddResult;
 import com.runwise.supply.mine.entity.ProcurenmentAddRequest;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductData;
-import com.runwise.supply.fragment.SearchListFragment;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.RunwiseKeyBoard;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -304,36 +307,13 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
                 }
             });
+            setCommontTopShow();
         } else {
             popView1.setVisibility(View.GONE);
-            popView2.setVisibility(View.VISIBLE);
-            name1.setText(productBean.getName());
-            number1.setText(productBean.getDefaultCode() + " | ");
-            content1.setText(productBean.getUnit());
-            finalButton1.setEnabled(false);
-            FrecoFactory.getInstance(mContext).disPlay(productImage1, Constant.BASE_URL + productBean.getImage().getImageSmall());
-            et_product_amount1.addTextChangedListener(new TextWatcher() {
+            RunwiseKeyBoard runwiseKeyBoard = new RunwiseKeyBoard(getActivityContext());
+            runwiseKeyBoard.setUp(productBean,new RunwiseKeyBoard.SetCountListener() {
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    if (!TextUtils.isEmpty(et_product_amount1.getText().toString())) {
-                        finalButton1.setEnabled(true);
-                    } else {
-                        finalButton1.setEnabled(false);
-                    }
-                }
-            });
-            finalButton1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    amount = et_product_amount1.getText().toString();
+                public void onSetCount(double count) {
                     ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
                     List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
                     ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
@@ -342,14 +322,60 @@ public class ProcurementAddActivity extends NetWorkActivity {
                     productsBean.setLot_name("none");
                     productsBean.setLife_datetime("");
                     productsBean.setProduce_datetime("");
-                    productsBean.setQty(Double.parseDouble(amount));
+                    productsBean.setQty(count);
                     products.add(productsBean);
                     procurenmentAddRequest.setProducts(products);
                     sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
+
                 }
             });
+            runwiseKeyBoard.show();
+
+
+//            popView2.setVisibility(View.VISIBLE);
+//            name1.setText(productBean.getName());
+//            number1.setText(productBean.getDefaultCode() + " | ");
+//            content1.setText(productBean.getUnit());
+//            finalButton1.setEnabled(false);
+//            FrecoFactory.getInstance(mContext).disPlay(productImage1, Constant.BASE_URL + productBean.getImage().getImageSmall());
+//            et_product_amount1.addTextChangedListener(new TextWatcher() {
+//                @Override
+//                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                }
+//
+//                @Override
+//                public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                }
+//
+//                @Override
+//                public void afterTextChanged(Editable s) {
+//                    if (!TextUtils.isEmpty(et_product_amount1.getText().toString())) {
+//                        finalButton1.setEnabled(true);
+//                    } else {
+//                        finalButton1.setEnabled(false);
+//                    }
+//                }
+//            });
+//            finalButton1.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    amount = et_product_amount1.getText().toString();
+//                    ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
+//                    List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
+//                    ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
+//                    productsBean.setProduct_id(productBean.getProductID());
+//                    productsBean.setTracking("");
+//                    productsBean.setLot_name("none");
+//                    productsBean.setLife_datetime("");
+//                    productsBean.setProduce_datetime("");
+//                    productsBean.setQty(Double.parseDouble(amount));
+//                    products.add(productsBean);
+//                    procurenmentAddRequest.setProducts(products);
+//                    sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
+//                }
+//            });
         }
-        setCommontTopShow();
+
     }
 
     @OnClick({R.id.colseIcon, R.id.colseIcon1,R.id.iv_open})
@@ -484,6 +510,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
     private PopupWindow mProductTypeWindow;
     ProductTypeAdapter mProductTypeAdapter;
 
+    @SuppressLint("WrongConstant")
     private void initPopWindow(ArrayList<String> typeList) {
         View dialog = LayoutInflater.from(mContext).inflate(R.layout.dialog_tab_type, null);
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);

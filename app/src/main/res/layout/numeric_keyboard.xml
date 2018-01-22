@@ -10,14 +10,17 @@
         android:background="#FFFFFFFF">
 
         <TextView
-            android:layout_width="112dp"
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="一次性外卖包装盒"
+            android:gravity="center"
             android:textColor="#FF2E2E2E"
             android:textSize="14sp" />
 
         <ImageView
+            android:id="@+id/iv_close"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_alignParentRight="true"
@@ -53,6 +56,7 @@
                 android:textSize="14sp" />
 
             <EditText
+                android:id="@+id/et_count"
                 style="?android:attr/textViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -63,7 +67,7 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:singleLine="true"
-                android:text="26"
+                android:text="266"
                 android:textColor="#FF2E2E2E"
                 android:textSize="16sp" />
 
@@ -92,6 +96,7 @@
                 android:weightSum="3">
 
                 <TextView
+                    android:id="@+id/tv_one"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -102,6 +107,7 @@
                     android:textSize="28dp" />
 
                 <TextView
+                    android:id="@+id/tv_two"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -112,6 +118,7 @@
                     android:textSize="28dp" />
 
                 <TextView
+                    android:id="@+id/tv_three"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -131,6 +138,7 @@
                 android:weightSum="3">
 
                 <TextView
+                    android:id="@+id/tv_four"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -141,6 +149,7 @@
                     android:textSize="28dp" />
 
                 <TextView
+                    android:id="@+id/tv_five"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -151,6 +160,7 @@
                     android:textSize="28dp" />
 
                 <TextView
+                    android:id="@+id/tv_six"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -169,6 +179,7 @@
                 android:weightSum="3">
 
                 <TextView
+                    android:id="@+id/tv_seven"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -179,6 +190,7 @@
                     android:textSize="28dp" />
 
                 <TextView
+                    android:id="@+id/tv_eight"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -189,6 +201,7 @@
                     android:textSize="28dp" />
 
                 <TextView
+                    android:id="@+id/tv_nine"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -207,6 +220,7 @@
                 android:weightSum="3">
 
                 <TextView
+                    android:id="@+id/tv_dot"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="2"
@@ -218,6 +232,7 @@
 
 
                 <TextView
+                    android:id="@+id/tv_zero"
                     android:layout_width="0dp"
                     android:layout_height="56.5dp"
                     android:layout_weight="1"
@@ -238,6 +253,7 @@
             android:layout_weight="1">
 
             <RelativeLayout
+                android:id="@+id/rl_delete"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -251,6 +267,7 @@
 
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/rl_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -261,7 +278,7 @@
                     android:text="确定"
                     android:textColor="#FF343434"
                     android:gravity="center"
-                    android:textSize="20px"
+                    android:textSize="20sp"
                     />
             </RelativeLayout>
 

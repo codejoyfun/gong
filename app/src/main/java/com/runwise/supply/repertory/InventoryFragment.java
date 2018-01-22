@@ -3,9 +3,7 @@ package com.runwise.supply.repertory;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,24 +13,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.util.DateFormateUtil;
-import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.AddInventoryBatchResponse;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.event.InventoryEditEvent;
+import com.runwise.supply.tools.RunwiseKeyBoard;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -101,9 +96,18 @@ public class InventoryFragment extends NetWorkFragment {
                     startActivityForResult(intent,REQ_MODIFY_BATCH);
                     getActivity().overridePendingTransition(R.anim.slide_in_from_bottom,R.anim.activity_close_exit);
                 }else{//无批次
-                    new EditCountDialog(getActivity())
-                            .setup(count -> EventBus.getDefault().post(new InventoryEditEvent()),inventoryProduct)
-                            .show();
+//                    new EditCountDialog(getActivity())
+//                            .setup(count -> EventBus.getDefault().post(new InventoryEditEvent()),inventoryProduct)
+//                            .show();
+                    RunwiseKeyBoard runwiseKeyBoard = new RunwiseKeyBoard(getActivity());
+                    runwiseKeyBoard.setUp(inventoryProduct, new RunwiseKeyBoard.SetCountListener() {
+                        @Override
+                        public void onSetCount(double count) {
+                            inventoryProduct.setEditNum(Double.valueOf(count));
+                            EventBus.getDefault().post(new InventoryEditEvent());
+                        }
+                    });
+                    runwiseKeyBoard.show();
                 }
             }
         });
