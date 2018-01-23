@@ -62,7 +62,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_FORMAT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application
         android:name=".GlobalApplication"
@@ -104,6 +104,7 @@
             android:enabled="true">
             <intent-filter android:priority="1000">
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
+
                 <category android:name="com.runwise.supply" />
             </intent-filter>
             <intent-filter>
@@ -322,12 +323,12 @@
             android:name=".orderpage.ProductActivityV2"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".orderpage.OneKeyActivityV2"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".mine.UserGuidActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -445,7 +446,7 @@
         <activity
             android:name=".InfoActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".repertory.EditRepertoryFinishActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -504,12 +505,12 @@
             android:name=".firstpage.OrderModifyActivityV2"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".orderpage.OrderAgainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".orderpage.OrderCommitSuccessActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -561,19 +562,19 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".repertory.InventoryActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".repertory.EditBatchDialog"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/myTransparent"/>
+            android:theme="@style/myTransparent"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".firstpage.EditBatchActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
-        <activity android:name=".firstpage.EvaluateSuccessActivity"></activity>
-        <activity android:name=".firstpage.RegisterSuccessActivity"></activity>
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".firstpage.EvaluateSuccessActivity" />
+        <activity android:name=".firstpage.RegisterSuccessActivity" />
 
         <receiver
             android:name=".receiver.JPushCustomReceiver"
@@ -592,10 +593,11 @@
 
         <activity
             android:name=".mine.CreateCallInListActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
-        <activity android:name=".orderpage.TransferOutActivity"></activity>
-        <activity android:name=".orderpage.TransferOutSuccessActivity"></activity>
-        <activity android:name=".orderpage.OrderSubmitActivity"></activity>
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".orderpage.TransferOutActivity" />
+        <activity android:name=".orderpage.TransferOutSuccessActivity" />
+        <activity android:name=".orderpage.OrderSubmitActivity" />
+        <activity android:name=".firstpage.OrderProductDiffActivity"></activity>
     </application>
 
 </manifest>

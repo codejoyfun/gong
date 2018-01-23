@@ -43,6 +43,19 @@
                    android:gravity="center"
                    android:background="@drawable/receive_circle"
                    android:visibility="gone"/>
+
+               <TextView
+                   android:id="@+id/tv_actual_delivery"
+                   android:layout_width="26dp"
+                   android:layout_height="14dp"
+                   android:text="实发"
+                   android:layout_marginLeft="5dp"
+                   android:textSize="9sp"
+                   android:textColor="#FA5900"
+                   android:gravity="center"
+                   android:background="@drawable/receive_circle"
+                   android:visibility="gone"/>
+
                <TextView
                    android:id="@+id/returnTv"
                    android:layout_width="18dp"

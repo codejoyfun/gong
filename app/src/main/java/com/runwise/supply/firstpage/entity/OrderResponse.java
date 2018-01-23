@@ -29,7 +29,7 @@ public class OrderResponse {
     /**
      * 由于首页需要混合显示SO单和调拨单，所以接口的列表返回两种对象，这里继承TransferEntity用于获取调拨单
      */
-    public static class ListBean extends TransferEntity implements Parcelable,Serializable {
+    public static class ListBean extends TransferEntity implements Parcelable, Serializable {
         /**
          * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,
          * "deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,
@@ -111,6 +111,7 @@ public class OrderResponse {
         private String receiveError;//是否收货失败
         private boolean isActual;
         private List<ProductAlteredBean> productAltered;
+        private boolean isActualSendOrder;
 
         public List<ProductAlteredBean> getProductAltered() {
             return productAltered;
@@ -119,7 +120,6 @@ public class OrderResponse {
         public void setProductAltered(List<ProductAlteredBean> productAltered) {
             this.productAltered = productAltered;
         }
-
 
 
         public boolean isActual() {
@@ -195,6 +195,7 @@ public class OrderResponse {
             receiveError = in.readString();
             isActual = in.readByte() != 0;
             productAltered = in.createTypedArrayList(ProductAlteredBean.CREATOR);
+            isActualSendOrder = in.readByte() != 0;
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -607,15 +608,24 @@ public class OrderResponse {
             dest.writeString(receiveError);
             dest.writeByte((byte) (isActual ? 1 : 0));
             dest.writeTypedList(productAltered);
+            dest.writeByte((byte) (isActualSendOrder ? 1 : 0));
+        }
+
+        public boolean isActualSendOrder() {
+            return isActualSendOrder;
+        }
+
+        public void setActualSendOrder(boolean actualSendOrder) {
+            isActualSendOrder = actualSendOrder;
         }
 
 
-        public static class ProductAlteredBean implements Parcelable{
+        public static class ProductAlteredBean implements Parcelable {
             String alterDate;
             String alterUserName;
             List<AlterProductBean> alterProducts;
 
-            public ProductAlteredBean(){
+            public ProductAlteredBean() {
 
             }
 
@@ -673,7 +683,7 @@ public class OrderResponse {
                 dest.writeTypedList(alterProducts);
             }
 
-            public static class AlterProductBean  implements Parcelable{
+            public static class AlterProductBean implements Parcelable {
                 String name;
                 String defaultCode;
                 String unit;
@@ -681,7 +691,7 @@ public class OrderResponse {
                 double originNum;
                 double alterNum;
 
-                public AlterProductBean(){
+                public AlterProductBean() {
 
                 }
 
@@ -1111,6 +1121,8 @@ public class OrderResponse {
             private String unit;
             private int unloadAmount;
             private String remark;//备注
+            private double actualSendNum;//实际发货数量
+
 
             //自定义字段
             private boolean isChanged;
@@ -1343,6 +1355,14 @@ public class OrderResponse {
                 this.remark = remark;
             }
 
+            public double getActualSendNum() {
+                return actualSendNum;
+            }
+
+            public void setActualSendNum(double actualSendNum) {
+                this.actualSendNum = actualSendNum;
+            }
+
             public static class LotListBean implements Parcelable {
                 /**
                  * lotPk : 82242
@@ -1497,12 +1517,11 @@ public class OrderResponse {
                 dest.writeDouble(productSettlePrice);
                 ;
                 dest.writeInt(settleUomId);
-                ;
                 dest.writeString(tracking);
                 dest.writeString(unit);
-                ;
                 dest.writeInt(unloadAmount);
                 dest.writeString(remark);
+                dest.writeDouble(actualSendNum);
             }
 
             public LinesBean() {
@@ -1538,6 +1557,7 @@ public class OrderResponse {
                 unit = in.readString();
                 unloadAmount = in.readInt();
                 remark = in.readString();
+                actualSendNum = in.readDouble();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

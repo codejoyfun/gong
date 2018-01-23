@@ -3,6 +3,11 @@ package com.runwise.supply.firstpage;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +32,19 @@ public class StateAdatper extends RecyclerView.Adapter {
     private static final int TYPE_TOP = 0x0000;
     private static final int TYPE_NORMAL= 0x0001;
 
+    public interface CallBack{
+        void onAction();
+    }
+
+    public CallBack getCallBack() {
+        return mCallBack;
+    }
+
+    public void setCallBack(CallBack callBack) {
+        mCallBack = callBack;
+    }
+
+    CallBack mCallBack;
 
     public StateAdatper(Context context, List list) {
         inflater = LayoutInflater.from(context);
@@ -60,7 +78,16 @@ public class StateAdatper extends RecyclerView.Adapter {
         }
         OrderStateLine osl = traceList.get(position);
         itemHolder.orderStateTv.setText(osl.getState());
-        itemHolder.orderContentTv.setText(osl.getContent());
+
+        if (osl.getContent().contains("查看差异")){
+            itemHolder.orderContentTv.setHighlightColor(context.getResources().getColor(android.R.color.transparent));
+            SpannableString spanableInfo = new SpannableString(osl.getContent());
+            spanableInfo.setSpan(new Clickable(clickListener),osl.getContent().length()-4,osl.getContent().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            itemHolder.orderContentTv.setText(spanableInfo);
+            itemHolder.orderContentTv.setMovementMethod(LinkMovementMethod.getInstance());
+        }else{
+            itemHolder.orderContentTv.setText(osl.getContent());
+        }
         itemHolder.stateTimeTv.setText(osl.getTime());
         List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts  = osl.getAlterProducts();
         if (alterProducts != null && alterProducts.size() > 0){
@@ -73,6 +100,8 @@ public class StateAdatper extends RecyclerView.Adapter {
         }
 
     }
+
+
     @Override
     public int getItemViewType(int position) {
         OrderStateLine osl = traceList.get(position);
@@ -105,4 +134,35 @@ public class StateAdatper extends RecyclerView.Adapter {
             rvProductList = (RecyclerView)itemView.findViewById(R.id.rv_product_list);
         }
     }
+    class Clickable extends ClickableSpan {
+        private final View.OnClickListener mListener;
+
+        public Clickable(View.OnClickListener l) {
+            mListener = l;
+        }
+
+        /**
+         * 重写父类点击事件
+         */
+        @Override
+        public void onClick(View v) {
+            mListener.onClick(v);
+        }
+
+        /**
+         * 重写父类updateDrawState方法  我们可以给TextView设置字体颜色,背景颜色等等...
+         */
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            ds.setColor(context.getResources().getColor(R.color.order_state_clickable));
+        }
+    }
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (mCallBack != null){
+                mCallBack.onAction();
+            }
+        }
+    };
 }

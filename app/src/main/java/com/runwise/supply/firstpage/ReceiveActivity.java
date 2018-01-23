@@ -272,22 +272,22 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     countMap.put(String.valueOf(receiveBean.getProductId()), receiveBean);
                 }
                 for (OrderResponse.ListBean.LinesBean bean : datas) {
-                    totalQty += bean.getProductUomQty();
+                    totalQty += bean.getActualSendNum();
                 }
                 updatePbProgress();
             }else{
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
-                    receiveBean.setCount(linesBean.getProductUomQty());
+                    receiveBean.setCount(linesBean.getActualSendNum());
                     final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
                     receiveBean.setTracking(basicBean.getTracking());
                     if (basicBean.getTracking().equals("lot")) {
                         List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
                         ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
                         lotBean.setLot_name("");
-                        lotBean.setHeight(linesBean.getProductUomQty());
-                        lotBean.setQty((int) linesBean.getProductUomQty());
+                        lotBean.setHeight(linesBean.getActualSendNum());
+                        lotBean.setQty((int) linesBean.getActualSendNum());
                         lotBean.setProduce_datetime(TimeUtils.getYMD(new Date()));
                         lot_list.add(lotBean);
                         receiveBean.setLot_list(lot_list);
@@ -626,7 +626,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     private void setDefalutProgressBar() {
         for (OrderResponse.ListBean.LinesBean bean : datas) {
-            totalQty += bean.getProductUomQty();
+            totalQty += bean.getActualSendNum();
         }
         mTvReceiveCount.setText(NumberUtil.getIOrD(totalQty));
         mTvReceiveCountTag.setText("/" + NumberUtil.getIOrD(totalQty) + "件");
@@ -924,7 +924,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     private boolean isSameReceiveCount() {
         for (OrderResponse.ListBean.LinesBean lb : datas) {
-            int qty = (int) lb.getProductUomQty();
+            int qty = (int) lb.getActualSendNum();
             String pId = String.valueOf(lb.getProductID());
             if (countMap.containsKey(pId)) {
                 if (qty != countMap.get(pId).getCount()) {
@@ -1100,11 +1100,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             runwiseKeyBoard.setUp(bottomData, new RunwiseKeyBoard.SetCountListener() {
                 @Override
                 public void onSetCount(double count) {
-                    if (TextUtils.isEmpty(edEt.getText().toString())){
-                        toast("输入数量不能为空!");
-                        return;
-                    }
                     String pId = String.valueOf(bottomData.getProductId());
+                    bottomData.setChange(true);
                     bottomData.setCount(count);
                     countMap.put(pId, bottomData);
                     mPopWindow2.dismiss();
