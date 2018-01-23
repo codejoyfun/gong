@@ -2,7 +2,6 @@ package com.runwise.supply.orderpage;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -22,8 +21,6 @@ import com.runwise.supply.R;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Locale;
-import java.util.logging.Handler;
 
 import io.vov.vitamio.utils.NumberUtil;
 
@@ -43,7 +40,7 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
     TextView mTvName;
 
     public ProductValueDialog(@NonNull Context context, String name, double initValue, String remark,IProductDialogCallback callback ){
-        super(context);
+        super(context, R.style.CustomProgressDialog);
         this.name = name;
         this.initValue = initValue;
         this.callback = callback;
@@ -51,7 +48,7 @@ public class ProductValueDialog extends Dialog implements View.OnClickListener{
         setContentView(R.layout.dialog_product_input);
         Window window = getWindow();
         window.getAttributes().gravity = Gravity.CENTER;
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         this.setCancelable(true);
         this.setCanceledOnTouchOutside(false);
         findViewById(R.id.dialog_product_input_ok).setOnClickListener(this);

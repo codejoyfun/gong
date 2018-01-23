@@ -11,13 +11,13 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.view.ProductImageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -196,7 +196,15 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         if(bean.getImage()!=null){
             FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, bean.getImage().getImageSmall());
         }
-
+        viewHolder.sDv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProductImageDialog productImageDialog = new ProductImageDialog(mContext);
+                productImageDialog.setListBean(bean);
+                productImageDialog.setProductCountSetter(productCountSetter);
+                productImageDialog.show();
+            }
+        });
         return convertView;
     }
 
