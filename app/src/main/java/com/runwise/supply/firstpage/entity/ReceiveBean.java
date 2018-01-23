@@ -24,6 +24,7 @@ public class ReceiveBean {
     private String tracking;
     private ImageBean imageBean;
     List<ReceiveRequest.ProductsBean.LotBean> lot_list;
+    private boolean isChange;
 
 
     public ReceiveBean(String source){
@@ -198,4 +199,11 @@ public class ReceiveBean {
         this.imageBean = imageBean;
     }
 
+    public boolean isChange() {
+        return isChange;
+    }
+
+    public void setChange(boolean change) {
+        isChange = change;
+    }
 }

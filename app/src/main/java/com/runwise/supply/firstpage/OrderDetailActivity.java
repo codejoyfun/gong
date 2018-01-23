@@ -31,7 +31,6 @@ import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -88,7 +87,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
-//    private OrderDtailAdapter adapter;
+    //    private OrderDtailAdapter adapter;
     @ViewInject(R.id.dateTv)
     private TextView dateTv;
     @ViewInject(R.id.orderStateTv)
@@ -109,6 +108,8 @@ public class OrderDetailActivity extends NetWorkActivity {
     private TextView uploadBtn;
     @ViewInject(R.id.receivtTv)
     private TextView receivtTv;
+    @ViewInject(R.id.tv_actual_delivery)
+    private TextView mTvActualDelivery;
     @ViewInject(R.id.returnTv)
     private TextView returnTv;
     @ViewInject(R.id.ygMoneyTv)
@@ -530,7 +531,8 @@ public class OrderDetailActivity extends NetWorkActivity {
         returnTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(InventoryCacheManager.getInstance(OrderDetailActivity.this).checkIsInventory(OrderDetailActivity.this))return;
+                if (InventoryCacheManager.getInstance(OrderDetailActivity.this).checkIsInventory(OrderDetailActivity.this))
+                    return;
                 //跳转到退换流程：如果超过7天,不支持退货
                 if (isMoreThanReturnData()) {
                     dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");
@@ -691,15 +693,22 @@ public class OrderDetailActivity extends NetWorkActivity {
                 returnTv.setVisibility(View.VISIBLE);
             }
             //实收判断
-            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.isActual()) {
+            if (bean.isActual()) {
                 receivtTv.setVisibility(View.VISIBLE);
                 countTv.setText((int) bean.getDeliveredQty() + "件");
             } else {
                 receivtTv.setVisibility(View.GONE);
                 countTv.setText((int) bean.getAmount() + "件");
             }
-            //商品数量/预估金额
-            DecimalFormat df = new DecimalFormat("#.##");
+            if (bean.isActualSendOrder()){
+                mTvActualDelivery.setVisibility(View.VISIBLE);
+            }else{
+                mTvActualDelivery.setVisibility(View.GONE);
+            }
+
+
+                //商品数量/预估金额
+                DecimalFormat df = new DecimalFormat("#.##");
             ygMoneyTv.setText("¥" + df.format(bean.getAmountTotal()));
 //            countTv.setText((int)bean.getAmount()+"件");
             //设置list

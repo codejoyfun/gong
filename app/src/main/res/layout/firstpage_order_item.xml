@@ -94,6 +94,18 @@
                     android:visibility="visible"
                     android:gravity="center"
                     android:background="@drawable/receive_circle"/>
+
+                <TextView
+                    android:id="@+id/tv_actual_delivery"
+                    android:layout_width="35dp"
+                    android:layout_height="14dp"
+                    android:text="实发"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="9sp"
+                    android:textColor="#FA5900"
+                    android:visibility="visible"
+                    android:gravity="center"
+                    android:background="@drawable/receive_circle"/>
             </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"

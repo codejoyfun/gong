@@ -147,7 +147,6 @@ public abstract class IBaseAdapter<T> extends BaseAdapter {
 			canClickItem = new HashMap<Integer, onInternalClickListener>();
 			canClickItem.put(key, onClickListener);
 	}
-
 	public interface onInternalClickListener {
 		public void OnClickListener(View parentV, View v, Integer position,
 									Object values);

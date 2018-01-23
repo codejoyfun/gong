@@ -237,8 +237,9 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                                 .append("\n").append("配送员：").append(bean.getWaybill().getDeliverUser().getName()).append(" ")
                                 .append(bean.getWaybill().getDeliverUser().getMobile()).append("\n")
                                 .append("预计到达时间：").append(bean.getEstimatedTime());
-                    } else {
-//                        content.append("暂未分配");
+                    }
+                    if (!bean.isActualSendOrder()){
+                        content.append("\n").append("查看差异");
                     }
                 } else if (str.contains("已确认")) {
                     content.append("正在为您挑拣商品");
@@ -261,6 +262,12 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
         adatper = new StateAdatper(mContext, sortStatusByTime(datas));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adatper);
+        adatper.setCallBack(new StateAdatper.CallBack() {
+            @Override
+            public void onAction() {
+                startActivity(OrderProductDiffActivity.getStartIntent(getActivityContext(), (OrderResponse.ListBean) data));
+            }
+        });
     }
 
     private void insertProductAlteredStatus(List<OrderStateLine> datas, OrderResponse.ListBean orderBean) {
