@@ -47,6 +47,7 @@ public class OrderProductDiffActivity extends NetWorkActivity {
     PriceAdapter mPriceAdapter;
 
     public static final String INTENT_KEY_ORDER = "intent_key_order";
+    public static final String INTENT_KEY_LIST = "intent_key_list";
     @BindView(R.id.pullListView)
     PullToRefreshListView mPullListView;
     @BindView(R.id.loadingLayout)
@@ -57,6 +58,11 @@ public class OrderProductDiffActivity extends NetWorkActivity {
     public static Intent getStartIntent(Activity activity, OrderResponse.ListBean orderBean) {
         Intent intent = new Intent(activity, OrderProductDiffActivity.class);
         intent.putExtra(INTENT_KEY_ORDER, (Parcelable) orderBean);
+        return intent;
+    }
+    public static Intent getStartIntent(Activity activity, List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts) {
+        Intent intent = new Intent(activity, OrderProductDiffActivity.class);
+        intent.putExtra(INTENT_KEY_LIST, (Parcelable) alterProducts);
         return intent;
     }
 

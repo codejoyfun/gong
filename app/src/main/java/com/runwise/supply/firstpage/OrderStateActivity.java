@@ -238,7 +238,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                                 .append(bean.getWaybill().getDeliverUser().getMobile()).append("\n")
                                 .append("预计到达时间：").append(bean.getEstimatedTime());
                     }
-                    if (!bean.isActualSendOrder()){
+                    if (bean.isActualSendOrder()) {
                         content.append("\n").append("查看差异");
                     }
                 } else if (str.contains("已确认")) {
@@ -256,7 +256,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 osl.setContent(content.toString());
                 datas.add(osl);
             }
-            insertProductAlteredStatus(datas,(OrderResponse.ListBean) data);
+            insertProductAlteredStatus(datas, (OrderResponse.ListBean) data);
         }
 
         adatper = new StateAdatper(mContext, sortStatusByTime(datas));
@@ -282,6 +282,8 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             String alterDate = productAlteredBean.getAlterDate();
             String timeSb = alterDate.substring(5);
             String content = "修改人:" + productAlteredBean.getAlterUserName();
+//            content = content + "\n" + "查看差异";
+
             osl.setState(state);
             osl.setTime(timeSb);
             osl.setContent(content);
@@ -300,14 +302,14 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
         Arrays.sort(orderStateLineList, new Comparator<OrderStateLine>() {
             @Override
             public int compare(OrderStateLine o1, OrderStateLine o2) {
-                if (o1.getTimeStamp() == o2.getTimeStamp()){
+                if (o1.getTimeStamp() == o2.getTimeStamp()) {
                     return 1;
                 }
                 return o1.getTimeStamp() < o2.getTimeStamp() ? 1 : -1;
             }
         });
         datas.clear();
-        for (int j = 0;j < orderStateLineList.length;j++){
+        for (int j = 0; j < orderStateLineList.length; j++) {
             datas.add(orderStateLineList[j]);
         }
         return datas;

@@ -82,6 +82,9 @@ public class StateAdatper extends RecyclerView.Adapter {
         if (osl.getContent().contains("查看差异")){
             itemHolder.orderContentTv.setHighlightColor(context.getResources().getColor(android.R.color.transparent));
             SpannableString spanableInfo = new SpannableString(osl.getContent());
+
+
+
             spanableInfo.setSpan(new Clickable(clickListener),osl.getContent().length()-4,osl.getContent().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             itemHolder.orderContentTv.setText(spanableInfo);
             itemHolder.orderContentTv.setMovementMethod(LinkMovementMethod.getInstance());
@@ -105,7 +108,6 @@ public class StateAdatper extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         OrderStateLine osl = traceList.get(position);
-        List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts  = osl.getAlterProducts();
         if (position == 0) {
             return TYPE_TOP;
         }

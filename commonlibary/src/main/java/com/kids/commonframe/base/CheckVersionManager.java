@@ -14,6 +14,7 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomUpdateDialog;
+import com.kids.commonframe.config.Constant;
 import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloader;
@@ -60,7 +61,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         checkVersionRequest.setTag("Android");
         checkVersionRequest.setCompanyName((String) SPUtils.get(baseActivity,FILE_KEY_COMPANY_NAME,""));
 
-        netWorkHelper.sendConnection("/api/app/release/latest/version",checkVersionRequest,REQUEST_CHECK_VERSION,false,VersionUpdateResponse.class);
+        netWorkHelper.sendConnection(Constant.UNLOGIN_URL,"/api/app/release/latest/version",checkVersionRequest,REQUEST_CHECK_VERSION,false,VersionUpdateResponse.class,true);
         if (showToast) {
             ToastUtil.show(baseActivity,"检查更新中...");
         }
