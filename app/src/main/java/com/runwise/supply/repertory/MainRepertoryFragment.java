@@ -17,8 +17,8 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
-import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.entity.InventoryResponse;
+import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
@@ -67,7 +67,6 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 return true;
             }
         });
-
     }
 
 
@@ -133,6 +132,13 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 //检查是否有缓存
                 InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
                 if(cacheBean!=null)inventoryBean = cacheBean;
+                //有确认中的盘点单，则显示盘点通知
+                boolean isInProgresss = "confirm".equals(inventoryBean.getState());
+                if(isInProgresss) {
+                    if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
+                }else{
+                    if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
+                }
                 intent1.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryBean);
                 startActivity(intent1);
                 break;
