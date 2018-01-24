@@ -1014,7 +1014,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         request.setLimit(1);
         request.setPz(1);
         request.setDate_type(0);
-        sendConnection("/api/v2/inventory/list",request,REQUEST_INVENTORY_LIST,false,FirstPageInventoryResult.class);
+        sendConnection("/api/v3/inventory/list",request,REQUEST_INVENTORY_LIST,false,FirstPageInventoryResult.class);
     }
 
     /**
