@@ -855,6 +855,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mmTvAdd.setOnClickListener(this);
             mmTvReduce = (ImageView) itemView.findViewById(R.id.iv_item_cart_minus);
             mmTvReduce.setOnClickListener(this);
+            mmTvCount.setOnClickListener(this);
         }
 
         @Override
@@ -898,6 +899,30 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, count));
                     mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getUom());
+                    break;
+                case R.id.tv_item_cart_count:
+                    double currentCount = mCountSetter.getCount(listBean);
+                    new ProductValueDialog(mContext, listBean.getName(), currentCount, mCountSetter.getRemark(listBean),new ProductValueDialog.IProductDialogCallback() {
+                        @Override
+                        public void onInputValue(double value,String remark) {
+
+                            mCountSetter.setCount(listBean,value);
+                            listBean.setRemark(remark);
+                            mCountSetter.setRemark(listBean);
+                            mMapCount.put(listBean, value);
+                            EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, value));
+                            mmTvCount.setText(NumberUtil.getIOrD(value) + listBean.getUom());
+                            if (!TextUtils.isEmpty(remark)){
+                                mmTvRemark.setVisibility(View.VISIBLE);
+                                mmTvRemark.setText("备注：" + remark);
+                            }else{
+                                mmTvRemark.setText("");
+                                mmTvRemark.setVisibility(View.GONE);
+                            }
+
+                            mmCbCheck.setChecked(true);
+                        }
+                    }).show();
                     break;
             }
         }

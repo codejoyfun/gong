@@ -14,6 +14,9 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.runwise.supply.business.entity.FirstPageInventoryResult;
+import com.runwise.supply.entity.InventoryResponse;
+import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.entity.ProcurementRequest;
 import com.runwise.supply.mine.ProcurementAddActivity;
 import com.runwise.supply.mine.ProcurementFragment;
@@ -24,6 +27,7 @@ import java.util.List;
 
 public class ProcurementActivity extends NetWorkActivity {
 
+    private static final int REQUEST_INVENTORY_LIST = 1<<0;
     @ViewInject(R.id.indicator)
     private SmartTabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -47,14 +51,45 @@ public class ProcurementActivity extends NetWorkActivity {
 
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
-        if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
-        startActivity(new Intent(ProcurementActivity.this,ProcurementAddActivity.class));
+        checkInventory();
     }
 
-
+    /**
+     * 检查盘点单
+     */
+    private void checkInventory(){
+        PageRequest request = new PageRequest();
+        //只查盘点列表第一个，盘点中的单一定在第一条
+        request.setLimit(1);
+        request.setPz(1);
+        request.setDate_type(0);
+        sendConnection("/api/v3/inventory/list",request,REQUEST_INVENTORY_LIST,false,FirstPageInventoryResult.class);
+    }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
+        switch (where){
+            case REQUEST_INVENTORY_LIST:
+                FirstPageInventoryResult inventoryResult = (FirstPageInventoryResult) result.getResult().getData();
+                if(inventoryResult.getList()!=null && inventoryResult.getList().size()>0){
+                    InventoryResponse.InventoryBean inventoryBean = inventoryResult.getList().get(0);
+                    boolean isInProgresss = "confirm".equals(inventoryBean.getState());
+                    //如果是盘点中，需要展示提示
+                    if(isInProgresss){
+                        InventoryCacheManager.getInstance(getActivityContext()).setIsInventory(true);//记录，不可其它入库出库操作了
+                        InventoryCacheManager.getInstance(getActivityContext()).shouldShowInventoryInProgress(true);
+                    }else{
+                        InventoryCacheManager.getInstance(getActivityContext()).shouldShowInventoryInProgress(false);
+                        InventoryCacheManager.getInstance(getActivityContext()).setIsInventory(false);
+                    }
+                }else{//没有记录
+                    InventoryCacheManager.getInstance(getActivityContext()).setIsInventory(false);
+                    InventoryCacheManager.getInstance(getActivityContext()).shouldShowInventoryInProgress(false);
+                }
+                if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
+                startActivity(new Intent(ProcurementActivity.this,ProcurementAddActivity.class));
+                break;
+        }
     }
 
     @Override
