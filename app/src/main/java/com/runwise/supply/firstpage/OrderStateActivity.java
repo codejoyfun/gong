@@ -36,6 +36,9 @@ import java.util.List;
 import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
+import static com.runwise.supply.firstpage.StateAdatper.DIFF_TYPE_DELIVERY;
+import static com.runwise.supply.firstpage.StateAdatper.DIFF_TYPE_RECEIVE;
+
 /**
  * Created by libin on 2017/7/16.
  */
@@ -264,8 +267,15 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
         recyclerView.setAdapter(adatper);
         adatper.setCallBack(new StateAdatper.CallBack() {
             @Override
-            public void onAction() {
-                startActivity(OrderProductDiffActivity.getStartIntent(getActivityContext(), (OrderResponse.ListBean) data));
+            public void onAction(int type,int position) {
+                switch (type){
+                    case DIFF_TYPE_RECEIVE:
+                        startActivity(OrderProductDiffActivity.getStartIntent(getActivityContext(), new ArrayList<>(datas.get(position).getAlterProducts())));
+                        break;
+                    case DIFF_TYPE_DELIVERY:
+                        startActivity(OrderProductDiffActivity.getStartIntent(getActivityContext(), (OrderResponse.ListBean) data));
+                        break;
+                }
             }
         });
     }
@@ -282,7 +292,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
             String alterDate = productAlteredBean.getAlterDate();
             String timeSb = alterDate.substring(5);
             String content = "修改人:" + productAlteredBean.getAlterUserName();
-//            content = content + "\n" + "查看差异";
+            content = content + "\n" + "查看差异";
 
             osl.setState(state);
             osl.setTime(timeSb);

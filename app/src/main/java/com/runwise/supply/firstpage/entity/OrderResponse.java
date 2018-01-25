@@ -129,6 +129,13 @@ public class OrderResponse {
         public void setIsActual(boolean actual) {
             isActual = actual;
         }
+        public boolean isActualSendOrder() {
+            return isActualSendOrder;
+        }
+
+        public void setIsActualSendOrder(boolean actualSendOrder) {
+            isActualSendOrder = actualSendOrder;
+        }
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -611,13 +618,6 @@ public class OrderResponse {
             dest.writeByte((byte) (isActualSendOrder ? 1 : 0));
         }
 
-        public boolean isActualSendOrder() {
-            return isActualSendOrder;
-        }
-
-        public void setActualSendOrder(boolean actualSendOrder) {
-            isActualSendOrder = actualSendOrder;
-        }
 
 
         public static class ProductAlteredBean implements Parcelable {
@@ -683,13 +683,15 @@ public class OrderResponse {
                 dest.writeTypedList(alterProducts);
             }
 
-            public static class AlterProductBean implements Parcelable {
+            public static class AlterProductBean implements Parcelable,Serializable {
                 String name;
                 String defaultCode;
                 String unit;
                 String uom;
                 double originNum;
                 double alterNum;
+                String imageMedium;
+                double price;
 
                 public AlterProductBean() {
 
@@ -703,6 +705,9 @@ public class OrderResponse {
                     uom = in.readString();
                     originNum = in.readDouble();
                     alterNum = in.readDouble();
+
+                    imageMedium = in.readString();
+                    price = in.readDouble();
                 }
 
                 public static final Creator<AlterProductBean> CREATOR = new Creator<AlterProductBean>() {
@@ -716,6 +721,21 @@ public class OrderResponse {
                         return new AlterProductBean[size];
                     }
                 };
+                public double getPrice() {
+                    return price;
+                }
+
+                public void setPrice(double price) {
+                    this.price = price;
+                }
+
+                public String getImageMedium() {
+                    return imageMedium;
+                }
+
+                public void setImageMedium(String imageMedium) {
+                    this.imageMedium = imageMedium;
+                }
 
                 public String getName() {
                     return name;
@@ -775,9 +795,13 @@ public class OrderResponse {
                     dest.writeString(name);
                     dest.writeString(defaultCode);
                     dest.writeString(unit);
+
                     dest.writeString(uom);
                     dest.writeDouble(originNum);
                     dest.writeDouble(alterNum);
+
+                    dest.writeString(imageMedium);
+                    dest.writeDouble(price);
                 }
             }
 

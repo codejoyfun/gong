@@ -38,6 +38,7 @@ public class ReceiveBean {
             twoUnitValue = jsonObject.optDouble("twoUnitValue");
             unit = jsonObject.optString("unit");
             tracking = jsonObject.optString("tracking");
+            isChange = jsonObject.optBoolean("isChange");
             JSONArray jsonArray = jsonObject.optJSONArray("lot_list");
             if(jsonArray !=null){
                 lot_list = new ArrayList<>();
@@ -65,6 +66,7 @@ public class ReceiveBean {
             jsonObject.put("unit",unit);
             jsonObject.put("twoUnitValue",twoUnitValue);
             jsonObject.put("tracking",tracking);
+            jsonObject.put("isChange",isChange);
             JSONArray jsonArray = new JSONArray();
             if (lot_list != null){
                 for (ReceiveRequest.ProductsBean.LotBean lotBean:lot_list){
@@ -203,7 +205,7 @@ public class ReceiveBean {
         return isChange;
     }
 
-    public void setChange(boolean change) {
+    public void setIsChange(boolean change) {
         isChange = change;
     }
 }
