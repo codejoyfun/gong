@@ -22,6 +22,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderProductAdapter;
+import com.runwise.supply.adapter.OrderStateProductAdapter;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.LotListActivity;
@@ -45,18 +46,27 @@ public class OrderProductDiffActivity extends NetWorkActivity {
 
     public static final int REQUEST_PRODUCT_DETAIL = 1 << 0;
     PriceAdapter mPriceAdapter;
+    OrderStateProductAdapter mOrderStateProductAdapter;
 
     public static final String INTENT_KEY_ORDER = "intent_key_order";
+    public static final String INTENT_KEY_LIST = "intent_key_list";
     @BindView(R.id.pullListView)
     PullToRefreshListView mPullListView;
     @BindView(R.id.loadingLayout)
     LoadingLayout mLoadingLayout;
 
     OrderResponse.ListBean mOrderBean;
+    List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> mAlterProducts;
 
     public static Intent getStartIntent(Activity activity, OrderResponse.ListBean orderBean) {
         Intent intent = new Intent(activity, OrderProductDiffActivity.class);
         intent.putExtra(INTENT_KEY_ORDER, (Parcelable) orderBean);
+        return intent;
+    }
+
+    public static Intent getStartIntent(Activity activity, ArrayList<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean> alterProducts) {
+        Intent intent = new Intent(activity, OrderProductDiffActivity.class);
+        intent.putExtra(INTENT_KEY_LIST, alterProducts);
         return intent;
     }
 
@@ -68,16 +78,28 @@ public class OrderProductDiffActivity extends NetWorkActivity {
         setTitleText(true, "差异明细");
         showBackBtn();
         mOrderBean = getIntent().getParcelableExtra(INTENT_KEY_ORDER);
-        List<OrderResponse.ListBean.LinesBean> linesBeans = mOrderBean.getLines();
-        List<OrderResponse.ListBean.LinesBean> diffLinesBeans = new ArrayList<>();
-        for (OrderResponse.ListBean.LinesBean linesBean : linesBeans) {
-            if (linesBean.getActualSendNum() != linesBean.getProductUomQty()) {
-                diffLinesBeans.add(linesBean);
+        if (mOrderBean != null) {
+            List<OrderResponse.ListBean.LinesBean> linesBeans = mOrderBean.getLines();
+            List<OrderResponse.ListBean.LinesBean> diffLinesBeans = new ArrayList<>();
+            for (OrderResponse.ListBean.LinesBean linesBean : linesBeans) {
+                if (linesBean.getActualSendNum() != linesBean.getProductUomQty()) {
+                    diffLinesBeans.add(linesBean);
+                }
             }
+            mPriceAdapter = new PriceAdapter();
+            mPullListView.setAdapter(mPriceAdapter);
+            mPriceAdapter.setData(diffLinesBeans);
         }
-        mPriceAdapter = new PriceAdapter();
-        mPullListView.setAdapter(mPriceAdapter);
-        mPriceAdapter.setData(diffLinesBeans);
+        Object serializableExtra = getIntent().getSerializableExtra(INTENT_KEY_LIST);
+        if (serializableExtra != null){
+            mAlterProducts = (List<OrderResponse.ListBean.ProductAlteredBean.AlterProductBean>) serializableExtra;
+        }
+        if (mAlterProducts != null && mAlterProducts.size() > 0) {
+            mOrderStateProductAdapter = new OrderStateProductAdapter();
+            mPullListView.setAdapter(mOrderStateProductAdapter);
+            mOrderStateProductAdapter.setData(mAlterProducts);
+        }
+
     }
 
 
@@ -120,11 +142,10 @@ public class OrderProductDiffActivity extends NetWorkActivity {
             }
             FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(vh.productImage, imageUrl);
             double puq = bean.getProductUomQty();
-            double dq = bean.getDeliveredQty();
 //            实发
-            vh.oldPriceTv.setText("x" + NumberUtil.getIOrD(bean.getActualSendNum()));
+            vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(bean.getActualSendNum()));
+            vh.oldPriceTv.setText("x" + NumberUtil.getIOrD(puq));
             vh.oldPriceTv.setVisibility(View.VISIBLE);
-            vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(puq));
 
             vh.name.setText(bean.getName());
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());

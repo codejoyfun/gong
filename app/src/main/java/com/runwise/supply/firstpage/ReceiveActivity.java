@@ -1101,7 +1101,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 @Override
                 public void onSetCount(double count) {
                     String pId = String.valueOf(bottomData.getProductId());
-                    bottomData.setChange(true);
+                    bottomData.setIsChange(true);
                     bottomData.setCount(count);
                     countMap.put(pId, bottomData);
                     mPopWindow2.dismiss();

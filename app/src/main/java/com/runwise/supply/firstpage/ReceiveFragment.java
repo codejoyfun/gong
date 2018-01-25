@@ -511,9 +511,9 @@ public class ReceiveFragment extends BaseFragment {
                     if (!rb.isChange()) {
                         if (bean.getActualSendNum() != bean.getProductUomQty()) {
                             viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_count));
-                        } else {
-                            viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_input_count));
                         }
+                    }else{
+                        viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_input_count));
                     }
 //                        }
 //                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());

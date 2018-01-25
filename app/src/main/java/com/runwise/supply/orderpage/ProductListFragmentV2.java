@@ -3,6 +3,7 @@ package com.runwise.supply.orderpage;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
@@ -51,6 +52,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
     private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
 
     boolean hasOtherSub;//是否有其它子分类，用于区分子项的layout
+    View mRefreshFooter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,9 +61,19 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,false);
         mProductAdapter = new ProductAdapter(getActivity(),hasOtherSub);
-        pullListView.setMode(PullToRefreshBase.Mode.BOTH);
+        pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
+        mRefreshFooter = LayoutInflater.from(getActivity()).inflate(R.layout.refresh_footer,null,false);
+        pullListView.getRefreshableView().addFooterView(mRefreshFooter);
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
+        pullListView.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
+            @Override
+            public void onLastItemVisible() {
+                mRefreshFooter.setVisibility(View.VISIBLE);
+                loadMore();
+            }
+        });
         pullListView.setAdapter(mProductAdapter);
 
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -73,7 +85,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-                loadMore();
+//                loadMore();
             }
         });
 
@@ -143,6 +155,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
                 mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
                 break;
             case REQUEST_PRODUCT_MORE:
+                mRefreshFooter.setVisibility(View.GONE);
                 productData = (ProductData)result.getResult().getData();
                 mProductAdapter.appendData(productData.getList());
                 if(productData.getList()!=null && productData.getList().size()!=0){
@@ -157,6 +170,9 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        if (where == REQUEST_PRODUCT_MORE){
+            mRefreshFooter.setVisibility(View.GONE);
+        }
         mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
         mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
             @Override
