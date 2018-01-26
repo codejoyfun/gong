@@ -51,7 +51,7 @@
                 android:layout_width="56dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="盘点数量"
+                android:text="商品数量"
                 android:textColor="#FF666666"
                 android:textSize="14sp" />
 
