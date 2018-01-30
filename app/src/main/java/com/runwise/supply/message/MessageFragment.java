@@ -20,11 +20,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
@@ -43,8 +41,8 @@ import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.SystemUpgradeLayout;
+import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -183,6 +181,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             pullListView.setRefreshing();
         }
         firstLaunch = true;
+        MobclickAgent.onPageStart("消息首页"); //统计页面，"MainScreen"为页面名称，可自定义
     }
 
     public void requestData (boolean showDialog, int where, int page, int limit) {
@@ -498,5 +497,8 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             TextView chatMsg;
         }
     }
-
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("消息首页");
+    }
 }

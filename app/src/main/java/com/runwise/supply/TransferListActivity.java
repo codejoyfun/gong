@@ -18,6 +18,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.fragment.TransferListFragment;
 import com.runwise.supply.mine.CreateCallInListActivity;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import static com.runwise.supply.fragment.TransferListFragment.ARG_KEY_TYPE;
 import static com.runwise.supply.fragment.TransferListFragment.TYPE_IN;
@@ -169,5 +170,18 @@ public class TransferListActivity extends NetWorkActivity implements View.OnClic
                     break;
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);       //统计时长
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

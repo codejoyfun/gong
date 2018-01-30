@@ -1,13 +1,12 @@
 package com.runwise.supply.orderpage;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * “又”一个下单成功页
@@ -29,5 +28,16 @@ public class OrderSubmitSuccessActivity extends BaseActivity {
     @OnClick({R.id.title_iv_left,R.id.btn_gohome})
     public void onBtnClick(View v){
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("提交订单成功页");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("提交订单成功页");
     }
 }

@@ -22,7 +22,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.TransferBatchLot;
@@ -34,6 +33,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.UserUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -504,5 +504,17 @@ public class TransferInActivity extends NetWorkActivity {
                 heightTransferIn = (TextView)itemView.findViewById(R.id.tv_transfer_in_height);
             }
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("入库");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("入库");
     }
 }

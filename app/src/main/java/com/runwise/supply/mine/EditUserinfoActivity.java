@@ -349,4 +349,17 @@ public class EditUserinfoActivity extends NetWorkActivity {
         });
         mLogoutDialog.show();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("个人信息页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("个人信息页");
+    }
 }

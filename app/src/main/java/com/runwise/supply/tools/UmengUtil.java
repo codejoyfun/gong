@@ -53,4 +53,11 @@ public class UmengUtil {
     public static String getChannel(Context ctx){
        return getAppMetaData(ctx, "UMENG_CHANNEL");
     }
+
+     public static final String EVENT_ID_DATE_OF_SERVICE  = "date_of_service";
+     public static final String EVENT_ID_ORDER_SUBMIT  = "order_submit";
+     public static final String EVENT_ID_RECEIVE_FINISH  = "receive_finish";
+     public static final String EVENT_ID_START_THE_INVENTORY  = "start_the_inventory";
+     public static final String EVENT_ID_SUBMIT_THE_INVENTORY  = "submit_the_inventory";
+     public static final String EVENT_ID_XUAN_HAO_L  = "xuan_hao_l";
 }

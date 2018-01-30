@@ -50,6 +50,7 @@ import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.PlatformNotificationManager;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -334,6 +335,7 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
 //        if (SPUtils.isLogin(mContext)){
 //            queryProductList();
@@ -362,6 +364,12 @@ public class MainActivity extends NetWorkActivity {
             }
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

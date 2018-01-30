@@ -21,6 +21,7 @@ import com.runwise.supply.entity.ProcurementRequest;
 import com.runwise.supply.mine.ProcurementAddActivity;
 import com.runwise.supply.mine.ProcurementFragment;
 import com.runwise.supply.tools.InventoryCacheManager;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -155,5 +156,17 @@ public class ProcurementActivity extends NetWorkActivity {
         public int getCount() {
             return titleList.size();
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("自采商品页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("自采商品页");
     }
 }

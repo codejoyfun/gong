@@ -65,6 +65,7 @@ import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoScrollViewPager;
 import com.runwise.supply.view.NoWatchEditText;
 import com.runwise.supply.view.ProductTypePopup;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -1289,5 +1290,16 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("收货页面");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("收货页面");
     }
 }

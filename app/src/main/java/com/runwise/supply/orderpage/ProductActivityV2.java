@@ -42,6 +42,7 @@ import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.view.ProductTypePopup;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -65,6 +66,7 @@ import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUC
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_FIRST;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_XUAN_HAO_L;
 
 /**
  * 分页/二级分类的商品选择页
@@ -403,6 +405,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * 点击选好了
      */
     protected void onOkClicked() {
+        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_XUAN_HAO_L);
         if (mmSelected.size() == 0) {
             Toast.makeText(this, "请在购物车中勾选商品", Toast.LENGTH_LONG).show();
             return;
@@ -1033,5 +1036,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         double getCount(ProductData.ListBean bean);
 
         String getRemark(ProductData.ListBean bean);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("自助下单页面");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("自助下单页面");
     }
 }
