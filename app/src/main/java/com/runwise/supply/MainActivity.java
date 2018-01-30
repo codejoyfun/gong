@@ -31,10 +31,9 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.entity.GuideResponse;
 import com.runwise.supply.entity.RemUser;
-import com.runwise.supply.entity.UpdateTimeRequest;
 import com.runwise.supply.entity.UnReadData;
+import com.runwise.supply.entity.UpdateTimeRequest;
 import com.runwise.supply.entity.UpdateTimeResponse;
 import com.runwise.supply.event.PlatformNotificationEvent;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
@@ -42,7 +41,6 @@ import com.runwise.supply.firstpage.entity.VersionRequest;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.mine.MineFragment;
-import com.runwise.supply.orderpage.OrderFragment;
 import com.runwise.supply.orderpage.OrderFragmentV2;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
@@ -61,7 +59,6 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.Log;
-import io.vov.vitamio.utils.NumberUtil;
 
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
@@ -93,6 +90,8 @@ public class MainActivity extends NetWorkActivity {
 
     long mTimeStartREQUEST_UNREAD;
 
+    DbUtils mDbUtils;
+
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements Runnable {
         private List<ProductBasicList.ListBean> basicList;
@@ -103,25 +102,17 @@ public class MainActivity extends NetWorkActivity {
 
         @Override
         public void run() {
-            DbUtils dbUtils = MyDbUtil.create(MainActivity.this);
+            mDbUtils = MyDbUtil.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
-//            Log.d("haha","total from network:"+basicList.size());
             HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
-            dbUtils.configAllowTransaction(true);
+            mDbUtils.configAllowTransaction(true);
             try{
-                dbUtils.saveOrUpdateAll(basicList);
-            }catch(DbException e){
-                e.printStackTrace();
-            }
-
-            for (ProductBasicList.ListBean bean : basicList) {
-                map.put(String.valueOf(bean.getProductID()), bean);
-            }
-
-            try{
-                //把数据库中原有的数据也提取出来，可能包括协议已删除的商品
-                dbUtils = MyDbUtil.create(MainActivity.this);
-                List<ProductBasicList.ListBean> list = dbUtils.findAll(ProductBasicList.ListBean.class);
+                mDbUtils.saveOrUpdateAll(basicList);
+                for (ProductBasicList.ListBean bean : basicList) {
+                    map.put(String.valueOf(bean.getProductID()), bean);
+                }
+//                dbUtils = MyDbUtil.create(MainActivity.this);
+                List<ProductBasicList.ListBean> list = mDbUtils.findAll(ProductBasicList.ListBean.class);
 //                Log.d("haha","total in db:"+list.size());
                 for(ProductBasicList.ListBean bean:list){
                     String keyId = bean.getProductID()+"";
@@ -132,10 +123,11 @@ public class MainActivity extends NetWorkActivity {
                         map.put(keyId,bean);
                     }
                 }
-            }catch (DbException e){
+                ProductBasicUtils.setBasicMap(map);
+            }catch(DbException e){
                 e.printStackTrace();
             }
-            ProductBasicUtils.setBasicMap(map);
+
 
         }
     }
@@ -385,6 +377,9 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+//        if (mDbUtils != null){
+//            mDbUtils.close();
+//        }
     }
 
     @Override

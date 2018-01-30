@@ -49,6 +49,7 @@ import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -202,7 +203,6 @@ public class LoginActivity extends NetWorkActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mDb.close();
     }
 
     private void getHost(String companyName) {
@@ -233,7 +233,6 @@ public class LoginActivity extends NetWorkActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mDb.close();
     }
 
     private boolean isEmpty() {
@@ -322,6 +321,7 @@ public class LoginActivity extends NetWorkActivity {
                     startActivity(intent);
                     return;
                 }
+                MobclickAgent.onProfileSignIn(userInfoData.getMobile());
                 mDb = MyDbUtil.create(this);
                 try {
                     RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", loginRequest.getLogin())));
@@ -342,7 +342,6 @@ public class LoginActivity extends NetWorkActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                mDb.close();
                 GlobalApplication.getInstance().saveUserInfo(userInfoData);
 //				ToastUtil.show(mContext,"登录成功");
                 //@libin added
