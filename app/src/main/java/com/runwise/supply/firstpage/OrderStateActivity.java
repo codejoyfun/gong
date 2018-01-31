@@ -27,6 +27,7 @@ import com.runwise.supply.message.MessageDetailActivity;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -389,5 +390,16 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                 startActivity(dealIntent);
                 break;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("订单状态页");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("订单状态页");
     }
 }

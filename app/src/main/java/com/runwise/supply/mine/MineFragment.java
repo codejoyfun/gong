@@ -34,6 +34,7 @@ import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.ObservableScrollView;
 import com.runwise.supply.view.SystemUpgradeLayout;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -192,6 +193,7 @@ public class MineFragment extends NetWorkFragment {
         if (isLogin) {
             requestUserInfo();
         }
+        MobclickAgent.onPageStart("更多页");
     }
 
     @Override
@@ -407,5 +409,12 @@ public class MineFragment extends NetWorkFragment {
     public void onUpdateUserInfo(UpdateUserInfo userLoginEvent) {
         userInfo = GlobalApplication.getInstance().loadUserInfo();
         setLoginStatus(userInfo);
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("更多页");
     }
 }

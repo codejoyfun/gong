@@ -71,6 +71,7 @@ import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.view.FingerprintPromptDialog;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -315,8 +316,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
         } else {
 //            PollingUtil.getInstance().stopRequestOrder();
+
         }
+        MobclickAgent.onPageStart("首页");
     }
+
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -324,6 +328,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         if (isVisibleToUser) {
             requestReturnList();
             mTimeStartFROMRETURN = System.currentTimeMillis();
+
         } else {
 //            PollingUtil.getInstance().stopRequestOrder();
         }
@@ -332,6 +337,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     @Override
     public void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("首页");
 //        PollingUtil.getInstance().stopRequestOrder();
     }
 

@@ -33,6 +33,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.googlecode.mp4parser:isoparser:1.0.6'
     compile 'com.android.support:support-core-ui:24.2.1'
-    compile "de.halfbit:pinned-section-listview:1.0.0"
+    compile 'de.halfbit:pinned-section-listview:1.0.0'
     compile 'com.github.bumptech.glide:glide:3.6.1'
 }

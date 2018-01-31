@@ -6,55 +6,41 @@ import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.WebViewActivity;
 import com.kids.commonframe.base.bean.UserLoginEvent;
-import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.StorageUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomBottomDialog;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
-import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.ChangePwdActivity;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.InfoActivity;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
-import com.runwise.supply.business.entity.UserGuideRequest;
-import com.runwise.supply.entity.GuideResponse;
 import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.mine.entity.UrlResult;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.SP_CONSTANTS;
-import com.runwise.supply.tools.ScoreUtils;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.File;
-import java.util.List;
 
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
@@ -288,5 +274,16 @@ public class SettingActivity extends NetWorkActivity {
         super.onUserLoginout();
         isLogin = false;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("设置页");
+    }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("设置页");
+    }
 }

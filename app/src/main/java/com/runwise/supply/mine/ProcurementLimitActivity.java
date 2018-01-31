@@ -19,6 +19,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.tools.UserUtils;
+import com.umeng.analytics.MobclickAgent;
 
 public class ProcurementLimitActivity extends NetWorkActivity {
 
@@ -126,6 +127,17 @@ public class ProcurementLimitActivity extends NetWorkActivity {
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("上周采购额");
+    }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("上周采购额");
+    }
 
 }

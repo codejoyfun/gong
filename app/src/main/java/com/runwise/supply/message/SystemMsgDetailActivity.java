@@ -21,6 +21,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.DetailResult;
+import com.umeng.analytics.MobclickAgent;
 
 public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
@@ -161,5 +162,17 @@ public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingL
             @ViewInject(R.id.msgContext)
             TextView msgContext;
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("系统消息页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("系统消息页");
     }
 }

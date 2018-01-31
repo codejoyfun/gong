@@ -57,6 +57,7 @@ import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.RunwiseKeyBoard;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -653,5 +654,17 @@ public class ProcurementAddActivity extends NetWorkActivity {
             bgView.setVisibility(View.GONE);
 
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("自采商品添加页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("自采商品添加页");
     }
 }

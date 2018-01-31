@@ -14,6 +14,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,5 +113,16 @@ public class CheckActivity extends BaseActivity {
             return titleList.size();
         }
     }
-    
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("盘点记录页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("盘点记录页");
+    }
 }
