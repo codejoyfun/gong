@@ -130,7 +130,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         ChannelPandian request = new ChannelPandian();
         request.setId(id);
         request.setState("draft");
-        sendConnection("/api/inventory/state",request,REQUEST_CHANNEL,true,null);
+        sendConnection("/api/v2/inventory/state",request,REQUEST_CHANNEL,true,null);
     }
 
 
