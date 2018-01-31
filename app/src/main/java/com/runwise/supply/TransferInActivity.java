@@ -509,6 +509,7 @@ public class TransferInActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("入库");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -516,5 +517,6 @@ public class TransferInActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("入库");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

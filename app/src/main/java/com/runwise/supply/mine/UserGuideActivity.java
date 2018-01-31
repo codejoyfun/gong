@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
-import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
@@ -27,10 +26,7 @@ import com.runwise.supply.entity.GuideResponse;
 import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
-import com.runwise.supply.tools.UmengUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.umeng.analytics.MobclickAgent;
 
 import static com.kids.commonframe.base.WebViewActivity.WEB_TITLE;
 import static com.kids.commonframe.base.WebViewActivity.WEB_URL;
@@ -130,5 +126,19 @@ public class UserGuideActivity extends NetWorkActivity {
 //                inflateGuideView();
 //                break;
 //        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("用户指南页");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("用户指南页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

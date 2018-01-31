@@ -34,10 +34,12 @@ public class OrderSubmitSuccessActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("提交订单成功页");
+        MobclickAgent.onResume(this);          //统计时长
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("提交订单成功页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

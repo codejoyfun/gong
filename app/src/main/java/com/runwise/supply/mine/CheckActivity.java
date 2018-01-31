@@ -117,6 +117,7 @@ public class CheckActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("盘点记录页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -124,5 +125,6 @@ public class CheckActivity extends BaseActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("盘点记录页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

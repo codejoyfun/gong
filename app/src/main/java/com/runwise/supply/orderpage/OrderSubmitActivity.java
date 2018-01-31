@@ -50,8 +50,17 @@ import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_AGAIN;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_ALWAYS;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_MODIFY;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SELF;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SMART;
 import static com.runwise.supply.tools.UmengUtil.EVENT_ID_DATE_OF_SERVICE;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_AGAIN;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_MODIFY;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT_ALWAY;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT_SELF;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT_SMART;
 import static java.lang.System.currentTimeMillis;
 
 /**
@@ -109,6 +118,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
     private ArrayList<ProductData.ListBean> mProductList;//选择的商品
     private TempOrderManager.TempOrder mTempOrder;//本地记录提交中的订单
     private boolean isSelfHelpOrder;//是否一般下单流程，是的话需要清空购物车缓存；再来一单、智能下单不需要清空购物车
+    protected int mPlaceOrderType;
+    public static final String  INTENT_KEY_PLACE_ORDER_TYPE = "intent_key_place_order_type";
 
     private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
             .setViewListener(new BottomDialog.ViewListener() {
@@ -126,6 +137,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         setContentView(R.layout.activity_order_sumbit);
         ButterKnife.bind(this);
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER);
+        mPlaceOrderType = getIntent().getIntExtra(INTENT_KEY_PLACE_ORDER_TYPE,-1);
         isSelfHelpOrder = getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false);
         if (mOrder != null) {
             mTvTitle.setText("修改订单");
@@ -340,7 +352,24 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.btn_submit:
-                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT);
+                switch (mPlaceOrderType){
+                    case PLACE_ORDER_TYPE_ALWAYS:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT_ALWAY);
+                        break;
+                    case PLACE_ORDER_TYPE_SELF:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT_SELF);
+                        break;
+                    case PLACE_ORDER_TYPE_SMART:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT_SMART);
+                        break;
+                    case PLACE_ORDER_TYPE_AGAIN:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_AGAIN);
+                        break;
+                    case PLACE_ORDER_TYPE_MODIFY:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_MODIFY);
+                        break;
+                }
+
                 if (mOrder == null) {
                     submitOrder();//创建订单
                 } else {
@@ -574,10 +603,12 @@ public class OrderSubmitActivity extends NetWorkActivity {
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("提交订单页");
+        MobclickAgent.onResume(this);          //统计时长
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("提交订单页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

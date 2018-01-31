@@ -9,6 +9,7 @@ import com.runwise.supply.orderpage.OrderSubmitActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPlaceOrderType = PLACE_ORDER_TYPE_MODIFY;
         bean = getIntent().getExtras().getParcelable("order");
         //初始化商品数据
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
@@ -90,5 +92,19 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
         intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER, (Parcelable) bean);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("订单修改页");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("订单修改页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

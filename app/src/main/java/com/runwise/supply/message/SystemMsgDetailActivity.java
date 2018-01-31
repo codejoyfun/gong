@@ -167,6 +167,7 @@ public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingL
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("系统消息页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -174,5 +175,6 @@ public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingL
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("系统消息页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

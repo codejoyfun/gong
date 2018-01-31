@@ -29,9 +29,7 @@ import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.MainActivity;
@@ -55,9 +53,9 @@ import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.view.AutoLinefeedLayout;
 import com.runwise.supply.view.YourScrollableViewPager;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,15 +65,12 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.vov.vitamio.utils.Log;
 
-import static com.runwise.supply.R.id.cb1;
-import static com.runwise.supply.R.id.cb2;
-import static com.runwise.supply.R.id.cb3;
 import static com.runwise.supply.R.id.headSdv;
 import static com.runwise.supply.R.id.tablayout;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_EVALUATE;
 
 /**
  * Created by libin on 2017/7/20.
@@ -494,6 +489,7 @@ public class EvaluateActivity extends NetWorkActivity {
                 ActivityManager.getInstance().finishAll();
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_EVALUATE);
 //                Intent intent = new Intent(getActivityContext(),EvaluateSuccessActivity.class);
 //                intent.putExtra("orderid",orderId);
 //                startActivity(intent);
@@ -679,5 +675,18 @@ public class EvaluateActivity extends NetWorkActivity {
         if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         View v = getCurrentFocus();
         if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("评价页面");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("评价页面");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

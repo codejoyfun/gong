@@ -43,6 +43,7 @@ import github.chenupt.dragtoplayout.DragTopLayout;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.repertory.EditRepertoryAddActivity.INTENT_FILTER;
 import static com.runwise.supply.repertory.InventoryFragment.INTENT_CATEGORY;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ADD_INVENTORY_PRODUCT;
 import static com.runwise.supply.tools.UmengUtil.EVENT_ID_SUBMIT_THE_INVENTORY;
 
 /**
@@ -71,6 +72,7 @@ public class InventoryActivity extends NetWorkActivity {
     List<Fragment> orderProductFragmentList;
     private double mInventoryTotal = 0;//盘点后总数
     private boolean isSubmitted = false;//是否提交，提交了则onStop不保存
+    boolean mAddProduct = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,6 +239,11 @@ public class InventoryActivity extends NetWorkActivity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddNewBean(NewAdd newBean) {
+        if (!mAddProduct){
+            mAddProduct = true;
+            MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ADD_INVENTORY_PRODUCT);
+        }
+
         if (newBean.getType() == 1) {
             boolean isFind = false;
             for (InventoryResponse.InventoryProduct bean : mInventoryBean.getLines()) {
@@ -354,6 +361,7 @@ public class InventoryActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("盘点单详情页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -361,5 +369,6 @@ public class InventoryActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("盘点单详情页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

@@ -44,6 +44,7 @@ import java.io.File;
 
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_USER_GUIDE;
 
 /**
  * 设置
@@ -161,6 +162,7 @@ public class SettingActivity extends NetWorkActivity {
         switch (view.getId()) {
             //给我们的留言
             case R.id.setItemLayout_1:
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_USER_GUIDE);
                 intent = new Intent(mContext,UserGuideActivity.class);
                 startActivity(intent);
                 break;
@@ -278,6 +280,7 @@ public class SettingActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("设置页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -285,5 +288,6 @@ public class SettingActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("设置页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

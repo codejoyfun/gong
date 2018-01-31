@@ -396,10 +396,12 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("订单状态页");
+        MobclickAgent.onResume(this);          //统计时长
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("订单状态页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

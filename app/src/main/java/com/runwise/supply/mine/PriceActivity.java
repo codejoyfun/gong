@@ -288,6 +288,7 @@ public class PriceActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("价目表");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -295,5 +296,6 @@ public class PriceActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("价目表");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

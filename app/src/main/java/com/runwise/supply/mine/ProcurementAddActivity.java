@@ -659,6 +659,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("自采商品添加页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -666,5 +667,6 @@ public class ProcurementAddActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("自采商品添加页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

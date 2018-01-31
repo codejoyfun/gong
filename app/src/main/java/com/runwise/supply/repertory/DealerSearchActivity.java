@@ -68,6 +68,7 @@ public class DealerSearchActivity extends BaseActivity{
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("商品搜索页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -75,6 +76,7 @@ public class DealerSearchActivity extends BaseActivity{
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("商品搜索页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 
 }

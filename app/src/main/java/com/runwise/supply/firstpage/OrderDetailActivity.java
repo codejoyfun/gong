@@ -938,11 +938,13 @@ public class OrderDetailActivity extends NetWorkActivity {
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("订单详情");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("订单详情");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

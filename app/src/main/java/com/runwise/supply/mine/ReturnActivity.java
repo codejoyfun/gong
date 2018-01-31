@@ -144,6 +144,7 @@ public class ReturnActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("退货记录页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -151,5 +152,6 @@ public class ReturnActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("退货记录页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

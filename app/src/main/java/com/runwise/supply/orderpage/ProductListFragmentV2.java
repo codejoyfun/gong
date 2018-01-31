@@ -65,6 +65,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
         mRefreshFooter = LayoutInflater.from(getActivity()).inflate(R.layout.refresh_footer,null,false);
         pullListView.getRefreshableView().addFooterView(mRefreshFooter);
+        mRefreshFooter.setVisibility(View.GONE);
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {

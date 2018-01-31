@@ -55,9 +55,56 @@ public class UmengUtil {
     }
 
      public static final String EVENT_ID_DATE_OF_SERVICE  = "date_of_service";
-     public static final String EVENT_ID_ORDER_SUBMIT  = "order_submit";
+     public static final String EVENT_ID_ORDER_SUBMIT_SELF  = "order_submit";
+     public static final String EVENT_ID_ORDER_SUBMIT_ALWAY  = "order_submit_alway";
+     public static final String EVENT_ID_ORDER_SUBMIT_SMART  = "order_submit_smart";
      public static final String EVENT_ID_RECEIVE_FINISH  = "receive_finish";
+    /**
+     * 创建盘点单
+     */
      public static final String EVENT_ID_START_THE_INVENTORY  = "start_the_inventory";
      public static final String EVENT_ID_SUBMIT_THE_INVENTORY  = "submit_the_inventory";
      public static final String EVENT_ID_XUAN_HAO_L  = "xuan_hao_l";
+    /**
+     * 轮播栏
+     */
+    public static final String EVENT_ID_CAROUSEL_BAR  = "carousel_bar";
+    /**
+     * 上周采购量
+     */
+     public static final String EVENT_ID_LAST_WEEK_PURCHASE  = "last_week_purchase";
+    /**
+     * 商品数量修改
+     */
+    public static final String EVENT_ID_PRODUCT_COUNT_MODIFY  = "product_count_modify";
+    /**
+     * 购物车
+     */
+    public static final String EVENT_ID_SHOPPING_CART  = "shopping_cart";
+    /**
+     * 继续选择
+     */
+    public static final String EVENT_ID_CONTINUE_TO_CHOOSE  = "continue_to_choose";
+    /**
+     * 评价
+     */
+    public static final String EVENT_ID_EVALUATE  = "evaluate";
+
+    /**
+     * 盘点单添加商品
+     */
+    public static final String EVENT_ID_ADD_INVENTORY_PRODUCT  = "add_inventory_product";
+    /**
+     * 用户指南
+     */
+    public static final String EVENT_ID_USER_GUIDE  = "user_guide";
+
+    /**
+     * 再来一单
+     */
+    public static final String EVENT_ID_ORDER_AGAIN  = "order_again";
+    /**
+     * 修改订单
+     */
+    public static final String EVENT_ID_ORDER_MODIFY  = "order_modify";
 }
