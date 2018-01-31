@@ -18,7 +18,6 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -28,7 +27,6 @@ import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.CheckResult;
-import com.runwise.supply.repertory.EditRepertoryListActivity;
 import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
@@ -40,7 +38,6 @@ import java.util.ArrayList;
 
 import io.vov.vitamio.utils.NumberUtil;
 
-import static com.runwise.supply.R.id.moneySum;
 import static com.runwise.supply.mine.CheckDetailActivity.INTENT_KEY_ID;
 
 /**
@@ -133,7 +130,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         ChannelPandian request = new ChannelPandian();
         request.setId(id);
         request.setState("draft");
-        sendConnection("/api/inventory/state",request,REQUEST_CHANNEL,true,null);
+        sendConnection("/api/v2/inventory/state",request,REQUEST_CHANNEL,true,null);
     }
 
 
