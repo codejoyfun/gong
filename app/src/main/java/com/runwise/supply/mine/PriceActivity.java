@@ -33,6 +33,7 @@ import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -283,5 +284,16 @@ public class PriceActivity extends NetWorkActivity {
             return titleList.size();
         }
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("价目表");
+    }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("价目表");
+    }
 }

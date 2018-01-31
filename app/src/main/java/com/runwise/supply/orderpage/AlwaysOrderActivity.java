@@ -13,6 +13,7 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 常购订单，类似智能下单的逻辑，继承自手动下单
@@ -146,5 +147,16 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacks(runnable);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("常购清单页面");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("常购清单页面");
     }
 }

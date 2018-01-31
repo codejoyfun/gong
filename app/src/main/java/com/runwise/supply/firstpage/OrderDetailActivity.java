@@ -57,6 +57,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.ProductTypePopup;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -931,5 +932,17 @@ public class OrderDetailActivity extends NetWorkActivity {
         sb.append(orderId).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("订单详情");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("订单详情");
     }
 }

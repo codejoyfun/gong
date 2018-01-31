@@ -18,6 +18,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.ReturnActivityRefreshEvent;
 import com.runwise.supply.mine.entity.ReturnData;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -139,5 +140,16 @@ public class ReturnActivity extends NetWorkActivity {
             return titleList.size();
         }
     }
-    
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("退货记录页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("退货记录页");
+    }
 }

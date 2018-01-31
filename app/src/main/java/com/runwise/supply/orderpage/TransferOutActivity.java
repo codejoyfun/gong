@@ -22,7 +22,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.config.Constant;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.TransferOutBatchAdapter;
@@ -33,6 +32,7 @@ import com.runwise.supply.orderpage.entity.TransferOutRequest;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.MaxHeightListView;
 import com.runwise.supply.view.NoWatchEditText;
+import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -541,5 +541,17 @@ public class TransferOutActivity extends NetWorkActivity {
                 ButterKnife.bind(this, view);
             }
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("出库页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("出库页");
     }
 }

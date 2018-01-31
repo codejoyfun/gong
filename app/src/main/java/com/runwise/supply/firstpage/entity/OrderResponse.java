@@ -1528,18 +1528,12 @@ public class OrderResponse {
                 dest.writeByte(this.isChanged ? (byte) 1 : (byte) 0);
 
                 dest.writeString(barcode);
-                ;
                 dest.writeString(defaultCode);
-                ;
                 dest.writeString(imageMedium);
-                ;
                 dest.writeByte((byte) (isTwoUnit ? 1 : 0));
                 dest.writeString(name);
-                ;
                 dest.writeDouble(productPrice);
-                ;
                 dest.writeDouble(productSettlePrice);
-                ;
                 dest.writeInt(settleUomId);
                 dest.writeString(tracking);
                 dest.writeString(unit);

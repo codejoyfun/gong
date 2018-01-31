@@ -20,20 +20,6 @@
             android:layout_height="180dp"
             android:scaleType="fitCenter"
             />
-
-        <TextView
-            android:id="@+id/loadingReTry"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/retry_btn_selector"
-            android:gravity="center_horizontal"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:text="重新加载"
-            android:textColor="#a8a8a8"
-            android:textSize="14sp"
-            />
-
         <TextView
             android:id="@+id/noDataText"
             android:layout_width="wrap_content"
@@ -41,9 +27,26 @@
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:textColor="#909398"
+            android:lineSpacingExtra="5dp"
             android:textSize="16sp"
-            android:text="wfef"
+            android:text="你的网络好像不太给力
+            请稍后再试"
             />
+
+        <TextView
+            android:id="@+id/loadingReTry"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/retry_btn_selector"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="重新刷新"
+            android:textColor="#a8a8a8"
+            android:textSize="14sp"
+            />
+
+
     </LinearLayout>
 
     <ProgressBar

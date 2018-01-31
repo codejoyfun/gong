@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -37,6 +36,7 @@ import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UmengUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -50,6 +50,8 @@ import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_DATE_OF_SERVICE;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT;
 import static java.lang.System.currentTimeMillis;
 
 /**
@@ -329,6 +331,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 finish();
                 break;
             case R.id.rl_date_of_service:
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_DATE_OF_SERVICE);
                 //弹出日期选择控件
                 if (bDialog.isVisible()) {
                     bDialog.dismiss();
@@ -337,6 +340,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 }
                 break;
             case R.id.btn_submit:
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT);
                 if (mOrder == null) {
                     submitOrder();//创建订单
                 } else {
@@ -565,5 +569,15 @@ public class OrderSubmitActivity extends NetWorkActivity {
             mTvTotalMoney.setVisibility(View.GONE);
         }
         mTvProductNum.setText("共" + NumberUtil.getIOrD(totalNum) + "件");
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("提交订单页");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("提交订单页");
     }
 }

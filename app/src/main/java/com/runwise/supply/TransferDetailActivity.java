@@ -11,14 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.TransferDetailResponse;
@@ -33,6 +31,7 @@ import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.UserUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -595,5 +594,17 @@ public class TransferDetailActivity extends NetWorkActivity {
                 mmVgPrice = (ViewGroup)itemView.findViewById(R.id.ll_price);
             }
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("调拨单详情");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("调拨单详情");
     }
 }

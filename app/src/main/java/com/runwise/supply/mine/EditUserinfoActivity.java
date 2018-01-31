@@ -25,7 +25,6 @@ import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ImageUtils;
 import com.kids.commonframe.base.util.SPUtils;
-import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomBottomDialog;
@@ -43,6 +42,8 @@ import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.mine.entity.UploadImg;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.umeng.analytics.MobclickAgent;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
@@ -127,6 +128,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
+                MobclickAgent.onProfileSignOff();
                 MessageFragment.isLogin = false;
                 GlobalApplication.getInstance().cleanUesrInfo();
                 JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
@@ -346,5 +348,18 @@ public class EditUserinfoActivity extends NetWorkActivity {
             }
         });
         mLogoutDialog.show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("个人信息页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("个人信息页");
     }
 }

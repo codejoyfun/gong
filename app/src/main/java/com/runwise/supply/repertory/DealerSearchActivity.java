@@ -1,49 +1,20 @@
 package com.runwise.supply.repertory;
 
-import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Button;
 
-import com.baidu.mapapi.map.Text;
 import com.kids.commonframe.base.BaseActivity;
-import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.util.ToastUtil;
-import com.lidroid.xutils.db.converter.BooleanColumnConverter;
-import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.mob.tools.utils.SharePrefrenceHelper;
 import com.runwise.supply.R;
-import com.runwise.supply.business.entity.SearchRequest;
-import com.runwise.supply.business.entity.SearchResponse;
-import com.runwise.supply.mine.RepertoryFragment;
 import com.runwise.supply.mine.entity.SearchKeyAct;
-import com.runwise.supply.mine.entity.SearchKeyWork;
-import com.runwise.supply.tools.HistoryUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * 库存搜索
@@ -92,6 +63,18 @@ public class DealerSearchActivity extends BaseActivity{
             default:
                 break;
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("商品搜索页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("商品搜索页");
     }
 
 }

@@ -23,12 +23,14 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
 import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
+import static com.runwise.supply.tools.UmengUtil.EVENT_ID_START_THE_INVENTORY;
 
 /**
  * 库存
@@ -76,6 +78,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
     }
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
+        MobclickAgent.onEvent(getActivity(), EVENT_ID_START_THE_INVENTORY);
         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
@@ -192,6 +195,19 @@ public class MainRepertoryFragment extends NetWorkFragment {
             }
         }
         return inventoryResponse.getInventory();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("库存首页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("库存首页");
     }
 }
 

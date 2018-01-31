@@ -101,7 +101,7 @@ public class RunwiseKeyBoard extends Dialog {
             setUpData(NumberUtil.getIOrD(mInventoryProduct.getEditNum()), mInventoryProduct.getProduct().getName());
         }
         if (mReceiveBean != null) {
-            setUpData(NumberUtil.getIOrD(mReceiveBean.getCount()), mReceiveBean.getName());
+            setUpData(NumberUtil.getIOrD(mReceiveBean.getCount()), mReceiveBean.getName(), String.valueOf(NumberUtil.getIOrD(mReceiveBean.getProductUomQty())));
         }
         if (mProductBean != null) {
             setUpData("", mProductBean.getName());
@@ -131,6 +131,12 @@ public class RunwiseKeyBoard extends Dialog {
         mEtCount.setText(count);
         mEtCount.selectAll();
         mTvTitle.setText(name);
+    }
+
+    private void setUpData(String count, String name,String productUomQty) {
+        mEtCount.setText(count);
+        mEtCount.selectAll();
+        mTvTitle.setText(name + " x " + productUomQty);
     }
 
     public RunwiseKeyBoard(@NonNull Context context) {
