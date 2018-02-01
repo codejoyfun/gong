@@ -21,6 +21,7 @@ public class LoadingLayout extends FrameLayout  implements OnClickListener{
 		LOADING,RETRY,NOTHING
 	}
 	private TextView loadingReTry;
+	private View viewLoadingReTry;
 	private TextView noDataText;
 	private ProgressBar loadingProgress;
 	private LinearLayout retryLayout;
@@ -52,11 +53,13 @@ public class LoadingLayout extends FrameLayout  implements OnClickListener{
 			}
 		});
 		loadingReTry = (TextView)view.findViewById(R.id.loadingReTry);
+		viewLoadingReTry = view.findViewById(R.id.rl_refresh);
 		noDataText = (TextView)view.findViewById(R.id.noDataText);
 		loadingProgress = (ProgressBar)view.findViewById(R.id.loadingProgress);
 		retryLayout = (LinearLayout)view.findViewById(R.id.retryLayout);
 		loadingIcon = (ImageView) view.findViewById(R.id.loadingIcon);
 		loadingReTry.setOnClickListener(this);
+		viewLoadingReTry.setOnClickListener(this);
 		addView(view);
 		this.setVisibility(View.GONE);
 	}
@@ -77,6 +80,7 @@ public class LoadingLayout extends FrameLayout  implements OnClickListener{
 				loadingProgress.setVisibility(View.GONE);
 				retryLayout.setVisibility(View.VISIBLE);
 				loadingReTry.setVisibility(View.VISIBLE);
+				viewLoadingReTry.setVisibility(View.VISIBLE);
 				noDataText.setVisibility(View.VISIBLE);
 				if ( drawId < 0 ) {
 					loadingIcon.setVisibility(View.GONE);
@@ -90,6 +94,7 @@ public class LoadingLayout extends FrameLayout  implements OnClickListener{
 				loadingProgress.setVisibility(View.GONE);
 				retryLayout.setVisibility(View.VISIBLE);
 				loadingReTry.setVisibility(View.GONE);
+				viewLoadingReTry.setVisibility(View.GONE);
 				noDataText.setVisibility(View.VISIBLE);
 				if ( drawId < 0 ) {
 					loadingIcon.setVisibility(View.GONE);
@@ -148,7 +153,7 @@ public class LoadingLayout extends FrameLayout  implements OnClickListener{
 	public void onFailure(String message,int drawableId) {
 		setVisibility(View.VISIBLE);
 		setStatus(Status.RETRY,drawableId);
-		noDataText.setText(message);
+		noDataText.setText(getContext().getString(R.string.page_network_error));
 	}
 
 	@Override

@@ -26,16 +26,15 @@ import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.ReLoginData;
+import com.kids.commonframe.base.util.ObjectTransformUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
-
-import org.w3c.dom.Text;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,6 @@ import java.util.Map.Entry;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
-import static com.kids.commonframe.base.util.SPUtils.getAll;
 
 /**
  * 网络请求帮助类
@@ -654,6 +652,7 @@ public class NetWorkHelper<T extends BaseEntity> {
                 BaseEntity baseEntity = new BaseEntity();
                 baseEntity.setMsg(error.getMessage());
                 newWorkCallBack.onFailure(errorMsg, (T) baseEntity, what);
+                MobclickAgent.reportError(context, error.getMessage());
             }
         }
     }
@@ -699,6 +698,13 @@ public class NetWorkHelper<T extends BaseEntity> {
                 }
             }
             newWorkCallBack.onFailure(errorMsg, response, what);
+            if (response.getError() != null){
+               String uMengErrorString =  ObjectTransformUtil.toString(response.getError().getData());
+                MobclickAgent.reportError(context, uMengErrorString);
+            }else{
+                MobclickAgent.reportError(context, errorMsg);
+            }
+
         }
     }
 
