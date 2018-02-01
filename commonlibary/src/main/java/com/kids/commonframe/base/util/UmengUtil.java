@@ -126,7 +126,7 @@ public class UmengUtil {
     /**
      * 自助下单时间统计
      */
-    public static final String TYPE_SELF_ORDER = "自助下单";
+    public static final String TYPE_SELF_ORDER = "self_order";
     /**
      * 自助下单时间统计
      */
