@@ -85,6 +85,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 import static com.runwise.supply.orderpage.entity.ReceiveInfo.SEPARATOR;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_RECEIVE_FINISH;
 
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;
@@ -776,7 +777,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         } else if (mode == 2) {
                             tallyDoneRequest();
                         }
-
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_RECEIVE_FINISH);
                     }
                 });
                 dialog.show();
@@ -1296,10 +1297,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("收货页面");
+        MobclickAgent.onResume(this);          //统计时长
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("收货页面");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

@@ -126,6 +126,7 @@ public class PlatformMsgDetailActivity extends NetWorkActivity implements Loadin
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("平台通知页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -133,5 +134,6 @@ public class PlatformMsgDetailActivity extends NetWorkActivity implements Loadin
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("平台通知页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

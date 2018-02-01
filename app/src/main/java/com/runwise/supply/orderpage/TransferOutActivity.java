@@ -546,6 +546,7 @@ public class TransferOutActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("出库页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -553,5 +554,6 @@ public class TransferOutActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("出库页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

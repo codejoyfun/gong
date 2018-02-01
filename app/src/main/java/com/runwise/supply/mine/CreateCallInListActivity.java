@@ -592,6 +592,7 @@ public class CreateCallInListActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("创建调拨单页面");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -599,5 +600,6 @@ public class CreateCallInListActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("创建调拨单页面");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

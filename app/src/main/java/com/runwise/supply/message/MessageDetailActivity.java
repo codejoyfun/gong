@@ -75,6 +75,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("消息详情页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 
     //维护两个fragment
@@ -222,5 +223,6 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("消息详情页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 }

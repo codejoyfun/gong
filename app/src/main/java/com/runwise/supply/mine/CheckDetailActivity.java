@@ -90,6 +90,8 @@ public class CheckDetailActivity extends NetWorkActivity {
     int mSyncCount = 0;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

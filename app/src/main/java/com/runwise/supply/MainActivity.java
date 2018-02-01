@@ -23,6 +23,7 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
@@ -200,6 +201,7 @@ public class MainActivity extends NetWorkActivity {
 
     private void logout(){
         SPUtils.loginOut(mContext);
+        PlaceOrderTimeStatisticsUtil.clear();
         MessageFragment.isLogin = false;
         GlobalApplication.getInstance().cleanUesrInfo();
         JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);

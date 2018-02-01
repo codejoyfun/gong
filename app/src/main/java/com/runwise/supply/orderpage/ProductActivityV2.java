@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -61,12 +62,15 @@ import java.util.Set;
 import io.vov.vitamio.utils.NumberUtil;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CONTINUE_TO_CHOOSE;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SHOPPING_CART;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_XUAN_HAO_L;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PLACE_ORDER_TYPE;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_FIRST;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_XUAN_HAO_L;
 
 /**
  * 分页/二级分类的商品选择页
@@ -120,6 +124,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     DecimalFormat df = new DecimalFormat("#.##");
 
     boolean mFirstGetShopCartCache = true;
+
+    protected int mPlaceOrderType = PLACE_ORDER_TYPE_SELF;
+    public static final int PLACE_ORDER_TYPE_ALWAYS = 1<<0;
+    public static final int PLACE_ORDER_TYPE_SELF = 1<<1;
+    public static final int PLACE_ORDER_TYPE_SMART = 1<<2;
+    public static final int PLACE_ORDER_TYPE_AGAIN = 1<<3;
+    public static final int PLACE_ORDER_TYPE_MODIFY = 1<<4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,9 +390,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 saveCache();
                 getCache();
                 mAdapterVp.fragmentList.get(mViewPagerCategoryFrags.getCurrentItem()).refresh();
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_SHOPPING_CART);
                 break;
             case R.id.tv_order_resume:
                 showCart(false);
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_CONTINUE_TO_CHOOSE);
                 break;
             case R.id.rl_cart_container:
                 showCart(false);
@@ -438,6 +451,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         Intent intent = new Intent(this, OrderSubmitActivity.class);
         //判断是否是自助下单
         intent.putExtra(INTENT_KEY_SELF_HELP, getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP, false));
+        intent.putExtra(INTENT_KEY_PLACE_ORDER_TYPE,mPlaceOrderType);
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for (ProductData.ListBean bean : mMapCount.keySet()) {
             if (!mmSelected.contains(bean.getProductID())) continue;//木有在购物车中打勾，跳过
@@ -1041,10 +1055,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("自助下单页面");
+        MobclickAgent.onResume(this);          //统计时长
+        PlaceOrderTimeStatisticsUtil.onResume();
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("自助下单页面");
+        MobclickAgent.onPause(this);          //统计时长
+        PlaceOrderTimeStatisticsUtil.onPause(getActivityContext());
     }
 }

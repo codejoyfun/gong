@@ -24,6 +24,7 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ImageUtils;
+import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
@@ -41,6 +42,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.mine.entity.UploadImg;
+import com.runwise.supply.orderpage.CartManager;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
@@ -128,6 +130,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
+                PlaceOrderTimeStatisticsUtil.clear();
                 MobclickAgent.onProfileSignOff();
                 MessageFragment.isLogin = false;
                 GlobalApplication.getInstance().cleanUesrInfo();
@@ -138,6 +141,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
                 startActivity(intent);
+                CartManager.getInstance(getActivityContext()).clearCart();
                 break;
             case REQUEST_USERINFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
@@ -354,6 +358,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("个人信息页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -361,5 +366,6 @@ public class EditUserinfoActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("个人信息页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

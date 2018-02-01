@@ -94,6 +94,8 @@ import static com.runwise.supply.firstpage.OrderAdapter.TYPE_TRANSFER;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CAROUSEL_BAR;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_LAST_WEEK_PURCHASE;
 
 /**
  * Created by libin on 2017/7/13.
@@ -188,6 +190,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     Intent intent = new Intent(mContext, ProcurementLimitActivity.class);
                     intent.putExtra(KEY_SUM_MONEY_DATA, mSumMoneyData);
                     startActivity(intent);
+                    MobclickAgent.onEvent(getContext(), EVENT_ID_LAST_WEEK_PURCHASE);
                 }
             }
         });
@@ -881,6 +884,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     Intent intent = new Intent(mContext, PageDeatailActivity.class);
                     intent.putExtra("url", bean.getPost_url());
                     startActivity(intent);
+                    MobclickAgent.onEvent(getContext(), EVENT_ID_CAROUSEL_BAR);
                 }
             }
         });

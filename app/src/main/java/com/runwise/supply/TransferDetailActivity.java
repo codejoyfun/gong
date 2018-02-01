@@ -599,6 +599,7 @@ public class TransferDetailActivity extends NetWorkActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("调拨单详情");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -606,5 +607,6 @@ public class TransferDetailActivity extends NetWorkActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("调拨单详情");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

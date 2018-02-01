@@ -51,6 +51,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
         setTitleText(true,"常购清单");
         ViewUtils.inject(this);
         initLoadingImgs();
+        mPlaceOrderType = PLACE_ORDER_TYPE_ALWAYS;
     }
 
     /**
@@ -153,10 +154,13 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
     protected void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("常购清单页面");
+        MobclickAgent.onResume(this);          //统计时长
+
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("常购清单页面");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

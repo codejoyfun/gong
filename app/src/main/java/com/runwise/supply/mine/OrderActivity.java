@@ -134,6 +134,7 @@ public class OrderActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("订单列表页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -141,5 +142,6 @@ public class OrderActivity extends BaseActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("订单列表页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

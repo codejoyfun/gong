@@ -55,6 +55,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
         setTitleText(true,"智能下单");
         ViewUtils.inject(this);
         initLoadingImgs();
+        mPlaceOrderType = PLACE_ORDER_TYPE_SMART;
     }
 
     /**

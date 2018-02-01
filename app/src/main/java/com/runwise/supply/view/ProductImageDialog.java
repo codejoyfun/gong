@@ -21,6 +21,7 @@ import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductValueDialog;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -31,6 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
+
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_PRODUCT_COUNT_MODIFY;
 
 /**
  * Created by mike on 2018/1/23.
@@ -61,6 +64,8 @@ public class ProductImageDialog extends Dialog {
     ImageButton mIvProductAdd;
     @BindView(R.id.ll_item_product_btns)
     LinearLayout mLlItemProductBtns;
+
+    private boolean mModify = false;
 
     public void setListBean(ProductData.ListBean listBean) {
         mListBean = listBean;
@@ -145,6 +150,10 @@ public class ProductImageDialog extends Dialog {
         double currentNum;
         switch (view.getId()) {
             case R.id.iv_product_reduce:
+               if (!mModify){
+                   MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);
+                   mModify = true;
+               }
                 currentNum = productCountSetter.getCount(mListBean);
                 if (currentNum > 0) {
                     //https://stackoverflow.com/questions/179427/how-to-resolve-a-java-rounding-double-issue
@@ -164,6 +173,10 @@ public class ProductImageDialog extends Dialog {
                 }
                 break;
             case R.id.iv_product_add:
+                if (!mModify){
+                    MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);
+                    mModify = true;
+                }
                 currentNum = productCountSetter.getCount(mListBean);
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
                 mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + mListBean.getUom());
@@ -177,6 +190,10 @@ public class ProductImageDialog extends Dialog {
                 EventBus.getDefault().post(new ProductCountUpdateEvent(mListBean,currentNum));
                 break;
             case R.id.tv_product_count:
+                if (!mModify){
+                    MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);
+                    mModify = true;
+                }
                 /**
                  * 点击数量展示输入对话框
                  */

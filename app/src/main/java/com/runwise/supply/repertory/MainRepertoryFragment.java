@@ -30,7 +30,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 
 import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_START_THE_INVENTORY;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_START_THE_INVENTORY;
 
 /**
  * 库存

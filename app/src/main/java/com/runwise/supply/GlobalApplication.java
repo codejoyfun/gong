@@ -8,12 +8,12 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.LogoutFromJpushEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
+import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.ImagePipelineConfigFactory;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.runwise.supply.message.MessageFragment;
-import com.runwise.supply.tools.UmengUtil;
-import com.umeng.analytics.MobclickAgent;
+import com.umeng.commonsdk.UMConfigure;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -50,7 +50,7 @@ public class GlobalApplication extends MultiDexApplication {
         if (!EventBus.getDefault().isRegistered(this)){
             EventBus.getDefault().register(this);
         }
-        MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(getApplicationContext(), "5a69830b8f4a9d1ad80000c8", UmengUtil.getChannel(getApplicationContext())));
+        UMConfigure.init(this, UMConfigure.DEVICE_TYPE_PHONE, "");
     }
 
     public static GlobalApplication getInstance() {
@@ -60,6 +60,7 @@ public class GlobalApplication extends MultiDexApplication {
     @Subscribe(threadMode = ThreadMode.MAIN)
    public void onLogout(LogoutFromJpushEvent logoutFromJpushEvent){
         SPUtils.loginOut(this);
+        PlaceOrderTimeStatisticsUtil.clear();
         MessageFragment.isLogin = false;
         GlobalApplication.getInstance().cleanUesrInfo();
         //退出登录

@@ -204,6 +204,7 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("对账单");
+        MobclickAgent.onResume(this);          //统计时长
     }
 
 
@@ -211,5 +212,6 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("对账单");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }
