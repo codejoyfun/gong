@@ -26,6 +26,7 @@ public class SPUtils {
     public static final String FILE_KEY_LOGIN_CONFLICT = "file_key_login_conflict";
     public static final String FILE_KEY_PLACE_ORDER_CACHE = "file_key_place_order_cache";
     public static final String FILE_KEY_COMPANY_NAME = "file_key_company_name";
+    public static final String FILE_KEY_USER_INFO = "userInfo";
 
 
     /**

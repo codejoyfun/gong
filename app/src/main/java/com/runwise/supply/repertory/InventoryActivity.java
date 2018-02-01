@@ -83,10 +83,16 @@ public class InventoryActivity extends NetWorkActivity {
         setTitleRightIcon2(true,R.drawable.nav_add);
         dragLayout.setOverDrag(false);
         mInventoryBean = (InventoryResponse.InventoryBean) getIntent().getSerializableExtra(INTENT_KEY_INVENTORY_BEAN);
+
         mTvInventoryId.setText(mInventoryBean.getName());
         mTvInventoryPerson.setText(mInventoryBean.getCreateUser());
         mTvInventoryDate.setText(mInventoryBean.getCreateDate());
 //        initDialog();
+        if (mInventoryBean.getLines() == null){
+            toast("该盘点单没有任何商品");
+            finish();
+            return;
+        }
         getCategory();
     }
 

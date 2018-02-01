@@ -28,9 +28,9 @@ import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.ReLoginData;
 import com.kids.commonframe.base.util.ObjectTransformUtil;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.UmengUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
-import com.umeng.analytics.MobclickAgent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -210,8 +210,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass);
-        RequestErrorListener errorLietener = new RequestErrorListener(where);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParams);
+        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParams);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
 
@@ -250,8 +250,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass);
-        RequestErrorListener errorLietener = new RequestErrorListener(where);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParams);
+        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParams);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
         httpCallback.setUseUnLoginDB(useUnLoginDB);
@@ -638,9 +638,16 @@ public class NetWorkHelper<T extends BaseEntity> {
 
     private class RequestErrorListener implements ErrorListener {
         private int what;
+        private String url;
+        private Map<String, String> paramsMap;
 
-        public RequestErrorListener(int what) {
+        public RequestErrorListener(int what,String url,Map<String, String> paramsMap) {
             this.what = what;
+            this.url = url;
+            this.paramsMap = paramsMap;
+            if (paramsMap == null){
+                this.paramsMap = new HashMap<>();
+            }
         }
 
         @Override
@@ -652,18 +659,25 @@ public class NetWorkHelper<T extends BaseEntity> {
                 BaseEntity baseEntity = new BaseEntity();
                 baseEntity.setMsg(error.getMessage());
                 newWorkCallBack.onFailure(errorMsg, (T) baseEntity, what);
-                MobclickAgent.reportError(context, error.getMessage());
+                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+error.getMessage());
             }
         }
     }
 
     private class RequestSuccessListener<M extends BaseEntity> implements Listener<T> {
         private int what;
+        private String url;
         private Class targerClass;
+        private Map<String, String> paramsMap;
 
-        public RequestSuccessListener(int what, Class targerClass) {
+        public RequestSuccessListener(int what, Class targerClass,String url,Map<String, String> paramsMap) {
             this.what = what;
+            this.url = url;
             this.targerClass = targerClass;
+            this.paramsMap = paramsMap;
+            if (paramsMap == null){
+                this.paramsMap = new HashMap<>();
+            }
         }
 
         @Override
@@ -676,15 +690,15 @@ public class NetWorkHelper<T extends BaseEntity> {
                         newWorkCallBack.onSuccess(response, what);
                     }
                 } else {
-                    cellBackError(response, what);
+                    cellBackError(response, what,url,paramsMap);
                 }
             } else {
-                cellBackError(response, what);
+                cellBackError(response, what,url,paramsMap);
             }
         }
     }
 
-    private void cellBackError(T response, int what) {
+    private void cellBackError(T response, int what,String url, Map<String, String> paramsMap) {
         if (newWorkCallBack != null) {
             String errorMsg = "";
             if (response.getResult() != null) {
@@ -700,9 +714,9 @@ public class NetWorkHelper<T extends BaseEntity> {
             newWorkCallBack.onFailure(errorMsg, response, what);
             if (response.getError() != null){
                String uMengErrorString =  ObjectTransformUtil.toString(response.getError().getData());
-                MobclickAgent.reportError(context, uMengErrorString);
+                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+uMengErrorString);
             }else{
-                MobclickAgent.reportError(context, errorMsg);
+                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+errorMsg);
             }
 
         }

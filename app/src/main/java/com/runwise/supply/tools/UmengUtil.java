@@ -50,6 +50,9 @@ public class UmengUtil {
         return resultData;
     }
 
+
+
+
     public static String getChannel(Context ctx){
        return getAppMetaData(ctx, "UMENG_CHANNEL");
     }

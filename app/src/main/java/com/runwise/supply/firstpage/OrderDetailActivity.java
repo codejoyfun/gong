@@ -185,6 +185,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         if (bean != null) {
             orderId = bean.getOrderID();
         }
+        orderId = 11111;
         //需要自己刷新
         Object request = null;
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
