@@ -94,8 +94,8 @@ import static com.runwise.supply.firstpage.OrderAdapter.TYPE_TRANSFER;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_CAROUSEL_BAR;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_LAST_WEEK_PURCHASE;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CAROUSEL_BAR;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_LAST_WEEK_PURCHASE;
 
 /**
  * Created by libin on 2017/7/13.

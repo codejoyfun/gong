@@ -67,9 +67,9 @@ import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUC
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_FIRST;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_CONTINUE_TO_CHOOSE;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_SHOPPING_CART;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_XUAN_HAO_L;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CONTINUE_TO_CHOOSE;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SHOPPING_CART;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_XUAN_HAO_L;
 
 /**
  * 分页/二级分类的商品选择页

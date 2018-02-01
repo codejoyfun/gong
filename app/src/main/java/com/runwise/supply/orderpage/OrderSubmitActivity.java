@@ -35,7 +35,6 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.tools.UmengUtil;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -50,17 +49,17 @@ import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_DATE_OF_SERVICE;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_AGAIN;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_MODIFY;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_ALWAY;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_SELF;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_SMART;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_AGAIN;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_ALWAYS;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_MODIFY;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SELF;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SMART;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_DATE_OF_SERVICE;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_AGAIN;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_MODIFY;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT_ALWAY;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT_SELF;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ORDER_SUBMIT_SMART;
 import static java.lang.System.currentTimeMillis;
 
 /**
@@ -267,7 +266,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        UmengUtil.reportError("OrderSubmitActivity",errMsg);
         if (mCustomProgressDialog != null) {
             mCustomProgressDialog.dismiss();
         }

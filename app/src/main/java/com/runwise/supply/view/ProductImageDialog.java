@@ -33,7 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
 
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_PRODUCT_COUNT_MODIFY;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_PRODUCT_COUNT_MODIFY;
 
 /**
  * Created by mike on 2018/1/23.

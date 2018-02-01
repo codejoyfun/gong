@@ -43,8 +43,8 @@ import github.chenupt.dragtoplayout.DragTopLayout;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.repertory.EditRepertoryAddActivity.INTENT_FILTER;
 import static com.runwise.supply.repertory.InventoryFragment.INTENT_CATEGORY;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_ADD_INVENTORY_PRODUCT;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_SUBMIT_THE_INVENTORY;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ADD_INVENTORY_PRODUCT;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SUBMIT_THE_INVENTORY;
 
 /**
  * 新界面的盘点

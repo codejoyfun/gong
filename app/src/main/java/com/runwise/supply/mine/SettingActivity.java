@@ -44,7 +44,7 @@ import java.io.File;
 
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_USER_GUIDE;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_USER_GUIDE;
 
 /**
  * 设置

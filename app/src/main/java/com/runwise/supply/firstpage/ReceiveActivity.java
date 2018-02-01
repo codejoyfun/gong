@@ -85,7 +85,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 import static com.runwise.supply.orderpage.entity.ReceiveInfo.SEPARATOR;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_RECEIVE_FINISH;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_RECEIVE_FINISH;
 
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;

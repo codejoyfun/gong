@@ -70,7 +70,7 @@ import static com.runwise.supply.R.id.headSdv;
 import static com.runwise.supply.R.id.tablayout;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
-import static com.runwise.supply.tools.UmengUtil.EVENT_ID_EVALUATE;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_EVALUATE;
 
 /**
  * Created by libin on 2017/7/20.
