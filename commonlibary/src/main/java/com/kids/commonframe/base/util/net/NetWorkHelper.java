@@ -27,6 +27,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.ReLoginData;
 import com.kids.commonframe.base.util.ObjectTransformUtil;
+import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.UmengUtil;
 import com.kids.commonframe.config.Constant;
@@ -708,6 +709,7 @@ public class NetWorkHelper<T extends BaseEntity> {
                 //sessino失效
                 if (100 == response.getError().getCode()) {
                     SPUtils.loginOut(context);
+                    PlaceOrderTimeStatisticsUtil.clear();
 //					ToastUtil.show(context,"登陆过期，请重新登陆");
                 }
             }

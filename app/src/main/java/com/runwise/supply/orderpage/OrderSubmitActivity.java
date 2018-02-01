@@ -22,6 +22,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
@@ -233,6 +234,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, list);
                 intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE, 0);
                 startActivity(intent);
+                PlaceOrderTimeStatisticsUtil.upload(getActivityContext());
                 break;
             case REQUEST_SUBMIT://下单
             case REQUEST_DUPLICATE://确认的重复下单
@@ -242,6 +244,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 ActivityManager.getInstance().finishAll();//关闭所有的activity
                 intent = new Intent(this, MainActivity.class);//重新打开首页
                 startActivity(intent);
+                PlaceOrderTimeStatisticsUtil.upload(getActivityContext());
 
                 EventBus.getDefault().post(new OrderSuccessEvent());
                 mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
@@ -602,11 +605,13 @@ public class OrderSubmitActivity extends NetWorkActivity {
         super.onResume();
         MobclickAgent.onPageStart("提交订单页");
         MobclickAgent.onResume(this);          //统计时长
+        PlaceOrderTimeStatisticsUtil.onResume();
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("提交订单页");
         MobclickAgent.onPause(this);          //统计时长
+        PlaceOrderTimeStatisticsUtil.onPause(getActivityContext());
     }
 }

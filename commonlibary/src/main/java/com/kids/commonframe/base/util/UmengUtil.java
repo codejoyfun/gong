@@ -21,12 +21,12 @@ public class UmengUtil {
      * @param errorMsg
      */
     public static void reportError(Context context, String errorMsg) {
-        if (SPUtils.isLogin(context)){
+        if (SPUtils.isLogin(context)) {
             String companyName = "公司名: " + SPUtils.get(context, SPUtils.FILE_KEY_COMPANY_NAME, "尚无公司名") + "\n";
             Object o = SPUtils.readObject(context, SPUtils.FILE_KEY_USER_INFO);
             String menDianName = "";
             String userName = "";
-            if (o!=null){
+            if (o != null) {
                 UserInfo userInfo = (UserInfo) o;
                 menDianName = "门店名: " + userInfo.getMendian() + "\n";
                 userName = "用户名: " + userInfo.getUsername() + "\n";
@@ -123,4 +123,20 @@ public class UmengUtil {
      * 修改订单
      */
     public static final String EVENT_ID_ORDER_MODIFY = "order_modify";
+    /**
+     * 自助下单时间统计
+     */
+    public static final String TYPE_SELF_ORDER = "自助下单";
+    /**
+     * 自助下单时间统计
+     */
+    public static final String EVENT_ID_ORDER_TIME = "order_time";
+    /**
+     * 下单类型
+     */
+    public static final String ORDER_TYPE = "order_type";
+    /**
+     * 企业号
+     */
+    public static final String COMPANY_TYPE = "company_type";
 }

@@ -8,6 +8,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.LogoutFromJpushEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
+import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.ImagePipelineConfigFactory;
 import com.liulishuo.filedownloader.FileDownloader;
@@ -59,6 +60,7 @@ public class GlobalApplication extends MultiDexApplication {
     @Subscribe(threadMode = ThreadMode.MAIN)
    public void onLogout(LogoutFromJpushEvent logoutFromJpushEvent){
         SPUtils.loginOut(this);
+        PlaceOrderTimeStatisticsUtil.clear();
         MessageFragment.isLogin = false;
         GlobalApplication.getInstance().cleanUesrInfo();
         //退出登录
