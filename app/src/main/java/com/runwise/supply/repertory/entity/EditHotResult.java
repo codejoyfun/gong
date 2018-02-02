@@ -31,6 +31,7 @@ public class EditHotResult {
         private ProductBean product;
         private int productID;
         private List<LotListBean> lotList;
+        private double count;
 
         public int getInventoryAddLineID() {
             return inventoryAddLineID;
@@ -64,6 +65,14 @@ public class EditHotResult {
             this.lotList = lotList;
         }
 
+        public double getCount() {
+            return count;
+        }
+
+        public void setCount(double count) {
+            this.count = count;
+        }
+
         public static class ProductBean {
             /**
              * tracking : lot
@@ -86,6 +95,16 @@ public class EditHotResult {
             private String defaultCode;
             private String unit;
             private int productID;
+
+            public String getUom() {
+                return uom;
+            }
+
+            public void setUom(String uom) {
+                this.uom = uom;
+            }
+
+            private String uom;
 
             public String getCategory() {
                 return category;
