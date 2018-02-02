@@ -50,11 +50,9 @@ import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
-import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.repertory.entity.AddRepertoryData;
 import com.runwise.supply.repertory.entity.AddRepertoryRequest;
 import com.runwise.supply.repertory.entity.EditHotResult;
@@ -246,7 +244,6 @@ public class EditRepertoryAddActivity extends NetWorkActivity {
             bean.setInventoryLineID(editHotBean.getInventoryAddLineID());
             bean.setProductID(productBean.getProductID());
             bean.setEditNum(entry.getValue());
-            bean.setUom(productBean.getUom());
 
             ProductBasicList.ListBean product = new ProductBasicList.ListBean();
             product.setName(productBean.getName());
@@ -265,6 +262,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity {
             imageBean.setImageSmall(productBean.getImage().getImageSmall());
             imageBean.setImageMedium(productBean.getImage().getImageMedium());
             product.setImage(imageBean);
+            product.setProductUom(productBean.getProductUom());
             bean.setProduct(product);
 
             NewAdd newAddBean = new NewAdd();

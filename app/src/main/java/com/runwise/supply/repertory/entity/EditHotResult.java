@@ -94,7 +94,17 @@ public class EditHotResult {
             private ImageBean image;
             private String defaultCode;
             private String unit;
+            private String uom;
             private int productID;
+            private String productUom;
+
+            public String getProductUom() {
+                return productUom;
+            }
+
+            public void setProductUom(String productUom) {
+                this.productUom = productUom;
+            }
 
             public String getUom() {
                 return uom;
@@ -103,8 +113,6 @@ public class EditHotResult {
             public void setUom(String uom) {
                 this.uom = uom;
             }
-
-            private String uom;
 
             public String getCategory() {
                 return category;
