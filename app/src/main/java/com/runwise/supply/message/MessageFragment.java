@@ -93,11 +93,13 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitleText(true,"消息");
+        showBackBtn();
 //        this.setTitleRigthIcon(true,R.drawable.nav_service_message);
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setOnItemClickListener(this);
+
 
         adapter = new MessageAdapter();
         if(mOnRefreshListener2 == null){

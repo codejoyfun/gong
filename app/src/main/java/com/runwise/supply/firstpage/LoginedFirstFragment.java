@@ -85,6 +85,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CAROUSEL_BAR;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_LAST_WEEK_PURCHASE;
 import static com.runwise.supply.ReceiveDetailActivity.INTENT_KEY_ORDER_ID;
 import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
 import static com.runwise.supply.firstpage.OrderAdapter.TRANS_ACTION_CANCEL;
@@ -94,8 +96,6 @@ import static com.runwise.supply.firstpage.OrderAdapter.TYPE_TRANSFER;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
 import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
-import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CAROUSEL_BAR;
-import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_LAST_WEEK_PURCHASE;
 
 /**
  * Created by libin on 2017/7/13.
@@ -759,46 +759,48 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Override
     public void call(final String phone) {
+        startActivity(new Intent(getActivity(), MessageActivity.class));
 //        final String number = GlobalApplication.getInstance().loadUserInfo().getCompanyHotLine();
-        if (TextUtils.isEmpty(phone)) {
-            ToastUtil.show(mContext, "尚未指派");
-            return;
-        }
-        dialog.setModel(CustomDialog.BOTH);
-        dialog.setTitle("联系配送员");
-        dialog.setMessageGravity();
-        dialog.setMessage(phone);
-        dialog.setLeftBtnListener("取消", null);
-        dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
-            @Override
-            public void doClickButton(Button btn, CustomDialog dialog) {
-                CommonUtils.callNumber(mContext, phone);
-            }
-        });
-        dialog.show();
+//        if (TextUtils.isEmpty(phone)) {
+//            ToastUtil.show(mContext, "尚未指派");
+//            return;
+//        }
+//        dialog.setModel(CustomDialog.BOTH);
+//        dialog.setTitle("联系配送员");
+//        dialog.setMessageGravity();
+//        dialog.setMessage(phone);
+//        dialog.setLeftBtnListener("取消", null);
+//        dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+//            @Override
+//            public void doClickButton(Button btn, CustomDialog dialog) {
+//                CommonUtils.callNumber(mContext, phone);
+//            }
+//        });
+//        dialog.show();
     }
 
     @OnClick({R.id.callIcon})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.callIcon:
-                if (userInfo != null && !TextUtils.isEmpty(userInfo.getCompanyHotLine())) {
-                    number = userInfo.getCompanyHotLine();
-                    dialog.setTitleGone();
-                } else {
-                    dialog.setTitle("致电 供鲜生 客服");
-                }
-                dialog.setModel(CustomDialog.BOTH);
-                dialog.setMessageGravity();
-                dialog.setMessage("致电 " + userInfo.getCompany() + " 客服\n"+number);
-                dialog.setLeftBtnListener("取消", null);
-                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        CommonUtils.callNumber(mContext, number);
-                    }
-                });
-                dialog.show();
+                startActivity(new Intent(getActivity(), MessageActivity.class));
+//                if (userInfo != null && !TextUtils.isEmpty(userInfo.getCompanyHotLine())) {
+//                    number = userInfo.getCompanyHotLine();
+//                    dialog.setTitleGone();
+//                } else {
+//                    dialog.setTitle("致电 供鲜生 客服");
+//                }
+//                dialog.setModel(CustomDialog.BOTH);
+//                dialog.setMessageGravity();
+//                dialog.setMessage("致电 " + userInfo.getCompany() + " 客服\n"+number);
+//                dialog.setLeftBtnListener("取消", null);
+//                dialog.setRightBtnListener("呼叫", new CustomDialog.DialogListener() {
+//                    @Override
+//                    public void doClickButton(Button btn, CustomDialog dialog) {
+//                        CommonUtils.callNumber(mContext, number);
+//                    }
+//                });
+//                dialog.show();
                 break;
         }
     }
