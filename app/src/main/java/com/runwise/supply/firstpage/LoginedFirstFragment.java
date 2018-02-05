@@ -50,6 +50,7 @@ import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.entity.TransferEntity;
+import com.runwise.supply.entity.UnReadData;
 import com.runwise.supply.event.OrderStatusChangeEvent;
 import com.runwise.supply.firstpage.entity.CancleRequest;
 import com.runwise.supply.firstpage.entity.DashBoardResponse;
@@ -58,6 +59,7 @@ import com.runwise.supply.firstpage.entity.LunboRequest;
 import com.runwise.supply.firstpage.entity.LunboResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.mine.ProcurementLimitActivity;
 import com.runwise.supply.mine.entity.ChannelPandian;
 import com.runwise.supply.mine.entity.SumMoneyData;
@@ -69,6 +71,7 @@ import com.runwise.supply.repertory.InventoryActivity;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.InventoryCacheManager;
+import com.runwise.supply.tools.PlatformNotificationManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.view.FingerprintPromptDialog;
 import com.umeng.analytics.MobclickAgent;
@@ -109,7 +112,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int FROMRETURN = 4;
     private static final int FINISHRETURN = 5;
     private static final int REQUEST_SUM = 6;
-//    private static final int REQUEST_TRANSFER_IN = 7;
+    //    private static final int REQUEST_TRANSFER_IN = 7;
 //    private static final int REQUEST_TRANSFER_OUT = 8;
     private static final int REQUEST_SUBMITTING_ORDER = 7;
     private static final int REQUEST_CANCEL_TRANSFER = 9;
@@ -118,6 +121,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_CANCEL_INVENTORY = 12;
     private static final int REQUEST_INVENTORY_LIST = 13;
     private static final int REQUEST_RECEIVE_AGAIN = 14;
+    private static final int REQUEST_UNREAD = 15;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -131,6 +135,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private RelativeLayout rl_title;
     @ViewInject(R.id.iv_call)
     private ImageView mIvCallBtn;
+    @ViewInject(R.id.tv_hint)
+    private TextView mTvHint;
     private View mViewNotice;
 
     private LayoutInflater layoutInflater;
@@ -177,7 +183,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         unPayMoney = (TextView) headView.findViewById(R.id.unPayAccount);
         lqCountTv = (TextView) headView.findViewById(R.id.lqCountTv);
         dqCountTv = (TextView) headView.findViewById(R.id.dqCountTv);
-        loadingLayout = (LoadingLayout)headView.findViewById(R.id.loadingLayout);
+        loadingLayout = (LoadingLayout) headView.findViewById(R.id.loadingLayout);
         banner = (ConvenientBanner) headView.findViewById(R.id.ConvenientBanner);
         mViewNotice = headView.findViewById(R.id.include_layout_notice);
         headView.findViewById(R.id.ll_procurement).setOnClickListener(new View.OnClickListener() {
@@ -231,7 +237,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     float ratio = top / (float) headView.getHeight() * 3;
                     rl_title.setBackgroundResource(R.color.white);
                     rl_title.setAlpha(ratio);
-                    mIvCallBtn.setAlpha(1-ratio);
+                    mIvCallBtn.setAlpha(1 - ratio);
                 } else {
                     rl_title.setAlpha(0);
                     mIvCallBtn.setAlpha(1f);
@@ -246,9 +252,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 int realPosition = (int) l;
                 if (adapter.getItemViewType(realPosition) == adapter.TYPE_ORDER) {
                     OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getList().get(realPosition);
-                    if(!TextUtils.isEmpty(bean.getReceiveError())){//收货失败
-                        Intent intent = new Intent(getActivity(),ReceiveDetailActivity.class);
-                        intent.putExtra(INTENT_KEY_ORDER_ID,bean.getOrderID());
+                    if (!TextUtils.isEmpty(bean.getReceiveError())) {//收货失败
+                        Intent intent = new Intent(getActivity(), ReceiveDetailActivity.class);
+                        intent.putExtra(INTENT_KEY_ORDER_ID, bean.getOrderID());
                         startActivity(intent);
                         return;
                     }
@@ -263,14 +269,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) adapter.getList().get(realPosition);
                     intent.putExtra("rid", bean.getReturnOrderID() + "");
                     startActivity(intent);
-                } else if(adapter.getItemViewType(realPosition) == TYPE_TRANSFER){
+                } else if (adapter.getItemViewType(realPosition) == TYPE_TRANSFER) {
                     TransferEntity transferEntity = (TransferEntity) adapter.getList().get(realPosition);
                     Intent intent = new Intent(getActivity(), TransferDetailActivity.class);
                     intent.putExtra(EXTRA_TRANSFER_ID, transferEntity.getPickingID());
                     startActivity(intent);
-                } else if(adapter.getItemViewType(realPosition) == TYPE_TEMP_ORDER){
-                    TempOrderManager.TempOrder tempOrder = (TempOrderManager.TempOrder)adapter.getList().get(realPosition);
-                    TempOrderActivity.start(getActivity(),tempOrder);
+                } else if (adapter.getItemViewType(realPosition) == TYPE_TEMP_ORDER) {
+                    TempOrderManager.TempOrder tempOrder = (TempOrderManager.TempOrder) adapter.getList().get(realPosition);
+                    TempOrderActivity.start(getActivity(), tempOrder);
                 }
             }
         });
@@ -291,13 +297,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         getProcurement();
         //加载电话
         userInfo = GlobalApplication.getInstance().loadUserInfo();
-        if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
+        if (SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))
+            showSystemUpgradeNotice();
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //指纹识别
             FingerprintHelper fingerprintHelper = new FingerprintHelper(getActivity(), FingerprintManagerCompat.from(getActivity()));
-            if(fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(),GlobalApplication.getInstance().getUid())){
-                FingerprintHelper.setPrompted(getActivity(),GlobalApplication.getInstance().getUid());
+            if (fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(), GlobalApplication.getInstance().getUid())) {
+                FingerprintHelper.setPrompted(getActivity(), GlobalApplication.getInstance().getUid());
                 Dialog dialog = new FingerprintPromptDialog(getActivity());
                 dialog.show();
             }
@@ -316,6 +323,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         if (getUserVisibleHint()) {
             requestReturnList();
             requestDashBoard();
+            if (SPUtils.isLogin(getActivity())) {
+                Object request = null;
+                sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
+            }
 //            PollingUtil.getInstance().requestOrder(netWorkHelper, FROMRETURN);
         } else {
 //            PollingUtil.getInstance().stopRequestOrder();
@@ -358,7 +369,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FROMORDER:
                 BaseEntity.ResultBean resultBean = result.getResult();
                 OrderResponse response = (OrderResponse) resultBean.getData();
-                orderList.addAll(orderList.size(),response.getList());//加到后边
+                orderList.addAll(orderList.size(), response.getList());//加到后边
                 adapter.setOrderCount(response.getList().size());
                 //adapter.setData(orderList);//notify adapter
                 orderRequesting = false;
@@ -383,7 +394,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case FROMRETURN:
                 BaseEntity.ResultBean resultBean4 = result.getResult();
                 ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
-                orderList.addAll(0,rob.getList());//加在前边
+                orderList.addAll(0, rob.getList());//加在前边
                 adapter.setReturnCount(rob.getList().size());
                 //adapter.setData(orderList);
                 returnRequesting = false;
@@ -412,17 +423,17 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 requestReturnList();
                 break;
             case REQUEST_OUTPUT_CONFIRM:
-                startActivity(TransferOutActivity.getStartIntent(getActivity(),mSelectTransferEntity));
+                startActivity(TransferOutActivity.getStartIntent(getActivity(), mSelectTransferEntity));
                 mInTheRequest = false;
                 break;
             case REQUEST_SUBMITTING_ORDER:
                 CheckOrderResponse checkOrderResponse = (CheckOrderResponse) result.getResult().getData();
-                if(checkOrderResponse.getOrderingList()!=null){
+                if (checkOrderResponse.getOrderingList() != null) {
                     Iterator<TempOrderManager.TempOrder> iterator = mTempOrders.iterator();
-                    while(iterator.hasNext()){
+                    while (iterator.hasNext()) {
                         TempOrderManager.TempOrder tempOrder = iterator.next();
-                        for(CheckOrderResponse.OrderingBean orderingBean:checkOrderResponse.getOrderingList()){
-                            if(tempOrder.getHashKey().equals(orderingBean.getHash()) && "A0006".equals(orderingBean.getState())){
+                        for (CheckOrderResponse.OrderingBean orderingBean : checkOrderResponse.getOrderingList()) {
+                            if (tempOrder.getHashKey().equals(orderingBean.getHash()) && "A0006".equals(orderingBean.getState())) {
                                 iterator.remove();
                                 TempOrderManager.getInstance(getActivity()).removeTempOrder(tempOrder);
                             }
@@ -443,24 +454,26 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_INVENTORY_LIST:
                 FirstPageInventoryResult inventoryResult = (FirstPageInventoryResult) result.getResult().getData();
-                if(inventoryResult.getList()!=null && inventoryResult.getList().size()>0){
+                if (inventoryResult.getList() != null && inventoryResult.getList().size() > 0) {
                     InventoryResponse.InventoryBean inventoryBean = inventoryResult.getList().get(0);
                     //有确认中的盘点单，则显示
                     boolean isInProgresss = "confirm".equals(inventoryBean.getState());
-                    if(isInProgresss) {
-                        if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
+                    if (isInProgresss) {
+                        if (getActivity() != null)
+                            InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
                         inventoryList.add(inventoryBean);
-                    }else{//没有确认中的盘点单
-                        if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
+                    } else {//没有确认中的盘点单
+                        if (getActivity() != null)
+                            InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
                     }
 
                     //如果是当前用户盘点中，需要展示提示
-                    if(isInProgresss){
+                    if (isInProgresss) {
                         InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(true);
-                    }else{
+                    } else {
                         InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(false);
                     }
-                }else{//没有记录
+                } else {//没有记录
                     InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
                     InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress(false);
                 }
@@ -476,16 +489,25 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 EventBus.getDefault().post(new UpdateRepertory());
                 EventBus.getDefault().post(new OrderUpdateEvent());
                 break;
+            case REQUEST_UNREAD:
+                UnReadData unReadData = (UnReadData) result.getResult().getData();
+                DetailResult.ListBean bean = PlatformNotificationManager.getInstance(getActivity()).getLastMessage();
+                if (unReadData.getUnread() || (bean!=null && !bean.isSeen())) {
+                    mTvHint.setVisibility(View.VISIBLE);
+                } else {
+                    mTvHint.setVisibility(View.GONE);
+                }
+                break;
         }
     }
 
     /**
      * 检查是否订单，退货单，提交中订单三个接口全部返回，是则更新界面
      */
-    private void checkSuccess(){
-        if(!orderRequesting && !returnRequesting && !submitRequesting && !inventoryRequesting){
-            orderList.addAll(0,inventoryList);
-            if(mTempOrders!=null)orderList.addAll(0,mTempOrders);//提交中订单加在最前边
+    private void checkSuccess() {
+        if (!orderRequesting && !returnRequesting && !submitRequesting && !inventoryRequesting) {
+            orderList.addAll(0, inventoryList);
+            if (mTempOrders != null) orderList.addAll(0, mTempOrders);//提交中订单加在最前边
             adapter.setData(orderList);
             pullListView.onRefreshComplete();
             if (adapter.getCount() == 0 && pullListView.getRefreshableView().getHeaderViewsCount() == 1) {
@@ -516,7 +538,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        switch (where){
+        switch (where) {
 //            case REQUEST_TRANSFER_IN:
 //            case REQUEST_TRANSFER_OUT:
             case FROMRETURN:
@@ -527,7 +549,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 checkSuccess();
                 break;
             case REQUEST_OUTPUT_CONFIRM:
-                if(errMsg.contains("库存不足")){
+                if (errMsg.contains("库存不足")) {
                     mInTheRequest = false;
                     dialog.setMessage("当前调拨商品库存不足，请重新盘点更新库存");
                     dialog.setMessageGravity();
@@ -537,9 +559,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                         @Override
                         public void doClickButton(Button btn, CustomDialog dialog) {
                             //发送取消订单请求
-                            Intent intent = new Intent(getActivity(),MainActivity.class);
-                            intent.putExtra(MainActivity.INTENT_KEY_TAB,2);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            intent.putExtra(MainActivity.INTENT_KEY_TAB, 2);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         }
                     });
@@ -557,7 +579,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 checkSuccess();
                 break;
             default:
-                if(!TextUtils.isEmpty(errMsg))ToastUtil.show(mContext, errMsg);
+                if (!TextUtils.isEmpty(errMsg)) ToastUtil.show(mContext, errMsg);
         }
     }
 
@@ -568,20 +590,21 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     @Override
     public void gotoInventory(InventoryResponse.InventoryBean inventoryBean) {
 
-        if(!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
-            ToastUtil.show(getActivity(),"当前"+inventoryBean.getCreateUser()+"正在盘点中，无法创建新的盘点单");
+        if (!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())) {
+            ToastUtil.show(getActivity(), "当前" + inventoryBean.getCreateUser() + "正在盘点中，无法创建新的盘点单");
             return;
         }
 
         InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
         //读取缓存
-        if(cacheBean!=null)inventoryBean = cacheBean;
+        if (cacheBean != null) inventoryBean = cacheBean;
         Intent intent = new Intent(getActivity(), InventoryActivity.class);
-        intent.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryBean);
+        intent.putExtra(INTENT_KEY_INVENTORY_BEAN, inventoryBean);
         startActivity(intent);
     }
 
     private InventoryResponse.InventoryBean mCancelInventory;//记录删除的盘点对象
+
     /**
      * 取消盘点缓存
      */
@@ -598,7 +621,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 ChannelPandian request = new ChannelPandian();
                 request.setId(inventoryBrief.getInventoryID());
                 request.setState("draft");
-                sendConnection("/api/inventory/state",request,REQUEST_CANCEL_INVENTORY,true,null);
+                sendConnection("/api/inventory/state", request, REQUEST_CANCEL_INVENTORY, true, null);
             }
         });
         dialog.show();
@@ -671,7 +694,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 startActivity(rIntent);
                 break;
             case RECEIVE://正常收货
-                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
+                if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                    return;
                 Intent intent = new Intent(mContext, ReceiveActivity.class);
                 Bundle bundle = new Bundle();
                 OrderResponse.ListBean listBean = (OrderResponse.ListBean) adapter.getItem(position);
@@ -730,10 +754,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Override
     public void doTransferAction(int type, final TransferEntity transferEntity) {
-        switch (type){
+        switch (type) {
             case TRANS_ACTION_CANCEL:
                 //取消
-                if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity())) return;
                 dialog.setTitleGone();
                 dialog.setMessage("确认取消订单?");
                 dialog.setMessageGravity();
@@ -746,7 +770,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                         requestCancel(transferEntity);
                     }
                 });
-                dialog.setLeftBtnListener("我再想想",null);
+                dialog.setLeftBtnListener("我再想想", null);
                 dialog.show();
                 break;
             case TRANS_ACTION_OUTPUT_CONFIRM:
@@ -807,26 +831,28 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     /**
      * 检查订单是否已经提交完成
+     *
      * @param orders
      */
-    private void checkTempOrders(List<TempOrderManager.TempOrder> orders){
-        if(orders==null){//没有提交中订单
+    private void checkTempOrders(List<TempOrderManager.TempOrder> orders) {
+        if (orders == null) {//没有提交中订单
             submitRequesting = false;
             checkSuccess();
             return;
         }
         mTempOrders = orders;
         CheckOrderSuccessRequest request = new CheckOrderSuccessRequest(mTempOrders);
-        sendConnection("/api/order/is/success",request,REQUEST_SUBMITTING_ORDER,false, CheckOrderResponse.class);
+        sendConnection("/api/order/is/success", request, REQUEST_SUBMITTING_ORDER, false, CheckOrderResponse.class);
     }
 
     List<InventoryResponse.InventoryBean> inventoryList = new ArrayList<>();
+
     /**
-     *  一次性加载全部，无分页,【先加载退货单，然后跟着正常订单】改为:
-     *  并行查询退货单、正常订单、和提交中的订单的状态
+     * 一次性加载全部，无分页,【先加载退货单，然后跟着正常订单】改为:
+     * 并行查询退货单、正常订单、和提交中的订单的状态
      */
     private void requestReturnList() {
-        if(returnRequesting || orderRequesting || submitRequesting || inventoryRequesting)return;
+        if (returnRequesting || orderRequesting || submitRequesting || inventoryRequesting) return;
         inventoryRequesting = true;
         returnRequesting = true;
         orderRequesting = true;
@@ -921,7 +947,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         if (canSeePrice) {
             DecimalFormat df = new DecimalFormat("#.##");
-            lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount()/10000));//万元单位
+            lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount() / 10000));//万元单位
         } else {
             lastWeekKey.setText("上周采购量(件)");
             lastWeekBuy.setText(String.valueOf(dbResponse.getTotalNumber()));
@@ -942,7 +968,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSystemUpgradeNotice(SystemUpgradeNoticeEvent receiverLogoutEvent) {
-        if(SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))showSystemUpgradeNotice();
+        if (SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))
+            showSystemUpgradeNotice();
     }
 
     //接收到订单状态更新推送，更新列表
@@ -957,14 +984,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     }
 
     boolean isDialogShown = false;//是不是有可能onCreate未调用同时收到推送，就弹两次框，防止这种情况
-    private void showSystemUpgradeNotice(){
-        if(isDialogShown)return;
+
+    private void showSystemUpgradeNotice() {
+        if (isDialogShown) return;
         isDialogShown = true;
-        final Dialog dialog = new Dialog(getActivity(),R.style.CustomProgressDialog);
-        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_system_upgrade_notice,null,false);
+        final Dialog dialog = new Dialog(getActivity(), R.style.CustomProgressDialog);
+        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_system_upgrade_notice, null, false);
         dialog.setContentView(rootView);
         dialog.show();
-        TextView tvNotice = (TextView)rootView.findViewById(R.id.tv_system_upgrade_notice);
+        TextView tvNotice = (TextView) rootView.findViewById(R.id.tv_system_upgrade_notice);
         SystemUpgradeHelper systemUpgradeHelper = SystemUpgradeHelper.getInstance(getContext());
         rootView.findViewById(R.id.iv_noitce_close).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -975,10 +1003,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         });
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(systemUpgradeHelper.getStartTime()*1000);
+        cal.setTimeInMillis(systemUpgradeHelper.getStartTime() * 1000);
         StringBuilder sb = new StringBuilder();
         sb.append(sdf.format(cal.getTime())).append("~");
-        cal.setTimeInMillis(systemUpgradeHelper.getEndTime()*1000);
+        cal.setTimeInMillis(systemUpgradeHelper.getEndTime() * 1000);
         sb.append(sdf.format(cal.getTime()));
         tvNotice.setText(Html.fromHtml("<font color=\"#666666\">后台将于" + sb.toString() +
                 "进行系统更新维护，届时只能查看内容，</font>" +
@@ -998,9 +1026,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      * 出库
      */
     TransferEntity mSelectTransferEntity;
-    boolean mInTheRequest  = false;
+    boolean mInTheRequest = false;
+
     private void requestOutputConfirm(TransferEntity transferEntity) {
-        if(mInTheRequest){
+        if (mInTheRequest) {
             return;
         }
         mInTheRequest = true;
@@ -1012,7 +1041,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     /**
      * 设置一个订单为已读状态
      */
-    private void setOrderRead(OrderResponse.ListBean order){
+    private void setOrderRead(OrderResponse.ListBean order) {
         order.setUserRead(GlobalApplication.getInstance().getUid());
         adapter.notifyDataSetChanged();
     }
@@ -1020,30 +1049,30 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     /**
      * 检查盘点单
      */
-    private void checkInventory(){
+    private void checkInventory() {
         PageRequest request = new PageRequest();
         //只查盘点列表第一个，盘点中的单一定在第一条
         request.setLimit(1);
         request.setPz(1);
         request.setDate_type(0);
-        sendConnection("/api/v3/inventory/list",request,REQUEST_INVENTORY_LIST,false,FirstPageInventoryResult.class);
+        sendConnection("/api/v3/inventory/list", request, REQUEST_INVENTORY_LIST, false, FirstPageInventoryResult.class);
     }
 
     /**
      * 展示盘点中
      */
     @Subscribe
-    public void showInventoryNotice(ShowInventoryNoticeEvent event){
-        if(event.isShow && !isNoticeClose){
+    public void showInventoryNotice(ShowInventoryNoticeEvent event) {
+        if (event.isShow && !isNoticeClose) {
             //用户当前未点关闭，并且正在盘点中
             mViewNotice.setVisibility(View.VISIBLE);
             //关闭按钮
-            mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v->{
+            mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v -> {
                 isNoticeClose = true;
                 mViewNotice.setVisibility(View.GONE);
             });
-        }else{
-            if(!event.isShow)isNoticeClose = false;//重置标记位，当下次再收到展示消息时，可以展示
+        } else {
+            if (!event.isShow) isNoticeClose = false;//重置标记位，当下次再收到展示消息时，可以展示
             mViewNotice.setVisibility(View.GONE);
         }
     }
