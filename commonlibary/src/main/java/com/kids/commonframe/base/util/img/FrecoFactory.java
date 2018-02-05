@@ -183,7 +183,7 @@ public class FrecoFactory {
         DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(mContext)
                 .setBaseDirectoryPath(mContext.getFilesDir())
                 .setBaseDirectoryName("image_cache")
-                .setMaxCacheSize(50 * ByteConstants.MB)
+                .setMaxCacheSize(100 * ByteConstants.MB)
                 .setMaxCacheSizeOnLowDiskSpace(10 * ByteConstants.MB)
                 .setMaxCacheSizeOnVeryLowDiskSpace(2 * ByteConstants.MB)
                 .build();

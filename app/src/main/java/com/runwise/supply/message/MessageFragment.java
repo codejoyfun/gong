@@ -447,7 +447,9 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     MessageResult.ChannelBean.LastMessageBeanX messageBeanX = channelBean.getLast_message();
 //                    viewHolder.msgTime.setText(DateFormateUtil.InfoClassShowdateFormat(messageBeanX.getDate()));
                     try{
-                        viewHolder.msgTime.setText(mSdfSysTimeTarget.format(mSdfSysTimeSource.parse(messageBeanX.getDate())));
+                        if(messageBeanX.getDate()!= null){
+                            viewHolder.msgTime.setText(mSdfSysTimeTarget.format(mSdfSysTimeSource.parse(messageBeanX.getDate())));
+                        }
                     }catch (ParseException e){
                         viewHolder.msgTime.setText(messageBeanX.getDate());
                     }

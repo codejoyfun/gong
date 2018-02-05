@@ -76,12 +76,18 @@ public class MainRepertoryFragment extends NetWorkFragment {
     public void leftClick(View view){
         startActivity(new Intent(mContext,DealerSearchActivity.class));
     }
+    boolean mCreateInventoryIng = false;
+
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
         MobclickAgent.onEvent(getActivity(), EVENT_ID_START_THE_INVENTORY);
         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
+            if (mCreateInventoryIng){
+                return;
+            }
+            mCreateInventoryIng = true;
             Object parma = null;
 //            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
             sendConnection("/api/v2/inventory/create",parma,REQUEST_INVENTORY,true,InventoryResponse.class);
@@ -144,6 +150,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 }
                 intent1.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryBean);
                 startActivity(intent1);
+                mCreateInventoryIng = false;
                 break;
         }
     }
@@ -157,6 +164,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 dialog.setMessage(errMsg);
                 dialog.setLeftBtnListener("我知道了", null);
                 dialog.show();
+                mCreateInventoryIng = false;
                 break;
         }
     }
