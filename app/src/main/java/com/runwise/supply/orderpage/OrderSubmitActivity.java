@@ -36,6 +36,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
+import com.runwise.supply.view.CustomDatePickerDialog;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -48,7 +49,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
-import me.shaohui.bottomdialog.BottomDialog;
 
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_DATE_OF_SERVICE;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_AGAIN;
@@ -121,21 +121,15 @@ public class OrderSubmitActivity extends NetWorkActivity {
     protected int mPlaceOrderType;
     public static final String  INTENT_KEY_PLACE_ORDER_TYPE = "intent_key_place_order_type";
 
-    private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
-            .setViewListener(new BottomDialog.ViewListener() {
-                @Override
-                public void bindView(View v) {
-                    initDefaultDate(v);
-                }
-            }).setLayoutRes(R.layout.date_layout)
-            .setCancelOutside(true)
-            .setDimAmount(0.5f);
-
+    private CustomDatePickerDialog mCustomDatePickerDialog;
+    CustomDatePickerDialog.PickerClickListener mPickerClickListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_sumbit);
         ButterKnife.bind(this);
+
+
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER);
         mPlaceOrderType = getIntent().getIntExtra(INTENT_KEY_PLACE_ORDER_TYPE,-1);
         isSelfHelpOrder = getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false);
@@ -150,6 +144,28 @@ public class OrderSubmitActivity extends NetWorkActivity {
         selectedDate = mReserveGoodsAdvanceDate;
         selectedDateIndex = 1;
         mTvDate.setText(cachedDWStr);
+
+
+
+        mCustomDatePickerDialog = new CustomDatePickerDialog(this,TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate));
+        mPickerClickListener = new CustomDatePickerDialog.PickerClickListener() {
+            @Override
+            public void doPickClick(String currentStr, String currenStr1, int currentPosition) {
+                long diffDay = TimeUtils.dateDiff(TimeUtils.getCurrentDate(),currenStr1,"yyyy-MM-dd");
+                if(diffDay<0){
+                    toast("不能选择过去的日期！");
+                    return;
+                }
+                if (diffDay>30){
+                    toast("只能选择未来30天内的日期！");
+                    return;
+                }
+                mTvDate.setText(currentStr.substring(5) + " " + TimeUtils.getWeekStr((int) diffDay));
+                mCustomDatePickerDialog.dismiss();
+            }
+        };
+        mCustomDatePickerDialog.addPickerListener(mPickerClickListener);
+
         OrderSubmitProductAdapter orderSubmitProductAdapter;
         orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
         mRvProductList.setAdapter(orderSubmitProductAdapter);
@@ -212,7 +228,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
                 selectedDateIndex = 1;
-                setSelectedColor(1);
                 if (mOrder != null) {
                     setUpDate(mReserveGoodsAdvanceDate);
                 }
@@ -346,11 +361,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
             case R.id.rl_date_of_service:
                 MobclickAgent.onEvent(getActivityContext(), EVENT_ID_DATE_OF_SERVICE);
                 //弹出日期选择控件
-                if (bDialog.isVisible()) {
-                    bDialog.dismiss();
-                } else {
-                    bDialog.show();
-                }
+                mCustomDatePickerDialog.show();
                 break;
             case R.id.btn_submit:
                 switch (mPlaceOrderType){
@@ -475,111 +486,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         sendConnection(sb.toString(), request, REQUEST_MODIFY, true, BaseEntity.ResultBean.class);
     }
 
-    private void initDefaultDate(View v) {
-        RelativeLayout rll1 = (RelativeLayout) v.findViewById(R.id.rll1);
-        RelativeLayout rll2 = (RelativeLayout) v.findViewById(R.id.rll2);
-        RelativeLayout rll3 = (RelativeLayout) v.findViewById(R.id.rll3);
-        TextView wTv1 = (TextView) v.findViewById(R.id.wTv1);
-        TextView dTv1 = (TextView) v.findViewById(R.id.dTv1);
-        TextView wTv2 = (TextView) v.findViewById(R.id.wTv2);
-        TextView dTv2 = (TextView) v.findViewById(R.id.dTv2);
-        TextView wTv3 = (TextView) v.findViewById(R.id.wTv3);
-        TextView dTv3 = (TextView) v.findViewById(R.id.dTv3);
-        wArr[0] = wTv1;
-        wArr[1] = wTv2;
-        wArr[2] = wTv3;
-        dArr[0] = dTv1;
-        dArr[1] = dTv2;
-        dArr[2] = dTv3;
-        //选中哪个，通过selectedDate来判断
-        wArr[selectedDateIndex].setTextColor(Color.parseColor("#6BB400"));
-        dArr[selectedDateIndex].setTextColor(Color.parseColor("#6BB400"));
-        //计算当前日期起，明后天的星期几+号数
-        wTv1.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1));
-        String[] t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate - 1).split("-");
-        if (t.length > 2) {
-            dTv1.setText(t[1] + "-" + t[2]);
-        }
-        wTv2.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
-        t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).split("-");
-        if (t.length > 2) {
-            dTv2.setText(t[1] + "-" + t[2]);
-        }
-        wTv3.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1));
-        t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate + 1).split("-");
-        if (t.length > 2) {
-            dTv3.setText(t[1] + "-" + t[2]);
-        }
-        //初始化点击事件
-        rll1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //清空颜色
-                setSelectedColor(0);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedDate = mReserveGoodsAdvanceDate - 1;
-                        selectedDateIndex = 0;
-                        bDialog.dismiss();
-                        mTvDate.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate - 1).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1));
-                    }
-                }, 500);
-            }
-        });
-        rll2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //清空颜色
-                setSelectedColor(1);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedDate = mReserveGoodsAdvanceDate;
-                        selectedDateIndex = 1;
-                        bDialog.dismiss();
-                        mTvDate.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
-                    }
-                }, 500);
-            }
-        });
-        rll3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //清空颜色
-                setSelectedColor(2);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedDate = mReserveGoodsAdvanceDate + 1;
-                        selectedDateIndex = 2;
-                        bDialog.dismiss();
-                        mTvDate.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate + 1).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1));
-                    }
-                }, 500);
-            }
-        });
-    }
 
-    //参数从0开始
-    private void setSelectedColor(int i) {
-        for (TextView tv : wArr) {
-            if (tv != null) {
-                tv.setTextColor(Color.parseColor("#2E2E2E"));
-            }
-        }
-        for (TextView tv : dArr) {
-            if (tv != null) {
-                tv.setTextColor(Color.parseColor("#2E2E2E"));
-            }
-        }
-        if (wArr[i] != null) {
-            wArr[i].setTextColor(Color.parseColor("#6BB400"));
-        }
-        if (dArr[i] != null) {
-            dArr[i].setTextColor(Color.parseColor("#6BB400"));
-        }
-    }
 
     /**
      * 更新底部bar
