@@ -93,11 +93,13 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitleText(true,"消息");
+        showBackBtn();
 //        this.setTitleRigthIcon(true,R.drawable.nav_service_message);
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setOnItemClickListener(this);
+
 
         adapter = new MessageAdapter();
         if(mOnRefreshListener2 == null){
@@ -447,7 +449,9 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     MessageResult.ChannelBean.LastMessageBeanX messageBeanX = channelBean.getLast_message();
 //                    viewHolder.msgTime.setText(DateFormateUtil.InfoClassShowdateFormat(messageBeanX.getDate()));
                     try{
-                        viewHolder.msgTime.setText(mSdfSysTimeTarget.format(mSdfSysTimeSource.parse(messageBeanX.getDate())));
+                        if(messageBeanX.getDate()!= null){
+                            viewHolder.msgTime.setText(mSdfSysTimeTarget.format(mSdfSysTimeSource.parse(messageBeanX.getDate())));
+                        }
                     }catch (ParseException e){
                         viewHolder.msgTime.setText(messageBeanX.getDate());
                     }

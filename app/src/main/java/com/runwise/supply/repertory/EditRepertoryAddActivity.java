@@ -57,7 +57,6 @@ import com.runwise.supply.repertory.entity.AddRepertoryData;
 import com.runwise.supply.repertory.entity.AddRepertoryRequest;
 import com.runwise.supply.repertory.entity.EditHotResult;
 import com.runwise.supply.repertory.entity.NewAdd;
-import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.TimeUtils;
 
@@ -70,6 +69,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
@@ -81,11 +81,10 @@ import static com.runwise.supply.orderpage.ProductBasicUtils.getBasicMap;
 
 /**
  * 库存添加收索
- *
+ * <p>
  * 新加逻辑：过滤掉已有的商品
- *
  */
-public class EditRepertoryAddActivity extends NetWorkActivity{
+public class EditRepertoryAddActivity extends NetWorkActivity {
     public static final String INTENT_FILTER = "intent_filter";
     @ViewInject(R.id.searchET)
     private EditText searchET;
@@ -120,7 +119,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
     private TextView tv_product_date_value;
     @ViewInject(R.id.et_product_amount)
     private EditText et_product_amount;
-//TYPE2
+    //TYPE2
     @ViewInject(R.id.name1)
     private TextView name1;
     @ViewInject(R.id.number1)
@@ -152,10 +151,20 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
     private EditHotResult.ListBean.ProductBean productBean;
     private EditHotResult.ListBean returnBean;
     //数量
-    private  String amount;
+    private String amount;
 
     //过滤
     Set<Integer> filters = new HashSet<>();
+    protected Map<EditHotResult.ListBean, Double> mMapCount = new HashMap<>();
+
+    /**
+     * 供子fragment统一设置商品数量,隐藏细节
+     */
+    public interface ProductCountSetter {
+        void setCount(EditHotResult.ListBean bean, double count);
+
+        double getCount(EditHotResult.ListBean bean);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +190,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             }
         });
         Object param = null;
-        sendConnection("/api/inventory/add/list",param,PRODUCT_GET,true, EditHotResult.class);
+        sendConnection("/api/inventory/add/list", param, PRODUCT_GET, true, EditHotResult.class);
 //        bgView.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -191,7 +200,82 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         filters.addAll(getIntent().getIntegerArrayListExtra(INTENT_FILTER));
     }
 
-    @OnClick({R.id.cancelBtn,R.id.iv_open})
+    /**
+     * 供子fragment统一设置商品数量的接口，向子fragment隐藏实现
+     */
+    ProductCountSetter mCountSetter = new ProductCountSetter() {
+        @Override
+        public void setCount(EditHotResult.ListBean bean, double count) {
+            if (count == 0) {
+                mMapCount.remove(bean);
+            } else {
+                mMapCount.put(bean, count);
+            }
+
+        }
+
+        @Override
+        public double getCount(EditHotResult.ListBean bean) {
+            return mMapCount.get(bean) == null ? 0 : mMapCount.get(bean);
+        }
+
+    };
+
+    /**
+     * 供子fragment统一设置商品数量
+     */
+    public ProductCountSetter getProductCountSetter() {
+        return mCountSetter;
+    }
+
+
+    public void postData() {
+        if (mMapCount.size() == 0){
+            toast("你尚未添加任何盘点商品!");
+            return;
+        }
+        for (Map.Entry<EditHotResult.ListBean, Double> entry : mMapCount.entrySet()) {
+            EditHotResult.ListBean editHotBean = entry.getKey();
+            EditHotResult.ListBean.ProductBean productBean = editHotBean.getProduct();
+            InventoryResponse.InventoryProduct bean = new InventoryResponse.InventoryProduct();
+            bean.setTheoreticalQty(0);
+            bean.setLotID(0);
+            bean.setCode(productBean.getDefaultCode());
+            bean.setInventoryLineID(editHotBean.getInventoryAddLineID());
+            bean.setProductID(productBean.getProductID());
+            bean.setEditNum(entry.getValue());
+
+            ProductBasicList.ListBean product = new ProductBasicList.ListBean();
+            product.setName(productBean.getName());
+            product.setBarcode(productBean.getBarcode());
+            product.setStockType(productBean.getStockType());
+            product.setDefaultCode(productBean.getDefaultCode());
+            product.setUnit(productBean.getUnit());
+            product.setTracking(productBean.getTracking());
+            ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
+            if (listBean != null) {
+                product.setUom(listBean.getUom());
+                product.setProductUom(listBean.getProductUom());
+            }
+            ImageBean imageBean = new ImageBean();
+            imageBean.setImage(productBean.getImage().getImage());
+            imageBean.setImageSmall(productBean.getImage().getImageSmall());
+            imageBean.setImageMedium(productBean.getImage().getImageMedium());
+            product.setImage(imageBean);
+            product.setProductUom(productBean.getProductUom());
+            bean.setProduct(product);
+
+            NewAdd newAddBean = new NewAdd();
+            newAddBean.setType(1);//无批次
+            newAddBean.setBean(bean);
+            EventBus.getDefault().post(newAddBean);
+        }
+        finish();
+
+    }
+
+
+    @OnClick({R.id.cancelBtn, R.id.iv_open, R.id.tv_add})
     public void btnClick(View view) {
         int vid = view.getId();
         switch (vid) {
@@ -199,25 +283,29 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 customFinish();
                 break;
             case R.id.iv_open:
-                if (mProductTypeWindow == null){
+                if (mProductTypeWindow == null) {
                     return;
                 }
-                if (!mProductTypeWindow.isShowing()){
+                if (!mProductTypeWindow.isShowing()) {
                     showPopWindow();
-                }else{
+                } else {
                     mProductTypeWindow.dismiss();
                 }
+                break;
+            case R.id.tv_add:
+                postData();
                 break;
             default:
                 break;
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onShowPopEvent(final EditHotResult.ListBean returnBean) {
         this.returnBean = returnBean;
         productBean = returnBean.getProduct();
         //有批次
-        if("lot".equals(productBean.getTracking())) {
+        if ("lot".equals(productBean.getTracking())) {
             popView1.setVisibility(View.VISIBLE);
             popView2.setVisibility(View.GONE);
             name.setText(productBean.getName());
@@ -259,13 +347,13 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             tv_product_date_value.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(pvCustomTime == null){
+                    if (pvCustomTime == null) {
                         pvCustomTime = new TimePickerView.Builder(mContext, new TimePickerView.OnTimeSelectListener() {
                             @Override
                             public void onTimeSelect(Date date, View v) {//选中事件回调
-                                if( 0 == wheelView.getCurrentItem()) {
-                                    if(!DateFormateUtil.befToday(TimeUtils.getYMDHMS(date))) {
-                                        ToastUtil.show(mContext,"生产日期不能是未来时间");
+                                if (0 == wheelView.getCurrentItem()) {
+                                    if (!DateFormateUtil.befToday(TimeUtils.getYMDHMS(date))) {
+                                        ToastUtil.show(mContext, "生产日期不能是未来时间");
                                         return;
                                     }
                                 }
@@ -320,20 +408,18 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     String number = et_batch_number.getText().toString();
                     amount = et_product_amount.getText().toString();
                     AddRepertoryRequest dataRequest = new AddRepertoryRequest();
-                    if("生产日期".equals(tv_product_date.getText().toString())) {
+                    if ("生产日期".equals(tv_product_date.getText().toString())) {
                         dataRequest.setProduce_datetime(tv_product_date_value.getText().toString());
-                    }
-                    else {
+                    } else {
                         dataRequest.setLife_datetime(tv_product_date_value.getText().toString());
                     }
 
                     dataRequest.setLot_name(number);
                     dataRequest.setProduct_id(productBean.getProductID());
-                    sendConnection("/api/shop/inventory/lot/check",dataRequest,PRODUCT_ADD_1,true, AddRepertoryData.class);
+                    sendConnection("/api/shop/inventory/lot/check", dataRequest, PRODUCT_ADD_1, true, AddRepertoryData.class);
                 }
             });
-        }
-        else {
+        } else {
             popView1.setVisibility(View.GONE);
             popView2.setVisibility(View.VISIBLE);
             name1.setText(productBean.getName());
@@ -352,10 +438,9 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    if(!TextUtils.isEmpty(et_product_amount1.getText().toString())) {
+                    if (!TextUtils.isEmpty(et_product_amount1.getText().toString())) {
                         finalButton1.setEnabled(true);
-                    }
-                    else {
+                    } else {
                         finalButton1.setEnabled(false);
                     }
                 }
@@ -384,7 +469,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                     product.setUnit(productBean.getUnit());
                     product.setTracking(productBean.getTracking());
                     ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
-                    if (listBean != null){
+                    if (listBean != null) {
                         product.setUom(listBean.getUom());
                         product.setProductUom(listBean.getProductUom());
                     }
@@ -406,7 +491,8 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         }
         setCommontTopShow();
     }
-    @OnClick({R.id.colseIcon,R.id.colseIcon1})
+
+    @OnClick({R.id.colseIcon, R.id.colseIcon1})
     public void closeIcon(View view) {
         switch (view.getId()) {
             case R.id.colseIcon:
@@ -416,12 +502,12 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 setCommontTopHide();
                 break;
             case R.id.iv_open:
-                if (mProductTypeWindow == null){
+                if (mProductTypeWindow == null) {
                     return;
                 }
-                if (!mProductTypeWindow.isShowing()){
+                if (!mProductTypeWindow.isShowing()) {
                     showPopWindow();
-                }else{
+                } else {
                     mProductTypeWindow.dismiss();
                 }
                 break;
@@ -429,20 +515,21 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
     }
 
     private void setFiniishBtnStatus() {
-        if( !TextUtils.isEmpty(tv_product_date_value.getText().toString()) && !TextUtils.isEmpty(et_product_amount.getText().toString())) {
+        if (!TextUtils.isEmpty(tv_product_date_value.getText().toString()) && !TextUtils.isEmpty(et_product_amount.getText().toString())) {
             finalButton.setEnabled(true);
-        }
-        else{
+        } else {
             finalButton.setEnabled(false);
         }
     }
+
     CategoryRespone categoryRespone;
     List<EditHotResult.ListBean> hotList = new ArrayList<>();
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case PRODUCT_GET:
-                EditHotResult editHotResult = (EditHotResult)result.getResult().getData();
+                EditHotResult editHotResult = (EditHotResult) result.getResult().getData();
                 Observable.from(editHotResult.getList())
                         .filter(listBean -> !filters.contains(listBean.getProductID()))
                         .subscribe(listBean -> hotList.add(listBean));
@@ -481,7 +568,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
                 imageBean.setImageMedium(productBean.getImage().getImageMedium());
                 product.setImage(imageBean);
                 ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
-                if (listBean != null){
+                if (listBean != null) {
                     product.setUom(listBean.getUom());
                     product.setProductUom(listBean.getProductUom());
                 }
@@ -521,12 +608,12 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         List<String> titles = new ArrayList<>();
         HashMap<String, ArrayList<EditHotResult.ListBean>> map = new HashMap<>();
         titles.add("全部");
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
-            map.put(category,new ArrayList<EditHotResult.ListBean>());
+            map.put(category, new ArrayList<EditHotResult.ListBean>());
         }
         for (EditHotResult.ListBean listBean : listBeen) {
-            if (!TextUtils.isEmpty(listBean.getProduct().getCategory())){
+            if (!TextUtils.isEmpty(listBean.getProduct().getCategory())) {
                 ArrayList<EditHotResult.ListBean> tempListBeen = map.get(listBean.getProduct().getCategory());
                 if (tempListBeen == null) {
                     tempListBeen = new ArrayList<>();
@@ -536,7 +623,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             }
         }
 
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             ArrayList<EditHotResult.ListBean> value = map.get(category);
             productDataFragmentList.add(newSearchListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
@@ -569,10 +656,10 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
 
             }
         });
-        if(titles.size()<=TAB_EXPAND_COUNT){
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        }else{
+        } else {
             ivOpen.setVisibility(View.VISIBLE);
             smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
@@ -584,6 +671,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
         SearchListFragment searchListFragment = new SearchListFragment();
         searchListFragment.type = DataType.ALL;
         searchListFragment.setData(value);
+        searchListFragment.setProductCountSetter(mCountSetter);
         return searchListFragment;
     }
 
@@ -644,18 +732,20 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        ToastUtil.show(mContext,errMsg);
+        ToastUtil.show(mContext, errMsg);
     }
+
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
         private List<String> titleList = new ArrayList<>();
         private List<Fragment> fragmentList = new ArrayList<>();
 
-        public TabPageIndicatorAdapter(FragmentManager fm,List<String> titles, List<Fragment> fragmentList) {
+        public TabPageIndicatorAdapter(FragmentManager fm, List<String> titles, List<Fragment> fragmentList) {
             super(fm);
             titleList.addAll(titles);
             this.fragmentList.addAll(fragmentList);
 
         }
+
         @Override
         public Fragment getItem(int position) {
             return fragmentList.get(position);
@@ -684,7 +774,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
 
     //显示弹窗
     public void setCommontTopShow() {
-        if ( topShowAnim == null ) {
+        if (topShowAnim == null) {
             topShowAnim = AnimationUtils.loadAnimation(mContext, com.kids.commonframe.R.anim.show_popwindow);
         }
         if (addRootView.getVisibility() == View.GONE) {
@@ -707,9 +797,10 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
             bgView.setVisibility(View.VISIBLE);
         }
     }
+
     //影藏弹窗
     public void setCommontTopHide() {
-        if (topHideAnim == null ) {
+        if (topHideAnim == null) {
             topHideAnim = AnimationUtils.loadAnimation(mContext, com.kids.commonframe.R.anim.hide_popwindow);
         }
         if (addRootView.getVisibility() == View.VISIBLE) {
@@ -735,17 +826,18 @@ public class EditRepertoryAddActivity extends NetWorkActivity{
     }
 
     InputMethodManager imm;
-    private void hideKeyboard(){
-        if(imm==null)imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+    private void hideKeyboard() {
+        if (imm == null) imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         View v = getCurrentFocus();
-        if(imm!=null && v!=null)imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        if (imm != null && v != null) imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     /**
      * 超级蛋疼的，键盘展示的时候回退到InventoryActivity，会造成draglayout显示错误，必须先收起键盘，暂时找不到原因
      * 先收起键盘，等待一小段时间，再finish
      */
-    private void customFinish(){
+    private void customFinish() {
         hideKeyboard();
 //        smartTabLayout.postDelayed(()->finish(),500);
         finish();

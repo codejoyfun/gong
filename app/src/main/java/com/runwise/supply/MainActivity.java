@@ -83,7 +83,7 @@ public class MainActivity extends NetWorkActivity {
     @ViewInject(android.R.id.tabhost)
     private FragmentTabHost mTabHost;
     //未读小红点
-    private TextView mMsgHite;
+//    private TextView mMsgHite;
     //    private UserInfo userInfo;
     private boolean isLogin;
     public static final String INTENT_KEY_SKIP_TO_LOGIN = "intent_key_skip_to_login";
@@ -241,7 +241,7 @@ public class MainActivity extends NetWorkActivity {
 //            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragmentV2.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
-        mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
+//        mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);
 //        }
 //        else{
@@ -279,7 +279,7 @@ public class MainActivity extends NetWorkActivity {
             ImageView tabIv = (ImageView) subTabView.findViewById(R.id.tab_iv_icon);
             TextView tabTv = (TextView) subTabView.findViewById(R.id.tab_tv_name);
             if (R.string.tab_4 == tabNameRes) {
-                mMsgHite = (TextView) subTabView.findViewById(R.id.tv_hint);
+//                mMsgHite = (TextView) subTabView.findViewById(R.id.tv_hint);
             }
             tabIv.setImageResource(bgRes);
             tabTv.setText(getString(tabNameRes));
@@ -302,9 +302,9 @@ public class MainActivity extends NetWorkActivity {
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
                 DetailResult.ListBean bean = PlatformNotificationManager.getInstance(this).getLastMessage();
                 if (unReadData.getUnread() || (bean!=null && !bean.isSeen())) {
-                    mMsgHite.setVisibility(View.VISIBLE);
+//                    mMsgHite.setVisibility(View.VISIBLE);
                 } else {
-                    mMsgHite.setVisibility(View.GONE);
+//                    mMsgHite.setVisibility(View.GONE);
                 }
 //                LogUtils.e("onSuccessTime REQUEST_UNREAD "+String.valueOf(System.currentTimeMillis() - mTimeStartREQUEST_UNREAD));
                 break;
@@ -418,7 +418,7 @@ public class MainActivity extends NetWorkActivity {
 
     @Subscribe
     public void refresh(PlatformNotificationEvent event){
-        mMsgHite.setVisibility(View.VISIBLE);
+//        mMsgHite.setVisibility(View.VISIBLE);
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN)

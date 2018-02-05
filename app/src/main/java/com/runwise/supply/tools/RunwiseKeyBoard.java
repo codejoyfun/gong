@@ -25,6 +25,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.repertory.entity.EditHotResult;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
@@ -83,7 +84,9 @@ public class RunwiseKeyBoard extends Dialog {
 
     private ReceiveBean mReceiveBean;
     ProductData.ListBean mProductBean;
+    EditHotResult.ListBean mEditHotBean;
     private SetCountListener mListener;
+
 
     public interface SetCountListener {
         void onSetCount(double count);
@@ -105,6 +108,10 @@ public class RunwiseKeyBoard extends Dialog {
         }
         if (mProductBean != null) {
             setUpData("", mProductBean.getName());
+        }
+
+        if (mEditHotBean != null) {
+            setUpData(String.valueOf(mEditHotBean.getCount()), mEditHotBean.getProduct().getName());
         }
 
         disableShowInput(mEtCount);
@@ -156,6 +163,10 @@ public class RunwiseKeyBoard extends Dialog {
 
     public void setUp(ProductData.ListBean productBean, SetCountListener listener) {
         mProductBean = productBean;
+        mListener = listener;
+    }
+    public void setUp(EditHotResult.ListBean editHotBean, SetCountListener listener) {
+        mEditHotBean = editHotBean;
         mListener = listener;
     }
 

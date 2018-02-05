@@ -574,6 +574,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         updateBottomBar();
     }
 
+
+
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         if (!TextUtils.isEmpty(errMsg)) toast(errMsg);

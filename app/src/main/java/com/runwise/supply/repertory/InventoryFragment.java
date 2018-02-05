@@ -248,7 +248,7 @@ public class InventoryFragment extends NetWorkFragment {
                 viewHolder.mmTvTheoretical.setVisibility(View.VISIBLE);
                 viewHolder.mmEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getEditNum()));
                 viewHolder.mmTvTheoretical.setText("/"+NumberUtil.getIOrD(inventoryProduct.getTheoreticalQty()));
-                viewHolder.mmTvUom.setText(inventoryProduct.getUom());
+                viewHolder.mmTvUom.setText(inventoryProduct.getProduct().getProductUom());
 
                 boolean isChanged = inventoryProduct.getEditNum()!=inventoryProduct.getTheoreticalQty();
                 viewHolder.mmRlRoot.setBackgroundColor(isChanged?colorBgChanged:colorBgUnChanged);

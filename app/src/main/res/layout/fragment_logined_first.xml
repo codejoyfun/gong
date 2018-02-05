@@ -32,7 +32,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:padding="12dp"
-            android:src="@drawable/ic_custom_service"
+            android:src="@drawable/nav_btn_message_gray"
             />
 
         <TextView
@@ -45,8 +45,7 @@
             android:text="@string/app_name"
             android:textColor="#2E2E2E"
             android:textSize="18sp"
-            android:visibility="visible"
-            />
+            android:visibility="visible"/>
 
         <View
             android:layout_width="match_parent"
@@ -55,6 +54,17 @@
             android:background="#bebebe"
             />
     </RelativeLayout>
+    <TextView
+        android:id="@+id/tv_hint"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/red_point_bg"
+        android:gravity="center"
+        android:scaleType="fitXY"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/iv_call"
@@ -62,6 +72,6 @@
         android:layout_height="48dp"
         android:layout_alignParentRight="true"
         android:padding="12dp"
-        android:src="@drawable/nav_service_home" />
+        android:src="@drawable/nav_btn_message" />
 
 </RelativeLayout>
