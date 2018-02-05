@@ -129,7 +129,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
         setContentView(R.layout.activity_order_sumbit);
         ButterKnife.bind(this);
 
-
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER);
         mPlaceOrderType = getIntent().getIntExtra(INTENT_KEY_PLACE_ORDER_TYPE,-1);
         isSelfHelpOrder = getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false);
