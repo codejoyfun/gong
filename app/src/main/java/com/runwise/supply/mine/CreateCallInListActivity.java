@@ -226,6 +226,9 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 @Override
                 public void onOptionsSelect(int options1, int options2, int options3, View v) {
                     //返回的分别是三个级别的选中位置
+                    if(mStoreResponse == null ||mStoreResponse.getList().size() == 0){
+                        return;
+                    }
                     String tx = mStoreResponse.getList().get(options1).getShopName();
                     mTvCallOutStore.setText(tx);
                     selectShopIndex = options1;

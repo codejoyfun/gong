@@ -168,10 +168,18 @@ public class FrecoFactory {
                 imageRequestBuilder.setResizeOptions(resizeOptions);
             }
         }
+        ImageRequest imageRequest = null;
+        if (draweeView.getWidth()!=0 && draweeView.getHeight()!=0){
+            imageRequest = imageRequestBuilder
+                    //根据View的尺寸放缩图片
+                    .setResizeOptions(new ResizeOptions(draweeView.getWidth(), draweeView.getHeight()))
+                    .build();
+        }
+
 //        imageRequestBuilder.setAutoRotateEnabled(true);
 //        imageRequestBuilder.setLowestPermittedRequestLevel(ImageRequest.RequestLevel.FULL_FETCH);
         DraweeController draweeController = Fresco.newDraweeControllerBuilder()
-                .setImageRequest(imageRequestBuilder.build())
+                .setImageRequest(imageRequest != null?imageRequest:imageRequestBuilder.build())
                 .setOldController(draweeView.getController())
                 .setLowResImageRequest(ImageRequest.fromUri(lowResUri))
                 .setControllerListener(controllerListener)

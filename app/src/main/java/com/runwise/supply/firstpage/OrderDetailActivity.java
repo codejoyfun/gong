@@ -395,7 +395,9 @@ public class OrderDetailActivity extends NetWorkActivity {
                             }
                         } else {
                             //mProductTypeWindow.dismiss();//
-                            mTypeWindow.dismiss();
+                            if (mTypeWindow != null){
+                                mTypeWindow.dismiss();
+                            }
                         }
                     }
 
