@@ -540,6 +540,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             for (ProductData.ListBean listBean1 : mMapCount.keySet()) {
                                 if (listBean1.getProductID() == listBean.getProductID()) {
                                     listBean1.setProductTag(listBean.getProductTag());
+                                    listBean1.setInvalid(false);
                                     break;
                                 }
                             }
