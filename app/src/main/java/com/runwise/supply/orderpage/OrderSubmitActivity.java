@@ -161,6 +161,21 @@ public class OrderSubmitActivity extends NetWorkActivity {
         return mProductList;
     }
 
+    private void setUpDate(int dayDiff) {
+        //送达日期
+        String estimatedStampStr = mOrder.getEstimatedTime().split(" ")[0];
+        int diff = (int) TimeUtils.dateDiff(TimeUtils.getCurrentDate(),estimatedStampStr,"yyyy-MM-dd");
+        if (diff < mReserveGoodsAdvanceDate-1){
+        //订单原有的送达日期已过期
+            cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+            selectedDate = mReserveGoodsAdvanceDate;
+        }else{
+            cachedDWStr = TimeUtils.getABFormatDate(diff).substring(5) + " " + TimeUtils.getWeekStr(diff);
+            selectedDate = diff;
+        }
+        mTvDate.setText(cachedDWStr);
+    }
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         Intent intent;
@@ -171,6 +186,9 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
+                if (mOrder != null) {
+                    setUpDate(mReserveGoodsAdvanceDate);
+                }
                 break;
             case REQUEST_MODIFY:
                 ToastUtil.show(mContext, "订单修改成功");
