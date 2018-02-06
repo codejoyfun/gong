@@ -8,13 +8,24 @@ import com.runwise.supply.view.timepacker.WheelAdapter;
  */
 
 public class DateServiceAdapter implements WheelAdapter {
+
+    int reserveGoodsAdvanceDate;
+
+    public DateServiceAdapter(){
+
+    }
+    public DateServiceAdapter(int reserveGoodsAdvanceDate){
+        this.reserveGoodsAdvanceDate = reserveGoodsAdvanceDate;
+    }
+
     @Override
     public int getItemsCount() {
-        return 31;
+            return 30;
     }
 
     @Override
     public String getItem(int index) {
+        index = reserveGoodsAdvanceDate-1+index;
         String date = TimeUtils.getABFormatDate(index).substring(5);
         String week = TimeUtils.getWeekStr(index);
         String desc = date+" "+week;
@@ -30,6 +41,10 @@ public class DateServiceAdapter implements WheelAdapter {
                 break;
         }
         return desc;
+    }
+
+    public String getItemYMD(int index){
+      return TimeUtils.getABFormatDate(reserveGoodsAdvanceDate-1+index);
     }
 
     @Override

@@ -32,6 +32,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         bean = getIntent().getExtras().getParcelable("order");
         //初始化商品数据
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
+        List<ProductData.ListBean> listBeans = new ArrayList<>();
         for (OrderResponse.ListBean.LinesBean lb : list) {
             ProductData.ListBean listBean = new ProductData.ListBean();
 //            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(lb.getProductID());
@@ -59,6 +60,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
             listBean.setRemark(lb.getRemark());
+            listBeans.add(listBean);
             mMapCount.put(listBean,lb.getProductUomQty());
             mMapRemarks.put(listBean,lb.getRemark());
         }
@@ -66,11 +68,13 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         super.onCreate(savedInstanceState);
         showCart(true);
         mTvOrderCommit.setText("确认修改");
+        checkValid(listBeans);
     }
 
     @Override
     protected void getCache() {
         //不需要获取缓存
+        checkValid(getSelectProductList());
     }
 
     @Override
@@ -78,10 +82,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         //不需要保存
     }
 
-    @Override
-    protected void onOkClicked() {
-
-        Intent intent = new Intent(this,OrderSubmitActivity.class);
+    private ArrayList<ProductData.ListBean> getSelectProductList(){
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mMapCount.keySet()){
             if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
@@ -89,6 +90,13 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             bean.setRemark(mMapRemarks.get(bean));
             list.add(bean);
         }
+        return list;
+    }
+
+    @Override
+    protected void onOkClicked() {
+        Intent intent = new Intent(this,OrderSubmitActivity.class);
+        ArrayList<ProductData.ListBean> list = getSelectProductList();
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
         intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER, (Parcelable) bean);
         startActivity(intent);

@@ -389,6 +389,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             case R.id.rl_bottom_bar:
                 saveCache();
                 getCache();
+//                showCart(true);
                 mAdapterVp.fragmentList.get(mViewPagerCategoryFrags.getCurrentItem()).refresh();
                 MobclickAgent.onEvent(getActivityContext(), EVENT_ID_SHOPPING_CART);
                 break;

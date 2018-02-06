@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.DateServiceAdapter;
 import com.runwise.supply.view.timepacker.WheelView;
 
+
 /**
  * Created by mike on 2018/2/5.
  */
@@ -27,20 +27,25 @@ public class DateServiceDialog extends Dialog {
 
     DateServiceAdapter mDateServiceAdapter;
     WheelView mWheelView;
+    DateServiceListener mDateServiceListener;
 
-    public DateServiceDialog(@NonNull Context context) {
-        super(context, R.style.DialogNoBg);
+    public interface DateServiceListener {
+        void onSelect(String ymd);
     }
 
-    public DateServiceDialog(@NonNull Context context, int themeResId) {
-        super(context, R.style.DialogNoBg);
+    public DateServiceDialog(@NonNull Context context, int reserveGoodsAdvanceDate) {
+        super(context, R.style.DialogDate);
+        init(context, reserveGoodsAdvanceDate, null);
     }
 
-    protected DateServiceDialog(@NonNull Context context, boolean cancelable, @Nullable OnCancelListener cancelListener) {
-        super(context, R.style.DialogNoBg);
+    public void setCurrentItem(int index){
+        if (mWheelView != null){
+            mWheelView.setCurrentItem(index);
+        }
     }
-    private void init(Context context, String defaultTime, final View animView) {
-        mDateServiceAdapter = new DateServiceAdapter();
+
+    private void init(Context context, int reserveGoodsAdvanceDate, final View animView) {
+        mDateServiceAdapter = new DateServiceAdapter(reserveGoodsAdvanceDate);
         Window window = this.getWindow();
         window.setWindowAnimations(R.style.MyPopwindow_anim_style);
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -53,7 +58,7 @@ public class DateServiceDialog extends Dialog {
         this.setCancelable(true);
         TextView channce = (TextView) this.findViewById(R.id.picker_channce);
         TextView ok = (TextView) this.findViewById(R.id.picker_ok);
-        mWheelView  = (WheelView) this.findViewById(R.id.wv_date);
+        mWheelView = (WheelView) this.findViewById(R.id.wv_date);
         mWheelView.setAdapter(mDateServiceAdapter);
         channce.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,9 +72,8 @@ public class DateServiceDialog extends Dialog {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) {
-                    listener.doPickClick(wheelMain.getTime(),
-                            wheelMain.getTime1(), 0);
+                if (mDateServiceListener != null) {
+                    mDateServiceListener.onSelect(mDateServiceAdapter.getItemYMD(mWheelView.getCurrentItem()));
                     return;
                 }
                 if (null != animView) {
@@ -89,6 +93,7 @@ public class DateServiceDialog extends Dialog {
             }
         });
     }
+
     /**
      * 顺时针旋转
      */
@@ -103,5 +108,13 @@ public class DateServiceDialog extends Dialog {
         /** 动画完成后不恢复原状 */
         anim.setFillAfter(true);
         view.startAnimation(anim);
+    }
+
+    public DateServiceListener getDateServiceListener() {
+        return mDateServiceListener;
+    }
+
+    public void setDateServiceListener(DateServiceListener dateServiceListener) {
+        mDateServiceListener = dateServiceListener;
     }
 }

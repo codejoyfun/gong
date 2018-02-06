@@ -21,12 +21,16 @@
             android:paddingRight="6dp"
             android:layout_marginLeft="8dp"
             android:text="取消"
-            android:textColor="#919191"
+            android:textColor="#4BB400"
             android:textSize="14sp" />
 
-        <View
+        <TextView
             android:layout_width="0dp"
-            android:layout_height="1px"
+            android:layout_height="match_parent"
+            android:text="选择送达日期"
+            android:gravity="center"
+            android:textSize="@dimen/title"
+            android:textColor="@color/bottom_dialog_textcolor"
             android:layout_weight="1" />
 
         <TextView
@@ -37,7 +41,7 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:text="完成"
-            android:textColor="@color/colorAccent"
+            android:textColor="#4BB400"
             android:textSize="14sp"
             android:layout_marginRight="8dp"
             />
@@ -48,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:background="@color/white"
         android:layout_below="@id/ll_title"/>
 
 
