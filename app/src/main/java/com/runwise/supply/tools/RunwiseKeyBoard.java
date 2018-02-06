@@ -107,7 +107,7 @@ public class RunwiseKeyBoard extends Dialog {
             setUpData(NumberUtil.getIOrD(mReceiveBean.getCount()), mReceiveBean.getName(), String.valueOf(NumberUtil.getIOrD(mReceiveBean.getProductUomQty())));
         }
         if (mProductBean != null) {
-            setUpData("", mProductBean.getName());
+            setUpData(NumberUtil.getIOrD(mProductBean.getCount()), mProductBean.getName());
         }
 
         if (mEditHotBean != null) {

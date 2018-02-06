@@ -60,6 +60,8 @@ public class ProductData implements Serializable{
         private boolean cacheSelected;
         private long cartAddedTime;//加入购物车时间,用于排序
         private String remark;//备注
+        private double count;
+
 
         public String getProductUom() {
             return productUom;
@@ -242,6 +244,13 @@ public class ProductData implements Serializable{
 
         public void setRemark(String remark) {
             this.remark = remark;
+        }
+        public double getCount() {
+            return count;
+        }
+
+        public void setCount(double count) {
+            this.count = count;
         }
 
         @Override

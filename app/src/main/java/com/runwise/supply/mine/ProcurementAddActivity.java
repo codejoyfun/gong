@@ -21,24 +21,16 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.bigkoo.pickerview.TimePickerView;
-import com.bigkoo.pickerview.adapter.ArrayWheelAdapter;
 import com.bigkoo.pickerview.lib.WheelView;
-import com.bigkoo.pickerview.listener.CustomListener;
-import com.bigkoo.pickerview.listener.OnDismissListener;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -54,19 +46,15 @@ import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
-import com.runwise.supply.tools.RunwiseKeyBoard;
 import com.runwise.supply.tools.SystemUpgradeHelper;
-import com.runwise.supply.tools.TimeUtils;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
@@ -82,40 +70,6 @@ public class ProcurementAddActivity extends NetWorkActivity {
     private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
-    private TabPageIndicatorAdapter adapter;
-//TYPE1
-
-    @ViewInject(R.id.name)
-    private TextView name;
-    @ViewInject(R.id.number)
-    private TextView number;
-    @ViewInject(R.id.content)
-    private TextView content;
-    @ViewInject(R.id.finalButton)
-    private TextView finalButton;
-    @ViewInject(R.id.productImage)
-    private SimpleDraweeView productImage;
-    @ViewInject(R.id.et_batch_number)
-    private EditText et_batch_number;
-    @ViewInject(R.id.tv_product_date)
-    private TextView tv_product_date;
-    @ViewInject(R.id.tv_product_date_value)
-    private TextView tv_product_date_value;
-    @ViewInject(R.id.et_product_amount)
-    private EditText et_product_amount;
-    //TYPE2
-    @ViewInject(R.id.name1)
-    private TextView name1;
-    @ViewInject(R.id.number1)
-    private TextView number1;
-    @ViewInject(R.id.content1)
-    private TextView content1;
-    @ViewInject(R.id.productImage1)
-    private SimpleDraweeView productImage1;
-    @ViewInject(R.id.et_product_amount1)
-    private EditText et_product_amount1;
-    @ViewInject(R.id.finalButton1)
-    private TextView finalButton1;
 
 
     private List<Fragment> fragmentList = new ArrayList<>();
@@ -138,11 +92,44 @@ public class ProcurementAddActivity extends NetWorkActivity {
     private ProductData.ListBean returnBean;
     //数量
     private String amount;
+    private TabPageIndicatorAdapter adapter;
+
+    /**
+     * 供子fragment统一设置商品数量,隐藏细节
+     */
+    public interface ProductCountSetter {
+        void setCount(ProductData.ListBean bean, double count);
+
+        double getCount(ProductData.ListBean bean);
+    }
+
+    protected Map<ProductData.ListBean, Double> mMapCount = new HashMap<>();
+
+    /**
+     * 供子fragment统一设置商品数量的接口，向子fragment隐藏实现
+     */
+    ProductCountSetter mCountSetter = new ProductCountSetter() {
+        @Override
+        public void setCount(ProductData.ListBean bean, double count) {
+            if (count == 0) {
+                mMapCount.remove(bean);
+            } else {
+                mMapCount.put(bean, count);
+            }
+
+        }
+
+        @Override
+        public double getCount(ProductData.ListBean bean) {
+            return mMapCount.get(bean) == null ? 0 : mMapCount.get(bean);
+        }
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!SystemUpgradeHelper.getInstance(this).check(this)){
+        if (!SystemUpgradeHelper.getInstance(this).check(this)) {
             finish();
             return;
         }
@@ -168,217 +155,47 @@ public class ProcurementAddActivity extends NetWorkActivity {
         });
         Object param = null;
         sendConnection("/gongfu/v2/product/list/", param, PRODUCT_GET, true, ProductData.class);
-//        bgView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                setCommontTopHide();
-//            }
-//        });
     }
 
-    @OnClick({R.id.cancelBtn})
+    @OnClick({R.id.cancelBtn, R.id.tv_add})
     public void btnClick(View view) {
         int vid = view.getId();
         switch (vid) {
             case R.id.cancelBtn:
                 this.finish();
                 break;
+            case R.id.tv_add:
+                postData();
+                break;
             default:
                 break;
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onShowPopEvent(final ProductData.ListBean returnBean) {
-        this.returnBean = returnBean;
-        productBean = returnBean;
-        //有批次
-        if ("lot".equals(productBean.getTracking())) {
-            popView1.setVisibility(View.VISIBLE);
-            popView2.setVisibility(View.GONE);
-            name.setText(productBean.getName());
-            number.setText(productBean.getDefaultCode() + " | ");
-            content.setText(productBean.getUnit());
-            tv_product_date_value.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    setFiniishBtnStatus();
-                }
-            });
-            et_product_amount.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    setFiniishBtnStatus();
-                }
-            });
-            FrecoFactory.getInstance(mContext).disPlay(productImage, Constant.BASE_URL + productBean.getImage().getImageSmall());
-            finalButton.setEnabled(false);
-
-            tv_product_date_value.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (pvCustomTime == null) {
-                        pvCustomTime = new TimePickerView.Builder(mContext, new TimePickerView.OnTimeSelectListener() {
-                            @Override
-                            public void onTimeSelect(Date date, View v) {//选中事件回调
-                                tv_product_date_value.setText(TimeUtils.getYMD(date));
-                                tv_product_date.setText(wheelView.getAdapter().getItem(wheelView.getCurrentItem()).toString());
-                            }
-                        }).setLayoutRes(R.layout.custom_time_picker, new CustomListener() {
-
-                            @Override
-                            public void customLayout(View v) {
-                                final Button btnSubmit = (Button) v.findViewById(R.id.btnSubmit);
-                                Button btnCancel = (Button) v.findViewById(R.id.btnCancel);
-                                wheelView = (WheelView) v.findViewById(R.id.options);
-                                ArrayList<String> stringArrayList = new ArrayList<String>();
-                                stringArrayList.add("生产日期");
-                                stringArrayList.add("到期日期");
-                                wheelView.setAdapter(new ArrayWheelAdapter(stringArrayList));
-                                wheelView.setCyclic(false);
-                                wheelView.setTextSize(18);
-                                wheelView.setLineSpacingMultiplier(1.6F);
-
-                                btnSubmit.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        pvCustomTime.returnData();
-                                        pvCustomTime.dismiss();
-                                    }
-                                });
-                                btnCancel.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        pvCustomTime.dismiss();
-                                    }
-                                });
-                            }
-                        })
-                                .setType(new boolean[]{true, true, true, false, false, false})
-                                .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
-                                .build();
-                        pvCustomTime.setOnDismissListener(new OnDismissListener() {
-                            @Override
-                            public void onDismiss(Object o) {
-                            }
-                        });
-                    }
-                    pvCustomTime.show();
-                }
-            });
-            finalButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String number = et_batch_number.getText().toString();
-                    amount = et_product_amount.getText().toString();
-                    ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
-                    List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
-                    ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
-                    if (!TextUtils.isEmpty(number)){
-                        productsBean.setLot_name(number);
-                    }
-                    productsBean.setTracking("lot");
-                    productsBean.setProduct_id(productBean.getProductID());
-
-                    if ("生产日期".equals(tv_product_date.getText().toString())) {
-                        productsBean.setProduce_datetime(tv_product_date_value.getText().toString());
-                    } else {
-                        productsBean.setLife_datetime(tv_product_date_value.getText().toString());
-                    }
-                    productsBean.setQty(Double.parseDouble(amount));
-                    products.add(productsBean);
-                    procurenmentAddRequest.setProducts(products);
-                    sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
-                }
-            });
-            setCommontTopShow();
-        } else {
-            popView1.setVisibility(View.GONE);
-            RunwiseKeyBoard runwiseKeyBoard = new RunwiseKeyBoard(getActivityContext());
-            runwiseKeyBoard.setUp(productBean,new RunwiseKeyBoard.SetCountListener() {
-                @Override
-                public void onSetCount(double count) {
-                    ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
-                    List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
-                    ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
-                    productsBean.setProduct_id(productBean.getProductID());
-                    productsBean.setTracking("");
-                    productsBean.setLot_name("none");
-                    productsBean.setLife_datetime("");
-                    productsBean.setProduce_datetime("");
-                    productsBean.setQty(count);
-                    products.add(productsBean);
-                    procurenmentAddRequest.setProducts(products);
-                    sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
-
-                }
-            });
-            runwiseKeyBoard.show();
-
-
-//            popView2.setVisibility(View.VISIBLE);
-//            name1.setText(productBean.getName());
-//            number1.setText(productBean.getDefaultCode() + " | ");
-//            content1.setText(productBean.getUnit());
-//            finalButton1.setEnabled(false);
-//            FrecoFactory.getInstance(mContext).disPlay(productImage1, Constant.BASE_URL + productBean.getImage().getImageSmall());
-//            et_product_amount1.addTextChangedListener(new TextWatcher() {
-//                @Override
-//                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                }
-//
-//                @Override
-//                public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                }
-//
-//                @Override
-//                public void afterTextChanged(Editable s) {
-//                    if (!TextUtils.isEmpty(et_product_amount1.getText().toString())) {
-//                        finalButton1.setEnabled(true);
-//                    } else {
-//                        finalButton1.setEnabled(false);
-//                    }
-//                }
-//            });
-//            finalButton1.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    amount = et_product_amount1.getText().toString();
-//                    ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
-//                    List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
-//                    ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
-//                    productsBean.setProduct_id(productBean.getProductID());
-//                    productsBean.setTracking("");
-//                    productsBean.setLot_name("none");
-//                    productsBean.setLife_datetime("");
-//                    productsBean.setProduce_datetime("");
-//                    productsBean.setQty(Double.parseDouble(amount));
-//                    products.add(productsBean);
-//                    procurenmentAddRequest.setProducts(products);
-//                    sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
-//                }
-//            });
+    public void postData() {
+        if (mMapCount.size() == 0){
+            toast("你尚未添加任何自采商品!");
+            return;
         }
+        ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
+        List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
+        for (Map.Entry<ProductData.ListBean, Double> entry : mMapCount.entrySet()) {
+            ProductData.ListBean listBean = entry.getKey();
+            ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
+            productsBean.setProduct_id(listBean.getProductID());
+            productsBean.setTracking("");
+            productsBean.setLot_name("none");
+            productsBean.setLife_datetime("");
+            productsBean.setProduce_datetime("");
+            productsBean.setQty(entry.getValue());
+            products.add(productsBean);
+        }
+        procurenmentAddRequest.setProducts(products);
+        sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
 
     }
 
-    @OnClick({R.id.colseIcon, R.id.colseIcon1,R.id.iv_open})
+    @OnClick({R.id.colseIcon, R.id.colseIcon1, R.id.iv_open})
     public void closeIcon(View view) {
         switch (view.getId()) {
             case R.id.colseIcon:
@@ -388,12 +205,12 @@ public class ProcurementAddActivity extends NetWorkActivity {
                 setCommontTopHide();
                 break;
             case R.id.iv_open:
-                if (mProductTypeWindow == null){
+                if (mProductTypeWindow == null) {
                     return;
                 }
-                if (!mProductTypeWindow.isShowing()){
+                if (!mProductTypeWindow.isShowing()) {
                     showPopWindow();
-                }else{
+                } else {
                     mProductTypeWindow.dismiss();
                 }
                 break;
@@ -401,16 +218,10 @@ public class ProcurementAddActivity extends NetWorkActivity {
 
     }
 
-    private void setFiniishBtnStatus() {
-        if (!TextUtils.isEmpty(tv_product_date_value.getText().toString()) && !TextUtils.isEmpty(et_product_amount.getText().toString())) {
-            finalButton.setEnabled(true);
-        } else {
-            finalButton.setEnabled(false);
-        }
-    }
     CategoryRespone categoryRespone;
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     List<ProductData.ListBean> hotList;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -441,12 +252,12 @@ public class ProcurementAddActivity extends NetWorkActivity {
         List<String> titles = new ArrayList<>();
         HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
         titles.add("全部");
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
-            map.put(category,new ArrayList<ProductData.ListBean>());
+            map.put(category, new ArrayList<ProductData.ListBean>());
         }
         for (ProductData.ListBean listBean : listBeen) {
-            if (!TextUtils.isEmpty(listBean.getCategory())){
+            if (!TextUtils.isEmpty(listBean.getCategory())) {
                 ArrayList<ProductData.ListBean> tempListBeen = map.get(listBean.getCategory());
                 if (tempListBeen == null) {
                     tempListBeen = new ArrayList<>();
@@ -456,7 +267,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
             }
         }
 
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             ArrayList<ProductData.ListBean> value = map.get(category);
             productDataFragmentList.add(newSearchListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
@@ -489,10 +300,10 @@ public class ProcurementAddActivity extends NetWorkActivity {
 
             }
         });
-        if(titles.size()<=TAB_EXPAND_COUNT){
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        }else{
+        } else {
             ivOpen.setVisibility(View.VISIBLE);
             smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
@@ -504,6 +315,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
         SearchListFragment searchListFragment = new SearchListFragment();
         searchListFragment.type = DataType.ALL;
         searchListFragment.setData(value);
+        searchListFragment.setProductCountSetter(mCountSetter);
         return searchListFragment;
     }
 
@@ -655,6 +467,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
 
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();

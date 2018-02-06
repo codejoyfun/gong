@@ -33,9 +33,11 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -79,13 +81,13 @@ import java.util.Map;
 
 import io.vov.vitamio.utils.NumberUtil;
 
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_RECEIVE_FINISH;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_ENTITIES;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 import static com.runwise.supply.orderpage.entity.ReceiveInfo.SEPARATOR;
-import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_RECEIVE_FINISH;
 
 //import com.socketmobile.capture.client.CaptureClient;
 //import com.socketmobile.capture.client.CaptureDeviceClient;
@@ -97,7 +99,7 @@ import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_RECEIVE_FINISH;
  * Created by libin on 2017/7/16.
  */
 
-public class ReceiveActivity extends NetWorkActivity implements DoActionCallback/*, CaptureClient.Listener*/ {
+public class ReceiveActivity extends NetWorkActivity implements DoActionCallback,LoadingLayoutInterface/*, CaptureClient.Listener*/ {
     private static final int RECEIVE = 100;           //收货
     private static final int TALLYING = 200;          //点货
     private static final int DONE_TALLY = 300;          //第二个人完成点货
@@ -119,6 +121,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private LinearLayout mLlSearchBar;
     @ViewInject(R.id.et_sou_suo)
     private EditText mEtSouSuo;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout mLoadingLayout;
     private TabPageIndicatorAdapter adapter;
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
     private PopupWindow mPopWindow;     //底部弹出
@@ -1007,6 +1011,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             case END_TALLY:
                 ToastUtil.show(mContext, "网络异常，请稍侯再试");
                 break;
+            case ORDER_DETAIL:
+                mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+                break;
         }
 
     }
@@ -1146,6 +1153,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
             EventBus.getDefault().post(new ReceiveProEvent(false));
         }
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+        requestOrderDetail();//没有传商品列表，需要查询订单详情
     }
 
 //    @Override

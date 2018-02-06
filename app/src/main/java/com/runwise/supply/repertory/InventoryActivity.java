@@ -151,6 +151,9 @@ public class InventoryActivity extends NetWorkActivity {
     }
 
     private void setUpDataForViewPage() {
+        if(categoryRespone == null){
+            return;
+        }
         orderProductFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();

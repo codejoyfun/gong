@@ -169,7 +169,7 @@ public class ProductData implements Serializable{
             this.productID = productID;
         }
 
-        public static class ImageBean {
+        public static class ImageBean implements Serializable{
             /**
              * imageMedium : /gongfu/image/product/8/image_medium/
              * image : /gongfu/image/product/8/image/

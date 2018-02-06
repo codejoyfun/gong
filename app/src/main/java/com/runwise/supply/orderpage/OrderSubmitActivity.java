@@ -3,7 +3,6 @@ package com.runwise.supply.orderpage;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -36,7 +35,7 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.view.CustomDatePickerDialog;
+import com.runwise.supply.view.DateServiceDialog;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -61,7 +60,6 @@ import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_AL
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_MODIFY;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SELF;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SMART;
-import static java.lang.System.currentTimeMillis;
 
 /**
  * 下单页 以及 修改订单页，取决于有没有传订单对象
@@ -102,16 +100,11 @@ public class OrderSubmitActivity extends NetWorkActivity {
     RecyclerView mRvProductList;
 
     CustomProgressDialog mCustomProgressDialog;
-    //弹窗星期的View集合
-    private TextView[] wArr = new TextView[3];
-    private TextView[] dArr = new TextView[3];
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
     private int selectedDate;
-    private int selectedDateIndex;
     //缓存外部显示用的日期周几
     private String cachedDWStr;
     int mReserveGoodsAdvanceDate;
-    private Handler handler = new Handler();
     public static final String INTENT_KEY_ORDER = "intent_key_order";
     OrderResponse.ListBean mOrder;
 
@@ -121,8 +114,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
     protected int mPlaceOrderType;
     public static final String  INTENT_KEY_PLACE_ORDER_TYPE = "intent_key_place_order_type";
 
-    private CustomDatePickerDialog mCustomDatePickerDialog;
-    CustomDatePickerDialog.PickerClickListener mPickerClickListener;
+    private DateServiceDialog mCustomDatePickerDialog;
+    DateServiceDialog.DateServiceListener mPickerClickListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,29 +134,18 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
-        selectedDateIndex = 1;
         mTvDate.setText(cachedDWStr);
 
-
-
-        mCustomDatePickerDialog = new CustomDatePickerDialog(this,TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate));
-        mPickerClickListener = new CustomDatePickerDialog.PickerClickListener() {
+        mCustomDatePickerDialog = new DateServiceDialog(this,mReserveGoodsAdvanceDate);
+        mPickerClickListener = new DateServiceDialog.DateServiceListener() {
             @Override
-            public void doPickClick(String currentStr, String currenStr1, int currentPosition) {
-                long diffDay = TimeUtils.dateDiff(TimeUtils.getCurrentDate(),currenStr1,"yyyy-MM-dd");
-                if(diffDay<0){
-                    toast("不能选择过去的日期！");
-                    return;
-                }
-                if (diffDay>30){
-                    toast("只能选择未来30天内的日期！");
-                    return;
-                }
-                mTvDate.setText(currentStr.substring(5) + " " + TimeUtils.getWeekStr((int) diffDay));
+            public void onSelect(String ymd) {
+                selectedDate = (int) TimeUtils.dateDiff(TimeUtils.getCurrentDate(),ymd,"yyyy-MM-dd");
+                mTvDate.setText(ymd.substring(5) + " " + TimeUtils.getWeekStr(selectedDate));
                 mCustomDatePickerDialog.dismiss();
             }
         };
-        mCustomDatePickerDialog.addPickerListener(mPickerClickListener);
+        mCustomDatePickerDialog.setDateServiceListener(mPickerClickListener);
 
         OrderSubmitProductAdapter orderSubmitProductAdapter;
         orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
@@ -181,40 +163,18 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     private void setUpDate(int dayDiff) {
         //送达日期
-        long estimatedStamp = TimeUtils.getFormatTime(mOrder.getEstimatedTime());
-        //下单日期
-        long createTime = TimeUtils.stringToTimeStamp(mOrder.getCreateDate());
-        String estimatedTimeStr;
-        //最初下单的送达日期最小值
-        long minStamp = createTime + 1000 * 3600 * 24 * (dayDiff - 1);
-        if (TimeUtils.differentDaysByMillisecond(currentTimeMillis(), minStamp) > 0) {
-            mReserveGoodsAdvanceDate = 1;
-            estimatedTimeStr = TimeUtils.getMMdd(currentTimeMillis());
-            cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(0);
-            selectedDateIndex = 0;
-            selectedDate = mReserveGoodsAdvanceDate - 1;
-        } else {
-            mReserveGoodsAdvanceDate = TimeUtils.differentDaysByMillisecond(createTime + dayDiff * 1000 * 3600 * 24, currentTimeMillis());
-            if (estimatedStamp == createTime + dayDiff * 1000 * 3600 * 24) {
-                estimatedTimeStr = TimeUtils.getMMdd(createTime + dayDiff * 1000 * 3600 * 24);
-                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
-                selectedDateIndex = 1;
-                selectedDate = mReserveGoodsAdvanceDate;
-            } else if (estimatedStamp > createTime + dayDiff * 1000 * 3600 * 24) {
-                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
-                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1);
-                selectedDateIndex = 2;
-                selectedDate = mReserveGoodsAdvanceDate+1;
-            } else {
-                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
-                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1);
-                selectedDateIndex = 0;
-                selectedDate = mReserveGoodsAdvanceDate-1;
-            }
+        String estimatedStampStr = mOrder.getEstimatedTime().split(" ")[0];
+        int diff = (int) TimeUtils.dateDiff(TimeUtils.getCurrentDate(),estimatedStampStr,"yyyy-MM-dd");
+        if (diff < mReserveGoodsAdvanceDate-1){
+        //订单原有的送达日期已过期
+            cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+            selectedDate = mReserveGoodsAdvanceDate;
+        }else{
+            cachedDWStr = TimeUtils.getABFormatDate(diff).substring(5) + " " + TimeUtils.getWeekStr(diff);
+            selectedDate = diff;
         }
         mTvDate.setText(cachedDWStr);
     }
-
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -226,7 +186,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
-                selectedDateIndex = 1;
                 if (mOrder != null) {
                     setUpDate(mReserveGoodsAdvanceDate);
                 }

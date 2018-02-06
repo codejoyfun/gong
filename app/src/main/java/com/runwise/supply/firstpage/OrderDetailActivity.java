@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -76,7 +77,7 @@ import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
  * Created by libin on 2017/7/14.
  */
 
-public class OrderDetailActivity extends NetWorkActivity {
+public class OrderDetailActivity extends NetWorkActivity implements LoadingLayoutInterface {
     private static final int UPLOAD = 100;
     private static final int DETAIL = 1;          //网络请求
     private static final int CANCEL = 2;
@@ -191,6 +192,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         sb.append(orderId).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
+        loadingLayout.setOnRetryClickListener(this);
         dragLayout.setOverDrag(false);
         findViewById(R.id.top_view).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -395,7 +397,9 @@ public class OrderDetailActivity extends NetWorkActivity {
                             }
                         } else {
                             //mProductTypeWindow.dismiss();//
-                            mTypeWindow.dismiss();
+                            if (mTypeWindow != null){
+                                mTypeWindow.dismiss();
+                            }
                         }
                     }
 
@@ -504,6 +508,9 @@ public class OrderDetailActivity extends NetWorkActivity {
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         toast(errMsg);
+        if (DETAIL == where){
+            loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }
     }
 
     @Override
@@ -946,5 +953,10 @@ public class OrderDetailActivity extends NetWorkActivity {
         super.onPause();
         MobclickAgent.onPageEnd("订单详情");
         MobclickAgent.onPause(this);          //统计时长
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+        refresh();
     }
 }

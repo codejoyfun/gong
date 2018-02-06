@@ -389,6 +389,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             case R.id.rl_bottom_bar:
                 saveCache();
                 getCache();
+//                showCart(true);
                 mAdapterVp.fragmentList.get(mViewPagerCategoryFrags.getCurrentItem()).refresh();
                 MobclickAgent.onEvent(getActivityContext(), EVENT_ID_SHOPPING_CART);
                 break;
@@ -539,6 +540,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             for (ProductData.ListBean listBean1 : mMapCount.keySet()) {
                                 if (listBean1.getProductID() == listBean.getProductID()) {
                                     listBean1.setProductTag(listBean.getProductTag());
+                                    listBean1.setInvalid(false);
                                     break;
                                 }
                             }
