@@ -91,7 +91,8 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        loadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        pullListView.onRefreshComplete(Integer.MAX_VALUE);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
         loadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
             @Override
             public void retryOnClick(View view) {

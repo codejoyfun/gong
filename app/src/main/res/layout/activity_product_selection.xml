@@ -75,6 +75,13 @@
                 android:layout_marginTop="15dp"
                 android:layout_below="@id/loadingImg"/>
         </RelativeLayout>
+        <com.kids.commonframe.base.view.LoadingLayout
+            android:id="@+id/loadingLayout"
+            android:layout_below="@id/title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            />
     </RelativeLayout>
 
     <!-- 购物车弹出框 -->
@@ -163,6 +170,7 @@
             android:layout_height="0.5dp"
             android:background="#f5f5f5"
             android:layout_alignParentTop="true"/>
+
     </RelativeLayout>
 
 

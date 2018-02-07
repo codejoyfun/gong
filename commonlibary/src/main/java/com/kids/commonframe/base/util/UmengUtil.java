@@ -139,4 +139,9 @@ public class UmengUtil {
      * 企业号
      */
     public static final String COMPANY_TYPE = "company_type";
+
+    /**
+     * 下单时间
+     */
+    public static final String ORDER_TIME_TYPE = "order_time_type";
 }

@@ -20,6 +20,8 @@ import android.widget.PopupWindow;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -45,13 +47,15 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 /**
  * 价目表
  */
-public class PriceActivity extends NetWorkActivity {
+public class PriceActivity extends NetWorkActivity implements LoadingLayoutInterface {
     @ViewInject(R.id.indicator)
     private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
     private ViewPager viewPager;
     @ViewInject(R.id.iv_open)
     private ImageView ivOpen;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout loadingLayout;
     private TabPageIndicatorAdapter adapter;
     private static final int REQUEST_MAIN = 1;
 
@@ -61,6 +65,7 @@ public class PriceActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_price);
+        loadingLayout.setOnRetryClickListener(this);
 
         this.setTitleText(true, "价目表");
         this.setTitleLeftIcon(true, R.drawable.back_btn);
@@ -105,11 +110,11 @@ public class PriceActivity extends NetWorkActivity {
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-
                 break;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
+                loadingLayout.onSuccess(categoryRespone.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
                 setUpDataForViewPage(listBeen);
                 break;
         }
@@ -246,7 +251,14 @@ public class PriceActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        if (where == REQUEST_MAIN){
+            loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }
+    }
 
+    @Override
+    public void retryOnClick(View view) {
+        requestData(true, REQUEST_MAIN);
     }
 
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
