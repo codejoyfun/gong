@@ -15,6 +15,8 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 
+import java.util.ArrayList;
+
 /**
  * 智能下单，继承自手动下单
  *
@@ -100,6 +102,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                 initSelectAll();
                 updateBottomBar();
                 showCart(true);
+                mFirstGetShopCartCache = false;
                 break;
         }
     }
@@ -116,6 +119,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                 requestCategory();
                 updateBottomBar();
                 Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
+                mFirstGetShopCartCache = false;
                 break;
         }
     }
@@ -124,8 +128,19 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
      * 智能下单不需要缓存
      */
     @Override
-    protected void saveCache() {}
-
+    protected void saveCache() {
+        checkValid(getSelectProductList());
+    }
+    private ArrayList<ProductData.ListBean> getSelectProductList(){
+        ArrayList<ProductData.ListBean> list = new ArrayList<>();
+        for(ProductData.ListBean bean:mMapCount.keySet()){
+            if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
+            bean.setActualQty(mMapCount.get(bean));
+            bean.setRemark(mMapRemarks.get(bean));
+            list.add(bean);
+        }
+        return list;
+    }
     /**
      * 智能下单不需要缓存
      */

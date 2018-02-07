@@ -15,9 +15,11 @@ import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.umeng.analytics.MobclickAgent;
 
+import java.util.ArrayList;
+
 /**
  * 常购订单，类似智能下单的逻辑，继承自手动下单
- *
+ * <p>
  * Created by Dong on 2017/11/23.
  */
 public class AlwaysOrderActivity extends ProductActivityV2 {
@@ -48,10 +50,11 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitleText(true,"常购清单");
+        setTitleText(true, "常购清单");
         ViewUtils.inject(this);
         initLoadingImgs();
         mPlaceOrderType = PLACE_ORDER_TYPE_ALWAYS;
+
     }
 
     /**
@@ -65,19 +68,19 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
     /**
      * 请求预设数据
      */
-    private void requestPresent(){
+    private void requestPresent() {
         //开始动画
         mViewAnim.setVisibility(View.VISIBLE);
         mRlBottomBar.setVisibility(View.GONE);
         mHandler.post(runnable);
         Object request = null;
-        sendConnection("/api/shop/always_buy/product/list",request,REQUEST_ALWAYS,false,PresetProductData.class);
+        sendConnection("/api/shop/always_buy/product/list", request, REQUEST_ALWAYS, false, PresetProductData.class);
     }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        super.onSuccess(result,where);
-        switch (where){
+        super.onSuccess(result, where);
+        switch (where) {
             case REQUEST_ALWAYS:
                 //停止动画
                 mHandler.removeCallbacks(runnable);
@@ -86,25 +89,25 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
                 BaseEntity.ResultBean resultBean = result.getResult();
                 PresetProductData data = (PresetProductData) resultBean.getData();
                 //init mCountMap;
-                if(data.getList()==null || data.getList().size()==0){
+                if (data.getList() == null || data.getList().size() == 0) {
                     //Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
-                }else{
-                    for(ProductData.ListBean pBean: data.getList()){
-                        mMapCount.put(pBean,pBean.getPresetQty());
+                } else {
+                    for (ProductData.ListBean pBean : data.getList()) {
+                        mMapCount.put(pBean, pBean.getPresetQty());
                     }
                 }
                 requestCategory();
                 initSelectAll();
                 updateBottomBar();
-                showCart(true);
+                checkValid(getSelectProductList());
                 break;
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        super.onFailure(errMsg,result,where);
-        switch (where){
+        super.onFailure(errMsg, result, where);
+        switch (where) {
             case REQUEST_ALWAYS:
                 //停止动画
                 mHandler.removeCallbacks(runnable);
@@ -112,7 +115,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
                 mRlBottomBar.setVisibility(View.VISIBLE);
                 requestCategory();
                 updateBottomBar();
-                Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "小主，暂时不用采购哦~", Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -121,13 +124,28 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
      * 智能下单不需要缓存
      */
     @Override
-    protected void saveCache() {}
+    protected void saveCache() {
+    }
 
     /**
      * 智能下单不需要缓存
      */
     @Override
-    protected void getCache() {}
+    protected void getCache() {
+        checkValid(getSelectProductList());
+    }
+
+    private ArrayList<ProductData.ListBean> getSelectProductList() {
+        ArrayList<ProductData.ListBean> list = new ArrayList<>();
+        for (ProductData.ListBean bean : mMapCount.keySet()) {
+            if (bean.isInvalid() || mMapCount.get(bean) == 0 || !mmSelected.contains(bean.getProductID()))
+                continue;
+            bean.setActualQty(mMapCount.get(bean));
+            bean.setRemark(mMapRemarks.get(bean));
+            list.add(bean);
+        }
+        return list;
+    }
 
     private void initLoadingImgs() {
         StringBuffer sb;
@@ -157,6 +175,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
         MobclickAgent.onResume(this);          //统计时长
 
     }
+
     @Override
     protected void onPause() {
         super.onPause();
