@@ -255,14 +255,14 @@ public class EditRepertoryAddActivity extends NetWorkActivity {
             ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
             if (listBean != null) {
                 product.setUom(listBean.getUom());
-                product.setProductUom(listBean.getProductUom());
+                product.setProductUom(listBean.getStockUom());
             }
             ImageBean imageBean = new ImageBean();
             imageBean.setImage(productBean.getImage().getImage());
             imageBean.setImageSmall(productBean.getImage().getImageSmall());
             imageBean.setImageMedium(productBean.getImage().getImageMedium());
             product.setImage(imageBean);
-            product.setProductUom(productBean.getProductUom());
+            product.setProductUom(productBean.getStockUom());
             bean.setProduct(product);
 
             NewAdd newAddBean = new NewAdd();

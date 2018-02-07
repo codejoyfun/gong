@@ -12,7 +12,7 @@ import java.util.List;
  * Created by libin on 2017/7/6.
  */
 
-public class ProductBasicList implements Serializable{
+public class ProductBasicList implements Serializable {
 
     private List<ListBean> list;
 
@@ -65,6 +65,10 @@ public class ProductBasicList implements Serializable{
         private int productID;
         @Column
         private String tracking;
+        @Column
+        private String stockUom;//库存单位
+        @Column
+        private String saleUom;//销售单位
 
         public static final String TRACKING_TYPE_LOT = "lot";
         public static final String TRACKING_TYPE_SERIAL = "serial";
@@ -191,6 +195,21 @@ public class ProductBasicList implements Serializable{
             this.productID = productID;
         }
 
+        public String getStockUom() {
+            return stockUom;
+        }
+
+        public void setStockUom(String stockUom) {
+            this.stockUom = stockUom;
+        }
+
+        public String getSaleUom() {
+            return saleUom;
+        }
+
+        public void setSaleUom(String saleUom) {
+            this.saleUom = saleUom;
+        }
 
     }
 }

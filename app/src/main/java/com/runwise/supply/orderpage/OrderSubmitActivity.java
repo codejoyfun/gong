@@ -146,6 +146,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
             }
         };
         mCustomDatePickerDialog.setDateServiceListener(mPickerClickListener);
+        mCustomDatePickerDialog.setCurrentItem(selectedDate-1);
 
         OrderSubmitProductAdapter orderSubmitProductAdapter;
         orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
@@ -161,7 +162,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         return mProductList;
     }
 
-    private void setUpDate(int dayDiff) {
+    private void setUpDate() {
         //送达日期
         String estimatedStampStr = mOrder.getEstimatedTime().split(" ")[0];
         int diff = (int) TimeUtils.dateDiff(TimeUtils.getCurrentDate(),estimatedStampStr,"yyyy-MM-dd");
@@ -173,7 +174,9 @@ public class OrderSubmitActivity extends NetWorkActivity {
             cachedDWStr = TimeUtils.getABFormatDate(diff).substring(5) + " " + TimeUtils.getWeekStr(diff);
             selectedDate = diff;
         }
+        mCustomDatePickerDialog.setTime(cachedDWStr.substring(0,5));
         mTvDate.setText(cachedDWStr);
+
     }
 
     @Override
@@ -187,7 +190,9 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
                 if (mOrder != null) {
-                    setUpDate(mReserveGoodsAdvanceDate);
+                    setUpDate();
+                }else{
+                    mCustomDatePickerDialog.setCurrentItem(1);
                 }
                 break;
             case REQUEST_MODIFY:

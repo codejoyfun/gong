@@ -46,8 +46,24 @@ public class DateServiceDialog extends Dialog {
         }
     }
 
+    public void setTime(String timeDesc) {
+        if (mWheelView != null) {
+            int index = -1;
+            for (int i= 0;i<mDescList.size();i++){
+                String desc = mDescList.get(i);
+                if (desc.substring(0,5).equals(timeDesc)){
+                    index = i;
+                }
+            }
+            if (index != -1){
+                mWheelView.setCurrentPosition(index);
+            }
+        }
+    }
+
+    ArrayList<String> mDescList;
     private ArrayList<String> generateData(int reserveGoodsAdvanceDate) {
-        ArrayList<String> descList = new ArrayList<>();
+        mDescList = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             int index = reserveGoodsAdvanceDate - 1 + i;
             String date = TimeUtils.getABFormatDate(index).substring(5);
@@ -64,9 +80,9 @@ public class DateServiceDialog extends Dialog {
                     desc += "[后天]";
                     break;
             }
-            descList.add(desc);
+            mDescList.add(desc);
         }
-        return descList;
+        return mDescList;
     }
 
     private void init(Context context, int reserveGoodsAdvanceDate, final View animView) {
