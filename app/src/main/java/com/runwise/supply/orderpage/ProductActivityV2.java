@@ -26,9 +26,11 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
@@ -84,7 +86,7 @@ import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_FI
  * Created by Dong on 2017/7/3.
  */
 
-public class ProductActivityV2 extends NetWorkActivity implements View.OnClickListener {
+public class ProductActivityV2 extends NetWorkActivity implements View.OnClickListener,LoadingLayoutInterface {
     public static final String INTENT_KEY_ADDED_PRODUCTS = "ap_added_products";
     //商品数据获取
     protected static final int REQUEST_CATEGORY = 1;
@@ -110,6 +112,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     protected TabPageIndicatorAdapter mAdapterVp;
     @ViewInject(R.id.rl_cart_container)
     protected RelativeLayout mRlCartContainer;
+    @ViewInject(R.id.loadingLayout)
+    protected LoadingLayout loadingLayout;
 
     protected ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
     protected ProductTypePopup mTypeWindow;//商品类型弹出框
@@ -126,11 +130,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     boolean mFirstGetShopCartCache = true;
 
     protected int mPlaceOrderType = PLACE_ORDER_TYPE_SELF;
-    public static final int PLACE_ORDER_TYPE_ALWAYS = 1<<0;
-    public static final int PLACE_ORDER_TYPE_SELF = 1<<1;
-    public static final int PLACE_ORDER_TYPE_SMART = 1<<2;
-    public static final int PLACE_ORDER_TYPE_AGAIN = 1<<3;
-    public static final int PLACE_ORDER_TYPE_MODIFY = 1<<4;
+    public static final int PLACE_ORDER_TYPE_ALWAYS = 1 << 0;
+    public static final int PLACE_ORDER_TYPE_SELF = 1 << 1;
+    public static final int PLACE_ORDER_TYPE_SMART = 1 << 2;
+    public static final int PLACE_ORDER_TYPE_AGAIN = 1 << 3;
+    public static final int PLACE_ORDER_TYPE_MODIFY = 1 << 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +148,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         setTitleRightIcon2(true, R.drawable.ic_nav_search);
         //获取上一个页面传来的Parcelable
         addedPros = getIntent().getParcelableArrayListExtra(INTENT_KEY_ADDED_PRODUCTS);
+        loadingLayout = (LoadingLayout) findViewById(R.id.loadingLayout);
+        loadingLayout.setOnRetryClickListener(this);
         getCache();//获取缓存
         updateBottomBar();//更新底部bar
         startRequest();//查询接口
@@ -181,7 +187,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
             //检查购物车商品有效性
             checkValid(cartCache.getListBeans());
-        }else{
+        } else {
             mFirstGetShopCartCache = false;
         }
     }
@@ -192,7 +198,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * 检查商品有效性
      */
     protected void checkValid(List<ProductData.ListBean> listToCheck) {
-        if (listToCheck == null || listToCheck.size() == 0){
+        if (listToCheck == null || listToCheck.size() == 0) {
             mFirstGetShopCartCache = false;
             return;
         }
@@ -452,7 +458,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         Intent intent = new Intent(this, OrderSubmitActivity.class);
         //判断是否是自助下单
         intent.putExtra(INTENT_KEY_SELF_HELP, getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP, false));
-        intent.putExtra(INTENT_KEY_PLACE_ORDER_TYPE,mPlaceOrderType);
+        intent.putExtra(INTENT_KEY_PLACE_ORDER_TYPE, mPlaceOrderType);
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for (ProductData.ListBean bean : mMapCount.keySet()) {
             if (!mmSelected.contains(bean.getProductID())) continue;//木有在购物车中打勾，跳过
@@ -512,6 +518,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             case REQUEST_CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryResponse = (CategoryRespone) resultBean1.getData();
+                loadingLayout.onSuccess(categoryResponse.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
                 setupViewPager();
                 break;
             case REQUEST_VALIDATE:
@@ -537,13 +544,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 if (products != null) {
                     for (int i = 0; i < products.size(); i++) {
                         ProductValidateResponse.ListBean listBean = products.get(i);
-                            for (ProductData.ListBean listBean1 : mMapCount.keySet()) {
-                                if (listBean1.getProductID() == listBean.getProductID()) {
-                                    listBean1.setProductTag(listBean.getProductTag());
-                                    listBean1.setInvalid(false);
-                                    break;
-                                }
+                        for (ProductData.ListBean listBean1 : mMapCount.keySet()) {
+                            if (listBean1.getProductID() == listBean.getProductID()) {
+                                listBean1.setProductTag(listBean.getProductTag());
+                                listBean1.setInvalid(false);
+                                break;
                             }
+                        }
                     }
 
                 }
@@ -577,7 +584,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     }
 
 
-
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         if (!TextUtils.isEmpty(errMsg)) toast(errMsg);
@@ -586,7 +592,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 updateBottomBar();//更新底部bar
                 startRequest();//查询接口
                 break;
+            case REQUEST_CATEGORY:
+                    loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+                break;
         }
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+        startRequest();
     }
 
     protected class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
@@ -923,20 +937,20 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     break;
                 case R.id.tv_item_cart_count:
                     double currentCount = mCountSetter.getCount(listBean);
-                    new ProductValueDialog(mContext, listBean.getName(), currentCount, mCountSetter.getRemark(listBean),new ProductValueDialog.IProductDialogCallback() {
+                    new ProductValueDialog(mContext, listBean.getName(), currentCount, mCountSetter.getRemark(listBean), new ProductValueDialog.IProductDialogCallback() {
                         @Override
-                        public void onInputValue(double value,String remark) {
+                        public void onInputValue(double value, String remark) {
 
-                            mCountSetter.setCount(listBean,value);
+                            mCountSetter.setCount(listBean, value);
                             listBean.setRemark(remark);
                             mCountSetter.setRemark(listBean);
                             mMapCount.put(listBean, value);
                             EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, value));
                             mmTvCount.setText(NumberUtil.getIOrD(value) + listBean.getUom());
-                            if (!TextUtils.isEmpty(remark)){
+                            if (!TextUtils.isEmpty(remark)) {
                                 mmTvRemark.setVisibility(View.VISIBLE);
                                 mmTvRemark.setText("备注：" + remark);
-                            }else{
+                            } else {
                                 mmTvRemark.setText("");
                                 mmTvRemark.setVisibility(View.GONE);
                             }
@@ -1055,6 +1069,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
         String getRemark(ProductData.ListBean bean);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -1062,6 +1077,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         MobclickAgent.onResume(this);          //统计时长
         PlaceOrderTimeStatisticsUtil.onResume();
     }
+
     @Override
     protected void onPause() {
         super.onPause();

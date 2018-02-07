@@ -132,6 +132,7 @@ public class RepertoryEntity implements Serializable{
         public void setProductID(int productID) {
             this.productID = productID;
         }
+
     }
 
     public static class RepertoryLot{

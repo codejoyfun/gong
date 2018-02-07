@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static com.kids.commonframe.base.util.UmengUtil.COMPANY_TYPE;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_TIME;
+import static com.kids.commonframe.base.util.UmengUtil.ORDER_TIME_TYPE;
 import static com.kids.commonframe.base.util.UmengUtil.ORDER_TYPE;
 import static com.kids.commonframe.base.util.UmengUtil.TYPE_SELF_ORDER;
 
@@ -39,6 +40,7 @@ public class PlaceOrderTimeStatisticsUtil {
         Map<String, String> map_value = new HashMap<String, String>();
         map_value.put(ORDER_TYPE, TYPE_SELF_ORDER);
         map_value.put(COMPANY_TYPE, (String) SPUtils.get(context,SPUtils.FILE_KEY_COMPANY_NAME,"尚没有公司名"));
+        map_value.put(ORDER_TIME_TYPE, String.valueOf(duration));
         MobclickAgent.onEventValue(context, EVENT_ID_ORDER_TIME, map_value, duration);
     }
 

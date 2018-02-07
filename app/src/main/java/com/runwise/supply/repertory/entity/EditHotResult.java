@@ -97,6 +97,15 @@ public class EditHotResult {
             private String uom;
             private int productID;
             private String productUom;
+            private String stockUom;
+
+            public String getStockUom() {
+                return stockUom;
+            }
+
+            public void setStockUom(String stockUom) {
+                this.stockUom = stockUom;
+            }
 
             public String getProductUom() {
                 return productUom;

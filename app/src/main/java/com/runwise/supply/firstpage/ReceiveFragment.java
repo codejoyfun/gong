@@ -264,11 +264,11 @@ public class ReceiveFragment extends BaseFragment {
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
                 sb.append(" | ").append(basicBean.getUnit());
                 if (canSeePrice) {
-                    sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                    sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getSaleUom());
                 }
                 viewHolder.content.setText(sb.toString());
-                viewHolder.countTv.setText(" " + bean.getProductUom());
-                viewHolder.mTvPurchaseCount.setText("订" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getProductUom());
+                viewHolder.countTv.setText(" " + bean.getSaleUom());
+                viewHolder.mTvPurchaseCount.setText("订" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getSaleUom());
 
                 if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                     convertView.setOnClickListener(new View.OnClickListener() {
@@ -468,11 +468,11 @@ public class ReceiveFragment extends BaseFragment {
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());
             sb.append(" | ").append(bean.getUnit());
             if (canSeePrice) {
-                sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getSaleUom());
             }
             viewHolder.content.setText(sb.toString());
-            viewHolder.countTv.setText(" " + bean.getProductUom());
-            viewHolder.mTvPurchaseCount.setText("订" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getProductUom());
+            viewHolder.countTv.setText(" " + bean.getSaleUom());
+            viewHolder.mTvPurchaseCount.setText("订" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getSaleUom());
 
 
             if (orderBean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
@@ -559,7 +559,7 @@ public class ReceiveFragment extends BaseFragment {
                         weightStr.append("0" + bean.getSettleUomId());
                     }
                 }
-                receiveStr.append(" /" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getProductUom());
+                receiveStr.append(" /" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getSaleUom());
                 SpannableString builder = new SpannableString(receiveStr.toString());
                 int end = receiveStr.indexOf(" ");
                 builder.setSpan(new AbsoluteSizeSpan(16, true), 0, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);

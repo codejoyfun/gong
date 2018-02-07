@@ -30,7 +30,7 @@ import java.util.Map;
  * 所有的已选数据保存在父Activity的map中
  *
  */
-public class ProductListFragmentV2 extends NetWorkFragment {
+public class ProductListFragmentV2 extends NetWorkFragment{
     public static final String INTENT_KEY_CATEGORY = "category";
     public static final String INTENT_KEY_SUB_CATEGORY = "subcategory";
     public static final String INTENT_KEY_HAS_OTHER_SUB = "has_other_sub";
@@ -89,7 +89,6 @@ public class ProductListFragmentV2 extends NetWorkFragment {
 //                loadMore();
             }
         });
-
         refresh(true);
     }
 
@@ -174,7 +173,7 @@ public class ProductListFragmentV2 extends NetWorkFragment {
         if (where == REQUEST_PRODUCT_MORE){
             mRefreshFooter.setVisibility(View.GONE);
         }
-        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        mLoadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
         mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
             @Override
             public void retryOnClick(View view) {
@@ -182,4 +181,5 @@ public class ProductListFragmentV2 extends NetWorkFragment {
             }
         });
     }
+
 }

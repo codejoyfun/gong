@@ -1146,6 +1146,7 @@ public class OrderResponse {
             private int unloadAmount;
             private String remark;//备注
             private double actualSendNum;//实际发货数量
+            private String saleUom;//实际发货数量
 
 
             //自定义字段
@@ -1386,6 +1387,13 @@ public class OrderResponse {
             public void setActualSendNum(double actualSendNum) {
                 this.actualSendNum = actualSendNum;
             }
+            public String getSaleUom() {
+                return saleUom;
+            }
+
+            public void setSaleUom(String saleUom) {
+                this.saleUom = saleUom;
+            }
 
             public static class LotListBean implements Parcelable {
                 /**
@@ -1540,6 +1548,7 @@ public class OrderResponse {
                 dest.writeInt(unloadAmount);
                 dest.writeString(remark);
                 dest.writeDouble(actualSendNum);
+                dest.writeString(saleUom);
             }
 
             public LinesBean() {
@@ -1576,6 +1585,7 @@ public class OrderResponse {
                 unloadAmount = in.readInt();
                 remark = in.readString();
                 actualSendNum = in.readDouble();
+                saleUom = in.readString();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

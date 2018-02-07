@@ -448,6 +448,14 @@ public class ReturnOrderBean implements Serializable {
             private double productUomQty;
             private List<String> lotIDs;
             private List<LotListBean> lotList;
+            private String imageMedium;
+            private String unit;
+            private String defaultCode;
+            private String barcode;
+            private String name;
+            private double productPrice;
+            private boolean isTwoUnit;
+            private String saleUom;
 
             protected LinesBean(Parcel in) {
                 productUom = in.readString();
@@ -465,6 +473,14 @@ public class ReturnOrderBean implements Serializable {
                 productUomQty = in.readDouble();
                 lotIDs = in.createStringArrayList();
                 lotList = in.createTypedArrayList(LotListBean.CREATOR);
+                imageMedium = in.readString();
+                unit = in.readString();
+                defaultCode = in.readString();
+                barcode = in.readString();
+                name = in.readString();
+                productPrice = in.readDouble();
+                isTwoUnit = in.readByte()==1;
+                saleUom = in.readString();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {
@@ -479,6 +495,61 @@ public class ReturnOrderBean implements Serializable {
                 }
             };
 
+            public String getImageMedium() {
+                return imageMedium;
+            }
+
+            public void setImageMedium(String imageMedium) {
+                this.imageMedium = imageMedium;
+            }
+
+            public String getUnit() {
+                return unit;
+            }
+
+            public void setUnit(String unit) {
+                this.unit = unit;
+            }
+
+            public String getDefaultCode() {
+                return defaultCode;
+            }
+
+            public void setDefaultCode(String defaultCode) {
+                this.defaultCode = defaultCode;
+            }
+
+            public String getBarcode() {
+                return barcode;
+            }
+
+            public void setBarcode(String barcode) {
+                this.barcode = barcode;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public double getProductPrice() {
+                return productPrice;
+            }
+
+            public void setProductPrice(double productPrice) {
+                this.productPrice = productPrice;
+            }
+
+            public boolean isTwoUnit() {
+                return isTwoUnit;
+            }
+
+            public void setTwoUnit(boolean twoUnit) {
+                isTwoUnit = twoUnit;
+            }
 
             public String getCategory() {
                 return category;
@@ -621,6 +692,25 @@ public class ReturnOrderBean implements Serializable {
                 dest.writeDouble(productUomQty);
                 dest.writeStringList(lotIDs);
                 dest.writeTypedList(lotList);
+
+                dest.writeString(imageMedium);
+                dest.writeString(unit);
+                dest.writeString(defaultCode);
+                dest.writeString(barcode);
+                dest.writeString(name);
+
+                dest.writeDouble(productPrice);
+                dest.writeByte((byte) (isTwoUnit?1:0));
+                dest.writeString(saleUom);
+
+            }
+
+            public String getSaleUom() {
+                return saleUom;
+            }
+
+            public void setSaleUom(String saleUom) {
+                this.saleUom = saleUom;
             }
 
             public static class LotListBean implements Parcelable, Serializable {

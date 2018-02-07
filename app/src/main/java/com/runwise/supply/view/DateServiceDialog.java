@@ -15,8 +15,11 @@ import android.view.animation.RotateAnimation;
 import android.widget.TextView;
 
 import com.runwise.supply.R;
-import com.runwise.supply.adapter.DateServiceAdapter;
-import com.runwise.supply.view.timepacker.WheelView;
+import com.runwise.supply.tools.TimeUtils;
+import com.weigan.loopview.LoopView;
+import com.weigan.loopview.OnItemSelectedListener;
+
+import java.util.ArrayList;
 
 
 /**
@@ -25,8 +28,7 @@ import com.runwise.supply.view.timepacker.WheelView;
 
 public class DateServiceDialog extends Dialog {
 
-    DateServiceAdapter mDateServiceAdapter;
-    WheelView mWheelView;
+    LoopView mWheelView;
     DateServiceListener mDateServiceListener;
 
     public interface DateServiceListener {
@@ -38,28 +40,69 @@ public class DateServiceDialog extends Dialog {
         init(context, reserveGoodsAdvanceDate, null);
     }
 
-    public void setCurrentItem(int index){
-        if (mWheelView != null){
-            mWheelView.setCurrentItem(index);
+    public void setCurrentItem(int index) {
+        if (mWheelView != null) {
+            mWheelView.setCurrentPosition(index);
         }
     }
 
+    public void setTime(String timeDesc) {
+        if (mWheelView != null) {
+            int index = -1;
+            for (int i= 0;i<mDescList.size();i++){
+                String desc = mDescList.get(i);
+                if (desc.substring(0,5).equals(timeDesc)){
+                    index = i;
+                }
+            }
+            if (index != -1){
+                mWheelView.setCurrentPosition(index);
+            }
+        }
+    }
+
+    ArrayList<String> mDescList;
+    private ArrayList<String> generateData(int reserveGoodsAdvanceDate) {
+        mDescList = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            int index = reserveGoodsAdvanceDate - 1 + i;
+            String date = TimeUtils.getABFormatDate(index).substring(5);
+            String week = TimeUtils.getWeekStr(index);
+            String desc = date + " " + week;
+            switch (index) {
+                case 0:
+                    desc += "[今天]";
+                    break;
+                case 1:
+                    desc += "[明天]";
+                    break;
+                case 2:
+                    desc += "[后天]";
+                    break;
+            }
+            mDescList.add(desc);
+        }
+        return mDescList;
+    }
+
     private void init(Context context, int reserveGoodsAdvanceDate, final View animView) {
-        mDateServiceAdapter = new DateServiceAdapter(reserveGoodsAdvanceDate);
+        ArrayList<String> descList = generateData(reserveGoodsAdvanceDate);
+
         Window window = this.getWindow();
         window.setWindowAnimations(R.style.MyPopwindow_anim_style);
+
         LayoutInflater inflater = LayoutInflater.from(context);
         final View timepickerview = inflater.inflate(R.layout.dialog_date_service, null);
-        this.setContentView(timepickerview);
         setContentView(timepickerview);
+
         window.getAttributes().gravity = Gravity.BOTTOM;
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
+
         this.setCancelable(true);
+
         TextView channce = (TextView) this.findViewById(R.id.picker_channce);
         TextView ok = (TextView) this.findViewById(R.id.picker_ok);
-        mWheelView = (WheelView) this.findViewById(R.id.wv_date);
-        mWheelView.setAdapter(mDateServiceAdapter);
         channce.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +116,7 @@ public class DateServiceDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (mDateServiceListener != null) {
-                    mDateServiceListener.onSelect(mDateServiceAdapter.getItemYMD(mWheelView.getCurrentItem()));
+                    mDateServiceListener.onSelect(TimeUtils.getABFormatDate(reserveGoodsAdvanceDate - 1 + mWheelView.getSelectedItem()));
                     return;
                 }
                 if (null != animView) {
@@ -92,6 +135,23 @@ public class DateServiceDialog extends Dialog {
                 }
             }
         });
+
+        mWheelView = (LoopView) this.findViewById(R.id.wv_date);
+        mWheelView.setNotLoop();
+        //滚动监听
+        mWheelView.setListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int i) {
+
+            }
+        });
+        //设置原始数据
+        mWheelView.setItems(descList);
+        //设置初始位置
+        mWheelView.setCurrentPosition(0);
+        //设置字体大小
+        mWheelView.setTextSize(20);
+        mWheelView.setCenterTextColor(getContext().getResources().getColor(R.color.colorAccent));
     }
 
     /**

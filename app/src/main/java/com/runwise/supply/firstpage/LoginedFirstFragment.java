@@ -621,7 +621,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 ChannelPandian request = new ChannelPandian();
                 request.setId(inventoryBrief.getInventoryID());
                 request.setState("draft");
-                sendConnection("/api/inventory/state", request, REQUEST_CANCEL_INVENTORY, true, null);
+                sendConnection("/api/v2/inventory/state", request, REQUEST_CANCEL_INVENTORY, true, null);
             }
         });
         dialog.show();

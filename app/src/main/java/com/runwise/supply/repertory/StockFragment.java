@@ -16,8 +16,9 @@ import android.widget.PopupWindow;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.SPUtils;
-import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -51,7 +52,7 @@ import static com.runwise.supply.repertory.RepoListFragment.ARG_CATEGORY;
  * 不同类别用不同的StockListFragment分别显示
  */
 
-public class StockFragment extends NetWorkFragment {
+public class StockFragment extends NetWorkFragment implements LoadingLayoutInterface {
 
     @ViewInject(R.id.indicator)
     private TabLayout smartTabLayout;
@@ -63,6 +64,8 @@ public class StockFragment extends NetWorkFragment {
     private SystemUpgradeLayout mLayoutUpgradeNotice;
     @ViewInject(R.id.include_notice)
     private View mViewNotice;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout mLoadingLayout;
     private TabPageIndicatorAdapter adapter;
 
     boolean isLogin;
@@ -74,15 +77,15 @@ public class StockFragment extends NetWorkFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLoadingLayout.setOnRetryClickListener(this);
         isLogin = SPUtils.isLogin(mContext);
-        if(isLogin) {
+        if (isLogin) {
             requestCategory();
             //展示盘点中
-            if(InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress()){
+            if (InventoryCacheManager.getInstance(getActivity()).shouldShowInventoryInProgress()) {
                 showNotice(new ShowInventoryNoticeEvent(true));
             }
-        }
-        else{
+        } else {
             buildData();
         }
         mLayoutUpgradeNotice.setPageName("盘点功能");
@@ -91,14 +94,14 @@ public class StockFragment extends NetWorkFragment {
     @OnClick({R.id.iv_open})
     public void btnClick(View view) {
         int viewId = view.getId();
-        switch (viewId){
+        switch (viewId) {
             case R.id.iv_open:
-                if (mTypeWindow == null){
+                if (mTypeWindow == null) {
                     return;
                 }
-                if (!mTypeWindow.isShowing()){
+                if (!mTypeWindow.isShowing()) {
                     showPopWindow();
-                }else{
+                } else {
                     mTypeWindow.dismiss();
                 }
                 break;
@@ -112,7 +115,7 @@ public class StockFragment extends NetWorkFragment {
         mTypeWindow = new ProductTypePopup(getActivity(),
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 DensityUtil.getScreenH(getActivity()) - y,
-                typeList,0);
+                typeList, 0);
         mTypeWindow.setViewPager(viewPager);
         mTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
@@ -122,32 +125,32 @@ public class StockFragment extends NetWorkFragment {
         });
     }
 
-    private void showPopWindow(){
+    private void showPopWindow() {
         final int[] location = new int[2];
         smartTabLayout.getLocationOnScreen(location);
         int y = (int) (location[1] + smartTabLayout.getHeight());
 //        mProductTypeWindow.showAtLocation(mainView, Gravity.NO_GRAVITY, 0, y);
 //        mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
-        mTypeWindow.showAtLocation(mainView,Gravity.NO_GRAVITY,0,y);
+        mTypeWindow.showAtLocation(mainView, Gravity.NO_GRAVITY, 0, y);
         mTypeWindow.setSelect(viewPager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
-    private void initUI(List<String> titles,List<AbstractStockListFragment> repertoryEntityFragmentList){
-        adapter = new TabPageIndicatorAdapter(this.getActivity().getSupportFragmentManager(),titles,repertoryEntityFragmentList);
+    private void initUI(List<String> titles, List<AbstractStockListFragment> repertoryEntityFragmentList) {
+        adapter = new TabPageIndicatorAdapter(this.getActivity().getSupportFragmentManager(), titles, repertoryEntityFragmentList);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(repertoryEntityFragmentList.size());
         smartTabLayout.removeAllTabs();
-        try{
+        try {
             smartTabLayout.setupWithViewPager(viewPager);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
-                viewPager.setCurrentItem(position,false);
+                viewPager.setCurrentItem(position, false);
                 mTypeWindow.dismiss();
 
                 //刷新当前fragment
@@ -165,11 +168,11 @@ public class StockFragment extends NetWorkFragment {
 
             }
         });
-        if(titles.size()<=TAB_EXPAND_COUNT){
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
-            ((ViewGroup.MarginLayoutParams)smartTabLayout.getLayoutParams()).setMargins(0,0,0,0);
-        }else{
+            ((ViewGroup.MarginLayoutParams) smartTabLayout.getLayoutParams()).setMargins(0, 0, 0, 0);
+        } else {
             ivOpen.setVisibility(View.VISIBLE);
             smartTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
@@ -177,6 +180,7 @@ public class StockFragment extends NetWorkFragment {
 
     /**
      * TODO: 库存更新，最好要移动到对应类别的fragment
+     *
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -185,6 +189,7 @@ public class StockFragment extends NetWorkFragment {
     }
 
     String mKeyword = "";
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearch(SearchKeyAct event) {
         if (mContext.getClass().getSimpleName().equals(event.getActName())) {
@@ -208,7 +213,7 @@ public class StockFragment extends NetWorkFragment {
 //        }
 //    }
 
-    private void requestCategory(){
+    private void requestCategory() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, OrderDetailActivity.CATEGORY, true, CategoryRespone.class);
@@ -217,8 +222,8 @@ public class StockFragment extends NetWorkFragment {
     /**
      * 未登录，示例数据
      */
-    private  void buildData() {
-        onSuccess(FictitiousStock.mockCategory(),CATEGORY);
+    private void buildData() {
+        onSuccess(FictitiousStock.mockCategory(), CATEGORY);
     }
 
     @Override
@@ -234,20 +239,26 @@ public class StockFragment extends NetWorkFragment {
 
     CategoryRespone categoryRespone;
     CategoryRespone mUnLoginCategoryRespone;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case OrderDetailActivity.CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
+                mLoadingLayout.onSuccess(categoryRespone.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
                 setUpDataForViewPage(categoryRespone);
-            break;
+                break;
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        ToastUtil.show(mContext,errMsg);
+        switch (where) {
+            case OrderDetailActivity.CATEGORY:
+                mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+                break;
+        }
     }
 
     private void setUpDataForViewPage(CategoryRespone categoryRespone) {
@@ -256,42 +267,50 @@ public class StockFragment extends NetWorkFragment {
 
         titles.add("全部");
         AbstractStockListFragment allStockListFragment = newRepertoryListFragment("");
-        allStockListFragment.getArguments().putBoolean(ARG_CURRENT,true);//全部为打开tab
+        allStockListFragment.getArguments().putBoolean(ARG_CURRENT, true);//全部为打开tab
         repertoryEntityFragmentList.add(0, allStockListFragment);
 
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
             repertoryEntityFragmentList.add(newRepertoryListFragment(category));
         }
 
-        initUI(titles,repertoryEntityFragmentList);
+        initUI(titles, repertoryEntityFragmentList);
         initPopWindow((ArrayList<String>) titles);
     }
 
     public AbstractStockListFragment newRepertoryListFragment(String category) {
         AbstractStockListFragment repertoryListFragment;
-        if(getActivity() instanceof DealerSearchActivity){
+        if (getActivity() instanceof DealerSearchActivity) {
             repertoryListFragment = new SearchStockListFragment();//搜索
-        }else{
+        } else {
             repertoryListFragment = new StockListFragment();//正常显示
         }
         Bundle bundle = new Bundle();
-        bundle.putString(ARG_CATEGORY,category);
+        bundle.putString(ARG_CATEGORY, category);
         repertoryListFragment.setArguments(bundle);
         return repertoryListFragment;
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+        requestCategory();
     }
 
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
         private List<String> titleList = new ArrayList<>();
         private List<AbstractStockListFragment> fragmentList = new ArrayList<>();
-        public TabPageIndicatorAdapter(FragmentManager fm,List<String> titles,List<AbstractStockListFragment> repertoryEntityFragmentList) {
+
+        public TabPageIndicatorAdapter(FragmentManager fm, List<String> titles, List<AbstractStockListFragment> repertoryEntityFragmentList) {
             super(fm);
             titleList = titles;
             fragmentList.addAll(repertoryEntityFragmentList);
         }
+
         public List<AbstractStockListFragment> getFragmentList() {
-            return  fragmentList;
+            return fragmentList;
         }
+
         @Override
         public Fragment getItem(int position) {
             return fragmentList.get(position);
@@ -333,16 +352,17 @@ public class StockFragment extends NetWorkFragment {
      * 展示盘点中提示
      */
     boolean isClose = false;
+
     @Subscribe
-    public void showNotice(ShowInventoryNoticeEvent showInventoryNoticeEvent){
-        if(showInventoryNoticeEvent.isShow && !isClose){
+    public void showNotice(ShowInventoryNoticeEvent showInventoryNoticeEvent) {
+        if (showInventoryNoticeEvent.isShow && !isClose) {
             mViewNotice.setVisibility(View.VISIBLE);
-            mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v->{
+            mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v -> {
                 isClose = true;
                 mViewNotice.setVisibility(View.GONE);
             });
-        }else{
-            if(!showInventoryNoticeEvent.isShow)isClose = false;
+        } else {
+            if (!showInventoryNoticeEvent.isShow) isClose = false;
             mViewNotice.setVisibility(View.GONE);
         }
     }

@@ -234,10 +234,8 @@ public abstract class BaseActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         LogUtil.e("login", "onResume----" + BaseActivity.this.getClass().getSimpleName());
-        //友盟数据统计
         JPushInterface.onResume(this);
         //jpush推送统计
-        //		JPushInterface.onResume(this);
         if (logout) {
             onUserLoginout();
             logout = false;

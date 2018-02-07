@@ -10,6 +10,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -160,6 +161,10 @@ public class MainRepertoryFragment extends NetWorkFragment {
         switch (where) {
             case REQUEST_EXIT:
             case REQUEST_INVENTORY:
+                if (errMsg.equals(getResources().getString(com.kids.commonframe.R.string.network_error))){
+                    ToastUtil.show(getActivity(),errMsg);
+                    return;
+                }
                 dialog.setModel(CustomDialog.LEFT);
                 dialog.setMessage(errMsg);
                 dialog.setLeftBtnListener("我知道了", null);
