@@ -90,6 +90,7 @@ public class ReturnActivity extends NetWorkActivity implements LoadingLayoutInte
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
+        toast(errMsg);
         loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
     }
 

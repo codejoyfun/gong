@@ -20,8 +20,10 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
+import com.kids.commonframe.base.util.AlwaysOrderTimestatisticsUtil;
 import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
+import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
@@ -212,7 +214,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, list);
                 intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE, 0);
                 startActivity(intent);
-                PlaceOrderTimeStatisticsUtil.upload(getActivityContext());
+                SelfOrderTimeStatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
                 break;
             case REQUEST_SUBMIT://下单
             case REQUEST_DUPLICATE://确认的重复下单
@@ -222,7 +224,18 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 ActivityManager.getInstance().finishAll();//关闭所有的activity
                 intent = new Intent(this, MainActivity.class);//重新打开首页
                 startActivity(intent);
-                PlaceOrderTimeStatisticsUtil.upload(getActivityContext());
+
+                switch (mPlaceOrderType){
+                    case PLACE_ORDER_TYPE_ALWAYS:
+                        AlwaysOrderTimestatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
+                        break;
+                    case PLACE_ORDER_TYPE_SELF:
+                        SelfOrderTimeStatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
+                        break;
+                    case PLACE_ORDER_TYPE_SMART:
+                        SmartOrderTimestatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
+                        break;
+                }
 
                 EventBus.getDefault().post(new OrderSuccessEvent());
                 mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
@@ -475,13 +488,34 @@ public class OrderSubmitActivity extends NetWorkActivity {
         super.onResume();
         MobclickAgent.onPageStart("提交订单页");
         MobclickAgent.onResume(this);          //统计时长
-        PlaceOrderTimeStatisticsUtil.onResume();
+        switch (mPlaceOrderType){
+            case PLACE_ORDER_TYPE_ALWAYS:
+                AlwaysOrderTimestatisticsUtil.onResume();
+                break;
+            case PLACE_ORDER_TYPE_SELF:
+                SelfOrderTimeStatisticsUtil.onResume();
+                break;
+            case PLACE_ORDER_TYPE_SMART:
+                SmartOrderTimestatisticsUtil.onResume();
+                break;
+        }
+
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("提交订单页");
         MobclickAgent.onPause(this);          //统计时长
-        PlaceOrderTimeStatisticsUtil.onPause(getActivityContext());
+        switch (mPlaceOrderType){
+            case PLACE_ORDER_TYPE_ALWAYS:
+                AlwaysOrderTimestatisticsUtil.onPause(getActivityContext());
+                break;
+            case PLACE_ORDER_TYPE_SELF:
+                SelfOrderTimeStatisticsUtil.onPause(getActivityContext());
+                break;
+            case PLACE_ORDER_TYPE_SMART:
+                SmartOrderTimestatisticsUtil.onPause(getActivityContext());
+                break;
+        }
     }
 }

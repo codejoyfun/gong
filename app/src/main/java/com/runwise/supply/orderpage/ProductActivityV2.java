@@ -27,7 +27,7 @@ import android.widget.Toast;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
@@ -586,13 +586,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        if (!TextUtils.isEmpty(errMsg)) toast(errMsg);
         switch (where) {
             case REQUEST_VALIDATE:
                 updateBottomBar();//更新底部bar
                 startRequest();//查询接口
+                if (!TextUtils.isEmpty(errMsg)) toast(errMsg);
                 break;
             case REQUEST_CATEGORY:
+                if (!TextUtils.isEmpty(errMsg)) toast(errMsg);
                     loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
                 break;
         }
@@ -1070,19 +1071,34 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         String getRemark(ProductData.ListBean bean);
     }
 
+    protected  String getPageName(){
+        return "自助下单页面";
+    }
+
+    protected void statisticsOrderTimeOnResume(){
+        SelfOrderTimeStatisticsUtil.onResume();
+    }
+
+    protected void statisticsOrderTimeOnPause(){
+        SelfOrderTimeStatisticsUtil.onPause(getActivityContext());
+    }
+
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
-        MobclickAgent.onPageStart("自助下单页面");
+        MobclickAgent.onPageStart(getPageName());
         MobclickAgent.onResume(this);          //统计时长
-        PlaceOrderTimeStatisticsUtil.onResume();
+        statisticsOrderTimeOnResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        MobclickAgent.onPageEnd("自助下单页面");
+        MobclickAgent.onPageEnd(getPageName());
         MobclickAgent.onPause(this);          //统计时长
-        PlaceOrderTimeStatisticsUtil.onPause(getActivityContext());
+        statisticsOrderTimeOnPause();
     }
 }

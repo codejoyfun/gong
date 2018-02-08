@@ -161,6 +161,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
         switch (where) {
             case REQUEST_EXIT:
             case REQUEST_INVENTORY:
+                mCreateInventoryIng = false;
                 if (errMsg.equals(getResources().getString(com.kids.commonframe.R.string.network_error))){
                     ToastUtil.show(getActivity(),errMsg);
                     return;
@@ -169,7 +170,6 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 dialog.setMessage(errMsg);
                 dialog.setLeftBtnListener("我知道了", null);
                 dialog.show();
-                mCreateInventoryIng = false;
                 break;
         }
     }

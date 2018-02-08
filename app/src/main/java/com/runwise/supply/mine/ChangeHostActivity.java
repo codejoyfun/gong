@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
-import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -285,7 +285,7 @@ private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017
     @Override
     public void onSuccess(BaseEntity result, int where) {
         SPUtils.loginOut(mContext);
-        PlaceOrderTimeStatisticsUtil.clear();
+        SelfOrderTimeStatisticsUtil.clear();
         //退出登录
         EventBus.getDefault().post(new UserLogoutEvent());
         switch (where) {

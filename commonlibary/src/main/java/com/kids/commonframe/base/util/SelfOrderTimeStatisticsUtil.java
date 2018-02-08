@@ -2,6 +2,7 @@ package com.kids.commonframe.base.util;
 
 import android.content.Context;
 
+import com.kids.commonframe.base.UserInfo;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
@@ -9,22 +10,22 @@ import java.util.Map;
 
 import static com.kids.commonframe.base.util.UmengUtil.COMPANY_TYPE;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_TIME;
+import static com.kids.commonframe.base.util.UmengUtil.ORDER_PRODUCTS_TYPE;
 import static com.kids.commonframe.base.util.UmengUtil.ORDER_TIME_TYPE;
-import static com.kids.commonframe.base.util.UmengUtil.ORDER_TYPE;
-import static com.kids.commonframe.base.util.UmengUtil.TYPE_SELF_ORDER;
 
 /**
  * Created by mike on 2018/1/31.
  * 统计下单时间（分五类:1 常购清单 2 自助下单 3 智能下单 4 再来一单 5 修改订单）
  */
 
-public class PlaceOrderTimeStatisticsUtil {
+public class SelfOrderTimeStatisticsUtil {
     private static long mStartTime;
     private static long mElapsedTime;
     private static int mStatus = 1 << 2;
     public static final int STATUS_START = 1 << 0;
     public static final int STATUS_PAUSE = 1 << 1;
     public static final int STATUS_NONE = 1 << 2;
+
 
     public static void onResume() {
         start();
@@ -34,13 +35,24 @@ public class PlaceOrderTimeStatisticsUtil {
         pause(context);
     }
 
-    public static void upload(Context context) {
+    public static void upload(Context context,String content) {
         //统计秒
         int duration = (int) (end(context) / 1000);
         Map<String, String> map_value = new HashMap<String, String>();
-        map_value.put(ORDER_TYPE, TYPE_SELF_ORDER);
         map_value.put(COMPANY_TYPE, (String) SPUtils.get(context,SPUtils.FILE_KEY_COMPANY_NAME,"尚没有公司名"));
         map_value.put(ORDER_TIME_TYPE, String.valueOf(duration));
+        Object o = SPUtils.readObject(context, SPUtils.FILE_KEY_USER_INFO);
+        String menDianName = "";
+        String userName = "";
+        String mobile = "";
+        if (o != null) {
+            UserInfo userInfo = (UserInfo) o;
+            menDianName = "门店名: " + userInfo.getMendian() + "\n";
+            userName = "用户名: " + userInfo.getUsername() + "\n";
+            mobile = "手机: " + userInfo.getMobile() + "\n";
+            content = menDianName+userName+mobile+ content;
+        }
+        map_value.put(ORDER_PRODUCTS_TYPE, content);
         MobclickAgent.onEventValue(context, EVENT_ID_ORDER_TIME, map_value, duration);
     }
 

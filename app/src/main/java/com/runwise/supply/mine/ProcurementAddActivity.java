@@ -30,7 +30,9 @@ import com.bigkoo.pickerview.TimePickerView;
 import com.bigkoo.pickerview.lib.WheelView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -59,7 +61,7 @@ import java.util.Map;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
-public class ProcurementAddActivity extends NetWorkActivity {
+public class ProcurementAddActivity extends NetWorkActivity implements LoadingLayoutInterface {
     @ViewInject(R.id.searchET)
     private EditText searchET;
     private final int PRODUCT_GET = 1;
@@ -86,6 +88,8 @@ public class ProcurementAddActivity extends NetWorkActivity {
     private View addRootView;
     @ViewInject(R.id.iv_open)
     private ImageView ivOpen;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout loadingLayout;
     private TimePickerView pvCustomTime;
     private WheelView wheelView;
     private ProductData.ListBean productBean;
@@ -93,6 +97,12 @@ public class ProcurementAddActivity extends NetWorkActivity {
     //数量
     private String amount;
     private TabPageIndicatorAdapter adapter;
+
+    @Override
+    public void retryOnClick(View view) {
+        Object param = null;
+        sendConnection("/gongfu/v2/product/list/", param, PRODUCT_GET, true, ProductData.class);
+    }
 
     /**
      * 供子fragment统一设置商品数量,隐藏细节
@@ -153,6 +163,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
                 EventBus.getDefault().post(bean);
             }
         });
+        loadingLayout.setOnRetryClickListener(this);
         Object param = null;
         sendConnection("/gongfu/v2/product/list/", param, PRODUCT_GET, true, ProductData.class);
     }
@@ -231,7 +242,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-
+                loadingLayout.onSuccess(hotList.size(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 break;
             case PRODUCT_ADD_1:
                 ProcurementAddResult procurementAddResult = (ProcurementAddResult) result.getResult();
@@ -243,6 +254,20 @@ public class ProcurementAddActivity extends NetWorkActivity {
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage(hotList);
                 break;
+        }
+    }
+
+    @Override
+    public void onFailure(String errMsg, BaseEntity result, int where) {
+        if (where == PRODUCT_GET){
+            if (errMsg.equals(getResources().getString(R.string.network_error))){
+                toast(getResources().getString(R.string.network_error));
+                loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+            }else{
+                loadingLayout.onSuccess(0,"哎呀！这里是空哒~~",R.drawable.default_ico_none);
+            }
+        }else{
+            ToastUtil.show(mContext, errMsg);
         }
     }
 
@@ -374,10 +399,7 @@ public class ProcurementAddActivity extends NetWorkActivity {
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
 
-    @Override
-    public void onFailure(String errMsg, BaseEntity result, int where) {
-        ToastUtil.show(mContext, errMsg);
-    }
+
 
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
         private List<String> titleList = new ArrayList<>();

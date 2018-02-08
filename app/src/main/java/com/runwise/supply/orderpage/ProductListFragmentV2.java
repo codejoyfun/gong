@@ -140,6 +140,9 @@ public class ProductListFragmentV2 extends NetWorkFragment{
      */
     @Subscribe
     public void updateProductCount(ProductCountUpdateEvent event){
+        if (event.getException()!=null&&event.getException() == mProductAdapter){
+            return;
+        }
         mProductAdapter.notifyDataSetChanged();
     }
 
@@ -153,6 +156,11 @@ public class ProductListFragmentV2 extends NetWorkFragment{
                 mProductAdapter.notifyDataSetChanged();
                 pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,Integer.MAX_VALUE);
                 mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+                if (productData.getList()!=null&&productData.getList().size()<mLimit){
+                    pullListView.getLvFooterLoadingFrame().setVisibility(View.VISIBLE);
+                }else{
+                    pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
+                }
                 break;
             case REQUEST_PRODUCT_MORE:
                 mRefreshFooter.setVisibility(View.GONE);
@@ -160,8 +168,15 @@ public class ProductListFragmentV2 extends NetWorkFragment{
                 mProductAdapter.appendData(productData.getList());
                 if(productData.getList()!=null && productData.getList().size()!=0){
                     pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,Integer.MAX_VALUE);
+                    if (productData.getList().size()<mLimit){
+                        pullListView.getLvFooterLoadingFrame().setVisibility(View.VISIBLE);
+                    }else{
+                        pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
+                    }
                 }else{
                     pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,mProductAdapter.getCount());
+                    pullListView.getLvFooterLoadingFrame().setVisibility(View.VISIBLE);
+
                 }
                 mProductAdapter.notifyDataSetChanged();
                 break;

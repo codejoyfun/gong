@@ -2,6 +2,7 @@ package com.runwise.supply.mine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,19 +118,19 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             @Override
             public void run() {
                 for (int i = pullListView.getRefreshableView().getFirstVisiblePosition(); i < pullListView.getRefreshableView().getLastVisiblePosition(); i++) {
-                    OrderResponse.ListBean bean = (OrderResponse.ListBean)adapter.getItem(i);
-                    if (bean != null){
+                    OrderResponse.ListBean bean = (OrderResponse.ListBean) adapter.getItem(i);
+                    if (bean != null) {
                         getOrder(bean.getOrderID());
                     }
                 }
             }
-        }, 3*1000, PollingUtil.defaultInterval);
+        }, 3 * 1000, PollingUtil.defaultInterval);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mTimer != null){
+        if (mTimer != null) {
             mTimer.cancel();
         }
     }
@@ -231,21 +232,21 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 OrderDetailResponse orderDetailResponse = (OrderDetailResponse) result.getResult().getData();
                 int orderId = orderDetailResponse.getOrder().getOrderID();
                 int index = 0;
-                for (int i = 0;i < adapter.getList().size();i++){
+                for (int i = 0; i < adapter.getList().size(); i++) {
                     OrderResponse.ListBean listBean = adapter.getList().get(i);
-                    if (listBean.getOrderID() == orderId){
+                    if (listBean.getOrderID() == orderId) {
                         index = i;
                         break;
                     }
                 }
-                if (index <= adapter.getList().size()-1){
-                    adapter.getList().set(index,orderDetailResponse.getOrder());
+                if (index <= adapter.getList().size() - 1) {
+                    adapter.getList().set(index, orderDetailResponse.getOrder());
                     adapter.notifyDataSetChanged();
                 }
                 break;
             case REQUEST_DETAIL_FOR_ORDER_AGAIN:
-                OrderDetailResponse res = (OrderDetailResponse)result.getResult().getData();
-                OrderAgainActivity.start(getActivity(),res.getOrder());
+                OrderDetailResponse res = (OrderDetailResponse) result.getResult().getData();
+                OrderAgainActivity.start(getActivity(), res.getOrder());
                 break;
         }
     }
@@ -253,6 +254,9 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
+        if (!TextUtils.isEmpty(errMsg)) {
+            ToastUtil.show(getActivity(), errMsg);
+        }
         loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
     }
 
@@ -319,7 +323,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
     /**
      * 请求订单详情，拿商品信息然后再来一单
      */
-    private void requestOrderDetailForOrderAgain(int orderId){
+    private void requestOrderDetailForOrderAgain(int orderId) {
         Object request = null;
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(orderId).append("/");
@@ -350,7 +354,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                            return;
                         dialog.setMessage("您确定要取消订单吗?");
                         dialog.setModel(CustomDialog.BOTH);
                         dialog.setLeftBtnListener("不取消了", null);
@@ -392,7 +397,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                            return;
                         //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
                         OrderDoAction action;
                         if (bean.isIsDoubleReceive()) {
@@ -407,7 +413,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                         }
                         switch (action) {
                             case RECEIVE://正常收货
-                                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
+                                if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                                    return;
                                 Intent intent = new Intent(mContext, ReceiveActivity.class);
                                 Bundle bundle = new Bundle();
                                 bundle.putParcelable("order", bean);
@@ -442,7 +449,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.tvOneMore.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                            return;
                         requestOrderDetailForOrderAgain(bean.getOrderID());
                     }
                 });
@@ -454,7 +462,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                            return;
                         Intent intent2 = new Intent(mContext, EvaluateActivity.class);
                         Bundle bundle2 = new Bundle();
                         bundle2.putParcelable("order", bean);
@@ -470,7 +479,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.tvOneMore.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                            return;
 //                        OrderAgainActivity.start(getActivity(),bean);
                         requestOrderDetailForOrderAgain(bean.getOrderID());
                     }
@@ -488,7 +498,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
+                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                            return;
                         dialog.setMessage("您确定要取消订单吗?");
                         dialog.setModel(CustomDialog.BOTH);
                         dialog.setLeftBtnListener("不删除了", null);
