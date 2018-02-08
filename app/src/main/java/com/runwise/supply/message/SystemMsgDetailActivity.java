@@ -121,7 +121,7 @@ public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingL
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.no_network);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
 
     @OnClick(R.id.stepPayFinish)

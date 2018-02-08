@@ -18,6 +18,7 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -257,6 +258,7 @@ public class StockFragment extends NetWorkFragment implements LoadingLayoutInter
         switch (where) {
             case OrderDetailActivity.CATEGORY:
                 mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+                ToastUtil.show(getContext(),errMsg);
                 break;
         }
     }

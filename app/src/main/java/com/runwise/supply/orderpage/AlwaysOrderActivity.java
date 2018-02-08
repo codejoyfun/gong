@@ -6,14 +6,13 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.util.AlwaysOrderTimestatisticsUtil;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.ProductData;
-import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 
@@ -89,7 +88,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
                 BaseEntity.ResultBean resultBean = result.getResult();
                 PresetProductData data = (PresetProductData) resultBean.getData();
                 //init mCountMap;
-                if (data.getList() == null || data.getList().size() == 0) {
+                if (data == null || data.getList() == null || data.getList().size() == 0) {
                     //Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
                 } else {
                     for (ProductData.ListBean pBean : data.getList()) {
@@ -115,7 +114,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
                 mRlBottomBar.setVisibility(View.VISIBLE);
                 requestCategory();
                 updateBottomBar();
-                Toast.makeText(this, "小主，暂时不用采购哦~", Toast.LENGTH_LONG).show();
+//                Toast.makeText(this, "小主，暂时不用采购哦~", Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -168,18 +167,19 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
         mHandler.removeCallbacks(runnable);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MobclickAgent.onPageStart("常购清单页面");
-        MobclickAgent.onResume(this);          //统计时长
 
+    @Override
+    protected String getPageName() {
+        return "常购清单页面";
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        MobclickAgent.onPageEnd("常购清单页面");
-        MobclickAgent.onPause(this);          //统计时长
+    protected void statisticsOrderTimeOnResume() {
+        AlwaysOrderTimestatisticsUtil.onResume();
+    }
+
+    @Override
+    protected void statisticsOrderTimeOnPause() {
+        AlwaysOrderTimestatisticsUtil.onPause(getActivityContext());
     }
 }

@@ -21,7 +21,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CheckUtil;
-import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -200,7 +200,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 				break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
-				PlaceOrderTimeStatisticsUtil.clear();
+				SelfOrderTimeStatisticsUtil.clear();
                 MessageFragment.isLogin = false;
                 GlobalApplication.getInstance().cleanUesrInfo();
                 JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);

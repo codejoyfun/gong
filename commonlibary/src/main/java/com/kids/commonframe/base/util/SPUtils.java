@@ -28,6 +28,8 @@ public class SPUtils {
     public static final String FILE_KEY_COMPANY_NAME = "file_key_company_name";
     public static final String FILE_KEY_USER_INFO = "userInfo";
     public static final String FILE_KEY_SELF_ORDER_ELAPSED_TIME = "file_key_self_order_elapsed_time";
+    public static final String FILE_KEY_ALWAYS_ORDER_ELAPSED_TIME = "file_key_always_order_elapsed_time";
+    public static final String FILE_KEY_SMART_ORDER_ELAPSED_TIME = "file_key_smart_order_elapsed_time";
 
 
     /**

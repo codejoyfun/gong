@@ -29,6 +29,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
@@ -104,7 +105,7 @@ import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTOR
  * Created by libin on 2017/7/13.
  */
 
-public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapter.DoActionInterface {
+public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapter.DoActionInterface,LoadingLayoutInterface {
     private static final int FROMORDER = 0;
     private static final int FROMLB = 1;
     private static final int FROMDB = 2;
@@ -284,7 +285,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //下拉刷新:只刷新列表内容
-                requestReturnList();
+                requestReturnList(false);
                 requestDashBoard();
             }
 
@@ -292,6 +293,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
             }
         });
+        loadingLayout.setOnRetryClickListener(this);
         requestDashBoard();
         requestLB();
         getProcurement();
@@ -321,7 +323,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void onResume() {
         super.onResume();
         if (getUserVisibleHint()) {
-            requestReturnList();
+            requestReturnList(false);
             requestDashBoard();
             if (SPUtils.isLogin(getActivity())) {
                 Object request = null;
@@ -340,7 +342,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            requestReturnList();
+            requestReturnList(false);
             mTimeStartFROMRETURN = System.currentTimeMillis();
 
         } else {
@@ -389,9 +391,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case CANCEL:
                 ToastUtil.show(mContext, "取消成功");
-                requestReturnList();
+                requestReturnList(false);
                 break;
             case FROMRETURN:
+                mRequestReturnListSuccess = true;
                 BaseEntity.ResultBean resultBean4 = result.getResult();
                 ReturnOrderBean rob = (ReturnOrderBean) resultBean4.getData();
                 orderList.addAll(0, rob.getList());//加在前边
@@ -420,7 +423,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 ToastUtil.show(mContext, "取消成功");
-                requestReturnList();
+                requestReturnList(false);
                 break;
             case REQUEST_OUTPUT_CONFIRM:
                 startActivity(TransferOutActivity.getStartIntent(getActivity(), mSelectTransferEntity));
@@ -516,6 +519,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             } else {
                 loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
             }
+            if (!mRequestReturnListSuccess){
+                loadingLayout.onFailure("",R.drawable.default_icon_checkconnection);
+            }
         }
     }
 
@@ -542,6 +548,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //            case REQUEST_TRANSFER_IN:
 //            case REQUEST_TRANSFER_OUT:
             case FROMRETURN:
+                ToastUtil.show(getActivity(),errMsg);
+                mRequestReturnListSuccess = false;
                 returnRequesting = false;
                 checkSuccess();
             case FROMORDER:
@@ -851,7 +859,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      * 一次性加载全部，无分页,【先加载退货单，然后跟着正常订单】改为:
      * 并行查询退货单、正常订单、和提交中的订单的状态
      */
-    private void requestReturnList() {
+    private void requestReturnList(boolean showDialog) {
         if (returnRequesting || orderRequesting || submitRequesting || inventoryRequesting) return;
         inventoryRequesting = true;
         returnRequesting = true;
@@ -867,7 +875,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         checkInventory();
 
         Object request = null;
-        sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, false, ReturnOrderBean.class);
+        sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, showDialog, ReturnOrderBean.class);
 
         //同时查订单和退货单
         Object requestOrder = null;
@@ -975,7 +983,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     //接收到订单状态更新推送，更新列表
     @Subscribe
     public void onOrderStatusChanged(OrderStatusChangeEvent orderStatusChangeEvent) {
-        requestReturnList();
+        requestReturnList(false);
     }
 
     @Override
@@ -1076,5 +1084,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             mViewNotice.setVisibility(View.GONE);
         }
     }
-
+boolean mRequestReturnListSuccess = true;
+    @Override
+    public void retryOnClick(View view) {
+        requestReturnList(true);
+        requestDashBoard();
+    }
 }

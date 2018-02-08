@@ -111,7 +111,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                         viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                        mCountMap.remove(bean);
                     }
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
+                    ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,currentNum);
+                    productCountUpdateEvent.setException(ProductAdapter.this);
+                    EventBus.getDefault().post(productCountUpdateEvent);
                 }
 
             }
@@ -135,7 +137,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                     viewHolder.tvCount.setVisibility(View.VISIBLE);
                     viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
-                EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
+                ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,currentNum);
+                productCountUpdateEvent.setException(ProductAdapter.this);
+                EventBus.getDefault().post(productCountUpdateEvent);
             }
         });
 
@@ -167,7 +171,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 //                            mCountMap.put(bean,value);
                         }
                         viewHolder.tvCount.setText(value + bean.getUom());
-                        EventBus.getDefault().post(new ProductCountUpdateEvent(bean,(int)value));
+                        ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,(int)value);
+                        productCountUpdateEvent.setException(ProductAdapter.this);
+                        EventBus.getDefault().post(productCountUpdateEvent);
                     }
                 }).show();
             }

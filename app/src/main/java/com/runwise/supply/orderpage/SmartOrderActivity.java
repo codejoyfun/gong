@@ -25,6 +25,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -251,11 +252,13 @@ public class SmartOrderActivity extends NetWorkActivity {
         super.onResume();
         MobclickAgent.onPageStart("智能下单页面");
         MobclickAgent.onResume(this);          //统计时长
+        SmartOrderTimestatisticsUtil.onResume();
     }
     @Override
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("智能下单页面");
         MobclickAgent.onPause(this);          //统计时长
+        SmartOrderTimestatisticsUtil.onPause(this);
     }
 }

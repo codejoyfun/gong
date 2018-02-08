@@ -24,6 +24,7 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -88,6 +89,8 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
     private SimpleDateFormat mSdfSysTimeSource = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS", Locale.getDefault());
     private SimpleDateFormat mSdfSysTimeTarget = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
+
+    boolean mAddPlatformMessage = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -235,17 +238,20 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
+                mAddPlatformMessage = true;
                 MessageResult mainListResult = (MessageResult)result.getResult();
                 adapter.setData(handlerMessageList(mainListResult));
                 loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_newsnone);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
+                mAddPlatformMessage = true;
                 MessageResult startResult = (MessageResult)result.getResult();
                 adapter.setData(handlerMessageList(startResult));
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
+                mAddPlatformMessage = false;
                 MessageResult endResult = (MessageResult)result.getResult();
                 endResult.setChannel(null);
                 if (endResult.getOrder() != null && !endResult.getOrder().isEmpty()) {
@@ -265,7 +271,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
         //加入平台通知
         MessageResult.ChannelBean.LastMessageBeanX beanX = PlatformNotificationManager.getInstance(getContext()).getLastMessageX();
-        if(beanX!=null){
+        if(beanX!=null&&mAddPlatformMessage){
             if(channelList==null)channelList = new ArrayList<>();
             MessageResult.ChannelBean platformChannelBean = new MessageResult.ChannelBean();
             platformChannelBean.setName("平台通知");
@@ -301,6 +307,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
+        ToastUtil.show(getActivity(),errMsg);
         loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
 

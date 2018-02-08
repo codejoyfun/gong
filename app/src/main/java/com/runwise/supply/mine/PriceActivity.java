@@ -21,6 +21,7 @@ import android.widget.PopupWindow;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -252,6 +253,7 @@ public class PriceActivity extends NetWorkActivity implements LoadingLayoutInter
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         if (where == REQUEST_MAIN){
+            ToastUtil.show(getActivityContext(),errMsg);
             loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
         }
     }

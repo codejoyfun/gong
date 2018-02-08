@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
@@ -118,7 +119,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                 mRlBottomBar.setVisibility(View.VISIBLE);
                 requestCategory();
                 updateBottomBar();
-                Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
+//                Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
                 mFirstGetShopCartCache = false;
                 break;
         }
@@ -166,5 +167,19 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacks(runnable);
+    }
+    @Override
+    protected String getPageName() {
+        return "智能下单页面";
+    }
+
+    @Override
+    protected void statisticsOrderTimeOnResume() {
+        SmartOrderTimestatisticsUtil.onResume();
+    }
+
+    @Override
+    protected void statisticsOrderTimeOnPause() {
+        SmartOrderTimestatisticsUtil.onPause(getActivityContext());
     }
 }

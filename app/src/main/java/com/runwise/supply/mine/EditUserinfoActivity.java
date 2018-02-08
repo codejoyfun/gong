@@ -24,7 +24,7 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ImageUtils;
-import com.kids.commonframe.base.util.PlaceOrderTimeStatisticsUtil;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
@@ -130,7 +130,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
-                PlaceOrderTimeStatisticsUtil.clear();
+                SelfOrderTimeStatisticsUtil.clear();
                 MobclickAgent.onProfileSignOff();
                 MessageFragment.isLogin = false;
                 GlobalApplication.getInstance().cleanUesrInfo();

@@ -45,7 +45,7 @@ import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
  * Created by Dong on 2017/10/10.
  */
 
-public class TransferListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener {
+public class TransferListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
 
     public static final String ARG_KEY_TYPE = "type";
     public static final int TYPE_IN = 0;
@@ -149,7 +149,12 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 }
                 return;
         }
-        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+
+        if (where == REQUEST_REFRESH && errMsg.equals(getResources().getString(R.string.network_error))){
+                mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }else{
+            mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        }
         mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
             @Override
             public void retryOnClick(View view) {
@@ -198,6 +203,10 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 MobclickAgent.onPageStart("调出单列表"); //统计页面，"MainScreen"为页面名称，可自定义
                 break;
         }
+    }
+
+    @Override
+    public void retryOnClick(View view) {
 
     }
 

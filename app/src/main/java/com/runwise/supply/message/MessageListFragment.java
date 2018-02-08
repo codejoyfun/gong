@@ -231,7 +231,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
             case REQUEST_MAIN:
                 MsgListResult mainListResult = (MsgListResult)result.getResult();
                 adapter.setData(mainListResult.getList());
-//                loadingLayout.onSuccess(adapter.getCount(),"暂时没有数据");
+                loadingLayout.onSuccess(1,"暂时没有数据");
 //                pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 pullListView.onRefreshComplete();
                 if(adapter.getCount() >0) {
@@ -268,7 +268,8 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure(errMsg);
+        ToastUtil.show(getContext(),errMsg);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
 
     @Override
