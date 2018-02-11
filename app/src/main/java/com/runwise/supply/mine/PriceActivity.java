@@ -78,7 +78,7 @@ public class PriceActivity extends NetWorkActivity implements LoadingLayoutInter
         PageRequest request = null;
 //        request.setLimit(limit);
 //        request.setPz(page);
-        sendConnection("/gongfu/v2/product/list", request, where, showDialog, ProductData.class);
+        sendConnection("/gongfu/v3/product/list", request, where, showDialog, ProductData.class);
     }
 
     @OnClick({R.id.left_layout, R.id.iv_open})

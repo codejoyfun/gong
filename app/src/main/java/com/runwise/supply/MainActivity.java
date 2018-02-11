@@ -480,7 +480,7 @@ public class MainActivity extends NetWorkActivity {
 
     private void queryProductList() {
         Object request = null;
-        sendConnection("/gongfu/v2/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
+        sendConnection("/gongfu/v3/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
         mTimeStartQUERY_ALL = System.currentTimeMillis();
     }
 

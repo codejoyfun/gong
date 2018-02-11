@@ -60,14 +60,16 @@
                 style="?android:attr/textViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/tv_tag"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
                 android:background="@null"
                 android:gravity="center|right"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:singleLine="true"
                 android:text="266"
+                android:inputType="numberDecimal"
                 android:textColor="#FF2E2E2E"
                 android:textSize="16sp" />
 
