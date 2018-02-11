@@ -218,7 +218,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }
         }
         productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
-        if (lbean.isNewType() && productBasicHelper.check(lbean.getLines())) {//新版订单不用查商品信息
+        if (lbean.isNewType()) {//新版订单不用查商品信息
             getCategory();
             updateUI();
         } else {
@@ -286,9 +286,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
                     receiveBean.setCount(linesBean.getActualSendNum());
-                    final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
-                    receiveBean.setTracking(basicBean.getTracking());
-                    if (basicBean.getTracking().equals("lot")) {
+                    receiveBean.setTracking(linesBean.getTracking());
+                    if (linesBean.getTracking().equals("lot")) {
                         List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
                         ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
                         lotBean.setLot_name("");

@@ -95,7 +95,7 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
         PageRequest request = null;
 //        request.setLimit(limit);
 //        request.setPz(page);
-        sendConnection("/gongfu/v2/product/list",request,where,showDialog,ProductData.class);
+        sendConnection("/gongfu/v3/product/list",request,where,showDialog,ProductData.class);
     }
 
     public List<ProductData.ListBean> handlerDataList(List<ProductData.ListBean> prodectList) {

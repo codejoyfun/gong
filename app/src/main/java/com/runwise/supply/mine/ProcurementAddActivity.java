@@ -101,7 +101,7 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
     @Override
     public void retryOnClick(View view) {
         Object param = null;
-        sendConnection("/gongfu/v2/product/list/", param, PRODUCT_GET, true, ProductData.class);
+        sendConnection("/gongfu/v3/product/list/", param, PRODUCT_GET, true, ProductData.class);
     }
 
     /**
@@ -165,7 +165,7 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         });
         loadingLayout.setOnRetryClickListener(this);
         Object param = null;
-        sendConnection("/gongfu/v2/product/list/", param, PRODUCT_GET, true, ProductData.class);
+        sendConnection("/gongfu/v3/product/list/", param, PRODUCT_GET, true, ProductData.class);
     }
 
     @OnClick({R.id.cancelBtn, R.id.tv_add})

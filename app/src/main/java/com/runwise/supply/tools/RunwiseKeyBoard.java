@@ -131,6 +131,8 @@ public class RunwiseKeyBoard extends Dialog {
         longClickProcess(mTvDot);
         longClickProcess(mTvZero);
         longClickProcess(mRlDelete);
+
+
     }
 
 
@@ -182,7 +184,6 @@ public class RunwiseKeyBoard extends Dialog {
 
     @OnClick({R.id.iv_close, R.id.rl_confirm})
     public void onViewClicked(View view) {
-
         switch (view.getId()) {
             case R.id.iv_close:
                 dismiss();
@@ -308,6 +309,10 @@ public class RunwiseKeyBoard extends Dialog {
                     input(addStr);
                     break;
                 case R.id.tv_dot:
+                    if(mEtCount.getText().toString().contains(".")){
+//                        已经有小数点了,不允许再输
+                        return;
+                    }
                     addStr = ".";
                     input(addStr);
                     break;
