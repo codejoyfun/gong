@@ -21,6 +21,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.DetailResult;
+import com.umeng.analytics.MobclickAgent;
 
 public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
@@ -120,7 +121,7 @@ public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingL
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
-        loadingLayout.onFailure("",R.drawable.no_network);
+        loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
 
     @OnClick(R.id.stepPayFinish)
@@ -161,5 +162,19 @@ public class SystemMsgDetailActivity extends NetWorkActivity implements LoadingL
             @ViewInject(R.id.msgContext)
             TextView msgContext;
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("系统消息页");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("系统消息页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

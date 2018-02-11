@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
@@ -17,22 +16,19 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.mine.entity.CheckOrderData;
-import com.runwise.supply.mine.entity.MsgEntity;
 import com.runwise.supply.mine.entity.MsgList;
 import com.runwise.supply.mine.entity.MsgResult;
-import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import static com.runwise.supply.tools.TimeUtils.getTimeStamps4;
 
@@ -203,5 +199,19 @@ public class AccountsListActivity extends NetWorkActivity implements AdapterView
             @ViewInject(R.id.money)
             TextView money;
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("对账单");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("对账单");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

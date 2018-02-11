@@ -29,7 +29,7 @@ public class OrderResponse {
     /**
      * 由于首页需要混合显示SO单和调拨单，所以接口的列表返回两种对象，这里继承TransferEntity用于获取调拨单
      */
-    public static class ListBean extends TransferEntity implements Parcelable{
+    public static class ListBean extends TransferEntity implements Parcelable, Serializable {
         /**
          * lines : [{"productUom":"条","priceUnit":8,"discount":0,"returnAmount":0,
          * "deliveredQty":5,"priceSubtotal":40,"productID":13,"tallyingAmount":0,
@@ -85,7 +85,7 @@ public class OrderResponse {
         private boolean unApplyService;
         private StoreBean store;
         //退货记录里加的字段，貌似收货人
-        private String  driver;
+        private String driver;
         private double settleAmountTotal;
         private WaybillBean waybill;
         private int hasAttachment;
@@ -109,6 +109,33 @@ public class OrderResponse {
         private boolean isAsyncOrder;
         private String orderUserIDs;
         private String receiveError;//是否收货失败
+        private boolean isActual;
+        private List<ProductAlteredBean> productAltered;
+        private boolean isActualSendOrder;
+
+        public List<ProductAlteredBean> getProductAltered() {
+            return productAltered;
+        }
+
+        public void setProductAltered(List<ProductAlteredBean> productAltered) {
+            this.productAltered = productAltered;
+        }
+
+
+        public boolean isActual() {
+            return isActual;
+        }
+
+        public void setIsActual(boolean actual) {
+            isActual = actual;
+        }
+        public boolean isActualSendOrder() {
+            return isActualSendOrder;
+        }
+
+        public void setIsActualSendOrder(boolean actualSendOrder) {
+            isActualSendOrder = actualSendOrder;
+        }
 
         public static final String TYPE_STANDARD = "standard";// 标准订单
         public static final String TYPE_VENDOR_DELIVERY = "vendor_delivery";// 直运订单
@@ -173,6 +200,9 @@ public class OrderResponse {
             isAsyncOrder = in.readByte() != 0;
             orderUserIDs = in.readString();
             receiveError = in.readString();
+            isActual = in.readByte() != 0;
+            productAltered = in.createTypedArrayList(ProductAlteredBean.CREATOR);
+            isActualSendOrder = in.readByte() != 0;
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -477,34 +507,37 @@ public class OrderResponse {
 
         /**
          * 是否是调拨单
+         *
          * @return
          */
-        public boolean isTransfer(){
-            return getPickingName()!=null&&getPickingName().trim().length()>0;
+        public boolean isTransfer() {
+            return getPickingName() != null && getPickingName().trim().length() > 0;
         }
 
         /**
          * 记录已经读过这条订单的用户
          */
         private List<String> readUsers;
-        private void initReadUsers(){
-            if(readUsers==null){
+
+        private void initReadUsers() {
+            if (readUsers == null) {
                 readUsers = new ArrayList<>();
-                if(orderUserIDs!=null)readUsers.addAll(Arrays.asList(orderUserIDs.split(",")));
+                if (orderUserIDs != null) readUsers.addAll(Arrays.asList(orderUserIDs.split(",")));
             }
         }
 
         /**
          * 判断用户是否已经读了这条订单
+         *
          * @param userId
          * @return
          */
-        public boolean isUserRead(String userId){
+        public boolean isUserRead(String userId) {
             initReadUsers();
             return readUsers.contains(userId);
         }
 
-        public void setUserRead(String userId){
+        public void setUserRead(String userId) {
             initReadUsers();
             readUsers.add(userId);
         }
@@ -540,7 +573,7 @@ public class OrderResponse {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest,flags);
+            super.writeToParcel(dest, flags);
             dest.writeDouble(amountTotal);
             dest.writeString(driver);
             dest.writeString(endUnloadDatetime);
@@ -557,7 +590,7 @@ public class OrderResponse {
             dest.writeByte((byte) (isDoubleReceive ? 1 : 0));
             dest.writeByte((byte) (unApplyService ? 1 : 0));
             dest.writeDouble(settleAmountTotal);
-            dest.writeParcelable(waybill,flags);
+            dest.writeParcelable(waybill, flags);
             dest.writeInt(hasAttachment);
             dest.writeByte((byte) (isFinishTallying ? 1 : 0));
             dest.writeString(createUserName);
@@ -575,11 +608,203 @@ public class OrderResponse {
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
             dest.writeStringList(returnOrders);
-            dest.writeByte((byte)(isNewType ? 1:0));
-            dest.writeByte((byte) (canAlter ? 1:0));
-            dest.writeByte((byte) (isAsyncOrder ? 1:0));
+            dest.writeByte((byte) (isNewType ? 1 : 0));
+            dest.writeByte((byte) (canAlter ? 1 : 0));
+            dest.writeByte((byte) (isAsyncOrder ? 1 : 0));
             dest.writeString(orderUserIDs);
             dest.writeString(receiveError);
+            dest.writeByte((byte) (isActual ? 1 : 0));
+            dest.writeTypedList(productAltered);
+            dest.writeByte((byte) (isActualSendOrder ? 1 : 0));
+        }
+
+
+
+        public static class ProductAlteredBean implements Parcelable {
+            String alterDate;
+            String alterUserName;
+            List<AlterProductBean> alterProducts;
+
+            public ProductAlteredBean() {
+
+            }
+
+            protected ProductAlteredBean(Parcel in) {
+                alterDate = in.readString();
+                alterUserName = in.readString();
+                alterProducts = in.createTypedArrayList(AlterProductBean.CREATOR);
+            }
+
+            public static final Creator<ProductAlteredBean> CREATOR = new Creator<ProductAlteredBean>() {
+                @Override
+                public ProductAlteredBean createFromParcel(Parcel in) {
+                    return new ProductAlteredBean(in);
+                }
+
+                @Override
+                public ProductAlteredBean[] newArray(int size) {
+                    return new ProductAlteredBean[size];
+                }
+            };
+
+            public String getAlterDate() {
+                return alterDate;
+            }
+
+            public void setAlterDate(String alterDate) {
+                this.alterDate = alterDate;
+            }
+
+            public String getAlterUserName() {
+                return alterUserName;
+            }
+
+            public void setAlterUserName(String alterUserName) {
+                this.alterUserName = alterUserName;
+            }
+
+            public List<AlterProductBean> getAlterProducts() {
+                return alterProducts;
+            }
+
+            public void setAlterProducts(List<AlterProductBean> alterProducts) {
+                this.alterProducts = alterProducts;
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeString(alterDate);
+                dest.writeString(alterUserName);
+                dest.writeTypedList(alterProducts);
+            }
+
+            public static class AlterProductBean implements Parcelable,Serializable {
+                String name;
+                String defaultCode;
+                String unit;
+                String uom;
+                double originNum;
+                double alterNum;
+                String imageMedium;
+                double price;
+
+                public AlterProductBean() {
+
+                }
+
+                protected AlterProductBean(Parcel in) {
+                    name = in.readString();
+                    defaultCode = in.readString();
+                    unit = in.readString();
+
+                    uom = in.readString();
+                    originNum = in.readDouble();
+                    alterNum = in.readDouble();
+
+                    imageMedium = in.readString();
+                    price = in.readDouble();
+                }
+
+                public static final Creator<AlterProductBean> CREATOR = new Creator<AlterProductBean>() {
+                    @Override
+                    public AlterProductBean createFromParcel(Parcel in) {
+                        return new AlterProductBean(in);
+                    }
+
+                    @Override
+                    public AlterProductBean[] newArray(int size) {
+                        return new AlterProductBean[size];
+                    }
+                };
+                public double getPrice() {
+                    return price;
+                }
+
+                public void setPrice(double price) {
+                    this.price = price;
+                }
+
+                public String getImageMedium() {
+                    return imageMedium;
+                }
+
+                public void setImageMedium(String imageMedium) {
+                    this.imageMedium = imageMedium;
+                }
+
+                public String getName() {
+                    return name;
+                }
+
+                public void setName(String name) {
+                    this.name = name;
+                }
+
+                public String getDefaultCode() {
+                    return defaultCode;
+                }
+
+                public void setDefaultCode(String defaultCode) {
+                    this.defaultCode = defaultCode;
+                }
+
+                public String getUnit() {
+                    return unit;
+                }
+
+                public void setUnit(String unit) {
+                    this.unit = unit;
+                }
+
+                public String getUom() {
+                    return uom;
+                }
+
+                public void setUom(String uom) {
+                    this.uom = uom;
+                }
+
+                public double getOriginNum() {
+                    return originNum;
+                }
+
+                public void setOriginNum(double originNum) {
+                    this.originNum = originNum;
+                }
+
+                public double getAlterNum() {
+                    return alterNum;
+                }
+
+                public void setAlterNum(double alterNum) {
+                    this.alterNum = alterNum;
+                }
+
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
+
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
+                    dest.writeString(name);
+                    dest.writeString(defaultCode);
+                    dest.writeString(unit);
+
+                    dest.writeString(uom);
+                    dest.writeDouble(originNum);
+                    dest.writeDouble(alterNum);
+
+                    dest.writeString(imageMedium);
+                    dest.writeDouble(price);
+                }
+            }
+
         }
 
         public static class StoreBean {
@@ -638,7 +863,7 @@ public class OrderResponse {
             }
         }
 
-        public static class WaybillBean implements Parcelable{
+        public static class WaybillBean implements Parcelable {
             /**
              * deliverUser : {"mobile":"15778177356","userID":30,"name":"李明","avatarUrl":"/gongfu/user/avatar/30/6691999026166866162.png"}
              * waybillID : 188
@@ -712,13 +937,13 @@ public class OrderResponse {
 
             @Override
             public void writeToParcel(Parcel dest, int flags) {
-                dest.writeParcelable(deliverUser,flags);
+                dest.writeParcelable(deliverUser, flags);
                 dest.writeString(waybillID);
                 dest.writeString(name);
-                dest.writeParcelable(deliverVehicle,flags);
+                dest.writeParcelable(deliverVehicle, flags);
             }
 
-            public static class DeliverUserBean implements Parcelable{
+            public static class DeliverUserBean implements Parcelable {
                 /**
                  * mobile : 15778177356
                  * userID : 30
@@ -799,7 +1024,7 @@ public class OrderResponse {
                 }
             }
 
-            public static class DeliverVehicleBean implements  Parcelable{
+            public static class DeliverVehicleBean implements Parcelable {
                 /**
                  * licensePlate : 沪A 0409D
                  * name : 江淮汽车/机型重卡/沪A 0409D
@@ -874,7 +1099,7 @@ public class OrderResponse {
          * 如果订单是isNewType,则包含详细的下单时保存的商品信息
          * 否则则需要按商品ID查当前的商品信息
          */
-        public static class LinesBean implements Parcelable,Serializable {
+        public static class LinesBean implements Parcelable, Serializable {
             /**
              * productUom : 条
              * priceUnit : 8.0
@@ -920,6 +1145,9 @@ public class OrderResponse {
             private String unit;
             private int unloadAmount;
             private String remark;//备注
+            private double actualSendNum;//实际发货数量
+            private String saleUom;//实际发货数量
+
 
             //自定义字段
             private boolean isChanged;
@@ -1152,6 +1380,21 @@ public class OrderResponse {
                 this.remark = remark;
             }
 
+            public double getActualSendNum() {
+                return actualSendNum;
+            }
+
+            public void setActualSendNum(double actualSendNum) {
+                this.actualSendNum = actualSendNum;
+            }
+            public String getSaleUom() {
+                return saleUom;
+            }
+
+            public void setSaleUom(String saleUom) {
+                this.saleUom = saleUom;
+            }
+
             public static class LotListBean implements Parcelable {
                 /**
                  * lotPk : 82242
@@ -1191,7 +1434,6 @@ public class OrderResponse {
                 public void setHeight(double height) {
                     this.height = height;
                 }
-
 
 
                 public String getLotPk() {
@@ -1293,18 +1535,20 @@ public class OrderResponse {
                 dest.writeTypedList(this.lotList);
                 dest.writeByte(this.isChanged ? (byte) 1 : (byte) 0);
 
-                dest.writeString(barcode);;
-                dest.writeString(defaultCode);;
-                dest.writeString(imageMedium);;
-                dest.writeByte((byte)(isTwoUnit?1:0));
-                dest.writeString(name);;
-                dest.writeDouble(productPrice);;
-                dest.writeDouble(productSettlePrice);;
-                dest.writeInt(settleUomId);;
+                dest.writeString(barcode);
+                dest.writeString(defaultCode);
+                dest.writeString(imageMedium);
+                dest.writeByte((byte) (isTwoUnit ? 1 : 0));
+                dest.writeString(name);
+                dest.writeDouble(productPrice);
+                dest.writeDouble(productSettlePrice);
+                dest.writeInt(settleUomId);
                 dest.writeString(tracking);
-                dest.writeString(unit);;
+                dest.writeString(unit);
                 dest.writeInt(unloadAmount);
                 dest.writeString(remark);
+                dest.writeDouble(actualSendNum);
+                dest.writeString(saleUom);
             }
 
             public LinesBean() {
@@ -1331,7 +1575,7 @@ public class OrderResponse {
                 this.barcode = in.readString();
                 defaultCode = in.readString();
                 imageMedium = in.readString();
-                isTwoUnit = in.readByte()!=0;
+                isTwoUnit = in.readByte() != 0;
                 name = in.readString();
                 productPrice = in.readDouble();
                 productSettlePrice = in.readDouble();
@@ -1340,6 +1584,8 @@ public class OrderResponse {
                 unit = in.readString();
                 unloadAmount = in.readInt();
                 remark = in.readString();
+                actualSendNum = in.readDouble();
+                saleUom = in.readString();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

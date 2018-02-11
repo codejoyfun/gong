@@ -23,27 +23,24 @@ import android.widget.TextView;
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
-import com.kids.commonframe.base.bean.OrderSuccessEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
-import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.view.SystemUpgradeLayout;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SMART;
 
 /**
  * 智能下单
@@ -73,6 +70,7 @@ public class SmartOrderActivity extends NetWorkActivity {
     private OptionsPickerView opv;
     private List<String> safeArr = new ArrayList<>();
     private int selectedIndex = 109;                              //最近一次所选,默认在+10上
+    private int mPlaceOrderType;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +78,7 @@ public class SmartOrderActivity extends NetWorkActivity {
         setContentView(R.layout.activity_smart_order);
         setTitleText(true,"智能下单");
         showBackBtn();
+        mPlaceOrderType = PLACE_ORDER_TYPE_SMART;
         for (int i = -99; i<=99; i++){
             String str = i < 0 ? String.valueOf(i) : ("+"+i);
             safeArr.add(str);
@@ -247,5 +246,19 @@ public class SmartOrderActivity extends NetWorkActivity {
         }
         opv.setSelectOptions(selectedIndex);
         opv.show(true);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("智能下单页面");
+        MobclickAgent.onResume(this);          //统计时长
+        SmartOrderTimestatisticsUtil.onResume();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("智能下单页面");
+        MobclickAgent.onPause(this);          //统计时长
+        SmartOrderTimestatisticsUtil.onPause(this);
     }
 }

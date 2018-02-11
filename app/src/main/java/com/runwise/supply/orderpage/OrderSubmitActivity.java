@@ -3,11 +3,9 @@ package com.runwise.supply.orderpage;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,7 +20,10 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.OrderSuccessEvent;
+import com.kids.commonframe.base.util.AlwaysOrderTimestatisticsUtil;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
+import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
@@ -36,7 +37,8 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.tools.UmengUtil;
+import com.runwise.supply.view.DateServiceDialog;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -48,9 +50,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
-import me.shaohui.bottomdialog.BottomDialog;
 
-import static java.lang.System.currentTimeMillis;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_DATE_OF_SERVICE;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_AGAIN;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_MODIFY;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_ALWAY;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_SELF;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_SMART;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_AGAIN;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_ALWAYS;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_MODIFY;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SELF;
+import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_SMART;
 
 /**
  * 下单页 以及 修改订单页，取决于有没有传订单对象
@@ -91,39 +102,30 @@ public class OrderSubmitActivity extends NetWorkActivity {
     RecyclerView mRvProductList;
 
     CustomProgressDialog mCustomProgressDialog;
-    //弹窗星期的View集合
-    private TextView[] wArr = new TextView[3];
-    private TextView[] dArr = new TextView[3];
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
     private int selectedDate;
-    private int selectedDateIndex;
     //缓存外部显示用的日期周几
     private String cachedDWStr;
     int mReserveGoodsAdvanceDate;
-    private Handler handler = new Handler();
     public static final String INTENT_KEY_ORDER = "intent_key_order";
     OrderResponse.ListBean mOrder;
 
     private ArrayList<ProductData.ListBean> mProductList;//选择的商品
     private TempOrderManager.TempOrder mTempOrder;//本地记录提交中的订单
     private boolean isSelfHelpOrder;//是否一般下单流程，是的话需要清空购物车缓存；再来一单、智能下单不需要清空购物车
+    protected int mPlaceOrderType;
+    public static final String  INTENT_KEY_PLACE_ORDER_TYPE = "intent_key_place_order_type";
 
-    private BottomDialog bDialog = BottomDialog.create(getSupportFragmentManager())
-            .setViewListener(new BottomDialog.ViewListener() {
-                @Override
-                public void bindView(View v) {
-                    initDefaultDate(v);
-                }
-            }).setLayoutRes(R.layout.date_layout)
-            .setCancelOutside(true)
-            .setDimAmount(0.5f);
-
+    private DateServiceDialog mCustomDatePickerDialog;
+    DateServiceDialog.DateServiceListener mPickerClickListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_sumbit);
         ButterKnife.bind(this);
+
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER);
+        mPlaceOrderType = getIntent().getIntExtra(INTENT_KEY_PLACE_ORDER_TYPE,-1);
         isSelfHelpOrder = getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP,false);
         if (mOrder != null) {
             mTvTitle.setText("修改订单");
@@ -134,8 +136,20 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
-        selectedDateIndex = 1;
         mTvDate.setText(cachedDWStr);
+
+        mCustomDatePickerDialog = new DateServiceDialog(this,mReserveGoodsAdvanceDate);
+        mPickerClickListener = new DateServiceDialog.DateServiceListener() {
+            @Override
+            public void onSelect(String ymd) {
+                selectedDate = (int) TimeUtils.dateDiff(TimeUtils.getCurrentDate(),ymd,"yyyy-MM-dd");
+                mTvDate.setText(ymd.substring(5) + " " + TimeUtils.getWeekStr(selectedDate));
+                mCustomDatePickerDialog.dismiss();
+            }
+        };
+        mCustomDatePickerDialog.setDateServiceListener(mPickerClickListener);
+        mCustomDatePickerDialog.setCurrentItem(selectedDate-1);
+
         OrderSubmitProductAdapter orderSubmitProductAdapter;
         orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
         mRvProductList.setAdapter(orderSubmitProductAdapter);
@@ -150,42 +164,22 @@ public class OrderSubmitActivity extends NetWorkActivity {
         return mProductList;
     }
 
-    private void setUpDate(int dayDiff) {
+    private void setUpDate() {
         //送达日期
-        long estimatedStamp = TimeUtils.getFormatTime(mOrder.getEstimatedTime());
-        //下单日期
-        long createTime = TimeUtils.stringToTimeStamp(mOrder.getCreateDate());
-        String estimatedTimeStr;
-        //最初下单的送达日期最小值
-        long minStamp = createTime + 1000 * 3600 * 24 * (dayDiff - 1);
-        if (TimeUtils.differentDaysByMillisecond(currentTimeMillis(), minStamp) > 0) {
-            mReserveGoodsAdvanceDate = 1;
-            estimatedTimeStr = TimeUtils.getMMdd(currentTimeMillis());
-            cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(0);
-            selectedDateIndex = 0;
-            selectedDate = mReserveGoodsAdvanceDate - 1;
-        } else {
-            mReserveGoodsAdvanceDate = TimeUtils.differentDaysByMillisecond(createTime + dayDiff * 1000 * 3600 * 24, currentTimeMillis());
-            if (estimatedStamp == createTime + dayDiff * 1000 * 3600 * 24) {
-                estimatedTimeStr = TimeUtils.getMMdd(createTime + dayDiff * 1000 * 3600 * 24);
-                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
-                selectedDateIndex = 1;
-                selectedDate = mReserveGoodsAdvanceDate;
-            } else if (estimatedStamp > createTime + dayDiff * 1000 * 3600 * 24) {
-                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
-                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1);
-                selectedDateIndex = 2;
-                selectedDate = mReserveGoodsAdvanceDate+1;
-            } else {
-                estimatedTimeStr = TimeUtils.getMMdd(estimatedStamp);
-                cachedDWStr = estimatedTimeStr + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1);
-                selectedDateIndex = 0;
-                selectedDate = mReserveGoodsAdvanceDate-1;
-            }
+        String estimatedStampStr = mOrder.getEstimatedTime().split(" ")[0];
+        int diff = (int) TimeUtils.dateDiff(TimeUtils.getCurrentDate(),estimatedStampStr,"yyyy-MM-dd");
+        if (diff < mReserveGoodsAdvanceDate-1){
+        //订单原有的送达日期已过期
+            cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
+            selectedDate = mReserveGoodsAdvanceDate;
+        }else{
+            cachedDWStr = TimeUtils.getABFormatDate(diff).substring(5) + " " + TimeUtils.getWeekStr(diff);
+            selectedDate = diff;
         }
+        mCustomDatePickerDialog.setTime(cachedDWStr.substring(0,5));
         mTvDate.setText(cachedDWStr);
-    }
 
+    }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -197,10 +191,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
-                selectedDateIndex = 1;
-                setSelectedColor(1);
                 if (mOrder != null) {
-                    setUpDate(mReserveGoodsAdvanceDate);
+                    setUpDate();
+                }else{
+                    mCustomDatePickerDialog.setCurrentItem(1);
                 }
                 break;
             case REQUEST_MODIFY:
@@ -220,6 +214,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 intent.putParcelableArrayListExtra(OrderCommitSuccessActivity.INTENT_KEY_ORDERS, list);
                 intent.putExtra(OrderCommitSuccessActivity.INTENT_KEY_TYPE, 0);
                 startActivity(intent);
+                SelfOrderTimeStatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
                 break;
             case REQUEST_SUBMIT://下单
             case REQUEST_DUPLICATE://确认的重复下单
@@ -229,6 +224,18 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 ActivityManager.getInstance().finishAll();//关闭所有的activity
                 intent = new Intent(this, MainActivity.class);//重新打开首页
                 startActivity(intent);
+
+                switch (mPlaceOrderType){
+                    case PLACE_ORDER_TYPE_ALWAYS:
+                        AlwaysOrderTimestatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
+                        break;
+                    case PLACE_ORDER_TYPE_SELF:
+                        SelfOrderTimeStatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
+                        break;
+                    case PLACE_ORDER_TYPE_SMART:
+                        SmartOrderTimestatisticsUtil.upload(getActivityContext(),JSON.toJSONString(request));
+                        break;
+                }
 
                 EventBus.getDefault().post(new OrderSuccessEvent());
                 mBtnSubmit.setBackgroundColor(Color.parseColor("#9ACC35"));
@@ -253,7 +260,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        UmengUtil.reportError("OrderSubmitActivity",errMsg);
         if (mCustomProgressDialog != null) {
             mCustomProgressDialog.dismiss();
         }
@@ -329,14 +335,29 @@ public class OrderSubmitActivity extends NetWorkActivity {
                 finish();
                 break;
             case R.id.rl_date_of_service:
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_DATE_OF_SERVICE);
                 //弹出日期选择控件
-                if (bDialog.isVisible()) {
-                    bDialog.dismiss();
-                } else {
-                    bDialog.show();
-                }
+                mCustomDatePickerDialog.show();
                 break;
             case R.id.btn_submit:
+                switch (mPlaceOrderType){
+                    case PLACE_ORDER_TYPE_ALWAYS:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT_ALWAY);
+                        break;
+                    case PLACE_ORDER_TYPE_SELF:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT_SELF);
+                        break;
+                    case PLACE_ORDER_TYPE_SMART:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_SUBMIT_SMART);
+                        break;
+                    case PLACE_ORDER_TYPE_AGAIN:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_AGAIN);
+                        break;
+                    case PLACE_ORDER_TYPE_MODIFY:
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_ORDER_MODIFY);
+                        break;
+                }
+
                 if (mOrder == null) {
                     submitOrder();//创建订单
                 } else {
@@ -441,111 +462,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         sendConnection(sb.toString(), request, REQUEST_MODIFY, true, BaseEntity.ResultBean.class);
     }
 
-    private void initDefaultDate(View v) {
-        RelativeLayout rll1 = (RelativeLayout) v.findViewById(R.id.rll1);
-        RelativeLayout rll2 = (RelativeLayout) v.findViewById(R.id.rll2);
-        RelativeLayout rll3 = (RelativeLayout) v.findViewById(R.id.rll3);
-        TextView wTv1 = (TextView) v.findViewById(R.id.wTv1);
-        TextView dTv1 = (TextView) v.findViewById(R.id.dTv1);
-        TextView wTv2 = (TextView) v.findViewById(R.id.wTv2);
-        TextView dTv2 = (TextView) v.findViewById(R.id.dTv2);
-        TextView wTv3 = (TextView) v.findViewById(R.id.wTv3);
-        TextView dTv3 = (TextView) v.findViewById(R.id.dTv3);
-        wArr[0] = wTv1;
-        wArr[1] = wTv2;
-        wArr[2] = wTv3;
-        dArr[0] = dTv1;
-        dArr[1] = dTv2;
-        dArr[2] = dTv3;
-        //选中哪个，通过selectedDate来判断
-        wArr[selectedDateIndex].setTextColor(Color.parseColor("#6BB400"));
-        dArr[selectedDateIndex].setTextColor(Color.parseColor("#6BB400"));
-        //计算当前日期起，明后天的星期几+号数
-        wTv1.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1));
-        String[] t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate - 1).split("-");
-        if (t.length > 2) {
-            dTv1.setText(t[1] + "-" + t[2]);
-        }
-        wTv2.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
-        t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).split("-");
-        if (t.length > 2) {
-            dTv2.setText(t[1] + "-" + t[2]);
-        }
-        wTv3.setText(TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1));
-        t = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate + 1).split("-");
-        if (t.length > 2) {
-            dTv3.setText(t[1] + "-" + t[2]);
-        }
-        //初始化点击事件
-        rll1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //清空颜色
-                setSelectedColor(0);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedDate = mReserveGoodsAdvanceDate - 1;
-                        selectedDateIndex = 0;
-                        bDialog.dismiss();
-                        mTvDate.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate - 1).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate - 1));
-                    }
-                }, 500);
-            }
-        });
-        rll2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //清空颜色
-                setSelectedColor(1);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedDate = mReserveGoodsAdvanceDate;
-                        selectedDateIndex = 1;
-                        bDialog.dismiss();
-                        mTvDate.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate));
-                    }
-                }, 500);
-            }
-        });
-        rll3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //清空颜色
-                setSelectedColor(2);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        selectedDate = mReserveGoodsAdvanceDate + 1;
-                        selectedDateIndex = 2;
-                        bDialog.dismiss();
-                        mTvDate.setText(TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate + 1).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate + 1));
-                    }
-                }, 500);
-            }
-        });
-    }
 
-    //参数从0开始
-    private void setSelectedColor(int i) {
-        for (TextView tv : wArr) {
-            if (tv != null) {
-                tv.setTextColor(Color.parseColor("#2E2E2E"));
-            }
-        }
-        for (TextView tv : dArr) {
-            if (tv != null) {
-                tv.setTextColor(Color.parseColor("#2E2E2E"));
-            }
-        }
-        if (wArr[i] != null) {
-            wArr[i].setTextColor(Color.parseColor("#6BB400"));
-        }
-        if (dArr[i] != null) {
-            dArr[i].setTextColor(Color.parseColor("#6BB400"));
-        }
-    }
 
     /**
      * 更新底部bar
@@ -565,5 +482,40 @@ public class OrderSubmitActivity extends NetWorkActivity {
             mTvTotalMoney.setVisibility(View.GONE);
         }
         mTvProductNum.setText("共" + NumberUtil.getIOrD(totalNum) + "件");
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("提交订单页");
+        MobclickAgent.onResume(this);          //统计时长
+        switch (mPlaceOrderType){
+            case PLACE_ORDER_TYPE_ALWAYS:
+                AlwaysOrderTimestatisticsUtil.onResume();
+                break;
+            case PLACE_ORDER_TYPE_SELF:
+                SelfOrderTimeStatisticsUtil.onResume();
+                break;
+            case PLACE_ORDER_TYPE_SMART:
+                SmartOrderTimestatisticsUtil.onResume();
+                break;
+        }
+
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("提交订单页");
+        MobclickAgent.onPause(this);          //统计时长
+        switch (mPlaceOrderType){
+            case PLACE_ORDER_TYPE_ALWAYS:
+                AlwaysOrderTimestatisticsUtil.onPause(getActivityContext());
+                break;
+            case PLACE_ORDER_TYPE_SELF:
+                SelfOrderTimeStatisticsUtil.onPause(getActivityContext());
+                break;
+            case PLACE_ORDER_TYPE_SMART:
+                SmartOrderTimestatisticsUtil.onPause(getActivityContext());
+                break;
+        }
     }
 }

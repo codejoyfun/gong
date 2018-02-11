@@ -26,6 +26,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.entity.MessageResult;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.umeng.analytics.MobclickAgent;
 
 
 /**
@@ -73,6 +74,8 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("消息详情页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 
     //维护两个fragment
@@ -215,5 +218,11 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
 
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("消息详情页");
+        MobclickAgent.onResume(this);          //统计时长
     }
 }

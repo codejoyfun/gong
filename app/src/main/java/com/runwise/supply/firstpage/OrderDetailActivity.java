@@ -21,18 +21,17 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.GlobalApplication;
@@ -59,6 +58,7 @@ import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.ProductTypePopup;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -77,7 +77,7 @@ import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
  * Created by libin on 2017/7/14.
  */
 
-public class OrderDetailActivity extends NetWorkActivity {
+public class OrderDetailActivity extends NetWorkActivity implements LoadingLayoutInterface {
     private static final int UPLOAD = 100;
     private static final int DETAIL = 1;          //网络请求
     private static final int CANCEL = 2;
@@ -89,7 +89,7 @@ public class OrderDetailActivity extends NetWorkActivity {
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();
-//    private OrderDtailAdapter adapter;
+    //    private OrderDtailAdapter adapter;
     @ViewInject(R.id.dateTv)
     private TextView dateTv;
     @ViewInject(R.id.orderStateTv)
@@ -110,6 +110,8 @@ public class OrderDetailActivity extends NetWorkActivity {
     private TextView uploadBtn;
     @ViewInject(R.id.receivtTv)
     private TextView receivtTv;
+    @ViewInject(R.id.tv_actual_delivery)
+    private TextView mTvActualDelivery;
     @ViewInject(R.id.returnTv)
     private TextView returnTv;
     @ViewInject(R.id.ygMoneyTv)
@@ -190,6 +192,7 @@ public class OrderDetailActivity extends NetWorkActivity {
         sb.append(orderId).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
+        loadingLayout.setOnRetryClickListener(this);
         dragLayout.setOverDrag(false);
         findViewById(R.id.top_view).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -394,7 +397,9 @@ public class OrderDetailActivity extends NetWorkActivity {
                             }
                         } else {
                             //mProductTypeWindow.dismiss();//
-                            mTypeWindow.dismiss();
+                            if (mTypeWindow != null){
+                                mTypeWindow.dismiss();
+                            }
                         }
                     }
 
@@ -503,6 +508,9 @@ public class OrderDetailActivity extends NetWorkActivity {
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         toast(errMsg);
+        if (DETAIL == where){
+            loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }
     }
 
     @Override
@@ -531,7 +539,8 @@ public class OrderDetailActivity extends NetWorkActivity {
         returnTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(InventoryCacheManager.getInstance(OrderDetailActivity.this).checkIsInventory(OrderDetailActivity.this))return;
+                if (InventoryCacheManager.getInstance(OrderDetailActivity.this).checkIsInventory(OrderDetailActivity.this))
+                    return;
                 //跳转到退换流程：如果超过7天,不支持退货
                 if (isMoreThanReturnData()) {
                     dialog.setMessage("已超过7天无理由退货时间\n如有其他问题请联系客服");
@@ -692,15 +701,22 @@ public class OrderDetailActivity extends NetWorkActivity {
                 returnTv.setVisibility(View.VISIBLE);
             }
             //实收判断
-            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && isShiShou()) {
+            if (bean.isActual()) {
                 receivtTv.setVisibility(View.VISIBLE);
                 countTv.setText((int) bean.getDeliveredQty() + "件");
             } else {
                 receivtTv.setVisibility(View.GONE);
                 countTv.setText((int) bean.getAmount() + "件");
             }
-            //商品数量/预估金额
-            DecimalFormat df = new DecimalFormat("#.##");
+            if (bean.isActualSendOrder()){
+                mTvActualDelivery.setVisibility(View.VISIBLE);
+            }else{
+                mTvActualDelivery.setVisibility(View.GONE);
+            }
+
+
+                //商品数量/预估金额
+                DecimalFormat df = new DecimalFormat("#.##");
             ygMoneyTv.setText("¥" + df.format(bean.getAmountTotal()));
 //            countTv.setText((int)bean.getAmount()+"件");
             //设置list
@@ -731,19 +747,6 @@ public class OrderDetailActivity extends NetWorkActivity {
         isModifyOrder = false;
     }
 
-    /**
-     * 是否实收
-     *
-     * @return
-     */
-    private boolean isShiShou() {
-        for (OrderResponse.ListBean.LinesBean linesBean : bean.getLines()) {
-            if (linesBean.getDeliveredQty() != linesBean.getProductUomQty()) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setBottom(View v) {
@@ -904,43 +907,7 @@ public class OrderDetailActivity extends NetWorkActivity {
                 DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()),
                 typeList, 0);
         mTypeWindow.setViewPager(viewpager);
-//        mProductTypeWindow = new PopupWindow(this);
-//        View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
-//        GridView gridView = (GridView) dialog.findViewById(R.id.gv);
-//        mProductTypeAdapter = new ProductTypeAdapter(typeList);
-//        gridView.setAdapter(mProductTypeAdapter);
-//        mProductTypeWindow = new PopupWindow(gridView, DensityUtil.getScreenW(getActivityContext()), DensityUtil.getScreenH(getActivityContext()) - (findViewById(R.id.title_bar).getHeight() + tablayout.getHeight()), true);
-//        mProductTypeWindow.setContentView(dialog);
-//        mProductTypeWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
-//        mProductTypeWindow.setBackgroundDrawable(new ColorDrawable(0x66000000));
-//        mProductTypeWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-//        mProductTypeWindow.setFocusable(false);
-//        mProductTypeWindow.setOutsideTouchable(false);
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                mProductTypeWindow.dismiss();
-//                viewpager.setCurrentItem(position);
-//                tablayout.getTabAt(position).select();
-//                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
-//                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
-//                }
-//                mProductTypeAdapter.selectList.set(position, new Boolean(true));
-//                mProductTypeAdapter.notifyDataSetChanged();
-//            }
-//        });
-//        dialog.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mProductTypeWindow.dismiss();
-//            }
-//        });
-        mTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                ivOpen.setImageResource(R.drawable.arrow);
-            }
-        });
+        mTypeWindow.setOnDismissListener(() -> ivOpen.setImageResource(R.drawable.arrow));
     }
 
     private void requestMissingInfo() {
@@ -972,5 +939,24 @@ public class OrderDetailActivity extends NetWorkActivity {
         sb.append(orderId).append("/");
         sendConnection(sb.toString(), request, DETAIL, false, OrderDetailResponse.class);
         loadingLayout.setStatusLoading();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("订单详情");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("订单详情");
+        MobclickAgent.onPause(this);          //统计时长
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+        refresh();
     }
 }

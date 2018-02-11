@@ -34,7 +34,6 @@ import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
 import com.runwise.supply.orderpage.ProductBasicUtils;
-import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.swipmenu.SwipeMenu;
 import com.runwise.supply.view.swipmenu.SwipeMenuCreator;
@@ -221,8 +220,8 @@ public class ReceiveFragment extends BaseFragment {
         @Override
         protected View getExView(final int position, View convertView, ViewGroup parent) {
             final ViewHolder viewHolder;
-            if(orderBean.isNewType()){//新版订单信息
-                return getNewTypeExView(position,convertView,parent);
+            if (orderBean.isNewType()) {//新版订单信息
+                return getNewTypeExView(position, convertView, parent);
             }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
@@ -264,11 +263,16 @@ public class ReceiveFragment extends BaseFragment {
                     FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
                 sb.append(" | ").append(basicBean.getUnit());
+                String uom = bean.getProductUom();
+                if (!TextUtils.isEmpty(bean.getSaleUom())){
+                    uom = bean.getSaleUom();
+                }
                 if (canSeePrice) {
-                    sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                    sb.append("\n").append(bean.getPriceUnit()).append("元/").append(uom);
                 }
                 viewHolder.content.setText(sb.toString());
-                viewHolder.countTv.setText("/" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getProductUom());
+                viewHolder.countTv.setText(" " + uom);
+                viewHolder.mTvPurchaseCount.setText("订" + NumberUtil.getIOrD(bean.getProductUomQty()) + uom);
 
                 if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                     convertView.setOnClickListener(new View.OnClickListener() {
@@ -411,7 +415,7 @@ public class ReceiveFragment extends BaseFragment {
             @ViewInject(R.id.settleLL)
             LinearLayout settleLL;
             @ViewInject(R.id.countLL)
-            LinearLayout countLL;
+            RelativeLayout countLL;
             @ViewInject(R.id.doBtn)
             TextView doBtn;
             @ViewInject(R.id.line)
@@ -420,6 +424,8 @@ public class ReceiveFragment extends BaseFragment {
             TextView settleTv;
             @ViewInject(R.id.weightTv)
             TextView weightTv;
+            @ViewInject(R.id.tv_purchase_count)
+            TextView mTvPurchaseCount;
         }
 
         /**
@@ -452,7 +458,7 @@ public class ReceiveFragment extends BaseFragment {
                     rb.setProductId(bean.getProductID());
                     if (isSettle) {
                         rb.setTwoUnit(true);
-                        rb.setUnit(""+bean.getSettleUomId());
+                        rb.setUnit("" + bean.getSettleUomId());
                     } else {
                         rb.setTwoUnit(false);
                     }
@@ -465,11 +471,18 @@ public class ReceiveFragment extends BaseFragment {
             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + bean.getImageMedium());
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());
             sb.append(" | ").append(bean.getUnit());
+            String uom = bean.getProductUom();
+            if (!TextUtils.isEmpty(bean.getSaleUom())){
+                uom = bean.getSaleUom();
+            }
+
             if (canSeePrice) {
-                sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
+                sb.append("\n").append(bean.getPriceUnit()).append("元/").append(uom);
             }
             viewHolder.content.setText(sb.toString());
-            viewHolder.countTv.setText("/" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getProductUom());
+            viewHolder.countTv.setText(" " + uom);
+            viewHolder.mTvPurchaseCount.setText("订" + NumberUtil.getIOrD(bean.getProductUomQty()) + uom);
+
 
             if (orderBean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                 convertView.setOnClickListener(new View.OnClickListener() {
@@ -504,6 +517,15 @@ public class ReceiveFragment extends BaseFragment {
                     ReceiveBean rb = countMap.get(String.valueOf(bean.getProductID()));
 //                        if (rb.getCount() != 0){
                     viewHolder.receivedTv.setText(NumberUtil.getIOrD(rb.getCount()));
+                    if (!rb.isChange()) {
+                        if (bean.getActualSendNum() != bean.getProductUomQty()) {
+                            viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_count));
+                        }else{
+                            viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_input_count));
+                        }
+                    }else{
+                        viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_input_count));
+                    }
 //                        }
 //                        viewHolder.weightTv.setText(rb.getTwoUnitValue() + rb.getUnit());
                 } else {
@@ -512,6 +534,7 @@ public class ReceiveFragment extends BaseFragment {
 //                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
                 }
             }
+
 
             String str = viewHolder.receivedTv.getText().toString();
             if (!TextUtils.isEmpty(str)) {
@@ -545,7 +568,7 @@ public class ReceiveFragment extends BaseFragment {
                         weightStr.append("0" + bean.getSettleUomId());
                     }
                 }
-                receiveStr.append(" /" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getProductUom());
+                receiveStr.append(" /" + NumberUtil.getIOrD(bean.getProductUomQty()) + uom);
                 SpannableString builder = new SpannableString(receiveStr.toString());
                 int end = receiveStr.indexOf(" ");
                 builder.setSpan(new AbsoluteSizeSpan(16, true), 0, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -573,7 +596,7 @@ public class ReceiveFragment extends BaseFragment {
             rb.setTracking(bean.getTracking());
 //                        rb.setCount((int)bean.getProductUomQty());
             rb.setCount(count);
-            rb.setProductUomQty( bean.getProductUomQty());
+            rb.setProductUomQty(bean.getProductUomQty());
             rb.setProductId(bean.getProductID());
             rb.setDefaultCode(bean.getDefaultCode());
             rb.setUnit(bean.getUnit());

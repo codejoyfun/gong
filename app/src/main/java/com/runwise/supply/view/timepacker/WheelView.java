@@ -54,13 +54,13 @@ import java.util.List;
 public class WheelView extends View {
 	private static float mScale = 1;
 	/** Scrolling duration */
-	private static final int SCROLLING_DURATION = 200;
+	private static final int SCROLLING_DURATION = 100;
 
 	/** Minimum delta for scrolling */
 	private static final int MIN_DELTA_FOR_SCROLLING = 2;
 
 	/** Current value & label text color */
-	private static final int VALUE_TEXT_COLOR = Color.parseColor("#333333");
+	private static final int VALUE_TEXT_COLOR = Color.parseColor("#4BB400");
 
 	/** Items text color */
 	private static final int ITEMS_TEXT_COLOR = Color.parseColor("#d9d9d9");
@@ -70,10 +70,10 @@ public class WheelView extends View {
 			0x00AAAAAA, 0x00AAAAAA };
 
 	/** Additional items height (is added to standard text item height) */
-	private static final int ADDITIONAL_ITEM_HEIGHT = 18;
+	private static final int ADDITIONAL_ITEM_HEIGHT = 38;
 
 	/** Text size */
-	public int TEXT_SIZE = 18;
+	public int TEXT_SIZE = 16;
 
 	/** Top and bottom items offset (to hide that) */
 	private final int ITEM_OFFSET = TEXT_SIZE / 5;
@@ -428,7 +428,7 @@ public class WheelView extends View {
 //					| Paint.FAKE_BOLD_TEXT_FLAG
 					| Paint.DITHER_FLAG);
 			// valuePaint.density = getResources().getDisplayMetrics().density;
-			valuePaint.setTextSize(TEXT_SIZE);
+			valuePaint.setTextSize((float) (TEXT_SIZE+5));
 			valuePaint.setShadowLayer(0.1f, 0, 0.1f, 0xFFC0C0C0);
 		}
 

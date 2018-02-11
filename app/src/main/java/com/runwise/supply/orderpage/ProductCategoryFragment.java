@@ -3,7 +3,6 @@ package com.runwise.supply.orderpage;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +19,6 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CategoryChildListRequest;
 import com.runwise.supply.orderpage.entity.CategoryChildResponse;
-import com.runwise.supply.orderpage.entity.CategoryResponseV2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +145,13 @@ public class ProductCategoryFragment extends NetWorkFragment {
         }
     }
 
+    public void refresh(){
+        Fragment newFragment = getChildFragmentManager().findFragmentByTag(mCurrentSubCategory);
+        if(newFragment!=null){
+            ((ProductListFragmentV2)newFragment).refresh(false);
+        }
+    }
+
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         mLoadingLayout.setOnRetryClickListener(v->{
@@ -164,9 +169,11 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public void onSelected() {
 //        if(!isAdded() || isLoaded)return;
 //        isLoaded = true;
-        mLoadingLayout.setStatusLoading();
-        //查询二级分类
-        requestChildCategory();
+        if(mLoadingLayout != null){
+            mLoadingLayout.setStatusLoading();
+            //查询二级分类
+            requestChildCategory();
+        }
     }
 
     public void requestChildCategory(){

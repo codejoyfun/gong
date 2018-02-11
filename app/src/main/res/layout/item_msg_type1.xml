@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:textColor="#989898"
-                    android:text="efw"
+                    android:text="未知时间"
                     android:layout_marginTop="2dp"
                     />
             </LinearLayout>

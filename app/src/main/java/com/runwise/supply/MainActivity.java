@@ -23,6 +23,7 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
@@ -31,10 +32,9 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.entity.GuideResponse;
 import com.runwise.supply.entity.RemUser;
-import com.runwise.supply.entity.UpdateTimeRequest;
 import com.runwise.supply.entity.UnReadData;
+import com.runwise.supply.entity.UpdateTimeRequest;
 import com.runwise.supply.entity.UpdateTimeResponse;
 import com.runwise.supply.event.PlatformNotificationEvent;
 import com.runwise.supply.firstpage.UnLoginedFirstFragment;
@@ -42,7 +42,6 @@ import com.runwise.supply.firstpage.entity.VersionRequest;
 import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.mine.MineFragment;
-import com.runwise.supply.orderpage.OrderFragment;
 import com.runwise.supply.orderpage.OrderFragmentV2;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
@@ -52,6 +51,7 @@ import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.PlatformNotificationManager;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -61,7 +61,6 @@ import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.Log;
-import io.vov.vitamio.utils.NumberUtil;
 
 //import com.socketmobile.capture.Capture;
 //import com.socketmobile.capture.client.CaptureClient;
@@ -84,7 +83,7 @@ public class MainActivity extends NetWorkActivity {
     @ViewInject(android.R.id.tabhost)
     private FragmentTabHost mTabHost;
     //未读小红点
-    private TextView mMsgHite;
+//    private TextView mMsgHite;
     //    private UserInfo userInfo;
     private boolean isLogin;
     public static final String INTENT_KEY_SKIP_TO_LOGIN = "intent_key_skip_to_login";
@@ -92,6 +91,8 @@ public class MainActivity extends NetWorkActivity {
     long mTimeStartQUERY_ALL;
 
     long mTimeStartREQUEST_UNREAD;
+
+    DbUtils mDbUtils;
 
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements Runnable {
@@ -103,25 +104,17 @@ public class MainActivity extends NetWorkActivity {
 
         @Override
         public void run() {
-            DbUtils dbUtils = MyDbUtil.create(MainActivity.this);
+            mDbUtils = MyDbUtil.create(MainActivity.this);
             ProductBasicUtils.setBasicArr(basicList);
-//            Log.d("haha","total from network:"+basicList.size());
             HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
-            dbUtils.configAllowTransaction(true);
+            mDbUtils.configAllowTransaction(true);
             try{
-                dbUtils.saveOrUpdateAll(basicList);
-            }catch(DbException e){
-                e.printStackTrace();
-            }
-
-            for (ProductBasicList.ListBean bean : basicList) {
-                map.put(String.valueOf(bean.getProductID()), bean);
-            }
-
-            try{
-                //把数据库中原有的数据也提取出来，可能包括协议已删除的商品
-                dbUtils = MyDbUtil.create(MainActivity.this);
-                List<ProductBasicList.ListBean> list = dbUtils.findAll(ProductBasicList.ListBean.class);
+                mDbUtils.saveOrUpdateAll(basicList);
+                for (ProductBasicList.ListBean bean : basicList) {
+                    map.put(String.valueOf(bean.getProductID()), bean);
+                }
+//                dbUtils = MyDbUtil.create(MainActivity.this);
+                List<ProductBasicList.ListBean> list = mDbUtils.findAll(ProductBasicList.ListBean.class);
 //                Log.d("haha","total in db:"+list.size());
                 for(ProductBasicList.ListBean bean:list){
                     String keyId = bean.getProductID()+"";
@@ -132,10 +125,11 @@ public class MainActivity extends NetWorkActivity {
                         map.put(keyId,bean);
                     }
                 }
-            }catch (DbException e){
+                ProductBasicUtils.setBasicMap(map);
+            }catch(DbException e){
                 e.printStackTrace();
             }
-            ProductBasicUtils.setBasicMap(map);
+
 
         }
     }
@@ -207,6 +201,7 @@ public class MainActivity extends NetWorkActivity {
 
     private void logout(){
         SPUtils.loginOut(mContext);
+        SelfOrderTimeStatisticsUtil.clear();
         MessageFragment.isLogin = false;
         GlobalApplication.getInstance().cleanUesrInfo();
         JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
@@ -246,7 +241,7 @@ public class MainActivity extends NetWorkActivity {
 //            mTabHost.addTab(createTabSpace(R.drawable.tab_1_selector, R.string.tab_1), LoginedFirstFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_2_selector, R.string.tab_2), OrderFragmentV2.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_3_selector, R.string.tab_3), MainRepertoryFragment.class, null);
-        mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
+//        mTabHost.addTab(createTabSpace(R.drawable.tab_4_selector, R.string.tab_4), MessageFragment.class, null);
         mTabHost.addTab(createTabSpace(R.drawable.tab_5_selector, R.string.tab_5), MineFragment.class, null);
 //        }
 //        else{
@@ -284,7 +279,7 @@ public class MainActivity extends NetWorkActivity {
             ImageView tabIv = (ImageView) subTabView.findViewById(R.id.tab_iv_icon);
             TextView tabTv = (TextView) subTabView.findViewById(R.id.tab_tv_name);
             if (R.string.tab_4 == tabNameRes) {
-                mMsgHite = (TextView) subTabView.findViewById(R.id.tv_hint);
+//                mMsgHite = (TextView) subTabView.findViewById(R.id.tv_hint);
             }
             tabIv.setImageResource(bgRes);
             tabTv.setText(getString(tabNameRes));
@@ -307,9 +302,9 @@ public class MainActivity extends NetWorkActivity {
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
                 DetailResult.ListBean bean = PlatformNotificationManager.getInstance(this).getLastMessage();
                 if (unReadData.getUnread() || (bean!=null && !bean.isSeen())) {
-                    mMsgHite.setVisibility(View.VISIBLE);
+//                    mMsgHite.setVisibility(View.VISIBLE);
                 } else {
-                    mMsgHite.setVisibility(View.GONE);
+//                    mMsgHite.setVisibility(View.GONE);
                 }
 //                LogUtils.e("onSuccessTime REQUEST_UNREAD "+String.valueOf(System.currentTimeMillis() - mTimeStartREQUEST_UNREAD));
                 break;
@@ -342,6 +337,7 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
 //        if (SPUtils.isLogin(mContext)){
 //            queryProductList();
@@ -373,6 +369,12 @@ public class MainActivity extends NetWorkActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
     }
@@ -385,6 +387,9 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+//        if (mDbUtils != null){
+//            mDbUtils.close();
+//        }
     }
 
     @Override
@@ -413,7 +418,7 @@ public class MainActivity extends NetWorkActivity {
 
     @Subscribe
     public void refresh(PlatformNotificationEvent event){
-        mMsgHite.setVisibility(View.VISIBLE);
+//        mMsgHite.setVisibility(View.VISIBLE);
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN)
@@ -475,7 +480,7 @@ public class MainActivity extends NetWorkActivity {
 
     private void queryProductList() {
         Object request = null;
-        sendConnection("/gongfu/v2/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
+        sendConnection("/gongfu/v3/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
         mTimeStartQUERY_ALL = System.currentTimeMillis();
     }
 

@@ -25,13 +25,11 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.config.Constant;
 import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.ViewUtils;
-import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -41,8 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
-
-import static com.kids.commonframe.base.util.net.NetWorkHelper.setRequestTimestamp;
 
 
 /**
@@ -225,7 +221,6 @@ public abstract class BaseActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
         isResume = false;
-        MobclickAgent.onPause(this);
         JPushInterface.onPause(this);
     }
 
@@ -239,11 +234,8 @@ public abstract class BaseActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         LogUtil.e("login", "onResume----" + BaseActivity.this.getClass().getSimpleName());
-        //友盟数据统计
-        MobclickAgent.onResume(this);
         JPushInterface.onResume(this);
         //jpush推送统计
-        //		JPushInterface.onResume(this);
         if (logout) {
             onUserLoginout();
             logout = false;

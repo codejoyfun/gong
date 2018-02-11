@@ -154,8 +154,6 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:layout_below="@id/tv_product_list"/>
-
-
     </RelativeLayout>
 
 

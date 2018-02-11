@@ -9,11 +9,14 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseEntity;
+import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.ProductData;
+
+import java.util.ArrayList;
 
 /**
  * 智能下单，继承自手动下单
@@ -55,6 +58,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
         setTitleText(true,"智能下单");
         ViewUtils.inject(this);
         initLoadingImgs();
+        mPlaceOrderType = PLACE_ORDER_TYPE_SMART;
     }
 
     /**
@@ -99,6 +103,7 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                 initSelectAll();
                 updateBottomBar();
                 showCart(true);
+                mFirstGetShopCartCache = false;
                 break;
         }
     }
@@ -114,7 +119,8 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                 mRlBottomBar.setVisibility(View.VISIBLE);
                 requestCategory();
                 updateBottomBar();
-                Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
+//                Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
+                mFirstGetShopCartCache = false;
                 break;
         }
     }
@@ -123,8 +129,19 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
      * 智能下单不需要缓存
      */
     @Override
-    protected void saveCache() {}
-
+    protected void saveCache() {
+        checkValid(getSelectProductList());
+    }
+    private ArrayList<ProductData.ListBean> getSelectProductList(){
+        ArrayList<ProductData.ListBean> list = new ArrayList<>();
+        for(ProductData.ListBean bean:mMapCount.keySet()){
+            if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
+            bean.setActualQty(mMapCount.get(bean));
+            bean.setRemark(mMapRemarks.get(bean));
+            list.add(bean);
+        }
+        return list;
+    }
     /**
      * 智能下单不需要缓存
      */
@@ -150,5 +167,19 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacks(runnable);
+    }
+    @Override
+    protected String getPageName() {
+        return "智能下单页面";
+    }
+
+    @Override
+    protected void statisticsOrderTimeOnResume() {
+        SmartOrderTimestatisticsUtil.onResume();
+    }
+
+    @Override
+    protected void statisticsOrderTimeOnPause() {
+        SmartOrderTimestatisticsUtil.onPause(getActivityContext());
     }
 }

@@ -8,13 +8,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.ProductData;
-import com.runwise.supply.tools.UserUtils;
 
 import java.util.List;
 
@@ -50,7 +48,7 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         }
         holder.mTvProductCount.setText(NumberUtil.getIOrD(listBean.getActualQty()));
         holder.mTvProductName.setText(listBean.getName());
-        holder.mTvProductUnit.setText(listBean.getProductUom());
+        holder.mTvProductUnit.setText(listBean.getUom());
         holder.mTvRemark.setText(listBean.getRemark()==null?"":"备注："+listBean.getRemark());
         StringBuilder sb = new StringBuilder();
         if(canSeePrice)sb.append("¥").append(NumberUtil.getIOrD(listBean.getPrice())).append("/").append(listBean.getProductUom()).append(" | ");

@@ -80,6 +80,17 @@ public class CheckDetailActivity extends NetWorkActivity {
     private List<String> titleList = new ArrayList<>();
     private List<Fragment> fragmentList = new ArrayList<>();
     CategoryRespone categoryRespone;
+    CheckResult mCheckResult;
+
+    public static final String INTENT_KEY_ID = "intent_key_id";
+    String mId;
+    public static final int REQUEST_CHECK_DETAIL = 1 << 0;
+
+    public static final int MAX_SYNC_COUNT = 2;
+    int mSyncCount = 0;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,42 +107,12 @@ public class CheckDetailActivity extends NetWorkActivity {
         this.setTitleText(true, "盘点记录详情");
         this.setTitleLeftIcon(true, R.drawable.back_btn);
 
-        bean = (CheckResult.ListBean) this.getIntent().getSerializableExtra("bean");
-        for (PandianResult.InventoryBean.LinesBean lines : bean.getLines()) {
-            ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(lines.getProductID()));
-            if (product == null) {
-                product = new ProductBasicList.ListBean();
-                product.setStockType("gege");
-            }
-            lines.setProduct(product);
-        }
+        mId = getIntent().getStringExtra(INTENT_KEY_ID);
+        Object request = null;
+        sendConnection("/api/inventory/line/"+mId,request,REQUEST_CHECK_DETAIL,true,CheckResult.class);
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-
-
-        text1.setText("盘点人员：" + bean.getCreateUser());
-        text2.setText("盘点单号：" + bean.getName());
-        text3.setText("盘点日期：" + TimeUtils.getTimeStamps3(bean.getCreateDate()));
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
-            text5.setText("¥" + bean.getValue() + "");
-            if (bean.getValue() >= 0) {
-                text5.setTextColor(Color.parseColor("#9cb62e"));
-            } else {
-                text5.setTextColor(Color.parseColor("#e75967"));
-            }
-        } else {
-            text5.setText(NumberUtil.getIOrD(bean.getNum()));
-            if (bean.getNum() >= 0) {
-                text5.setTextColor(Color.parseColor("#9cb62e"));
-            } else {
-                text5.setTextColor(Color.parseColor("#e75967"));
-            }
-        }
-        if ("confirm".equals(bean.getState())) {
-            text5.setTextColor(Color.parseColor("#999999"));
-            text5.setText("--");
-        }
         dragLayout.setOverDrag(false);
     }
 
@@ -310,13 +291,60 @@ public class CheckDetailActivity extends NetWorkActivity {
         finish();
     }
 
+    public void setUpData(){
+        mSyncCount++;
+        if (mSyncCount == MAX_SYNC_COUNT){
+            setUpDetail();
+            setUpDataForViewPage();
+        }
+    }
+
+    public void setUpDetail(){
+        bean = mCheckResult.getList().get(0);
+        for (PandianResult.InventoryBean.LinesBean lines : bean.getLines()) {
+            ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(lines.getProductID()));
+            if (product == null) {
+                product = new ProductBasicList.ListBean();
+                product.setStockType("gege");
+            }
+            lines.setProduct(product);
+        }
+        text1.setText("盘点人员：" + bean.getCreateUser());
+        text2.setText("盘点单号：" + bean.getName());
+        text3.setText("盘点日期：" + TimeUtils.getTimeStamps3(bean.getCreateDate()));
+        if (GlobalApplication.getInstance().getCanSeePrice()) {
+            text5.setText("¥" + NumberUtil.getIOrD(bean.getValue()) + "");
+            if (bean.getValue() >= 0) {
+                text5.setTextColor(Color.parseColor("#9cb62e"));
+            } else {
+                text5.setTextColor(Color.parseColor("#e75967"));
+            }
+        } else {
+            text5.setText(NumberUtil.getIOrD(bean.getNum()));
+            if (bean.getNum() >= 0) {
+                text5.setTextColor(Color.parseColor("#9cb62e"));
+            } else {
+                text5.setTextColor(Color.parseColor("#e75967"));
+            }
+        }
+        if ("confirm".equals(bean.getState())) {
+            text5.setTextColor(Color.parseColor("#999999"));
+            text5.setText("--");
+        }
+    }
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case CATEGORY:
+                BaseEntity.ResultBean resultBean = result.getResult();
+                categoryRespone = (CategoryRespone) resultBean.getData();
+                setUpData();
+                break;
+            case REQUEST_CHECK_DETAIL:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
-                categoryRespone = (CategoryRespone) resultBean1.getData();
-                setUpDataForViewPage();
+                mCheckResult = (CheckResult) resultBean1.getData();
+                setUpData();
                 break;
         }
     }

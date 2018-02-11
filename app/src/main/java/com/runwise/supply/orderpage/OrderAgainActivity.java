@@ -3,11 +3,13 @@ package com.runwise.supply.orderpage;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class OrderAgainActivity extends ProductActivityV2 {
         initSelectAll();
         super.onCreate(savedInstanceState);
         showCart(true);
+        mPlaceOrderType = PLACE_ORDER_TYPE_AGAIN;
     }
 
     /**
@@ -76,8 +79,20 @@ public class OrderAgainActivity extends ProductActivityV2 {
 
     public static void start(Activity activity, OrderResponse.ListBean order){
         Intent intent = new Intent(activity,OrderAgainActivity.class);
-        intent.putExtra(INTENT_KEY_ORDER_AGAIN,order);
+        intent.putExtra(INTENT_KEY_ORDER_AGAIN, (Parcelable) order);
         activity.startActivity(intent);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("再来一单页面");
+        MobclickAgent.onResume(this);          //统计时长
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("再来一单页面");
+        MobclickAgent.onPause(this);          //统计时长
+    }
 }

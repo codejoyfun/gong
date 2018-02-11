@@ -2,15 +2,14 @@ package com.runwise.supply.firstpage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.OrderSubmitActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
-import com.runwise.supply.orderpage.ProductBasicUtils;
-import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ImageBean;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +28,11 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPlaceOrderType = PLACE_ORDER_TYPE_MODIFY;
         bean = getIntent().getExtras().getParcelable("order");
         //初始化商品数据
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
+        List<ProductData.ListBean> listBeans = new ArrayList<>();
         for (OrderResponse.ListBean.LinesBean lb : list) {
             ProductData.ListBean listBean = new ProductData.ListBean();
 //            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(lb.getProductID());
@@ -59,6 +60,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
             listBean.setRemark(lb.getRemark());
+            listBeans.add(listBean);
             mMapCount.put(listBean,lb.getProductUomQty());
             mMapRemarks.put(listBean,lb.getRemark());
         }
@@ -66,11 +68,13 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         super.onCreate(savedInstanceState);
         showCart(true);
         mTvOrderCommit.setText("确认修改");
+        checkValid(listBeans);
     }
 
     @Override
     protected void getCache() {
         //不需要获取缓存
+        checkValid(getSelectProductList());
     }
 
     @Override
@@ -78,10 +82,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         //不需要保存
     }
 
-    @Override
-    protected void onOkClicked() {
-
-        Intent intent = new Intent(this,OrderSubmitActivity.class);
+    private ArrayList<ProductData.ListBean> getSelectProductList(){
         ArrayList<ProductData.ListBean> list = new ArrayList<>();
         for(ProductData.ListBean bean:mMapCount.keySet()){
             if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
@@ -89,8 +90,29 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             bean.setRemark(mMapRemarks.get(bean));
             list.add(bean);
         }
+        return list;
+    }
+
+    @Override
+    protected void onOkClicked() {
+        Intent intent = new Intent(this,OrderSubmitActivity.class);
+        ArrayList<ProductData.ListBean> list = getSelectProductList();
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
-        intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER,bean);
+        intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER, (Parcelable) bean);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("订单修改页");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("订单修改页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

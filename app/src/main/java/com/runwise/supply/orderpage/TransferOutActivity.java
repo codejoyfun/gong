@@ -21,8 +21,10 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.config.Constant;
+import com.kids.commonframe.base.view.LoadingLayout;
+import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.TransferOutBatchAdapter;
@@ -33,6 +35,7 @@ import com.runwise.supply.orderpage.entity.TransferOutRequest;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.MaxHeightListView;
 import com.runwise.supply.view.NoWatchEditText;
+import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -50,7 +53,7 @@ import io.vov.vitamio.utils.NumberUtil;
 import static com.runwise.supply.R.id.tv_submit;
 
 
-public class TransferOutActivity extends NetWorkActivity {
+public class TransferOutActivity extends NetWorkActivity implements LoadingLayoutInterface {
 
     private static final int REQUEST_DETAIL = 1 << 0;
     private static final int REQUEST_TRANSFEROUT = 1 << 1;
@@ -72,6 +75,8 @@ public class TransferOutActivity extends NetWorkActivity {
     ListView mLvProduct;
     @BindView(tv_submit)
     TextView mTvSubmit;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout mLoadingLayout;
 
     public static final String INTENT_KEY_TRANSFER_ENTITY = "intent_key_transfer_entity";
     TransferEntity mTransferEntity;
@@ -155,6 +160,7 @@ public class TransferOutActivity extends NetWorkActivity {
         switch (where) {
             case REQUEST_DETAIL:
                 mTransferOutDetailResponse = (TransferOutDetailResponse) result.getResult().getData();
+                mLoadingLayout.onSuccess(1, "哎呀！这里是空哒~~",R.drawable.default_ico_none);
 //                simulationData();
                 processData();
                 setUpData();
@@ -195,8 +201,11 @@ public class TransferOutActivity extends NetWorkActivity {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-//        simulationData();
-//        setUpData();
+        if (where == REQUEST_DETAIL && errMsg.equals(getResources().getString(R.string.network_error))){
+            mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }else{
+            toast(errMsg);
+        }
     }
 
     public static Intent getStartIntent(Context context, TransferEntity transferEntity) {
@@ -467,6 +476,11 @@ public class TransferOutActivity extends NetWorkActivity {
         getWindow().setAttributes(lp);
     }
 
+    @Override
+    public void retryOnClick(View view) {
+        requestData();
+    }
+
     public class ProductAdapter extends IBaseAdapter {
 
         @Override
@@ -541,5 +555,19 @@ public class TransferOutActivity extends NetWorkActivity {
                 ButterKnife.bind(this, view);
             }
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("出库页");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("出库页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

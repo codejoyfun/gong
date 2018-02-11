@@ -1,6 +1,5 @@
 package com.runwise.supply.firstpage;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,9 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,11 +33,11 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.bean.ReceiveProEvent;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
-import com.kids.commonframe.config.Constant;
+import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -65,37 +61,27 @@ import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.ProductBasicHelper;
+import com.runwise.supply.tools.RunwiseKeyBoard;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.NoScrollViewPager;
 import com.runwise.supply.view.NoWatchEditText;
 import com.runwise.supply.view.ProductTypePopup;
-import com.socketmobile.capture.Capture;
-//import com.socketmobile.capture.client.CaptureClient;
-//import com.socketmobile.capture.client.CaptureDeviceClient;
-import com.socketmobile.capture.events.DataDecodedEvent;
-import com.socketmobile.capture.events.DeviceAvailabilityEvent;
-//import com.socketmobile.capture.events.DataDecodedEvent;
-//import com.socketmobile.capture.events.DeviceAvailabilityEvent;
-//import com.socketmobile.capture.types.DecodedData;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.vov.vitamio.utils.Log;
 import io.vov.vitamio.utils.NumberUtil;
 
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_RECEIVE_FINISH;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_ENTITIES;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
@@ -103,11 +89,17 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 import static com.runwise.supply.orderpage.entity.ReceiveInfo.SEPARATOR;
 
+//import com.socketmobile.capture.client.CaptureClient;
+//import com.socketmobile.capture.client.CaptureDeviceClient;
+//import com.socketmobile.capture.events.DataDecodedEvent;
+//import com.socketmobile.capture.events.DeviceAvailabilityEvent;
+//import com.socketmobile.capture.types.DecodedData;
+
 /**
  * Created by libin on 2017/7/16.
  */
 
-public class ReceiveActivity extends NetWorkActivity implements DoActionCallback/*, CaptureClient.Listener*/ {
+public class ReceiveActivity extends NetWorkActivity implements DoActionCallback,LoadingLayoutInterface/*, CaptureClient.Listener*/ {
     private static final int RECEIVE = 100;           //收货
     private static final int TALLYING = 200;          //点货
     private static final int DONE_TALLY = 300;          //第二个人完成点货
@@ -129,6 +121,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private LinearLayout mLlSearchBar;
     @ViewInject(R.id.et_sou_suo)
     private EditText mEtSouSuo;
+    @ViewInject(R.id.loadingLayout)
+    private LoadingLayout mLoadingLayout;
     private TabPageIndicatorAdapter adapter;
     private ArrayList<OrderResponse.ListBean.LinesBean> datas = new ArrayList<>();
     private PopupWindow mPopWindow;     //底部弹出
@@ -224,7 +218,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }
         }
         productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
-        if (lbean.isNewType() && productBasicHelper.check(lbean.getLines())) {//新版订单不用查商品信息
+        if (lbean.isNewType()) {//新版订单不用查商品信息
             getCategory();
             updateUI();
         } else {
@@ -284,22 +278,21 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     countMap.put(String.valueOf(receiveBean.getProductId()), receiveBean);
                 }
                 for (OrderResponse.ListBean.LinesBean bean : datas) {
-                    totalQty += bean.getProductUomQty();
+                    totalQty += bean.getActualSendNum();
                 }
                 updatePbProgress();
             }else{
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
-                    receiveBean.setCount(linesBean.getProductUomQty());
-                    final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(linesBean.getProductID()));
-                    receiveBean.setTracking(basicBean.getTracking());
-                    if (basicBean.getTracking().equals("lot")) {
+                    receiveBean.setCount(linesBean.getActualSendNum());
+                    receiveBean.setTracking(linesBean.getTracking());
+                    if (linesBean.getTracking().equals("lot")) {
                         List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
                         ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
                         lotBean.setLot_name("");
-                        lotBean.setHeight(linesBean.getProductUomQty());
-                        lotBean.setQty((int) linesBean.getProductUomQty());
+                        lotBean.setHeight(linesBean.getActualSendNum());
+                        lotBean.setQty((int) linesBean.getActualSendNum());
                         lotBean.setProduce_datetime(TimeUtils.getYMD(new Date()));
                         lot_list.add(lotBean);
                         receiveBean.setLot_list(lot_list);
@@ -638,7 +631,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     private void setDefalutProgressBar() {
         for (OrderResponse.ListBean.LinesBean bean : datas) {
-            totalQty += bean.getProductUomQty();
+            totalQty += bean.getActualSendNum();
         }
         mTvReceiveCount.setText(NumberUtil.getIOrD(totalQty));
         mTvReceiveCountTag.setText("/" + NumberUtil.getIOrD(totalQty) + "件");
@@ -787,7 +780,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         } else if (mode == 2) {
                             tallyDoneRequest();
                         }
-
+                        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_RECEIVE_FINISH);
                     }
                 });
                 dialog.show();
@@ -936,7 +929,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     private boolean isSameReceiveCount() {
         for (OrderResponse.ListBean.LinesBean lb : datas) {
-            int qty = (int) lb.getProductUomQty();
+            int qty = (int) lb.getActualSendNum();
             String pId = String.valueOf(lb.getProductID());
             if (countMap.containsKey(pId)) {
                 if (qty != countMap.get(pId).getCount()) {
@@ -1017,6 +1010,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             case END_TALLY:
                 ToastUtil.show(mContext, "网络异常，请稍侯再试");
                 break;
+            case ORDER_DETAIL:
+                mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+                break;
         }
 
     }
@@ -1091,52 +1087,76 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             String pId = String.valueOf(bottomData.getProductId());
             bottomData.setCount(bean.getCount());
             countMap.put(pId, bottomData);
-            View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
-            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(bottomData.getProductId()));
-            if (listBean != null) {
-                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, listBean.getImage().getImageSmall());
-                StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
-                sb.append("  ").append(listBean.getUnit());
-                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-                if (canSeePrice) {
-                    if (listBean.isTwoUnit()) {
-                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
-                    } else {
-                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
-                    }
+//            View rootview = LayoutInflater.from(this).inflate(R.layout.receive_layout, null);
+//            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(bottomData.getProductId()));
+//            if (listBean != null) {
+//                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, listBean.getImage().getImageSmall());
+//                StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
+//                sb.append("  ").append(listBean.getUnit());
+//                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+//                if (canSeePrice) {
+//                    if (listBean.isTwoUnit()) {
+//                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
+//                    } else {
+//                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getPrice()))).append("元/").append(listBean.getProductUom());
+//                    }
+//                }
+//                mTvContent.setText(sb.toString());
+//                mTvUnit.setText(listBean.getUom());
+//            }
+            RunwiseKeyBoard runwiseKeyBoard = new RunwiseKeyBoard(getActivityContext());
+            runwiseKeyBoard.setUp(bottomData, new RunwiseKeyBoard.SetCountListener() {
+                @Override
+                public void onSetCount(double count) {
+                    String pId = String.valueOf(bottomData.getProductId());
+                    bottomData.setIsChange(true);
+                    bottomData.setCount(count);
+                    countMap.put(pId, bottomData);
+                    mPopWindow2.dismiss();
+                    //更新进度条
+                    updatePbProgress();
+                    //更新fragment列表内容
+                    EventBus.getDefault().post(new ReceiveProEvent(true));
                 }
-                mTvContent.setText(sb.toString());
-                mTvUnit.setText(listBean.getUom());
-            }
+            });
+            runwiseKeyBoard.show();
             titleTv.setText(bottomData.getName());
-            edEt.setText(NumberUtil.getIOrD(bottomData.getCount()));
-            mTvStockCount.setText(NumberUtil.getIOrD(bottomData.getProductUomQty()));
-            edEt.setSelectAllOnFocus(true);
-            mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
-            edEt.requestFocus();
-            edEt.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    InputMethodManager inputMethodManager=(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-            },200);
-            View dialogRoot = dialogView2.findViewById(R.id.dialog_main);
-            dialogRoot.setVisibility(View.GONE);
-            edEt.postDelayed(new Runnable(){
-                @Override
-                public void run() {
-                    Animation animation = AnimationUtils.loadAnimation(getActivityContext(),R.anim.fade_in);
-                    dialogRoot.setVisibility(View.VISIBLE);
-                    dialogRoot.startAnimation(animation);
-                }
-            },400);
+//            edEt.setText(NumberUtil.getIOrD(bottomData.getCount()));
+//            mTvStockCount.setText(NumberUtil.getIOrD(bottomData.getProductUomQty()));
+//            edEt.setSelectAllOnFocus(true);
+//            mPopWindow2.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
+//            edEt.requestFocus();
+//            edEt.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    InputMethodManager inputMethodManager=(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+//                }
+//            },200);
+//            View dialogRoot = dialogView2.findViewById(R.id.dialog_main);
+//            dialogRoot.setVisibility(View.GONE);
+//            edEt.postDelayed(new Runnable(){
+//                @Override
+//                public void run() {
+//                    Animation animation = AnimationUtils.loadAnimation(getActivityContext(),R.anim.fade_in);
+//                    dialogRoot.setVisibility(View.VISIBLE);
+//                    dialogRoot.startAnimation(animation);
+//                }
+//            },400);
+
+
+
             //更新进度条
             updatePbProgress();
             //更新fragment列表内容
 
             EventBus.getDefault().post(new ReceiveProEvent(false));
         }
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+        requestOrderDetail();//没有传商品列表，需要查询订单详情
     }
 
 //    @Override
@@ -1282,5 +1302,18 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("收货页面");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("收货页面");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

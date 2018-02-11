@@ -26,7 +26,6 @@ import com.runwise.supply.tools.UserUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.vov.vitamio.utils.Log;
 import io.vov.vitamio.utils.NumberUtil;
 
 import static com.kids.commonframe.config.Constant.ORDER_STATE_DRAFT;
@@ -115,8 +114,14 @@ public class OrderProductAdapter extends BaseAdapter {
             vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(dq));
             vh.oldPriceTv.setVisibility(View.VISIBLE);
         } else {
-            vh.oldPriceTv.setVisibility(View.GONE);
-            vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(puq));
+//            实发
+            if (Constant.ORDER_STATE_PEISONG.equals(status) && bean.getActualSendNum() != bean.getProductUomQty()){
+                vh.oldPriceTv.setText("x" + NumberUtil.getIOrD(puq));
+                vh.oldPriceTv.setVisibility(View.VISIBLE);
+            }else{
+                vh.oldPriceTv.setVisibility(View.GONE);
+            }
+            vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(bean.getActualSendNum()));
         }
 
         vh.name.setText(bean.getName());

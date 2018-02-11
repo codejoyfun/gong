@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,8 +102,8 @@ public class ReturnProductAdapter extends BaseAdapter {
         final ReturnOrderBean.ListBean.LinesBean bean = productList.get(position);
         int pId = bean.getProductID();
         final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(context).get(String.valueOf(pId));
-        if (basicBean != null && basicBean.getImage() != null){
-            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+basicBean.getImage().getImageSmall());
+        if (TextUtils.isEmpty(bean.getImageMedium())){
+            FrecoFactory.getInstance(context).disPlay(vh.productImage, Constant.BASE_URL+bean.getImageMedium());
         }
         double puq = bean.getProductUomQty();
         double dq = bean.getDeliveredQty();
@@ -116,23 +117,19 @@ public class ReturnProductAdapter extends BaseAdapter {
             vh.nowPriceTv.setText("x"+puq);
         }
 
-        if (basicBean != null){
-            vh.name.setText(basicBean.getName());
-            StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-            sb.append(" | ").append(basicBean.getUnit());
+            vh.name.setText(bean.getName());
+            StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+            sb.append(" | ").append(bean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
-            if (canSeePrice){
+            if (canSeePrice&&basicBean != null){
                 if (isTwoUnit){
                     sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getSettlePrice()))).append("元/").append(basicBean.getSettleUomId());
                 }else{
-                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getPrice()))).append("元/").append(bean.getProductUom());
+                    sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getPrice()))).append("元/").append(bean.getSaleUom());
                 }
             }
-            vh.unit1.setText(bean.getProductUom());
+            vh.unit1.setText(bean.getSaleUom());
             vh.content.setText(sb.toString());
-        }else{
-            vh.name.setText("");
-        }
         //发货状态订单
 //        if("peisong".equals(status)) {
         vh.rootView.setOnClickListener(new View.OnClickListener() {

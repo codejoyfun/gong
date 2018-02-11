@@ -9,12 +9,12 @@ import android.text.TextUtils;
 
 import com.kids.commonframe.R;
 import com.kids.commonframe.base.bean.CheckVersionRequest;
-import com.kids.commonframe.base.bean.CheckVersionResult;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomUpdateDialog;
+import com.kids.commonframe.config.Constant;
 import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloader;
@@ -22,6 +22,7 @@ import com.liulishuo.filedownloader.FileDownloader;
 import java.io.File;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_COMPANY_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 
 /**
@@ -58,14 +59,16 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         CheckVersionRequest checkVersionRequest = new CheckVersionRequest();
         checkVersionRequest.setVersion(CommonUtils.getVersionCode(baseActivity));
         checkVersionRequest.setTag("Android");
-        netWorkHelper.sendConnection("/api/app/release/latest/version",checkVersionRequest,REQUEST_CHECK_VERSION,false,VersionUpdateResponse.class);
+        checkVersionRequest.setCompanyName((String) SPUtils.get(baseActivity,FILE_KEY_COMPANY_NAME,""));
+
+        netWorkHelper.sendConnection(Constant.UNLOGIN_URL,"/api/app/release/latest/version",checkVersionRequest,REQUEST_CHECK_VERSION,false,VersionUpdateResponse.class,true);
         if (showToast) {
             ToastUtil.show(baseActivity,"检查更新中...");
         }
     }
 
     public void startDownloadFile(String remoteUrl) {
-        remoteUrl = netWorkHelper.getHost(remoteUrl)+remoteUrl;
+//        remoteUrl = netWorkHelper.getHost(remoteUrl)+remoteUrl;
         File remoteFile = new File(remoteUrl);
         localFile = new File(CommonUtils.getCachePath(baseActivity),remoteFile.getName());
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);

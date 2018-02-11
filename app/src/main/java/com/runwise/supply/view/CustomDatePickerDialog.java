@@ -99,6 +99,7 @@ public class CustomDatePickerDialog extends Dialog {
 				if (listener != null) {
 					listener.doPickClick(wheelMain.getTime(),
 							wheelMain.getTime1(), 0);
+					return;
 				}
 				if (null != animView) {
 					positive(animView);
@@ -121,6 +122,9 @@ public class CustomDatePickerDialog extends Dialog {
 	public void addPickerListener(String text,
 			final PickerClickListener listener) {
 		ok.setText(text);
+		this.listener = listener;
+	}
+	public void addPickerListener(final PickerClickListener listener) {
 		this.listener = listener;
 	}
 

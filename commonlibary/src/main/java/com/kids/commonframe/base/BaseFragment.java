@@ -3,21 +3,18 @@ package com.kids.commonframe.base;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.R;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.LogUtil;
-import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.ViewUtils;
@@ -25,8 +22,6 @@ import com.lidroid.xutils.ViewUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import static com.kids.commonframe.base.util.net.NetWorkHelper.setRequestTimestamp;
 
 /**
  * 每一个fragment都继承该类
@@ -197,5 +192,15 @@ public abstract class BaseFragment extends Fragment {
 		FrameLayout view = (FrameLayout) findViewById(R.id.title_bg);
 		view.setBackgroundColor(color);
 	}
-
+	protected void showBackBtn() {
+		ImageView view = (ImageView) findViewById(R.id.title_iv_left);
+		view.setVisibility(View.VISIBLE);
+		view.setImageResource(R.drawable.back_btn);
+		view.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getActivity().finish();
+			}
+		});
+	}
 }

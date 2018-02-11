@@ -1,6 +1,7 @@
 package com.runwise.supply;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Editable;
@@ -23,7 +24,6 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
-import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.NetWorkActivity;
@@ -32,7 +32,6 @@ import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.ViewUtils;
@@ -45,12 +44,12 @@ import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.mine.FingerprintDialog;
-import com.runwise.supply.mine.SettingActivity;
 import com.runwise.supply.tools.AESCrypt;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.SP_CONSTANTS;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -58,11 +57,10 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
-import io.vov.vitamio.utils.Crypto;
 
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_COMPANY_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
-import static com.kids.commonframe.base.util.SPUtils.get;
 import static com.runwise.supply.FindPasswordActivity.INTENT_KEY_COMPANY_NAME;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
@@ -147,40 +145,43 @@ public class LoginActivity extends NetWorkActivity {
             }
         });
         showFirstUserFromDB();
-        remPassword.setChecked((Boolean)SPUtils.get(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,true));
-        remPassword.setOnCheckedChangeListener((v,isChecked)->SPUtils.put(this,SP_CONSTANTS.SP_CB_REMEMBER_PW,isChecked));
+        remPassword.setChecked((Boolean) SPUtils.get(this, SP_CONSTANTS.SP_CB_REMEMBER_PW, true));
+        remPassword.setOnCheckedChangeListener((v, isChecked) -> SPUtils.put(this, SP_CONSTANTS.SP_CB_REMEMBER_PW, isChecked));
 
         //指纹登录
-        mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
-        if(mFgHelper.isSupported() && FingerprintHelper.isFingerprintEnabled(this)){
-            mFgHelper.init();
-            FingerprintDialog fragment = new FingerprintDialog();
-            fragment.setFingerprintHelper(mFgHelper);
-            fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
-                @Override
-                public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
-                    if(isSuccess==STATUS_SUCCEED){
-                        String loginUser = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_USER,"");
-                        String cipher = (String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_PW,"");
-                        mPhone.setText(loginUser);
-                        try{
-                            mPassword.setText(AESCrypt.decrypt(loginUser,cipher));
-                        }catch (GeneralSecurityException e){
-                            e.printStackTrace();
-                            ToastUtil.show(LoginActivity.this,"指纹验证失败");
-                            return;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                mFgHelper = new FingerprintHelper(this, FingerprintManagerCompat.from(this));
+                if (mFgHelper.isSupported() && FingerprintHelper.isFingerprintEnabled(this)) {
+                    mFgHelper.init();
+                    FingerprintDialog fragment = new FingerprintDialog();
+                    fragment.setFingerprintHelper(mFgHelper);
+                    fragment.setCallback(new FingerprintHelper.OnAuthenticateListener() {
+                        @Override
+                        public void onAuthenticate(int isSuccess, FingerprintManagerCompat.CryptoObject cryptoObject) {
+                            if (isSuccess == STATUS_SUCCEED) {
+                                String loginUser = (String) SPUtils.get(getActivityContext(), SP_CONSTANTS.SP_FG_USER, "");
+                                String cipher = (String) SPUtils.get(getActivityContext(), SP_CONSTANTS.SP_PW, "");
+                                mPhone.setText(loginUser);
+                                try {
+                                    mPassword.setText(AESCrypt.decrypt(loginUser, cipher));
+                                } catch (GeneralSecurityException e) {
+                                    e.printStackTrace();
+                                    ToastUtil.show(LoginActivity.this, "指纹验证失败");
+                                    return;
+                                }
+                                mCetCompany.setText((String) SPUtils.get(getActivityContext(), SP_CONSTANTS.SP_FG_COMPANY, ""));
+                                onLogin(null);
+                                fragment.dismiss();
+                            } else if (isSuccess == STATUS_FAILED) {
+                                ToastUtil.show(LoginActivity.this, "指纹验证失败");
+                            }
                         }
-                        mCetCompany.setText((String)SPUtils.get(getActivityContext(),SP_CONSTANTS.SP_FG_COMPANY,""));
-                        onLogin(null);
-                        fragment.dismiss();
-                    }else if(isSuccess==STATUS_FAILED){
-                        ToastUtil.show(LoginActivity.this,"指纹验证失败");
-                    }
+                    });
+                    fragment.setText("通过验证手机指纹进行登录");
+                    fragment.show(getSupportFragmentManager(), "tag");
                 }
-            });
-            fragment.setText("通过验证手机指纹进行登录");
-            fragment.show(getSupportFragmentManager(),"tag");
-        }
+            }
+
     }
 
     public void showFirstUserFromDB() {
@@ -202,13 +203,12 @@ public class LoginActivity extends NetWorkActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mDb.close();
     }
 
     private void getHost(String companyName) {
         GetHostRequest getHostRequest = new GetHostRequest();
         getHostRequest.setCompanyName(companyName);
-        sendConnection(Constant.UNLOGIN_URL, "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class,true);
+        sendConnection(Constant.UNLOGIN_URL, "/api/get/host", getHostRequest, GET_HOST, true, HostResponse.class, true);
     }
 
     @OnClick(R.id.root_layout)
@@ -233,7 +233,6 @@ public class LoginActivity extends NetWorkActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mDb.close();
     }
 
     private boolean isEmpty() {
@@ -301,7 +300,7 @@ public class LoginActivity extends NetWorkActivity {
     @Override
     public void onResume() {
         super.onResume();
-        SPUtils.setLoginConflict(getActivityContext(),false);
+        SPUtils.setLoginConflict(getActivityContext(), false);
     }
 
     HostResponse mHostResponse;
@@ -322,6 +321,7 @@ public class LoginActivity extends NetWorkActivity {
                     startActivity(intent);
                     return;
                 }
+                MobclickAgent.onProfileSignIn(userInfoData.getMobile());
                 mDb = MyDbUtil.create(this);
                 try {
                     RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", loginRequest.getLogin())));
@@ -337,12 +337,11 @@ public class LoginActivity extends NetWorkActivity {
                     }
                     newRem.setCompany(mCetCompany.getText().toString());
                     SPUtils.put(this, SP_CONSTANTS.SP_CUR_PW,
-                            AESCrypt.encrypt(loginRequest.getLogin(),loginRequest.getPassword()));
+                            AESCrypt.encrypt(loginRequest.getLogin(), loginRequest.getPassword()));
                     mDb.save(newRem);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                mDb.close();
                 GlobalApplication.getInstance().saveUserInfo(userInfoData);
 //				ToastUtil.show(mContext,"登录成功");
                 //@libin added
@@ -385,6 +384,7 @@ public class LoginActivity extends NetWorkActivity {
                     SPUtils.put(getActivityContext(), FILE_KEY_HOST, mHostResponse.getHost() + ":" + mHostResponse.getPort());
                 }
                 SPUtils.put(getActivityContext(), FILE_KEY_DB_NAME, mHostResponse.getDbName());
+                SPUtils.put(getActivityContext(), FILE_KEY_COMPANY_NAME, mCetCompany.getText().toString());
                 login();
                 break;
         }

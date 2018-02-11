@@ -10,6 +10,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -17,18 +18,20 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
-import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.entity.InventoryResponse;
+import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
 import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTORY_BEAN;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_START_THE_INVENTORY;
 
 /**
  * 库存
@@ -47,7 +50,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         this.setTitleText(true, "库存" );
         this.setTitleLeftIcon(true, R.drawable.searchbar_ico_search);
-        setTitleRightText(true,"盘点");
+        setTitleRightText(true,"开始盘点");
         FragmentManager manager = this.getActivity().getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.contextLayout,new StockFragment()).commitAllowingStateLoss();
 //        manager.beginTransaction().replace(R.id.contextLayout,new RepertoryFragment()).commitAllowingStateLoss();
@@ -67,7 +70,6 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 return true;
             }
         });
-
     }
 
 
@@ -75,11 +77,18 @@ public class MainRepertoryFragment extends NetWorkFragment {
     public void leftClick(View view){
         startActivity(new Intent(mContext,DealerSearchActivity.class));
     }
+    boolean mCreateInventoryIng = false;
+
     @OnClick(R.id.right_layout)
     public void rightClick(View view){
+        MobclickAgent.onEvent(getActivity(), EVENT_ID_START_THE_INVENTORY);
         if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
         boolean isLogin = SPUtils.isLogin(mContext);
         if(isLogin) {
+            if (mCreateInventoryIng){
+                return;
+            }
+            mCreateInventoryIng = true;
             Object parma = null;
 //            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
             sendConnection("/api/v2/inventory/create",parma,REQUEST_INVENTORY,true,InventoryResponse.class);
@@ -133,8 +142,16 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 //检查是否有缓存
                 InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
                 if(cacheBean!=null)inventoryBean = cacheBean;
+                //有确认中的盘点单，则显示盘点通知
+                boolean isInProgresss = "confirm".equals(inventoryBean.getState());
+                if(isInProgresss) {
+                    if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
+                }else{
+                    if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
+                }
                 intent1.putExtra(INTENT_KEY_INVENTORY_BEAN,inventoryBean);
                 startActivity(intent1);
+                mCreateInventoryIng = false;
                 break;
         }
     }
@@ -144,6 +161,11 @@ public class MainRepertoryFragment extends NetWorkFragment {
         switch (where) {
             case REQUEST_EXIT:
             case REQUEST_INVENTORY:
+                mCreateInventoryIng = false;
+                if (errMsg.equals(getResources().getString(com.kids.commonframe.R.string.network_error))){
+                    ToastUtil.show(getActivity(),errMsg);
+                    return;
+                }
                 dialog.setModel(CustomDialog.LEFT);
                 dialog.setMessage(errMsg);
                 dialog.setLeftBtnListener("我知道了", null);
@@ -186,6 +208,19 @@ public class MainRepertoryFragment extends NetWorkFragment {
             }
         }
         return inventoryResponse.getInventory();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("库存首页");
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("库存首页");
     }
 }
 

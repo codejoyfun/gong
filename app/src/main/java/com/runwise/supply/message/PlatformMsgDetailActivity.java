@@ -2,13 +2,10 @@ package com.runwise.supply.message;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
@@ -19,9 +16,9 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.tools.PlatformNotificationManager;
+import com.umeng.analytics.MobclickAgent;
 
 public class PlatformMsgDetailActivity extends NetWorkActivity implements LoadingLayoutInterface {
 
@@ -123,5 +120,20 @@ public class PlatformMsgDetailActivity extends NetWorkActivity implements Loadin
             @ViewInject(R.id.msgContext)
             TextView msgContext;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("平台通知页");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("平台通知页");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

@@ -26,16 +26,16 @@ import com.kids.commonframe.base.BaseActivity;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.ReLoginData;
+import com.kids.commonframe.base.util.ObjectTransformUtil;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.UmengUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
-
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +43,6 @@ import java.util.Map.Entry;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
-import static com.kids.commonframe.base.util.SPUtils.getAll;
 
 /**
  * 网络请求帮助类
@@ -212,8 +211,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass);
-        RequestErrorListener errorLietener = new RequestErrorListener(where);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParams);
+        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParams);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
 
@@ -252,8 +251,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass);
-        RequestErrorListener errorLietener = new RequestErrorListener(where);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParams);
+        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParams);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
         httpCallback.setUseUnLoginDB(useUnLoginDB);
@@ -640,9 +639,16 @@ public class NetWorkHelper<T extends BaseEntity> {
 
     private class RequestErrorListener implements ErrorListener {
         private int what;
+        private String url;
+        private Map<String, String> paramsMap;
 
-        public RequestErrorListener(int what) {
+        public RequestErrorListener(int what,String url,Map<String, String> paramsMap) {
             this.what = what;
+            this.url = url;
+            this.paramsMap = paramsMap;
+            if (paramsMap == null){
+                this.paramsMap = new HashMap<>();
+            }
         }
 
         @Override
@@ -654,17 +660,25 @@ public class NetWorkHelper<T extends BaseEntity> {
                 BaseEntity baseEntity = new BaseEntity();
                 baseEntity.setMsg(error.getMessage());
                 newWorkCallBack.onFailure(errorMsg, (T) baseEntity, what);
+                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+error.getMessage());
             }
         }
     }
 
     private class RequestSuccessListener<M extends BaseEntity> implements Listener<T> {
         private int what;
+        private String url;
         private Class targerClass;
+        private Map<String, String> paramsMap;
 
-        public RequestSuccessListener(int what, Class targerClass) {
+        public RequestSuccessListener(int what, Class targerClass,String url,Map<String, String> paramsMap) {
             this.what = what;
+            this.url = url;
             this.targerClass = targerClass;
+            this.paramsMap = paramsMap;
+            if (paramsMap == null){
+                this.paramsMap = new HashMap<>();
+            }
         }
 
         @Override
@@ -677,15 +691,15 @@ public class NetWorkHelper<T extends BaseEntity> {
                         newWorkCallBack.onSuccess(response, what);
                     }
                 } else {
-                    cellBackError(response, what);
+                    cellBackError(response, what,url,paramsMap);
                 }
             } else {
-                cellBackError(response, what);
+                cellBackError(response, what,url,paramsMap);
             }
         }
     }
 
-    private void cellBackError(T response, int what) {
+    private void cellBackError(T response, int what,String url, Map<String, String> paramsMap) {
         if (newWorkCallBack != null) {
             String errorMsg = "";
             if (response.getResult() != null) {
@@ -695,10 +709,18 @@ public class NetWorkHelper<T extends BaseEntity> {
                 //sessino失效
                 if (100 == response.getError().getCode()) {
                     SPUtils.loginOut(context);
+                    SelfOrderTimeStatisticsUtil.clear();
 //					ToastUtil.show(context,"登陆过期，请重新登陆");
                 }
             }
             newWorkCallBack.onFailure(errorMsg, response, what);
+            if (response.getError() != null){
+               String uMengErrorString =  ObjectTransformUtil.toString(response.getError().getData());
+                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+uMengErrorString);
+            }else{
+                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+errorMsg);
+            }
+
         }
     }
 

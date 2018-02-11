@@ -11,13 +11,13 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.view.ProductImageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -111,7 +111,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                         viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                        mCountMap.remove(bean);
                     }
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
+                    ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,currentNum);
+                    productCountUpdateEvent.setException(ProductAdapter.this);
+                    EventBus.getDefault().post(productCountUpdateEvent);
                 }
 
             }
@@ -135,7 +137,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                     viewHolder.tvCount.setVisibility(View.VISIBLE);
                     viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
-                EventBus.getDefault().post(new ProductCountUpdateEvent(bean,currentNum));
+                ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,currentNum);
+                productCountUpdateEvent.setException(ProductAdapter.this);
+                EventBus.getDefault().post(productCountUpdateEvent);
             }
         });
 
@@ -167,7 +171,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 //                            mCountMap.put(bean,value);
                         }
                         viewHolder.tvCount.setText(value + bean.getUom());
-                        EventBus.getDefault().post(new ProductCountUpdateEvent(bean,(int)value));
+                        ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,(int)value);
+                        productCountUpdateEvent.setException(ProductAdapter.this);
+                        EventBus.getDefault().post(productCountUpdateEvent);
                     }
                 }).show();
             }
@@ -196,7 +202,15 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         if(bean.getImage()!=null){
             FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, bean.getImage().getImageSmall());
         }
-
+        viewHolder.sDv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProductImageDialog productImageDialog = new ProductImageDialog(mContext);
+                productImageDialog.setListBean(bean);
+                productImageDialog.setProductCountSetter(productCountSetter);
+                productImageDialog.show();
+            }
+        });
         return convertView;
     }
 

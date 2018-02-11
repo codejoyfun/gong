@@ -20,12 +20,11 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
-import com.kids.commonframe.base.bean.SystemUpgradeNoticeEvent;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.DateFormateUtil;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -43,8 +42,8 @@ import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.SystemUpgradeLayout;
+import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,15 +90,19 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     private SimpleDateFormat mSdfSysTimeSource = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS", Locale.getDefault());
     private SimpleDateFormat mSdfSysTimeTarget = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
 
+    boolean mAddPlatformMessage = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitleText(true,"消息");
+        showBackBtn();
 //        this.setTitleRigthIcon(true,R.drawable.nav_service_message);
         pullListView.setPullToRefreshOverScrollEnabled(false);
         pullListView.setScrollingWhileRefreshingEnabled(true);
         pullListView.setMode(PullToRefreshBase.Mode.BOTH);
         pullListView.setOnItemClickListener(this);
+
 
         adapter = new MessageAdapter();
         if(mOnRefreshListener2 == null){
@@ -183,6 +186,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             pullListView.setRefreshing();
         }
         firstLaunch = true;
+        MobclickAgent.onPageStart("消息首页"); //统计页面，"MainScreen"为页面名称，可自定义
     }
 
     public void requestData (boolean showDialog, int where, int page, int limit) {
@@ -234,17 +238,20 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_MAIN:
+                mAddPlatformMessage = true;
                 MessageResult mainListResult = (MessageResult)result.getResult();
                 adapter.setData(handlerMessageList(mainListResult));
                 loadingLayout.onSuccess(adapter.getCount(),"哎呀！这里是空哒~~",R.drawable.default_icon_newsnone);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
+                mAddPlatformMessage = true;
                 MessageResult startResult = (MessageResult)result.getResult();
                 adapter.setData(handlerMessageList(startResult));
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_DEN:
+                mAddPlatformMessage = false;
                 MessageResult endResult = (MessageResult)result.getResult();
                 endResult.setChannel(null);
                 if (endResult.getOrder() != null && !endResult.getOrder().isEmpty()) {
@@ -264,7 +271,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
         //加入平台通知
         MessageResult.ChannelBean.LastMessageBeanX beanX = PlatformNotificationManager.getInstance(getContext()).getLastMessageX();
-        if(beanX!=null){
+        if(beanX!=null&&mAddPlatformMessage){
             if(channelList==null)channelList = new ArrayList<>();
             MessageResult.ChannelBean platformChannelBean = new MessageResult.ChannelBean();
             platformChannelBean.setName("平台通知");
@@ -300,6 +307,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
+        ToastUtil.show(getActivity(),errMsg);
         loadingLayout.onFailure(errMsg,R.drawable.default_icon_checkconnection);
     }
 
@@ -448,7 +456,9 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
                     MessageResult.ChannelBean.LastMessageBeanX messageBeanX = channelBean.getLast_message();
 //                    viewHolder.msgTime.setText(DateFormateUtil.InfoClassShowdateFormat(messageBeanX.getDate()));
                     try{
-                        viewHolder.msgTime.setText(mSdfSysTimeTarget.format(mSdfSysTimeSource.parse(messageBeanX.getDate())));
+                        if(messageBeanX.getDate()!= null){
+                            viewHolder.msgTime.setText(mSdfSysTimeTarget.format(mSdfSysTimeSource.parse(messageBeanX.getDate())));
+                        }
                     }catch (ParseException e){
                         viewHolder.msgTime.setText(messageBeanX.getDate());
                     }
@@ -498,5 +508,8 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
             TextView chatMsg;
         }
     }
-
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("消息首页");
+    }
 }

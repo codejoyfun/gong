@@ -13,6 +13,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
@@ -39,7 +41,7 @@ import io.vov.vitamio.utils.NumberUtil;
  * Created by mike on 2017/8/25.
  */
 
-public class ProcurementFragment extends NetWorkFragment {
+public class ProcurementFragment extends NetWorkFragment implements LoadingLayoutInterface {
     @ViewInject(R.id.pullListView)
     private PullToRefreshListView pullListView;
     private ProductAdapter adapter;
@@ -73,6 +75,7 @@ public class ProcurementFragment extends NetWorkFragment {
                 requestData();
             }
         });
+        loadingLayout.setOnRetryClickListener(this);
         requestData();
         loadingLayout.setStatusLoading();
     }
@@ -120,7 +123,17 @@ public class ProcurementFragment extends NetWorkFragment {
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        loadingLayout.onSuccess(0,"哎呀！这里是空哒~~",R.drawable.default_ico_none);
+        if (errMsg.equals(getResources().getString(R.string.network_error))){
+            ToastUtil.show(getActivity(),getResources().getString(R.string.network_error));
+            loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }else{
+            loadingLayout.onSuccess(0,"哎呀！这里是空哒~~",R.drawable.default_ico_none);
+        }
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+        requestData();
     }
 
     public class ProductAdapter extends IBaseAdapter<ProcurementEntity.ListBean.ProductsBean> {

@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:id="@+id/contextLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/title_bar"
-        >
+        android:layout_above="@+id/rl_bottom"
+        android:layout_below="@+id/title_bar">
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/windowBackground"
             android:layout_below="@id/search_bar"
-            >
+            android:background="@color/windowBackground">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" >
+                android:orientation="vertical">
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="42dp">
@@ -28,95 +30,102 @@
                         android:id="@+id/indicator"
                         style="@style/MyCustomTabLayout"
                         android:layout_width="match_parent"
-                        android:background="@color/white"
                         android:layout_height="42dp"
-                        app:tabMode="scrollable"
-                        android:layout_marginRight="30dp"/>
+                        android:layout_marginRight="30dp"
+                        android:background="@color/white"
+                        app:tabMode="scrollable" />
 
                     <ImageView
                         android:id="@+id/iv_open"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
-                        android:src="@drawable/arrow"
-                        android:padding="15dp"
+                        android:layout_alignParentRight="true"
                         android:background="@drawable/tab_shadow"
-                        android:visibility="gone"
-                        android:layout_alignParentRight="true"/>
+                        android:padding="15dp"
+                        android:src="@drawable/arrow"
+                        android:visibility="gone" />
 
                 </RelativeLayout>
+
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewPager"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
-                    />
+                    android:layout_weight="1" />
+
+                <com.kids.commonframe.base.view.LoadingLayout
+                    android:id="@+id/loadingLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
             </LinearLayout>
         </FrameLayout>
     </FrameLayout>
 
     <LinearLayout
         android:id="@+id/title_bar"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
         <com.runwise.supply.view.ClearEditText
+            android:id="@+id/searchET"
             android:layout_width="match_parent"
             android:layout_height="32dp"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:background="@drawable/product_search_bg"
-            android:hint="商品名称、关键字"
-            android:textSize="13sp"
-            android:textColorHint="#a8a8a8"
-            android:drawableLeft="@drawable/searchbar_ico_search"
+            android:layout_marginLeft="20dp"
             android:layout_weight="1"
+            android:background="@drawable/product_search_bg"
+            android:drawableLeft="@drawable/searchbar_ico_search"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:hint="商品名称、关键字"
+            android:inputType="textPersonName"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:drawablePadding="10dp"
-            android:layout_marginLeft="20dp"
-            android:id="@+id/searchET"
-            />
+            android:textColorHint="#a8a8a8"
+            android:textSize="13sp" />
+
         <Button
-            android:text="取消"
+            android:id="@+id/cancelBtn"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:id="@+id/cancelBtn"
+            android:background="@null"
+            android:text="取消"
             android:textColor="#5f646e"
-            android:textSize="16sp"
-            android:background="@null" />
+            android:textSize="16sp" />
     </LinearLayout>
+
     <View
         android:id="@+id/bgView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#90000000"
-        android:visibility="gone"
-        />
-    <FrameLayout
-        android:id="@+id/addRootView"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        >
-        <include
-            android:id="@+id/popView1"
-            layout="@layout/add_repertory_item"
-            android:layout_height="wrap_content"
+        android:background="#FFFFFFFF">
+
+        <TextView
+            android:id="@+id/tv_add"
             android:layout_width="match_parent"
-            android:visibility="gone"
-            />
-        <include
-            android:id="@+id/popView2"
-            layout="@layout/add_sum_item"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            />
-    </FrameLayout>
+            android:layout_height="45dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/bg_green_gradient_selector"
+            android:gravity="center"
+            android:text="确认添加"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
 </RelativeLayout>

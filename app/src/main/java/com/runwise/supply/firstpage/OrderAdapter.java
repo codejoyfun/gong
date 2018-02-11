@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,8 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.IBaseAdapter;
-import com.kids.commonframe.base.util.ToastUtil;
-import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -40,7 +37,6 @@ import com.runwise.supply.tools.UserUtils;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -67,10 +63,15 @@ public class OrderAdapter extends IBaseAdapter {
 
     public interface DoActionInterface {
         void doAction(OrderDoAction action, int postion);
-        void doTransferAction(int type,TransferEntity transferEntity);
+
+        void doTransferAction(int type, TransferEntity transferEntity);
+
         void call(String phone);
+
         void resubmitOrder(TempOrderManager.TempOrder tempOrder);
+
         void gotoInventory(InventoryResponse.InventoryBean inventoryBean);
+
         void cancelInventory(InventoryResponse.InventoryBean inventoryBean);
     }
 
@@ -109,9 +110,10 @@ public class OrderAdapter extends IBaseAdapter {
     protected View getExView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
         int viewType = getItemViewType(position);
-        if(viewType==TYPE_TEMP_ORDER)return getSubmittingOrderView(position,convertView,parent);
-        if(viewType==TYPE_TRANSFER)return getTransferView(position,convertView,parent);
-        if(viewType==TYPE_INVENTORY)return getInventoryView(position,convertView,parent);
+        if (viewType == TYPE_TEMP_ORDER)
+            return getSubmittingOrderView(position, convertView, parent);
+        if (viewType == TYPE_TRANSFER) return getTransferView(position, convertView, parent);
+        if (viewType == TYPE_INVENTORY) return getInventoryView(position, convertView, parent);
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
@@ -130,9 +132,9 @@ public class OrderAdapter extends IBaseAdapter {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
             //未读红点
             boolean unread = bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid());
-            if(unread){
+            if (unread) {
                 viewHolder.ivUnread.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 viewHolder.ivUnread.setVisibility(View.GONE);
             }
 
@@ -163,7 +165,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(!SystemUpgradeHelper.getInstance(context).check(context))return;
+                    if (!SystemUpgradeHelper.getInstance(context).check(context)) return;
                     //根据状态进行不同的逻辑处理
                     String doAction = ((TextView) v).getText().toString();
                     OrderDoAction action = OrderActionUtils.getDoActionByText(doAction, bean);
@@ -233,10 +235,9 @@ public class OrderAdapter extends IBaseAdapter {
             //图标
             StringBuffer drawableSb = new StringBuffer("state_restaurant_");
             drawableSb.append(bean.getState());
-            if(!TextUtils.isEmpty(bean.getReceiveError()) && PEISONG.getName().equals(bean.getState())){//收货失败
+            if (!TextUtils.isEmpty(bean.getReceiveError()) && PEISONG.getName().equals(bean.getState())) {//收货失败
                 viewHolder.imgIv.setImageResource(R.drawable.state_restaurant_goosfailed);
-            }
-            else if (getResIdByDrawableName(drawableSb.toString()) == 0) {
+            } else if (getResIdByDrawableName(drawableSb.toString()) == 0) {
                 viewHolder.imgIv.setImageResource(R.drawable.state_restaurant_draft);
             } else {
                 viewHolder.imgIv.setImageResource(getResIdByDrawableName(drawableSb.toString()));
@@ -259,27 +260,31 @@ public class OrderAdapter extends IBaseAdapter {
             } else {
                 viewHolder.returnTv.setVisibility(View.GONE);
             }
-            if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
+            if (bean.isActual()) {
                 viewHolder.realTv.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.realTv.setVisibility(View.GONE);
             }
             if (bean.getHasAttachment() == 0 && bean.getOrderSettleName().contains("单次结算") && bean.getOrderSettleName().contains("先付款后收货") && bean.getState().equals(OrderState.DRAFT.getName())) {
                 viewHolder.tvToPay.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 viewHolder.tvToPay.setVisibility(View.GONE);
             }
-
+            if (bean.isActualSendOrder()) {
+                viewHolder.tvActualDelivery.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.tvActualDelivery.setVisibility(View.GONE);
+            }
             //背景色
-            if(bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())){//收货失败
+            if (bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())) {//收货失败
                 viewHolder.mmRlRoot.setBackgroundColor(mColorPink);
                 viewHolder.stateTv.setText("收货失败");
                 viewHolder.stateTv.setTextColor(mColorRed);
                 viewHolder.mmViewArrowArea.setVisibility(View.GONE);
-            }else{//正常
-                if(unread){//未读
+            } else {//正常
+                if (unread) {//未读
                     viewHolder.mmRlRoot.setBackgroundColor(Color.parseColor("#FFFAFEF6"));
-                }else{//已读
+                } else {//已读
                     viewHolder.mmRlRoot.setBackgroundColor(mColorWhite);
                 }
                 viewHolder.stateTv.setTextColor(Color.BLACK);
@@ -291,6 +296,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.returnTv.setVisibility(View.GONE);
             viewHolder.realTv.setVisibility(View.GONE);
             viewHolder.tvToPay.setVisibility(View.GONE);
+            viewHolder.tvActualDelivery.setVisibility(View.GONE);
             viewHolder.imgIv.setImageResource(R.drawable.more_restaurant_returnrecord);
             viewHolder.titleTv.setText(bean.getName());
             viewHolder.stateTv.setText("退货中");
@@ -424,6 +430,8 @@ public class OrderAdapter extends IBaseAdapter {
         TextView realTv;
         @ViewInject(R.id.tv_to_pay)
         TextView tvToPay;
+        @ViewInject(R.id.tv_actual_delivery)
+        TextView tvActualDelivery;
         @ViewInject(R.id.iv_first_order_item_unread)
         ImageView ivUnread;
         @ViewInject(R.id.rl_firstpage_order_item_root)
@@ -448,13 +456,11 @@ public class OrderAdapter extends IBaseAdapter {
     public int getItemViewType(int position) {
         Object object = mList.get(position);
         if (object instanceof OrderResponse.ListBean) {
-            if(((OrderResponse.ListBean) object).isTransfer())return TYPE_TRANSFER;
+            if (((OrderResponse.ListBean) object).isTransfer()) return TYPE_TRANSFER;
             return TYPE_ORDER;
-        }
-        else if(object instanceof TempOrderManager.TempOrder){
+        } else if (object instanceof TempOrderManager.TempOrder) {
             return TYPE_TEMP_ORDER;
-        }
-        else if(object instanceof InventoryResponse.InventoryBean){
+        } else if (object instanceof InventoryResponse.InventoryBean) {
             return TYPE_INVENTORY;
         }
 //        else if(object instanceof TransferEntity){
@@ -469,11 +475,12 @@ public class OrderAdapter extends IBaseAdapter {
     }
 
     SimpleDateFormat sdfSource = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    SimpleDateFormat sdfTarget = new SimpleDateFormat("MM月dd日",Locale.getDefault());
-    private String formatTimeStr(String str){
-        try{
+    SimpleDateFormat sdfTarget = new SimpleDateFormat("MM月dd日", Locale.getDefault());
+
+    private String formatTimeStr(String str) {
+        try {
             return sdfTarget.format(sdfSource.parse(str));
-        }catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
             return str;
         }
@@ -481,44 +488,46 @@ public class OrderAdapter extends IBaseAdapter {
 
     int mFailedColor;//提交中失败的背景色
     int mNormalColor;//提交中正常的颜色
+
     /**
      * 提交中的订单
+     *
      * @param position
      * @param convertView
      * @param parent
      * @return
      */
-    private View getSubmittingOrderView(final int position, View convertView, ViewGroup parent){
+    private View getSubmittingOrderView(final int position, View convertView, ViewGroup parent) {
         SubmittingOrderViewHolder viewHolder = null;
-        if(convertView==null){
-            convertView = View.inflate(context,R.layout.firstpage_order_temp_item,null);
+        if (convertView == null) {
+            convertView = View.inflate(context, R.layout.firstpage_order_temp_item, null);
             viewHolder = new SubmittingOrderViewHolder();
-            ViewUtils.inject(viewHolder,convertView);
+            ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
-        }else{
+        } else {
             viewHolder = (SubmittingOrderViewHolder) convertView.getTag();
         }
         TempOrderManager.TempOrder order = (TempOrderManager.TempOrder) mList.get(position);
-        viewHolder.mmTvTitle.setText("预计"+formatTimeStr(order.getEstimateDate())+"送达");
+        viewHolder.mmTvTitle.setText("预计" + formatTimeStr(order.getEstimateDate()) + "送达");
 
-        if(GlobalApplication.getInstance().getCanSeePrice()){
+        if (GlobalApplication.getInstance().getCanSeePrice()) {
             viewHolder.mmTvPrice.setVisibility(View.VISIBLE);
             viewHolder.mmTvPrice.setText(UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
-        }else{
+        } else {
             viewHolder.mmTvPrice.setVisibility(View.GONE);
         }
 //        viewHolder.mmTvPrice.setText(UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
-        viewHolder.mmTvPieces.setText("共"+order.getTotalPieces()+"件商品");
+        viewHolder.mmTvPieces.setText("共" + order.getTotalPieces() + "件商品");
 
         //删除按钮
-        if(order.isFailed()){
+        if (order.isFailed()) {
             viewHolder.mmIvClose.setVisibility(View.VISIBLE);
             viewHolder.mmTvStatus.setText("提交失败");
             viewHolder.mmTvStatus.setTextColor(context.getResources().getColor(R.color.colore64340));
             viewHolder.mmContainer.setBackgroundColor(mFailedColor);
             viewHolder.mmTvButton.setVisibility(View.VISIBLE);
             viewHolder.mmTvSubTitle.setText("--");
-        }else{
+        } else {
             viewHolder.mmIvClose.setVisibility(View.INVISIBLE);
             viewHolder.mmTvStatus.setText("提交中");
             viewHolder.mmContainer.setBackgroundColor(mNormalColor);
@@ -528,15 +537,15 @@ public class OrderAdapter extends IBaseAdapter {
         }
 
         //删除按钮
-        viewHolder.mmIvClose.setOnClickListener(v->{
+        viewHolder.mmIvClose.setOnClickListener(v -> {
             TempOrderManager.getInstance(context).removeTempOrder(order);
             mList.remove(order);
             notifyDataSetChanged();
         });
 
         //重新提交按钮
-        viewHolder.mmTvButton.setOnClickListener(v->{
-            if(callback!=null)callback.resubmitOrder(order);
+        viewHolder.mmTvButton.setOnClickListener(v -> {
+            if (callback != null) callback.resubmitOrder(order);
         });
 
         return convertView;
@@ -544,12 +553,13 @@ public class OrderAdapter extends IBaseAdapter {
 
     /**
      * 调拨item
+     *
      * @param position
      * @param convertView
      * @param parent
      * @return
      */
-    private View getTransferView(final int position, View convertView, ViewGroup parent){
+    private View getTransferView(final int position, View convertView, ViewGroup parent) {
         TransferViewHolder viewHolder = null;
         if (convertView == null) {
             convertView = View.inflate(context, R.layout.firstpage_transfer_item, null);
@@ -561,34 +571,35 @@ public class OrderAdapter extends IBaseAdapter {
         }
         final TransferEntity transferEntity = (TransferEntity) mList.get(position);
         boolean isDest = GlobalApplication.getInstance().loadUserInfo().getMendian().equals(transferEntity.getLocationDestName());
-        viewHolder.mmIvIcon.setImageResource(isDest?R.drawable.state_delivery_8_callin:R.drawable.state_delivery_8_callout);
+        viewHolder.mmIvIcon.setImageResource(isDest ? R.drawable.state_delivery_8_callin : R.drawable.state_delivery_8_callout);
 
         viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
         viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
         viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-        if(GlobalApplication.getInstance().getCanSeePrice())viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
+        if (GlobalApplication.getInstance().getCanSeePrice())
+            viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
         else viewHolder.mmTvPrice.setText(NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
         viewHolder.mmTvAction.setVisibility(View.VISIBLE);
 
         viewHolder.mmTvStatus.setText(transferEntity.getPickingState());
 
-        if(isDest){//入库方
-            setTransferInViewHolder(viewHolder,transferEntity);
-        }
-        else{//出库方
-            setTransferOutViewHolder(viewHolder,transferEntity,position);
+        if (isDest) {//入库方
+            setTransferInViewHolder(viewHolder, transferEntity);
+        } else {//出库方
+            setTransferOutViewHolder(viewHolder, transferEntity, position);
         }
         return convertView;
     }
 
     /**
      * 盘点item
+     *
      * @param position
      * @param convertView
      * @param parent
      * @return
      */
-    private View getInventoryView(final int position, View convertView, ViewGroup parent){
+    private View getInventoryView(final int position, View convertView, ViewGroup parent) {
         InventoryViewHolder viewHolder = null;
         if (convertView == null) {
             convertView = View.inflate(context, R.layout.firstpage_inventory_item, null);
@@ -600,15 +611,15 @@ public class OrderAdapter extends IBaseAdapter {
         }
         final InventoryResponse.InventoryBean inventoryBean = (InventoryResponse.InventoryBean) mList.get(position);
         viewHolder.inventoryBean = inventoryBean;
-        viewHolder.tvInventoryDate.setText("盘点日期 "+ inventoryBean.getCreateDate().substring(5,10));
+        viewHolder.tvInventoryDate.setText("盘点日期 " + inventoryBean.getCreateDate().substring(5, 10));
         viewHolder.tvInventoryId.setText(inventoryBean.getName());
         viewHolder.tvInventoryPerson.setText(inventoryBean.getCreateUser());
         viewHolder.cvRoot.setOnClickListener(viewHolder);
         //当前用户创建的，可以取消
-        if(GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())){
+        if (GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())) {
             viewHolder.tvInventoryCancel.setOnClickListener(viewHolder);
             viewHolder.tvInventoryCancel.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             viewHolder.tvInventoryCancel.setVisibility(View.GONE);
         }
         return convertView;
@@ -617,11 +628,12 @@ public class OrderAdapter extends IBaseAdapter {
 
     /**
      * 入库方的列表项
+     *
      * @param viewHolder
      * @param transferEntity
      */
-    private void setTransferInViewHolder(TransferViewHolder viewHolder,final TransferEntity transferEntity){
-        switch (transferEntity.getPickingStateNum()){
+    private void setTransferInViewHolder(TransferViewHolder viewHolder, final TransferEntity transferEntity) {
+        switch (transferEntity.getPickingStateNum()) {
             case TransferEntity.STATE_SUBMIT://已提交，可取消
                 viewHolder.mmTvAction.setVisibility(View.GONE);
                 viewHolder.mmTvCancel.setVisibility(View.VISIBLE);
@@ -629,7 +641,8 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (callback!=null)callback.doTransferAction(TRANS_ACTION_CANCEL,transferEntity);
+                        if (callback != null)
+                            callback.doTransferAction(TRANS_ACTION_CANCEL, transferEntity);
                     }
                 });
                 break;
@@ -640,8 +653,9 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(context).check(context))return;
-                        if(InventoryCacheManager.getInstance(context).checkIsInventory(context))return;
+                        if (!SystemUpgradeHelper.getInstance(context).check(context)) return;
+                        if (InventoryCacheManager.getInstance(context).checkIsInventory(context))
+                            return;
                         Intent intent = new Intent(context, TransferInActivity.class);
                         intent.putExtra(TransferInActivity.INTENT_KEY_TRANSFER_ENTITY, transferEntity);
                         context.startActivity(intent);
@@ -651,7 +665,8 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.mmTvCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (callback!=null)callback.doTransferAction(TRANS_ACTION_CANCEL,transferEntity);
+                        if (callback != null)
+                            callback.doTransferAction(TRANS_ACTION_CANCEL, transferEntity);
                     }
                 });
                 break;
@@ -663,12 +678,13 @@ public class OrderAdapter extends IBaseAdapter {
 
     /**
      * 出库方列表项
+     *
      * @param viewHolder
      * @param transferEntity
      * @param position
      */
-    private void setTransferOutViewHolder(TransferViewHolder viewHolder,final TransferEntity transferEntity,final int position){
-        switch (transferEntity.getPickingStateNum()){
+    private void setTransferOutViewHolder(TransferViewHolder viewHolder, final TransferEntity transferEntity, final int position) {
+        switch (transferEntity.getPickingStateNum()) {
             case TransferEntity.STATE_SUBMIT://已提交，可出库
                 viewHolder.mmTvCancel.setVisibility(View.GONE);
                 viewHolder.mmTvAction.setVisibility(View.VISIBLE);
@@ -678,12 +694,13 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.mmTvAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!SystemUpgradeHelper.getInstance(context).check(context))return;
-                        if(InventoryCacheManager.getInstance(context).checkIsInventory(context))return;
+                        if (!SystemUpgradeHelper.getInstance(context).check(context)) return;
+                        if (InventoryCacheManager.getInstance(context).checkIsInventory(context))
+                            return;
                         int realPosition = (int) view.getTag();
                         if (realPosition == position) {
-                            if(callback!=null){
-                                callback.doTransferAction(TRANS_ACTION_OUTPUT_CONFIRM,transferEntity);
+                            if (callback != null) {
+                                callback.doTransferAction(TRANS_ACTION_OUTPUT_CONFIRM, transferEntity);
                             }
                             //变成可用状态
 //                            requestOutputConfirm(transferEntity);
@@ -719,7 +736,7 @@ public class OrderAdapter extends IBaseAdapter {
     /**
      * 提交中订单
      */
-    private class SubmittingOrderViewHolder{
+    private class SubmittingOrderViewHolder {
         @ViewInject(R.id.tv_item_temp_title)
         TextView mmTvTitle;
         @ViewInject(R.id.tv_item_temp_sub_title)
@@ -743,7 +760,7 @@ public class OrderAdapter extends IBaseAdapter {
     /**
      * 盘点的viewholder
      */
-    private class InventoryViewHolder implements View.OnClickListener{
+    private class InventoryViewHolder implements View.OnClickListener {
         InventoryResponse.InventoryBean inventoryBean;
         @ViewInject(R.id.tv_item_inventory_date)
         TextView tvInventoryDate;
@@ -758,13 +775,13 @@ public class OrderAdapter extends IBaseAdapter {
 
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.tv_item_inventory_cancel:
                     //本地删除
-                    if(callback!=null)callback.cancelInventory(inventoryBean);
+                    if (callback != null) callback.cancelInventory(inventoryBean);
                     break;
                 case R.id.cv_inventory_root:
-                    if(callback!=null)callback.gotoInventory(inventoryBean);
+                    if (callback != null) callback.gotoInventory(inventoryBean);
                     break;
             }
         }

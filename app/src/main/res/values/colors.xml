@@ -50,4 +50,7 @@
     <color name="stock_4_days">#999999</color>
     <color name="stock_4_days_bg">#FFF5F5F5</color>
     <color name="inventory_changed_bg">#FFF3FBED</color>
+    <color name="order_state_clickable">#1A84FF</color>
+    <color name="receive_count">#FFE64340</color>
+    <color name="receive_input_count">#343434</color>
 </resources>

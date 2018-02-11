@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="香糯汤圆黑芝麻口味"
+        android:textColor="#444444"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_name"
+        android:layout_below="@id/tv_name"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:lineSpacingExtra="7dp"
+        android:maxLines="3"
+        android:text="3000000002 [满芬牌]100克/袋,10袋/盒"
+        android:textColor="#999999"
+        android:textSize="11sp" />
+
+    <LinearLayout
+        android:id="@+id/countLL"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_old_product_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13dp"
+            android:textColor="#999999"
+            android:text="x10"
+            />
+        <TextView
+            android:id="@+id/tv_new_product_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp"
+            android:textColor="#2E2E2E"
+            android:text="11袋"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

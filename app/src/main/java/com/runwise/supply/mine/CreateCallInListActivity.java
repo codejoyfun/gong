@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -28,7 +27,6 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -38,13 +36,13 @@ import com.runwise.supply.orderpage.ProductActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.CreateCallInListRequest;
-import com.runwise.supply.orderpage.entity.DefaultPBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.orderpage.entity.StoreResponse;
 import com.runwise.supply.tools.DataClickListener;
 import com.runwise.supply.tools.DataTextWatch;
 import com.runwise.supply.view.NoWatchEditText;
+import com.umeng.analytics.MobclickAgent;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -58,7 +56,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
 
-import static com.runwise.supply.R.id.mTv;
 import static com.runwise.supply.R.id.tv_edit_or_finish;
 import static com.runwise.supply.orderpage.ProductActivity.INTENT_KEY_BACKAP;
 
@@ -229,6 +226,9 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 @Override
                 public void onOptionsSelect(int options1, int options2, int options3, View v) {
                     //返回的分别是三个级别的选中位置
+                    if(mStoreResponse == null ||mStoreResponse.getList().size() == 0){
+                        return;
+                    }
                     String tx = mStoreResponse.getList().get(options1).getShopName();
                     mTvCallOutStore.setText(tx);
                     selectShopIndex = options1;
@@ -590,5 +590,19 @@ public class CreateCallInListActivity extends NetWorkActivity {
             TextView tv_count;
 
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("创建调拨单页面");
+        MobclickAgent.onResume(this);          //统计时长
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("创建调拨单页面");
+        MobclickAgent.onPause(this);          //统计时长
     }
 }

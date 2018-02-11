@@ -17,7 +17,6 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
-import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
@@ -32,6 +31,7 @@ import com.runwise.supply.entity.TransferListResponse;
 import com.runwise.supply.orderpage.TransferOutActivity;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.DecimalFormat;
 
@@ -45,7 +45,7 @@ import static com.runwise.supply.TransferDetailActivity.EXTRA_TRANSFER_ID;
  * Created by Dong on 2017/10/10.
  */
 
-public class TransferListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener {
+public class TransferListFragment extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
 
     public static final String ARG_KEY_TYPE = "type";
     public static final int TYPE_IN = 0;
@@ -149,7 +149,12 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
                 }
                 return;
         }
-        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+
+        if (where == REQUEST_REFRESH && errMsg.equals(getResources().getString(R.string.network_error))){
+                mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }else{
+            mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        }
         mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
             @Override
             public void retryOnClick(View view) {
@@ -190,6 +195,19 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
     public void onResume() {
         super.onResume();
         refresh();
+        switch(mType){
+            case TYPE_IN:
+                MobclickAgent.onPageStart("调入单列表"); //统计页面，"MainScreen"为页面名称，可自定义
+                break;
+            case TYPE_OUT:
+                MobclickAgent.onPageStart("调出单列表"); //统计页面，"MainScreen"为页面名称，可自定义
+                break;
+        }
+    }
+
+    @Override
+    public void retryOnClick(View view) {
+
     }
 
     /**
@@ -439,4 +457,17 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         Object request = null;
         sendConnection("/gongfu/shop/transfer/cancel/" + transferEntity.getPickingID(), request, REQUEST_CANCEL_TRANSFER, true, null);
     }
+    @Override
+    public void onPause() {
+        super.onPause();
+        switch(mType){
+            case TYPE_IN:
+                MobclickAgent.onPageEnd("调入单列表"); //统计页面，"MainScreen"为页面名称，可自定义
+                break;
+            case TYPE_OUT:
+                MobclickAgent.onPageEnd("调出单列表"); //统计页面，"MainScreen"为页面名称，可自定义
+                break;
+        }
+    }
+
 }
