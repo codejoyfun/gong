@@ -378,7 +378,7 @@ public class MineFragment extends NetWorkFragment {
                 refreshProcument();
                 break;
             case R.id.ll_cai_gou_e:
-                if (SPUtils.isLogin(getActivity())) {
+                if (SPUtils.isLogin(getActivity())&&sumMoneyData != null) {
                     intent = new Intent(mContext, ProcurementLimitActivity.class);
                     intent.putExtra(KEY_SUM_MONEY_DATA, sumMoneyData);
                     startActivity(intent);

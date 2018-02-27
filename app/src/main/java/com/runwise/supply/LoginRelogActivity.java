@@ -8,6 +8,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -135,8 +136,30 @@ public class LoginRelogActivity extends NetWorkActivity {
 
     private void requestRegistration(){
         RegistrationRequest registrationRequest = new RegistrationRequest();
-        registrationRequest.setIos_registration_id(JPushInterface.getRegistrationID(this));
-        this.sendConnection("/gongfu/registration_id", registrationRequest, REQUEST_REGISTRATION, true, null);
+        String registrationID = JPushInterface.getRegistrationID(this);
+//        设备号为空
+        if (TextUtils.isEmpty(registrationID)){
+            registrationID = CommonUtils.getDeviceId(getActivityContext());
+            //弹出提示,手机获取不了设备号，可能导致接收不到推送，确定登录？
+            dialog.setTitleGone();
+            dialog.setMessage("手机获取不了设备号，可能导致接收不到推送，确定登录？");
+            dialog.setMessageGravity();
+            dialog.setModel(CustomDialog.BOTH);
+            String finalRegistrationID = registrationID;
+            dialog.setRightBtnListener("确定", new CustomDialog.DialogListener() {
+                @Override
+                public void doClickButton(Button btn, CustomDialog dialog) {
+                    registrationRequest.setIos_registration_id(finalRegistrationID);
+                    sendConnection("/gongfu/registration_id", registrationRequest, REQUEST_REGISTRATION, true, null);
+
+                }
+            });
+            dialog.setLeftBtnListener("取消", null);
+            dialog.show();
+        }else{
+            registrationRequest.setIos_registration_id(registrationID);
+            this.sendConnection("/gongfu/registration_id", registrationRequest, REQUEST_REGISTRATION, true, null);
+        }
     }
 
     @Override

@@ -61,6 +61,7 @@ import cn.jpush.android.api.JPushInterface;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_COMPANY_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_HOST;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PASSWORD;
 import static com.runwise.supply.FindPasswordActivity.INTENT_KEY_COMPANY_NAME;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_FAILED;
 import static com.runwise.supply.tools.FingerprintHelper.STATUS_SUCCEED;
@@ -342,6 +343,7 @@ public class LoginActivity extends NetWorkActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                SPUtils.put(getActivityContext(),FILE_KEY_PASSWORD,loginRequest.getPassword());
                 GlobalApplication.getInstance().saveUserInfo(userInfoData);
 //				ToastUtil.show(mContext,"登录成功");
                 //@libin added

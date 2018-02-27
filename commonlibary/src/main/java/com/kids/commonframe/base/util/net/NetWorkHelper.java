@@ -659,6 +659,9 @@ public class NetWorkHelper<T extends BaseEntity> {
             if (newWorkCallBack != null) {
                 BaseEntity baseEntity = new BaseEntity();
                 baseEntity.setMsg(error.getMessage());
+                if (errorMsg.contains("Session Expired")){
+                    errorMsg = context.getString(R.string.session_expired);
+                }
                 newWorkCallBack.onFailure(errorMsg, (T) baseEntity, what);
                 UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+error.getMessage());
             }
@@ -712,6 +715,9 @@ public class NetWorkHelper<T extends BaseEntity> {
                     SelfOrderTimeStatisticsUtil.clear();
 //					ToastUtil.show(context,"登陆过期，请重新登陆");
                 }
+            }
+            if (errorMsg.contains("Session Expired")){
+                errorMsg = context.getString(R.string.session_expired);
             }
             newWorkCallBack.onFailure(errorMsg, response, what);
             if (response.getError() != null){

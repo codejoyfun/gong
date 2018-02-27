@@ -150,8 +150,8 @@ public class PriceActivity extends NetWorkActivity implements LoadingLayoutInter
         }
 
         productDataFragmentList.add(0, newPriceListFragment((ArrayList<ProductData.ListBean>) listBeen));
-        initUI(titles, productDataFragmentList);
         initPopWindow((ArrayList<String>) titles);
+        initUI(titles, productDataFragmentList);
     }
 
     private void initUI(List<String> titles, List<Fragment> priceFragmentList) {

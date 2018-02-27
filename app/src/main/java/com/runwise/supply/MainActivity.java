@@ -18,13 +18,14 @@ import com.anthonycr.grant.PermissionsResultAction;
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.CheckVersionManager;
+import com.kids.commonframe.base.LoginData;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
-import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
@@ -32,6 +33,7 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.runwise.supply.entity.LoginRequest;
 import com.runwise.supply.entity.RemUser;
 import com.runwise.supply.entity.UnReadData;
 import com.runwise.supply.entity.UpdateTimeRequest;
@@ -62,12 +64,8 @@ import java.util.List;
 import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.Log;
 
-//import com.socketmobile.capture.Capture;
-//import com.socketmobile.capture.client.CaptureClient;
-//import com.socketmobile.capture.client.CaptureDeviceClient;
-//import com.socketmobile.capture.events.DataDecodedEvent;
-//import com.socketmobile.capture.events.DeviceAvailabilityEvent;
-//import com.socketmobile.capture.types.DecodedData;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PASSWORD;
+
 
 public class MainActivity extends NetWorkActivity {
     public static final String INTENT_KEY_TAB = "tab";
@@ -76,6 +74,7 @@ public class MainActivity extends NetWorkActivity {
     private final int REQUEST_UNREAD = 2;
     private final int REQUEST_UPLOAD_VERSION = 3;
     private final int REQUEST_SYSTEM_UPGRADE_TIME = 4;
+    private final int REQUEST_LOGIN = 5;
     private static final int CHECK_UPGRADE_INTERVAL = 1000 * 60 * 10;//10分钟查询间隔
 
     //    private int devicesConnected = -1;
@@ -108,7 +107,7 @@ public class MainActivity extends NetWorkActivity {
             ProductBasicUtils.setBasicArr(basicList);
             HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
             mDbUtils.configAllowTransaction(true);
-            try{
+            try {
                 mDbUtils.saveOrUpdateAll(basicList);
                 for (ProductBasicList.ListBean bean : basicList) {
                     map.put(String.valueOf(bean.getProductID()), bean);
@@ -116,17 +115,17 @@ public class MainActivity extends NetWorkActivity {
 //                dbUtils = MyDbUtil.create(MainActivity.this);
                 List<ProductBasicList.ListBean> list = mDbUtils.findAll(ProductBasicList.ListBean.class);
 //                Log.d("haha","total in db:"+list.size());
-                for(ProductBasicList.ListBean bean:list){
-                    String keyId = bean.getProductID()+"";
-                    if(!map.containsKey(keyId)){
-                        if(bean.getImage()==null){//TODO:xutils的坑，没有load imagebean？
+                for (ProductBasicList.ListBean bean : list) {
+                    String keyId = bean.getProductID() + "";
+                    if (!map.containsKey(keyId)) {
+                        if (bean.getImage() == null) {//TODO:xutils的坑，没有load imagebean？
                             bean.setImage(new ImageBean());
                         }
-                        map.put(keyId,bean);
+                        map.put(keyId, bean);
                     }
                 }
                 ProductBasicUtils.setBasicMap(map);
-            }catch(DbException e){
+            } catch (DbException e) {
                 e.printStackTrace();
             }
 
@@ -154,6 +153,7 @@ public class MainActivity extends NetWorkActivity {
 //        }
 //    };
     String[] mTags;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -165,8 +165,8 @@ public class MainActivity extends NetWorkActivity {
         upLoadVersion();
         isLogin = SPUtils.isLogin(mContext);
         if (isLogin) {
-            Constant.BASE_URL = (String) SPUtils.get(getActivityContext(),SPUtils.FILE_KEY_HOST, "");
-            if (TextUtils.isEmpty(Constant.BASE_URL)){
+            Constant.BASE_URL = (String) SPUtils.get(getActivityContext(), SPUtils.FILE_KEY_HOST, "");
+            if (TextUtils.isEmpty(Constant.BASE_URL)) {
                 logout();
                 return;
             }
@@ -174,7 +174,7 @@ public class MainActivity extends NetWorkActivity {
             //检查版本
             CheckVersionManager checkVersionManager = new CheckVersionManager(this);
             checkVersionManager.checkVersion(false);
-        }else{
+        } else {
             Constant.BASE_URL = Constant.UNLOGIN_URL;
         }
         initTabView();
@@ -191,7 +191,7 @@ public class MainActivity extends NetWorkActivity {
         String tab3 = getString(R.string.tab_3);
         String tab4 = getString(R.string.tab_4);
         String tab5 = getString(R.string.tab_5);
-        mTags = new String[]{tab1,tab2,tab3,tab4,tab5};
+        mTags = new String[]{tab1, tab2, tab3, tab4, tab5};
         if (getIntent().getBooleanExtra(INTENT_KEY_SKIP_TO_LOGIN, false)) {
             startActivity(new Intent(getActivityContext(), LoginActivity.class));
         } else {
@@ -199,7 +199,7 @@ public class MainActivity extends NetWorkActivity {
         }
     }
 
-    private void logout(){
+    private void logout() {
         SPUtils.loginOut(mContext);
         SelfOrderTimeStatisticsUtil.clear();
         MessageFragment.isLogin = false;
@@ -209,7 +209,7 @@ public class MainActivity extends NetWorkActivity {
         ActivityManager.getInstance().finishAll();
         EventBus.getDefault().post(new UserLogoutEvent());
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
+        intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN, true);
         startActivity(intent);
     }
 
@@ -253,14 +253,14 @@ public class MainActivity extends NetWorkActivity {
         mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
-                for (int i = 0;i<mTags.length;i++){
+                for (int i = 0; i < mTags.length; i++) {
                     Fragment fragment = getSupportFragmentManager().findFragmentByTag(mTags[i]);
-                    if (fragment!=null){
+                    if (fragment != null) {
                         fragment.setUserVisibleHint(false);
                     }
                 }
                 Fragment fragment = getSupportFragmentManager().findFragmentByTag(tabId);
-                if (fragment!=null){
+                if (fragment != null) {
                     fragment.setUserVisibleHint(true);
                 }
             }
@@ -301,7 +301,7 @@ public class MainActivity extends NetWorkActivity {
             case REQUEST_UNREAD:
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
                 DetailResult.ListBean bean = PlatformNotificationManager.getInstance(this).getLastMessage();
-                if (unReadData.getUnread() || (bean!=null && !bean.isSeen())) {
+                if (unReadData.getUnread() || (bean != null && !bean.isSeen())) {
 //                    mMsgHite.setVisibility(View.VISIBLE);
                 } else {
 //                    mMsgHite.setVisibility(View.GONE);
@@ -309,8 +309,8 @@ public class MainActivity extends NetWorkActivity {
 //                LogUtils.e("onSuccessTime REQUEST_UNREAD "+String.valueOf(System.currentTimeMillis() - mTimeStartREQUEST_UNREAD));
                 break;
             case REQUEST_SYSTEM_UPGRADE_TIME:
-                UpdateTimeResponse response = (UpdateTimeResponse)result.getResult().getData();
-                SystemUpgradeHelper.getInstance(this).create(response.getStartDate(),response.getEndDate());
+                UpdateTimeResponse response = (UpdateTimeResponse) result.getResult().getData();
+                SystemUpgradeHelper.getInstance(this).create(response.getStartDate(), response.getEndDate());
                 break;
             default:
                 break;
@@ -342,6 +342,7 @@ public class MainActivity extends NetWorkActivity {
 //        if (SPUtils.isLogin(mContext)){
 //            queryProductList();
 //        }URL	http://develop.runwise.cn/gongfu/message/unread/
+        login();
         if (isLogin) {
             Object request = null;
             sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
@@ -350,18 +351,18 @@ public class MainActivity extends NetWorkActivity {
             //查询系统更新
             long currentTime = System.currentTimeMillis();
             UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
-            if(userInfo==null)return;
+            if (userInfo == null) return;
             DbUtils db = MyDbUtil.create(this);
-            try{
+            try {
                 RemUser rem = db.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
-                if(rem!=null && currentTime - lastSystemQuery > CHECK_UPGRADE_INTERVAL){//10 minutes
+                if (rem != null && currentTime - lastSystemQuery > CHECK_UPGRADE_INTERVAL) {//10 minutes
                     lastSystemQuery = currentTime;
                     //get company name
                     Object systemUpdateTimeRequest = new UpdateTimeRequest(rem.getCompany());
-                    sendConnection(Constant.UNLOGIN_URL,"/api/system/update",systemUpdateTimeRequest,
-                            REQUEST_SYSTEM_UPGRADE_TIME,false,UpdateTimeResponse.class,true);
+                    sendConnection(Constant.UNLOGIN_URL, "/api/system/update", systemUpdateTimeRequest,
+                            REQUEST_SYSTEM_UPGRADE_TIME, false, UpdateTimeResponse.class, true);
                 }
-            }catch (DbException e){
+            } catch (DbException e) {
                 e.printStackTrace();
             }
 
@@ -395,8 +396,8 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        int tabIndex = intent.getIntExtra(INTENT_KEY_TAB,-1);
-        if(tabIndex!=-1)gotoTabByIndex(tabIndex);
+        int tabIndex = intent.getIntExtra(INTENT_KEY_TAB, -1);
+        if (tabIndex != -1) gotoTabByIndex(tabIndex);
     }
 
     @Override
@@ -417,7 +418,7 @@ public class MainActivity extends NetWorkActivity {
     }
 
     @Subscribe
-    public void refresh(PlatformNotificationEvent event){
+    public void refresh(PlatformNotificationEvent event) {
 //        mMsgHite.setVisibility(View.VISIBLE);
     }
 
@@ -472,7 +473,7 @@ public class MainActivity extends NetWorkActivity {
 //        ((TextView) findViewById(R.id.hello_scan)).append("\n" + message);
     }
 
-    private void upLoadVersion(){
+    private void upLoadVersion() {
         VersionRequest versionRequest = new VersionRequest();
         versionRequest.setVersion_name("安卓" + CommonUtils.getVersionName(this));
         sendConnection("/gongfu/v2/user/app/version/", versionRequest, REQUEST_UPLOAD_VERSION, false, null);
@@ -494,5 +495,23 @@ public class MainActivity extends NetWorkActivity {
     //跳转到哪个tab页下面
     public void gotoTabByIndex(int index) {
         mTabHost.setCurrentTab(index);
+    }
+
+    private void login() {
+        Object object = SPUtils.readObject(getActivityContext(), SPUtils.FILE_KEY_USER_INFO);
+        if (object != null) {
+            UserInfo userInfo = (UserInfo) object;
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setLogin(userInfo.getLogin());
+            String password = (String) SPUtils.get(getActivityContext(), FILE_KEY_PASSWORD, "");
+            if (TextUtils.isEmpty(password)) {
+                return;
+            }
+            loginRequest.setPassword(password);
+            String registrationId = JPushInterface.getRegistrationID(this);
+            loginRequest.setRegistrationID(registrationId);
+            sendConnection("/gongfu/v2/authenticate", loginRequest, REQUEST_LOGIN, false, LoginData.class);
+        }
+
     }
 }

@@ -748,16 +748,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 //如果每样商品数量不一致，则提示:收货数量与订单不一致，是否确认收货?
                 //如果无批次，提示请认真核对商品数量，确认收货无法修改哦！
                 //如果有批次，提示
-                boolean hasLotTracking = false;
-                for (OrderResponse.ListBean.LinesBean bean : datas) {
-                    //检查是否是批次
-                    final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
-                    if("lot".equals(basicBean.getTracking())){
-                        hasLotTracking = true;
-                        break;
-                    }
-                }
-                String tip = hasLotTracking && TYPE_VENDOR_DELIVERY.equals(lbean.getDeliveryType()) ?
+                String tip = TYPE_VENDOR_DELIVERY.equals(lbean.getDeliveryType()) ?
                         "请认真核对商品数量和生产日期,确认收货后无法修改哦！":"请认真核对商品数量，确认收货无法修改哦！";
                 if (mode == 2) {
                     tip = "确认完成收货?";

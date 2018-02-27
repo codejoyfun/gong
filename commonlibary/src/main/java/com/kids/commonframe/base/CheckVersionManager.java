@@ -12,6 +12,7 @@ import com.kids.commonframe.base.bean.CheckVersionRequest;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.UmengUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomUpdateDialog;
 import com.kids.commonframe.config.Constant;
@@ -23,13 +24,12 @@ import java.io.File;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_COMPANY_NAME;
-import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_DB_NAME;
 
 /**
  * 版本管理器
  */
 public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEntity> {
-    public interface CheckVersionListener{
+    public interface CheckVersionListener {
     }
 
     private final int REQUEST_CHECK_VERSION = 1;
@@ -59,25 +59,25 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         CheckVersionRequest checkVersionRequest = new CheckVersionRequest();
         checkVersionRequest.setVersion(CommonUtils.getVersionCode(baseActivity));
         checkVersionRequest.setTag("Android");
-        checkVersionRequest.setCompanyName((String) SPUtils.get(baseActivity,FILE_KEY_COMPANY_NAME,""));
+        checkVersionRequest.setCompanyName((String) SPUtils.get(baseActivity, FILE_KEY_COMPANY_NAME, ""));
 
-        netWorkHelper.sendConnection(Constant.UNLOGIN_URL,"/api/app/release/latest/version",checkVersionRequest,REQUEST_CHECK_VERSION,false,VersionUpdateResponse.class,true);
+        netWorkHelper.sendConnection(Constant.UNLOGIN_URL, "/api/app/release/latest/version", checkVersionRequest, REQUEST_CHECK_VERSION, false, VersionUpdateResponse.class, true);
         if (showToast) {
-            ToastUtil.show(baseActivity,"检查更新中...");
+            ToastUtil.show(baseActivity, "检查更新中...");
         }
     }
 
     public void startDownloadFile(String remoteUrl) {
 //        remoteUrl = netWorkHelper.getHost(remoteUrl)+remoteUrl;
         File remoteFile = new File(remoteUrl);
-        localFile = new File(CommonUtils.getCachePath(baseActivity),remoteFile.getName());
+        localFile = new File(CommonUtils.getCachePath(baseActivity), remoteFile.getName());
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
 
-        String header = (String) SPUtils.get(baseActivity, FILE_KEY_DB_NAME,"");
-        if(!TextUtils.isEmpty(header))downloadTask.addHeader("X-Odoo-Db", header);
+//        String header = (String) SPUtils.get(baseActivity, FILE_KEY_DB_NAME, "");
+//        if (!TextUtils.isEmpty(header)) downloadTask.addHeader("X-Odoo-Db", header);
+
 
         downloadTask.setPath(localFile.getAbsolutePath())
-                //.addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME))
                 .setCallbackProgressMinInterval(1000)
                 .setListener(new FileDownloadListener() {
                     @Override
@@ -90,7 +90,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
 
                     @Override
                     protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                        updateNotification((int) (soFarBytes* 100f) / totalBytes);
+                        updateNotification((int) (soFarBytes * 100f) / totalBytes);
                     }
 
                     @Override
@@ -104,7 +104,20 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                     @Override
                     protected void completed(BaseDownloadTask task) {
                         deleteNotification();
-                        CommonUtils.installApk(baseActivity,localFile.getAbsolutePath());
+                        try {
+//                            1M=1024k=1048576字节
+                            if (localFile.length() <= 10 * 1048576) {
+                                UmengUtil.reportError(baseActivity, "安装apk报错: 安裝包下載不完整");
+                                goToBrowser();
+                                return;
+                            }
+                            CommonUtils.installApk(baseActivity, localFile.getAbsolutePath());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            //友盟报告错误
+                            UmengUtil.reportError(baseActivity, "安装apk报错: " + e.toString());
+                            goToBrowser();
+                        }
                     }
 
                     @Override
@@ -114,25 +127,34 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                     @Override
                     protected void error(BaseDownloadTask task, Throwable e) {
                         deleteNotification();
-                        ToastUtil.show(baseActivity,"下载错误,请重试或在网页下载安装");
-                        Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_DOWNLOAD));
-                        baseActivity.startActivity(it);
+                        goToBrowser();
                     }
 
                     @Override
                     protected void warn(BaseDownloadTask task) {
                     }
                 });
-        if(downloadTask.isReusedOldFile()) {
-            CommonUtils.installApk(baseActivity,localFile.getAbsolutePath());
-        }
-        else {
+        if (downloadTask.isReusedOldFile()) {
+            if (localFile.length() <= 10 * 1048576) {
+                UmengUtil.reportError(baseActivity, "安装apk报错: 安裝包下載不完整");
+                goToBrowser();
+                return;
+            }
+            CommonUtils.installApk(baseActivity, localFile.getAbsolutePath());
+        } else {
             downloadTask.start();
-            ToastUtil.show(baseActivity,"更新下载中...");
+            ToastUtil.show(baseActivity, "更新下载中...");
         }
     }
+
+    private void goToBrowser() {
+        ToastUtil.show(baseActivity, "下载错误,请重试或在网页下载安装");
+        Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_DOWNLOAD));
+        baseActivity.startActivity(it);
+    }
+
     private void initNofBuilder() {
-        if( mBuilder == null ) {
+        if (mBuilder == null) {
             mBuilder = new NotificationCompat.Builder(baseActivity);
             mBuilder.setTicker("下载通知") //通知首次出现在通知栏，带上升动画效果的
                     .setWhen(System.currentTimeMillis())//通知产生的时间，会在通知信息里显示，一般是系统获取到的时间
@@ -146,15 +168,14 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
     private void updateNotification(int progress) {
         initNofBuilder();
         mBuilder.setContentTitle("正在下载更新");
-        if(progress == 100) {
-            mBuilder.setProgress(0,0,false)
+        if (progress == 100) {
+            mBuilder.setProgress(0, 0, false)
                     .setContentText("下载完成");
+        } else {
+            mBuilder.setContentText("完成" + progress + "%")
+                    .setProgress(100, progress, false);
         }
-        else {
-            mBuilder.setContentText("完成"+progress+"%")
-                    .setProgress(100,progress,false);
-        }
-        mNotificationManager.notify(notificationId,mBuilder.build());
+        mNotificationManager.notify(notificationId, mBuilder.build());
     }
 
     private void deleteNotification() {
@@ -172,35 +193,35 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
             case REQUEST_CHECK_VERSION:
                 VersionUpdateResponse updateResponse = (VersionUpdateResponse) result.getResult().getData();
                 String latestVersion = updateResponse.getVersionName();
-                if(TextUtils.isEmpty(latestVersion) || TextUtils.isEmpty(updateResponse.getUrl()))return;
+                if (TextUtils.isEmpty(latestVersion) || TextUtils.isEmpty(updateResponse.getUrl()))
+                    return;
 
-                try{
+                try {
                     int intLatestVersion = Integer.valueOf(latestVersion);
                     int intCurrentVersion = Integer.valueOf(CommonUtils.getVersionCode(baseActivity));
-                    if(intLatestVersion > intCurrentVersion){
-                        CustomUpdateDialog customUpdateDialog = new CustomUpdateDialog(baseActivity,updateResponse,CheckVersionManager.this);
-                        if(!baseActivity.isFinishing()) {
+                    if (intLatestVersion > intCurrentVersion) {
+                        CustomUpdateDialog customUpdateDialog = new CustomUpdateDialog(baseActivity, updateResponse, CheckVersionManager.this);
+                        if (!baseActivity.isFinishing()) {
                             customUpdateDialog.show();
                         }
-                    }else {
-                        if(showToast) {
-                            ToastUtil.show(baseActivity,"已是最新版本");
+                    } else {
+                        if (showToast) {
+                            ToastUtil.show(baseActivity, "已是最新版本");
                         }
                     }
                     return;
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                if(!latestVersion.equals(CommonUtils.getVersionCode(baseActivity))) {
-                    CustomUpdateDialog customUpdateDialog = new CustomUpdateDialog(baseActivity,updateResponse,CheckVersionManager.this);
-                    if(!baseActivity.isFinishing()) {
+                if (!latestVersion.equals(CommonUtils.getVersionCode(baseActivity))) {
+                    CustomUpdateDialog customUpdateDialog = new CustomUpdateDialog(baseActivity, updateResponse, CheckVersionManager.this);
+                    if (!baseActivity.isFinishing()) {
                         customUpdateDialog.show();
                     }
-                }
-                else {
-                    if(showToast) {
-                        ToastUtil.show(baseActivity,"已是最新版本");
+                } else {
+                    if (showToast) {
+                        ToastUtil.show(baseActivity, "已是最新版本");
                     }
                 }
                 break;

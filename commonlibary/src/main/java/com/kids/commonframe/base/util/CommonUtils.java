@@ -211,9 +211,8 @@ public class CommonUtils {
 	 * @return
 	 */
 	public static final String createIMSI() {
-		StringBuffer strbuf = new StringBuffer();
-		for(int i = 0; i < 15; i++) strbuf.append(random.nextInt(10));
-		return strbuf.toString();
+		String uuid=java.util.UUID.randomUUID().toString();
+		return uuid;
 	}
 	/**
 	 * 返回电话的IMEI:手机的唯一标识码
