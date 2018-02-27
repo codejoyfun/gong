@@ -296,22 +296,24 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         bean.setNum(checkResultBean.getNum());
         bean.setState(checkResultBean.getState());
         bean.setLines(new ArrayList<>());
-        for(PandianResult.InventoryBean.LinesBean linesBean:checkResultBean.getLines()){
-            InventoryResponse.InventoryProduct product = new InventoryResponse.InventoryProduct();
-            product.setLotList(linesBean.getLotList());
-            product.setProduct(linesBean.getProduct());
-            product.setProductID(linesBean.getProductID());
-            product.setActualQty(linesBean.getActualQty());
-            product.setCode(linesBean.getCode());
-            product.setDiff((int)linesBean.getDiff());
-            product.setInventoryLineID(linesBean.getInventoryLineID());
-            product.setLifeEndDate(linesBean.getLifeEndDate());
-            product.setLotID(linesBean.getLotID());
-            product.setLotNum(linesBean.getLotNum());
-            product.setTheoreticalQty(linesBean.getTheoreticalQty());
-            product.setUnitPrice(linesBean.getUnitPrice());
-            product.setUom(linesBean.getUom());
-            bean.getLines().add(product);
+        if (checkResultBean.getLines()!= null){
+            for(PandianResult.InventoryBean.LinesBean linesBean:checkResultBean.getLines()){
+                InventoryResponse.InventoryProduct product = new InventoryResponse.InventoryProduct();
+                product.setLotList(linesBean.getLotList());
+                product.setProduct(linesBean.getProduct());
+                product.setProductID(linesBean.getProductID());
+                product.setActualQty(linesBean.getActualQty());
+                product.setCode(linesBean.getCode());
+                product.setDiff((int)linesBean.getDiff());
+                product.setInventoryLineID(linesBean.getInventoryLineID());
+                product.setLifeEndDate(linesBean.getLifeEndDate());
+                product.setLotID(linesBean.getLotID());
+                product.setLotNum(linesBean.getLotNum());
+                product.setTheoreticalQty(linesBean.getTheoreticalQty());
+                product.setUnitPrice(linesBean.getUnitPrice());
+                product.setUom(linesBean.getUom());
+                bean.getLines().add(product);
+            }
         }
         return bean;
     }

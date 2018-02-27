@@ -12,6 +12,7 @@ import com.kids.commonframe.base.bean.CheckVersionRequest;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.UmengUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomUpdateDialog;
 import com.kids.commonframe.config.Constant;
@@ -74,10 +75,10 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
 
         String header = (String) SPUtils.get(baseActivity, FILE_KEY_DB_NAME,"");
-//        if(!TextUtils.isEmpty(header))downloadTask.addHeader("X-Odoo-Db", header);
+        if(!TextUtils.isEmpty(header))downloadTask.addHeader("X-Odoo-Db", header);
+
 
         downloadTask.setPath(localFile.getAbsolutePath())
-                //.addHeader("X-Odoo-Db", (String) SPUtils.get(baseActivity, "X-Odoo-Db", DEFAULT_DATABASE_NAME))
                 .setCallbackProgressMinInterval(1000)
                 .setListener(new FileDownloadListener() {
                     @Override
@@ -104,7 +105,14 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                     @Override
                     protected void completed(BaseDownloadTask task) {
                         deleteNotification();
-                        CommonUtils.installApk(baseActivity,localFile.getAbsolutePath());
+                        try{
+                            CommonUtils.installApk(baseActivity,localFile.getAbsolutePath());
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            //友盟报告错误
+                            UmengUtil.reportError(baseActivity, "安装apk报错: "+e.toString());
+                            goToBrowser();
+                        }
                     }
 
                     @Override
@@ -114,9 +122,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                     @Override
                     protected void error(BaseDownloadTask task, Throwable e) {
                         deleteNotification();
-                        ToastUtil.show(baseActivity,"下载错误,请重试或在网页下载安装");
-                        Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_DOWNLOAD));
-                        baseActivity.startActivity(it);
+                        goToBrowser();
                     }
 
                     @Override
@@ -131,6 +137,13 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
             ToastUtil.show(baseActivity,"更新下载中...");
         }
     }
+
+    private void goToBrowser(){
+        ToastUtil.show(baseActivity,"下载错误,请重试或在网页下载安装");
+        Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_DOWNLOAD));
+        baseActivity.startActivity(it);
+    }
+
     private void initNofBuilder() {
         if( mBuilder == null ) {
             mBuilder = new NotificationCompat.Builder(baseActivity);

@@ -94,4 +94,10 @@ public abstract class NetWorkActivity extends BaseActivity implements NetWorkHel
 		super.onStop();
 		netWorkHelper.onStopAllRequest();
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+	}
 }

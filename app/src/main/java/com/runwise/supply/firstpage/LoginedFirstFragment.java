@@ -193,7 +193,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 if (mSumMoneyData == null) {
                     return;
                 }
-                if (SPUtils.isLogin(getActivity())) {
+                if (SPUtils.isLogin(getActivity())&&mSumMoneyData != null) {
                     Intent intent = new Intent(mContext, ProcurementLimitActivity.class);
                     intent.putExtra(KEY_SUM_MONEY_DATA, mSumMoneyData);
                     startActivity(intent);

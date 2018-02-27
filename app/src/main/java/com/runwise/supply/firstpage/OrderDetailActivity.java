@@ -379,9 +379,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                     dragLayout.toggleTopView();
                     canShow = true;
                 } else {
-//                    if (mProductTypeWindow.isShowing()) {
-//                        mProductTypeWindow.dismiss();
-                    if (mTypeWindow.isShowing()) {
+                    if (mTypeWindow != null && mTypeWindow.isShowing()) {
                         mTypeWindow.dismiss();
                     } else {
                         showPopWindow();
@@ -397,7 +395,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                             }
                         } else {
                             //mProductTypeWindow.dismiss();//
-                            if (mTypeWindow != null){
+                            if (mTypeWindow != null) {
                                 mTypeWindow.dismiss();
                             }
                         }
@@ -426,9 +424,10 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
     boolean canShow = false;
 
     private void showPopWindow() {
+        if (mTypeWindow == null) {
+            return;
+        }
         int y = findViewById(R.id.title_bar).getHeight() + tablayout.getHeight();
-//        mProductTypeWindow.showAtLocation(getRootView(OrderDetailActivity.this), Gravity.NO_GRAVITY, 0, y);
-//        mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
         mTypeWindow.setSelect(viewpager.getCurrentItem());
         mTypeWindow.showAtLocation(getRootView(OrderDetailActivity.this), Gravity.NO_GRAVITY, 0, y);
         ivOpen.setImageResource(R.drawable.arrow_up);
@@ -508,7 +507,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         toast(errMsg);
-        if (DETAIL == where){
+        if (DETAIL == where) {
             loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
         }
     }
@@ -708,15 +707,15 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                 receivtTv.setVisibility(View.GONE);
                 countTv.setText((int) bean.getAmount() + "件");
             }
-            if (bean.isActualSendOrder()){
+            if (bean.isActualSendOrder()) {
                 mTvActualDelivery.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 mTvActualDelivery.setVisibility(View.GONE);
             }
 
 
-                //商品数量/预估金额
-                DecimalFormat df = new DecimalFormat("#.##");
+            //商品数量/预估金额
+            DecimalFormat df = new DecimalFormat("#.##");
             ygMoneyTv.setText("¥" + df.format(bean.getAmountTotal()));
 //            countTv.setText((int)bean.getAmount()+"件");
             //设置list
@@ -770,17 +769,12 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
             map.put(category, new ArrayList<ListBean.LinesBean>());
         }
         for (ListBean.LinesBean linesBean : listDatas) {
-            ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(linesBean.getProductID()));
-            if (listBean != null && !TextUtils.isEmpty(listBean.getCategory())) {
-                ArrayList<ListBean.LinesBean> linesBeen = map.get(listBean.getCategory());
-                if (linesBeen == null) {
-                    linesBeen = new ArrayList<>();
-                    map.put(listBean.getCategory(), linesBeen);
-                }
-                linesBeen.add(linesBean);
-            } else if (listBean == null) {//本地没有该商品数据
-                missingLinesBean.put(linesBean.getProductID(), linesBean);
+            ArrayList<ListBean.LinesBean> linesBeen = map.get(linesBean.getCategory());
+            if (linesBeen == null) {
+                linesBeen = new ArrayList<>();
+                map.put(linesBean.getCategory(), linesBeen);
             }
+            linesBeen.add(linesBean);
         }
         if (missingLinesBean != null && missingLinesBean.size() > 0) {
             //request server

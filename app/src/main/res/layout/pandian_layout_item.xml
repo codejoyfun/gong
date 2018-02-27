@@ -34,7 +34,7 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="黑鱼(大型)"
+            android:text="加载中..."
             android:textColor="#444444"
             android:textSize="16sp"
             />
@@ -98,7 +98,7 @@
              android:id="@+id/dateNumber"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="黑鱼(大型)"
+             android:text="加载中..."
              android:textColor="#444444"
              android:textSize="14sp"
              android:background="@drawable/repertory_bg"
