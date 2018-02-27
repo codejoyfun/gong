@@ -8,7 +8,6 @@ import android.os.Parcelable;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
-import com.runwise.supply.orderpage.entity.ProductData;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class OrderAgainActivity extends ProductActivityV2 {
     protected void initData(){
         List<OrderResponse.ListBean.LinesBean> list = mOrder.getLines();
         for (OrderResponse.ListBean.LinesBean lb : list) {
-            ProductData.ListBean listBean = new ProductData.ListBean();
+            ProductBasicList.ListBean listBean = new ProductBasicList.ListBean();
             ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(lb.getProductID());
             listBean.setProductID(lb.getProductID());
             listBean.setTracking(lb.getTracking());
@@ -48,19 +47,18 @@ public class OrderAgainActivity extends ProductActivityV2 {
             listBean.setRemark(lb.getRemark());
             if(mOrder.isNewType()){
                 listBean.setPrice(lb.getProductPrice());
-                listBean.setSettlePrice(lb.getProductSettlePrice()+"");
+                listBean.setSettlePrice((float) lb.getProductSettlePrice());
                 listBean.setImage(new ImageBean(lb.getImageMedium()));
                 listBean.setUom(lb.getProductUom());
             }else if(basicBean!=null){
                 listBean.setPrice(basicBean.getPrice());
-                listBean.setSettlePrice(basicBean.getSettlePrice()+"");
+                listBean.setSettlePrice(basicBean.getSettlePrice());
                 listBean.setImage(basicBean.getImage());
                 listBean.setUom(basicBean.getUom());
             }
             listBean.setName(lb.getName());
             listBean.setDefaultCode(lb.getDefaultCode());
             listBean.setCategory(lb.getCategory());
-            listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
             mMapCount.put(listBean,lb.getProductUomQty());
             mMapRemarks.put(listBean,lb.getRemark());

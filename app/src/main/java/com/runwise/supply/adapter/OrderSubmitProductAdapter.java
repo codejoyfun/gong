@@ -12,7 +12,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.List;
 
@@ -26,10 +26,10 @@ import io.vov.vitamio.utils.NumberUtil;
 
 public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitProductAdapter.ViewHolder>{
 
-    List<ProductData.ListBean> mListBeanList;
+    List<ProductBasicList.ListBean> mListBeanList;
     private boolean canSeePrice = false;
 
-    public OrderSubmitProductAdapter(List<ProductData.ListBean> listBeanList){
+    public OrderSubmitProductAdapter(List<ProductBasicList.ListBean> listBeanList){
         mListBeanList = listBeanList;
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
     }
@@ -42,16 +42,16 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ProductData.ListBean listBean = mListBeanList.get(position);
+        ProductBasicList.ListBean listBean = mListBeanList.get(position);
         if (listBean.getImage() != null){
             FrecoFactory.getInstance(holder.itemView.getContext()).disPlay(holder.mSdvProduct, Constant.BASE_URL+listBean.getImage().getImageSmall());
         }
         holder.mTvProductCount.setText(NumberUtil.getIOrD(listBean.getActualQty()));
         holder.mTvProductName.setText(listBean.getName());
-        holder.mTvProductUnit.setText(listBean.getUom());
+        holder.mTvProductUnit.setText(listBean.getSaleUom());
         holder.mTvRemark.setText(listBean.getRemark()==null?"":"备注："+listBean.getRemark());
         StringBuilder sb = new StringBuilder();
-        if(canSeePrice)sb.append("¥").append(NumberUtil.getIOrD(listBean.getPrice())).append("/").append(listBean.getProductUom()).append(" | ");
+        if(canSeePrice)sb.append("¥").append(NumberUtil.getIOrD(listBean.getPrice())).append("/").append(listBean.getSaleUom()).append(" | ");
         sb.append(listBean.getUnit());
         holder.mTvProductPrice.setText(sb.toString());
         if(TextUtils.isEmpty(listBean.getProductTag())){

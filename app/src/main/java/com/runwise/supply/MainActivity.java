@@ -128,8 +128,6 @@ public class MainActivity extends NetWorkActivity {
             } catch (DbException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 

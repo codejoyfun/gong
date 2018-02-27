@@ -15,14 +15,11 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
-import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
-import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.UserUtils;
 
 import io.vov.vitamio.utils.NumberUtil;
@@ -74,7 +71,7 @@ public class TempOrderActivity extends NetWorkActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder vh;
             vh  = (ViewHolder) holder;
-            final ProductData.ListBean bean = mTempOrder.getProductList().get(position);
+            final ProductBasicList.ListBean bean = mTempOrder.getProductList().get(position);
             int pId = bean.getProductID();
             FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(vh.productImage, bean.getImage().getImageSmall());
 

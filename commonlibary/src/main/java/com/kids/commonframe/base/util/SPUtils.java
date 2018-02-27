@@ -31,6 +31,7 @@ public class SPUtils {
     public static final String FILE_KEY_SELF_ORDER_ELAPSED_TIME = "file_key_self_order_elapsed_time";
     public static final String FILE_KEY_ALWAYS_ORDER_ELAPSED_TIME = "file_key_always_order_elapsed_time";
     public static final String FILE_KEY_SMART_ORDER_ELAPSED_TIME = "file_key_smart_order_elapsed_time";
+    public static final String FILE_KEY_VERSION_PRODUCT_LIST = "FILE_KEY_VERSION_PRODUCT_LIST";
 
 
 

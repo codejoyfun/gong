@@ -605,6 +605,9 @@
         <activity android:name=".orderpage.OrderSubmitActivity" />
         <activity android:name=".firstpage.OrderProductDiffActivity" />
         <activity android:name=".firstpage.MessageActivity"></activity>
+
+        <service android:name="com.runwise.supply.tools.RunwiseService"/>
+
     </application>
 
 </manifest>

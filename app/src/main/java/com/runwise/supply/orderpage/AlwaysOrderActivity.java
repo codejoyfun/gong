@@ -12,7 +12,7 @@ import com.kids.commonframe.base.util.AlwaysOrderTimestatisticsUtil;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;
 
@@ -91,7 +91,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
                 if (data == null || data.getList() == null || data.getList().size() == 0) {
                     //Toast.makeText(this,"小主，暂时不用采购哦~",Toast.LENGTH_LONG).show();
                 } else {
-                    for (ProductData.ListBean pBean : data.getList()) {
+                    for (ProductBasicList.ListBean pBean : data.getList()) {
                         mMapCount.put(pBean, pBean.getPresetQty());
                     }
                 }
@@ -134,9 +134,9 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
         checkValid(getSelectProductList());
     }
 
-    private ArrayList<ProductData.ListBean> getSelectProductList() {
-        ArrayList<ProductData.ListBean> list = new ArrayList<>();
-        for (ProductData.ListBean bean : mMapCount.keySet()) {
+    private ArrayList<ProductBasicList.ListBean> getSelectProductList() {
+        ArrayList<ProductBasicList.ListBean> list = new ArrayList<>();
+        for (ProductBasicList.ListBean bean : mMapCount.keySet()) {
             if (bean.isInvalid() || mMapCount.get(bean) == 0 || !mmSelected.contains(bean.getProductID()))
                 continue;
             bean.setActualQty(mMapCount.get(bean));

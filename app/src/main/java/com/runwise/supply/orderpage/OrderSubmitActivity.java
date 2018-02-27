@@ -35,7 +35,7 @@ import com.runwise.supply.entity.OrderChangedEvent;
 import com.runwise.supply.entity.OrderCommitResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.DateServiceDialog;
 import com.umeng.analytics.MobclickAgent;
@@ -110,7 +110,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     public static final String INTENT_KEY_ORDER = "intent_key_order";
     OrderResponse.ListBean mOrder;
 
-    private ArrayList<ProductData.ListBean> mProductList;//选择的商品
+    private ArrayList<ProductBasicList.ListBean> mProductList;//选择的商品
     private TempOrderManager.TempOrder mTempOrder;//本地记录提交中的订单
     private boolean isSelfHelpOrder;//是否一般下单流程，是的话需要清空购物车缓存；再来一单、智能下单不需要清空购物车
     protected int mPlaceOrderType;
@@ -159,7 +159,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         updateBottomBar();
     }
 
-    List<ProductData.ListBean> getProductData() {
+    List<ProductBasicList.ListBean> getProductData() {
         mProductList = getIntent().getParcelableArrayListExtra(INTENT_KEY_PRODUCTS);
         return mProductList;
     }
@@ -385,7 +385,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         request.setOrder_type_id("121");
         List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
-        for (ProductData.ListBean bean : mProductList) {
+        for (ProductBasicList.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
             double qty = bean.getActualQty();
@@ -445,7 +445,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         CommitOrderRequest request = new CommitOrderRequest();
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
-        for (ProductData.ListBean bean : mProductList) {
+        for (ProductBasicList.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
             double qty = bean.getActualQty();
@@ -470,7 +470,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     protected void updateBottomBar() {
         double totalMoney = 0;
         double totalNum = 0;
-        for (ProductData.ListBean bean : mProductList) {
+        for (ProductBasicList.ListBean bean : mProductList) {
             totalMoney = totalMoney + bean.getPrice() * bean.getActualQty();
             totalNum = totalNum + bean.getActualQty();
         }

@@ -1,6 +1,6 @@
 package com.runwise.supply.event;
 
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 /**
  * Created by Dong on 2017/11/22.
@@ -19,12 +19,12 @@ public class ProductCountUpdateEvent {
     Object exception;
 
     public ProductCountUpdateEvent(){}
-    public ProductCountUpdateEvent(ProductData.ListBean listBean,double count){
+    public ProductCountUpdateEvent(ProductBasicList.ListBean listBean, double count){
         this.bean = listBean;
         this.count = count;
     }
 
 
-    public ProductData.ListBean bean;
+    public ProductBasicList.ListBean bean;
     public double count;
 }

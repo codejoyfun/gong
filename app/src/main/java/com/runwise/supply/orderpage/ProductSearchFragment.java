@@ -25,7 +25,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProductListRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -55,7 +55,7 @@ public class ProductSearchFragment extends NetWorkFragment {
     private String mKeyword;
 
     private boolean canSeePrice = true;//默认价格中可见
-    private Map<ProductData.ListBean,Integer> mCountMap;//记录数量，从父activity获取
+    private Map<ProductBasicList.ListBean,Integer> mCountMap;//记录数量，从父activity获取
     private Handler mHandler = new Handler();
 
     @Override
@@ -175,7 +175,7 @@ public class ProductSearchFragment extends NetWorkFragment {
     }
 
     protected void requestData(int where){
-        sendConnection("/gongfu/v3/product/list",new ProductListRequest(mLimit,mPz,mKeyword,mCategory,mSubCategory),where,false,ProductData.class);
+        sendConnection("/gongfu/v3/product/list",new ProductListRequest(mLimit,mPz,mKeyword,mCategory,mSubCategory),where,false,ProductBasicList.class);
     }
 
     /**
@@ -192,21 +192,21 @@ public class ProductSearchFragment extends NetWorkFragment {
         switch (where) {
             case REQUEST_PRODUCT_REFRESH:
                 if(TextUtils.isEmpty(mKeyword))return;
-                ProductData productData = (ProductData)result.getResult().getData();
+                ProductBasicList ProductBasicList = (ProductBasicList)result.getResult().getData();
                 mProductAdapter.clear();
-                mProductAdapter.appendData(productData.getList());
+                mProductAdapter.appendData(ProductBasicList.getList());
                 mProductAdapter.notifyDataSetChanged();
-                pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,Integer.MAX_VALUE);
+                pullListView.onFooterRefreshComplete(ProductBasicList.getList().size(),mLimit,Integer.MAX_VALUE);
                 mLoadingLayout.onSuccess(mProductAdapter.getCount(), "搜索不到相关商品，换个关键词试试~", R.drawable.default_icon_goodsnone);
                 break;
             case REQUEST_PRODUCT_MORE:
                 if(TextUtils.isEmpty(mKeyword))return;
-                productData = (ProductData)result.getResult().getData();
-                mProductAdapter.appendData(productData.getList());
-                if(productData.getList()!=null && productData.getList().size()!=0){
-                    pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,Integer.MAX_VALUE);
+                ProductBasicList = (ProductBasicList)result.getResult().getData();
+                mProductAdapter.appendData(ProductBasicList.getList());
+                if(ProductBasicList.getList()!=null && ProductBasicList.getList().size()!=0){
+                    pullListView.onFooterRefreshComplete(ProductBasicList.getList().size(),mLimit,Integer.MAX_VALUE);
                 }else{
-                    pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,mProductAdapter.getCount());
+                    pullListView.onFooterRefreshComplete(ProductBasicList.getList().size(),mLimit,mProductAdapter.getCount());
                 }
                 mProductAdapter.notifyDataSetChanged();
                 break;

@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.SPUtils;
 import com.runwise.supply.GlobalApplication;
-import com.runwise.supply.firstpage.entity.OrderResponse;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -23,10 +21,8 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import rx.Observable;
-import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -139,7 +135,7 @@ public class TempOrderManager {
         private boolean isFailed;//是否提交失败，后台返回
         private double totalMoney;
         private double totalPieces;
-        private ArrayList<ProductData.ListBean> productList;
+        private ArrayList<ProductBasicList.ListBean> productList;
 
         public String getEstimateDate() {
             return estimateDate;
@@ -149,7 +145,7 @@ public class TempOrderManager {
             return hashKey;
         }
 
-        public ArrayList<ProductData.ListBean> getProductList() {
+        public ArrayList<ProductBasicList.ListBean> getProductList() {
             return productList;
         }
 
@@ -161,12 +157,12 @@ public class TempOrderManager {
             this.hashKey = hashKey;
         }
 
-        public void setProductList(ArrayList<ProductData.ListBean> productList) {
+        public void setProductList(ArrayList<ProductBasicList.ListBean> productList) {
             this.productList = productList;
             totalMoney = 0;
             totalPieces = 0;
             if(productList!=null){
-                for(ProductData.ListBean bean:productList){
+                for(ProductBasicList.ListBean bean:productList){
                     totalMoney = totalMoney + bean.getActualQty() * bean.getPrice();
                     totalPieces = totalPieces + bean.getActualQty();
                 }
@@ -221,7 +217,7 @@ public class TempOrderManager {
             this.isFailed = in.readByte() != 0;
             this.totalMoney = in.readDouble();
             this.totalPieces = in.readDouble();
-            this.productList = in.createTypedArrayList(ProductData.ListBean.CREATOR);
+            this.productList = in.createTypedArrayList(ProductBasicList.ListBean.CREATOR);
         }
 
         public static final Creator<TempOrder> CREATOR = new Creator<TempOrder>() {

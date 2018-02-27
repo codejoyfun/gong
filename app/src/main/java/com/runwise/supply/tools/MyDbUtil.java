@@ -2,7 +2,6 @@ package com.runwise.supply.tools;
 
 import android.content.Context;
 
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
 import com.runwise.supply.entity.RemUser;
 
@@ -11,7 +10,7 @@ import com.runwise.supply.entity.RemUser;
  */
 
 public class MyDbUtil {
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 3;
 
     public static DbUtils create(Context context) {
         DbUtils dbUtils = DbUtils.create(context, "runwise.db", DB_VERSION, new DbUtils.DbUpgradeListener() {

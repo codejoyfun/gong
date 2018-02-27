@@ -6,15 +6,13 @@ import android.preference.PreferenceManager;
 
 import com.kids.commonframe.base.util.SPUtils;
 import com.runwise.supply.entity.CartCache;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 
 import static com.kids.commonframe.config.Constant.SP_KEY_CART;
 
@@ -50,9 +48,9 @@ public class CartManager {
      * @param mapCount
      * @param selected 勾选状态，只有勾选了才会去下单，否则一直保留
      */
-    public void saveCart(Map<ProductData.ListBean,String> mapRemarks,Map<ProductData.ListBean,Double> mapCount, HashSet<Integer> selected){
-        ArrayList<ProductData.ListBean> list = new ArrayList<>();
-        for(ProductData.ListBean bean:mapCount.keySet()){
+    public void saveCart(Map<ProductBasicList.ListBean,String> mapRemarks, Map<ProductBasicList.ListBean,Double> mapCount, HashSet<Integer> selected){
+        ArrayList<ProductBasicList.ListBean> list = new ArrayList<>();
+        for(ProductBasicList.ListBean bean:mapCount.keySet()){
             bean.setActualQty(mapCount.get(bean));
             bean.setRemark(mapRemarks.get(bean));
             bean.setCacheSelected(selected.contains(bean.getProductID()));//在购物车中是否被选中
@@ -75,7 +73,7 @@ public class CartManager {
      * 清空勾选状态
      * @param productList
      */
-    public void clearCart(List<ProductData.ListBean> productList){
+    public void clearCart(List<ProductBasicList.ListBean> productList){
         CartCache cartCache = loadCart();//读取购物车，从购物车中删除
         if(cartCache!=null && cartCache.getListBeans()!=null){
             //short cut，如果数量一样，直接删所有
@@ -84,9 +82,9 @@ public class CartManager {
                 return;
             }
 
-            HashSet<ProductData.ListBean> shouldRemoved = new HashSet<>();//记录应该删除的商品
+            HashSet<ProductBasicList.ListBean> shouldRemoved = new HashSet<>();//记录应该删除的商品
             shouldRemoved.addAll(productList);
-            ListIterator<ProductData.ListBean> iter = cartCache.getListBeans().listIterator();
+            ListIterator<ProductBasicList.ListBean> iter = cartCache.getListBeans().listIterator();
             while(iter.hasNext()){
                 if(shouldRemoved.contains(iter.next())){
                     iter.remove();

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,14 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.CategoryChildListRequest;
 import com.runwise.supply.orderpage.entity.CategoryChildResponse;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -51,19 +55,19 @@ public class ProductCategoryFragment extends NetWorkFragment {
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
 
         mSubCategoryAdapter = new SubCategoryAdapter();
-        mRvSubCategory.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        mRvSubCategory.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRvSubCategory.setAdapter(mSubCategoryAdapter);
         mRvSubCategory.setVisibility(View.GONE);
 
         //按比例设置二级分类列表宽度
-        mRvSubCategory.getLayoutParams().width = (int)(GlobalConstant.screenW * 0.2);
+        mRvSubCategory.getLayoutParams().width = (int) (GlobalConstant.screenW * 0.2);
         mRvSubCategory.requestLayout();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(getArguments().getBoolean(INTENT_KEY_FIRST,false)){
+        if (getArguments().getBoolean(INTENT_KEY_FIRST, false)) {
             onSelected();
         }
     }
@@ -75,93 +79,26 @@ public class ProductCategoryFragment extends NetWorkFragment {
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where){
-            case REQUEST_CATEGORY_CHILD://查询二级分类返回
-                mLoadingLayout.setVisibility(View.GONE);
-                //根据子类别加入fragment
-                //适配没有二级分类,加一个空的tag
-                CategoryChildResponse categoryChildResponse = (CategoryChildResponse) result.getResult().getData();
-
-                //检查接口返回的二级分类和现有的是否一致
-                boolean isNeedUpdate = false;//是否需要刷新二级分类
-                if(mCategoryChildList==null){//初次进入，没有子分类
-                    isNeedUpdate = true;
-                } else if(categoryChildResponse.getCategoryChild()!=null){
-                    if(mCategoryChildList.size()!=categoryChildResponse.getCategoryChild().size()){//原有子分类数量不一样
-                        isNeedUpdate = true;
-                    }else{
-                        for(int i=0;i<mCategoryChildList.size();i++){
-                            String childCategory = mCategoryChildList.get(i);
-                            if(!childCategory.equals(categoryChildResponse.getCategoryChild().get(i))){
-                                isNeedUpdate = true;
-                                break;
-                            }
-                        }
-                    }
-                }else{//mCategoryChildList!=null && categoryChildResponse.getCategoryChild()==null
-                    isNeedUpdate = true;
-                }
-
-//                isNeedUpdate = true;
-                //不需要更新二级分类，刷新当前列表
-                if(!isNeedUpdate){
-                    ProductListFragmentV2 fragment = (ProductListFragmentV2) getChildFragmentManager().findFragmentByTag(mCurrentSubCategory);
-                    fragment.refresh(true);
-                    return;
-                }
-
-                //*****需要更新二级分类****
-                mCurrentSubCategory = null;
-
-                //清空现有fragment
-                //NOTE:remove居然没有用，在之后的findTagById还是会找出来，但是最后却还是remove了，可能是因为是队列处理的原因？
-                //现在先用detach
-                List<Fragment> fragments = getChildFragmentManager().getFragments();
-                if(fragments!=null){
-                    for(Fragment fragment:fragments){
-                        getChildFragmentManager().beginTransaction().detach(fragment).commitAllowingStateLoss();
-                    }
-                }
-
-//                if(mCategoryChildList!=null){
-//                    for(String category:mCategoryChildList){
-//                        transaction.remove(getChildFragmentManager().findFragmentByTag(category));
-//                    }
-//                }
-
-                mCategoryChildList = categoryChildResponse.getCategoryChild();
-                if(categoryChildResponse.getCategoryChild()==null || categoryChildResponse.getCategoryChild().isEmpty()){
-                    //没有子类别
-                    //隐藏子类别选择列表，并加入一个空的子类别
-                    mRvSubCategory.setVisibility(View.GONE);
-                    mCategoryChildList = new ArrayList<>();
-                    mCategoryChildList.add("");
-                }else{
-                    mRvSubCategory.setVisibility(View.VISIBLE);
-                }
-                //切换到第一个子类别，并刷新
-                switchSubCategory(mCategoryChildList.get(0));
-                break;
-        }
     }
 
-    public void refresh(){
+    public void refresh() {
         Fragment newFragment = getChildFragmentManager().findFragmentByTag(mCurrentSubCategory);
-        if(newFragment!=null){
-            ((ProductListFragmentV2)newFragment).refresh(false);
+        if (newFragment != null) {
+            ((ProductListFragmentV2) newFragment).refresh(false);
         }
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        mLoadingLayout.setOnRetryClickListener(v->{
+        mLoadingLayout.setOnRetryClickListener(v -> {
             //mLoadingLayout.setStatusLoading();
             requestChildCategory();
         });
-        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        mLoadingLayout.onFailure(errMsg, R.drawable.nonocitify_icon);
     }
 
 //    boolean isLoaded = false;
+
     /**
      * 每次当前tab被选择的时候调用
      * 查询子类别
@@ -169,31 +106,128 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public void onSelected() {
 //        if(!isAdded() || isLoaded)return;
 //        isLoaded = true;
-        if(mLoadingLayout != null){
+        if (mLoadingLayout != null) {
             mLoadingLayout.setStatusLoading();
             //查询二级分类
             requestChildCategory();
         }
     }
+    HashMap<String, List<ProductBasicList.ListBean>> mChildProductMap;
+    public HashMap<String, List<ProductBasicList.ListBean>> getChildProductMap(){
+        return mChildProductMap;
+    }
 
-    public void requestChildCategory(){
+    public void requestChildCategory() {
         //查询二级分类
-        CategoryChildListRequest request = new CategoryChildListRequest(mCategory);
-        sendConnection("/api/v2/product/category/child_list",request,REQUEST_CATEGORY_CHILD,false, CategoryChildResponse.class);
+        HashMap<String, List<ProductBasicList.ListBean>> productMap = ((ProductActivityV2) getActivity()).getProductMap();
+        List<ProductBasicList.ListBean> listBeans = productMap.get(mCategory);
+
+        mChildProductMap = new HashMap<>();
+        for (int i = 0; i < listBeans.size(); i++) {
+            ProductBasicList.ListBean bean = listBeans.get(i);
+            String categoryChild = bean.getCategoryChild();
+            List<ProductBasicList.ListBean> beanList;
+            if (mChildProductMap.containsKey(categoryChild)) {
+                beanList = mChildProductMap.get(categoryChild);
+                beanList.add(bean);
+            } else {
+                beanList = new ArrayList<>();
+                beanList.add(bean);
+                mChildProductMap.put(categoryChild, beanList);
+            }
+        }
+        List<String> categoryList = new ArrayList<>();
+        Iterator iter = mChildProductMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String categoryChild = (String) entry.getKey();
+            if (!TextUtils.isEmpty(categoryChild)){
+                categoryList.add(categoryChild);
+            }
+        }
+
+
+        mLoadingLayout.setVisibility(View.GONE);
+        //根据子类别加入fragment
+        //适配没有二级分类,加一个空的tag
+        CategoryChildResponse categoryChildResponse = new CategoryChildResponse();
+        categoryChildResponse.setCategoryChild(categoryList);
+
+        //检查接口返回的二级分类和现有的是否一致
+        boolean isNeedUpdate = false;//是否需要刷新二级分类
+        if (mCategoryChildList == null) {//初次进入，没有子分类
+            isNeedUpdate = true;
+        } else if (categoryChildResponse.getCategoryChild() != null) {
+            if (mCategoryChildList.size() != categoryChildResponse.getCategoryChild().size()) {//原有子分类数量不一样
+                isNeedUpdate = true;
+            } else {
+                for (int i = 0; i < mCategoryChildList.size(); i++) {
+                    String childCategory = mCategoryChildList.get(i);
+                    if (!childCategory.equals(categoryChildResponse.getCategoryChild().get(i))) {
+                        isNeedUpdate = true;
+                        break;
+                    }
+                }
+            }
+        } else {//mCategoryChildList!=null && categoryChildResponse.getCategoryChild()==null
+            isNeedUpdate = true;
+        }
+
+//                isNeedUpdate = true;
+        //不需要更新二级分类，刷新当前列表
+        if (!isNeedUpdate) {
+            ProductListFragmentV2 fragment = (ProductListFragmentV2) getChildFragmentManager().findFragmentByTag(mCurrentSubCategory);
+            fragment.refresh(true);
+            return;
+        }
+
+        //*****需要更新二级分类****
+        mCurrentSubCategory = null;
+
+        //清空现有fragment
+        //NOTE:remove居然没有用，在之后的findTagById还是会找出来，但是最后却还是remove了，可能是因为是队列处理的原因？
+        //现在先用detach
+        List<Fragment> fragments = getChildFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                getChildFragmentManager().beginTransaction().detach(fragment).commitAllowingStateLoss();
+            }
+        }
+
+//                if(mCategoryChildList!=null){
+//                    for(String category:mCategoryChildList){
+//                        transaction.remove(getChildFragmentManager().findFragmentByTag(category));
+//                    }
+//                }
+
+        mCategoryChildList = categoryChildResponse.getCategoryChild();
+        if (categoryChildResponse.getCategoryChild() == null || categoryChildResponse.getCategoryChild().isEmpty()) {
+            //没有子类别
+            //隐藏子类别选择列表，并加入一个空的子类别
+            mRvSubCategory.setVisibility(View.GONE);
+            mCategoryChildList = new ArrayList<>();
+            mCategoryChildList.add("");
+        } else {
+            mRvSubCategory.setVisibility(View.VISIBLE);
+        }
+        //切换到第一个子类别，并刷新
+        switchSubCategory(mCategoryChildList.get(0));
+
     }
 
     /**
      * 新建子类商品列表fragment
+     *
      * @param subCategory 子类名称
      * @return
      */
     public ProductListFragmentV2 newProductListFragment(String subCategory) {
         ProductListFragmentV2 productListFragment = new ProductListFragmentV2();
         Bundle bundle = new Bundle();
-        bundle.putString(ProductListFragmentV2.INTENT_KEY_CATEGORY,mCategory);
-        bundle.putString(ProductListFragmentV2.INTENT_KEY_SUB_CATEGORY,subCategory);
-        if(mCategoryChildList.size()>1){//有多个子分类
-            bundle.putBoolean(ProductListFragmentV2.INTENT_KEY_HAS_OTHER_SUB,true);
+        bundle.putString(ProductListFragmentV2.INTENT_KEY_CATEGORY, mCategory);
+        bundle.putString(ProductListFragmentV2.INTENT_KEY_SUB_CATEGORY, subCategory);
+        if (mCategoryChildList.size() > 1) {//有多个子分类
+            bundle.putBoolean(ProductListFragmentV2.INTENT_KEY_HAS_OTHER_SUB, true);
         }
         productListFragment.setArguments(bundle);
         return productListFragment;
@@ -201,26 +235,25 @@ public class ProductCategoryFragment extends NetWorkFragment {
 
     /**
      * 转换子类对应的fragment
-     * @param subCategory 子类名称
      *
+     * @param subCategory 子类名称
      */
-    private void switchSubCategory(String subCategory){
-        if(subCategory.equals(mCurrentSubCategory))return;
+    private void switchSubCategory(String subCategory) {
+        if (subCategory.equals(mCurrentSubCategory)) return;
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         Fragment currentFragment = getChildFragmentManager().findFragmentByTag(mCurrentSubCategory);
-        if(currentFragment!=null){
+        if (currentFragment != null) {
             ft.detach(currentFragment);//用attach和detach，onCreate只会被调用一次
         }
         mCurrentSubCategory = subCategory;
         Fragment newFragment = getChildFragmentManager().findFragmentByTag(subCategory);
-        if(newFragment!=null){
+        if (newFragment != null) {
             ft.attach(newFragment);
-            ((ProductListFragmentV2)newFragment).refresh(true);
-        }
-        else{
+            ((ProductListFragmentV2) newFragment).refresh(true);
+        } else {
             newFragment = newProductListFragment(subCategory);
 //            newFragment.getArguments().putBoolean(INTENT_KEY_FIRST_LOAD,true);//表示加载的同时需要查询商品列表接口
-            ft.add(R.id.fl_product_list_container,newFragment,subCategory);
+            ft.add(R.id.fl_product_list_container, newFragment, subCategory);
         }
         ft.commitAllowingStateLoss();
         mSubCategoryAdapter.notifyDataSetChanged();
@@ -238,13 +271,14 @@ public class ProductCategoryFragment extends NetWorkFragment {
     /**
      * 子分类列表adapter
      */
-    private class SubCategoryAdapter extends RecyclerView.Adapter<ViewHolder>{
+    private class SubCategoryAdapter extends RecyclerView.Adapter<ViewHolder> {
         int selectColor = getResources().getColor(R.color.color4bb400);
         int unSelectColor = getResources().getColor(R.color.color999999);
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            return new ViewHolder(inflater.inflate(R.layout.item_sub_category,parent,false));
+            return new ViewHolder(inflater.inflate(R.layout.item_sub_category, parent, false));
         }
 
         @Override
@@ -252,20 +286,20 @@ public class ProductCategoryFragment extends NetWorkFragment {
             String subCategory = mCategoryChildList.get(position);
             holder.mmSubCategory = subCategory;
             holder.mmTvSubCategory.setText(subCategory);
-            if(mCurrentSubCategory.equals(holder.mmTvSubCategory.getText())){
+            if (mCurrentSubCategory.equals(holder.mmTvSubCategory.getText())) {
                 holder.mmTvSubCategory.setTextColor(selectColor);
-            }else{
+            } else {
                 holder.mmTvSubCategory.setTextColor(unSelectColor);
             }
         }
 
         @Override
         public int getItemCount() {
-            return mCategory==null||mCategoryChildList==null?0:mCategoryChildList.size();
+            return mCategory == null || mCategoryChildList == null ? 0 : mCategoryChildList.size();
         }
     }
 
-    private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         String mmSubCategory;
         TextView mmTvSubCategory;
 

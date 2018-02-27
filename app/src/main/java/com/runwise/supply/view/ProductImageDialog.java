@@ -20,7 +20,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductValueDialog;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -67,11 +67,11 @@ public class ProductImageDialog extends Dialog {
 
     private boolean mModify = false;
 
-    public void setListBean(ProductData.ListBean listBean) {
+    public void setListBean(ProductBasicList.ListBean listBean) {
         mListBean = listBean;
     }
 
-    ProductData.ListBean mListBean;
+    ProductBasicList.ListBean mListBean;
     ProductActivityV2.ProductCountSetter productCountSetter;
     boolean mCanSeePrice = false;
     DecimalFormat df = new DecimalFormat("#.##");
@@ -126,15 +126,9 @@ public class ProductImageDialog extends Dialog {
 
         if (mCanSeePrice) {
             StringBuffer sb1 = new StringBuffer();
-            if (mListBean.isIsTwoUnit()) {
-                sb1.append("¥").append(df.format(Double.valueOf(mListBean.getSettlePrice())));
-                mTvProductPrice.setText(sb1.toString());
-                mTvProductPriceUnit.setText("/"+mListBean.getSettleUomId());
-            } else {
                 sb1.append("¥").append(df.format(Double.valueOf(mListBean.getPrice())));
                 mTvProductPrice.setText(sb1.toString());
                 mTvProductPriceUnit.setText("/"+mListBean.getUom());
-            }
         } else {
             mTvProductPrice.setVisibility(View.GONE);
             mTvProductPriceUnit.setVisibility(View.GONE);
