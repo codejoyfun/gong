@@ -176,7 +176,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 e.printStackTrace();
             }
         }
-
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_TYPE_SERVICE);
