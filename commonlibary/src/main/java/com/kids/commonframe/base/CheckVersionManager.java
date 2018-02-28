@@ -22,6 +22,8 @@ import com.liulishuo.filedownloader.FileDownloader;
 
 import java.io.File;
 
+import io.vov.vitamio.utils.FileUtils;
+
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_COMPANY_NAME;
 
@@ -70,6 +72,9 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
     public void startDownloadFile(String remoteUrl) {
 //        remoteUrl = netWorkHelper.getHost(remoteUrl)+remoteUrl;
         File remoteFile = new File(remoteUrl);
+        File cacheFile = new File(CommonUtils.getCachePath(baseActivity));
+        FileUtils.deleteDir(cacheFile);
+
         localFile = new File(CommonUtils.getCachePath(baseActivity), remoteFile.getName());
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
 
