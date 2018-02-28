@@ -167,14 +167,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             showIProgressDialog();
 
         } else {
+            showIProgressDialog();
             Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
             startService(startIntent);
-            showIProgressDialog();
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter();
