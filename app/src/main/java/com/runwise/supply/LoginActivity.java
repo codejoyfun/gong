@@ -260,7 +260,7 @@ public class LoginActivity extends NetWorkActivity {
 //		if (!ParamsUtil.isPhoneNumberValid(userName)) {
 //			ToastUtil.show(mContext, "用户名必须是手机号码或邮箱");
 //
-        getHost(mCetCompany.getText().toString());
+        getHost(mCetCompany.getText().toString().trim());
     }
 
     private void login() {

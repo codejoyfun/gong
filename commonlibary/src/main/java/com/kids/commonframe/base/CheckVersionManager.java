@@ -4,7 +4,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import com.kids.commonframe.R;
@@ -75,7 +78,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
         File cacheFile = new File(CommonUtils.getCachePath(baseActivity));
         FileUtils.deleteDir(cacheFile);
 
-        localFile = new File(CommonUtils.getCachePath(baseActivity), remoteFile.getName());
+        localFile = new File(Environment.getExternalStorageDirectory().getPath(), System.currentTimeMillis()+".apk");
         BaseDownloadTask downloadTask = FileDownloader.getImpl().create(remoteUrl);
 
 //        String header = (String) SPUtils.get(baseActivity, FILE_KEY_DB_NAME, "");
@@ -110,13 +113,7 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                     protected void completed(BaseDownloadTask task) {
                         deleteNotification();
                         try {
-//                            1M=1024k=1048576字节
-                            if (localFile.length() <= 10 * 1048576) {
-                                UmengUtil.reportError(baseActivity, "安装apk报错: 安裝包下載不完整");
-                                goToBrowser();
-                                return;
-                            }
-                            CommonUtils.installApk(baseActivity, localFile.getAbsolutePath());
+                            installApk();
                         } catch (Exception e) {
                             e.printStackTrace();
                             //友盟报告错误
@@ -145,10 +142,32 @@ public class CheckVersionManager implements NetWorkHelper.NetWorkCallBack<BaseEn
                 goToBrowser();
                 return;
             }
-            CommonUtils.installApk(baseActivity, localFile.getAbsolutePath());
+            installApk();
         } else {
             downloadTask.start();
             ToastUtil.show(baseActivity, "更新下载中...");
+        }
+    }
+
+    private void installApk(){
+        //                            1M=1024k=1048576字节
+        if (localFile.length() <= 10 * 1048576) {
+            UmengUtil.reportError(baseActivity, "安装apk报错: 安裝包下載不完整");
+            goToBrowser();
+            return;
+        }
+        if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
+            Uri apkUri = FileProvider.getUriForFile(baseActivity, "com.runwise.supply.fileprovider", localFile);//在AndroidManifest中的android:authorities值
+            Intent install = new Intent(Intent.ACTION_VIEW);
+            install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
+            install.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            baseActivity.startActivity(install);
+        } else{
+            Intent install = new Intent(Intent.ACTION_VIEW);
+            install.setDataAndType(Uri.fromFile(localFile), "application/vnd.android.package-archive");
+            install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            baseActivity.startActivity(install);
         }
     }
 
