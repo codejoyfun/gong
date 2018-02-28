@@ -45,7 +45,9 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         netWorkHelper = new NetWorkHelper<BaseEntity>(this, this);
         sendServiceStatus(getString(R.string.service_start));
-        requestProductList();
+        if (SPUtils.isLogin(getApplicationContext())) {
+            requestProductList();
+        }
     }
 
     @Override
@@ -64,7 +66,6 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     @Override
     public void onDestroy() {
         super.onDestroy();
-        sendServiceStatus(getString(R.string.service_finish));
     }
 
     // 发送服务状态信息
@@ -88,6 +89,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
                 SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
                 putProductsToDB(productListResponse.getProducts());
+                sendServiceStatus(getString(R.string.service_finish));
                 break;
         }
     }
@@ -127,7 +129,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 dbUtils.configAllowTransaction(true);
                 try {
                     List<ProductBasicList.ListBean> list = dbUtils.findAll(ProductBasicList.ListBean.class);
-                    if (list == null){
+                    if (list == null) {
                         return;
                     }
                     for (ProductBasicList.ListBean bean : list) {
@@ -143,6 +145,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 } catch (DbException e) {
                     e.printStackTrace();
                 }
+                sendServiceStatus(getString(R.string.service_finish));
                 break;
         }
     }

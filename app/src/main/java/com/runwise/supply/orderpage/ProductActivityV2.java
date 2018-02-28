@@ -3,12 +3,14 @@ package com.runwise.supply.orderpage;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -141,6 +143,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     public static final int PLACE_ORDER_TYPE_SMART = 1 << 2;
     public static final int PLACE_ORDER_TYPE_AGAIN = 1 << 3;
     public static final int PLACE_ORDER_TYPE_MODIFY = 1 << 4;
+    MyBroadcastReceiver mMyBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,13 +164,26 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         String status = RunwiseService.getStatus();
         if (status.equals(getString(R.string.service_start)) || status.equals(getString(R.string.service_running))) {
             //显示商品列表加载中,请耐心等待
-            loadingLayout.setVisibility(View.VISIBLE);
-           ToastUtil.show(getActivityContext(),"加载中,请耐心等待");
-        }else{
+            showIProgressDialog();
+            ToastUtil.show(getActivityContext(), "加载中,请耐心等待");
+        } else {
             Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
             startService(startIntent);
-            startRequest();//查询接口
+            showIProgressDialog();
+            ToastUtil.show(getActivityContext(), "加载中,请耐心等待");
         }
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_TYPE_SERVICE);
+        mMyBroadcastReceiver = new MyBroadcastReceiver();
+        localBroadcastManager.registerReceiver(mMyBroadcastReceiver , filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMyBroadcastReceiver);
     }
 
     /**
@@ -1151,6 +1167,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         MobclickAgent.onPageStart(getPageName());
         MobclickAgent.onResume(this);          //统计时长
         statisticsOrderTimeOnResume();
+
     }
 
     @Override
@@ -1168,11 +1185,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case ACTION_TYPE_SERVICE:
+                    dismissIProgressDialog();
                     String status = intent.getStringExtra(INTENT_KEY_STATUS);
-                    if (status.equals(getString(R.string.service_finish))){
+                    if (status.equals(getString(R.string.service_finish))) {
                         //刷新商品列表
                         requestCategory();
-                        loadingLayout.setVisibility(View.GONE);
                     }
                     break;
             }
