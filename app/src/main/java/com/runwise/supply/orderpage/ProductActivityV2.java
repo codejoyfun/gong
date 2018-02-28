@@ -165,12 +165,16 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         if (status.equals(getString(R.string.service_start)) || status.equals(getString(R.string.service_running))) {
             //显示商品列表加载中,请耐心等待
             showIProgressDialog();
-            ToastUtil.show(getActivityContext(), "加载中,请耐心等待");
+
         } else {
             Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
             startService(startIntent);
             showIProgressDialog();
-            ToastUtil.show(getActivityContext(), "加载中,请耐心等待");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
