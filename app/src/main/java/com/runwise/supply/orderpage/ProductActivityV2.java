@@ -162,15 +162,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         getCache();//获取缓存
         updateBottomBar();//更新底部bar
         String status = RunwiseService.getStatus();
-        if (status.equals(getString(R.string.service_start)) || status.equals(getString(R.string.service_running))) {
-            //显示商品列表加载中,请耐心等待
-            showIProgressDialog();
-
-        } else {
             showIProgressDialog();
             Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
             startService(startIntent);
-        }
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_TYPE_SERVICE);

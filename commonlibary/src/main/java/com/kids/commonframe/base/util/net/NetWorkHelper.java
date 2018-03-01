@@ -211,8 +211,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParams);
-        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParams);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParamStr);
+        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParamStr);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
 
@@ -251,8 +251,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParams);
-        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParams);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParamStr);
+        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParamStr);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
         httpCallback.setUseUnLoginDB(useUnLoginDB);
@@ -640,15 +640,12 @@ public class NetWorkHelper<T extends BaseEntity> {
     private class RequestErrorListener implements ErrorListener {
         private int what;
         private String url;
-        private Map<String, String> paramsMap;
+        private String bodyParamStr;
 
-        public RequestErrorListener(int what,String url,Map<String, String> paramsMap) {
+        public RequestErrorListener(int what,String url,String bodyParamStr) {
             this.what = what;
             this.url = url;
-            this.paramsMap = paramsMap;
-            if (paramsMap == null){
-                this.paramsMap = new HashMap<>();
-            }
+            this.bodyParamStr = bodyParamStr;
         }
 
         @Override
@@ -663,7 +660,7 @@ public class NetWorkHelper<T extends BaseEntity> {
                     errorMsg = context.getString(R.string.session_expired);
                 }
                 newWorkCallBack.onFailure(errorMsg, (T) baseEntity, what);
-                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+error.getMessage());
+                UmengUtil.reportError(context, url+"\n"+"参数: "+bodyParamStr+"\n"+error.getMessage());
             }
         }
     }
@@ -672,16 +669,13 @@ public class NetWorkHelper<T extends BaseEntity> {
         private int what;
         private String url;
         private Class targerClass;
-        private Map<String, String> paramsMap;
+        private String bodyParamStr;
 
-        public RequestSuccessListener(int what, Class targerClass,String url,Map<String, String> paramsMap) {
+        public RequestSuccessListener(int what, Class targerClass,String url,String bodyParamStr) {
             this.what = what;
             this.url = url;
             this.targerClass = targerClass;
-            this.paramsMap = paramsMap;
-            if (paramsMap == null){
-                this.paramsMap = new HashMap<>();
-            }
+            this.bodyParamStr = bodyParamStr;
         }
 
         @Override
@@ -694,15 +688,15 @@ public class NetWorkHelper<T extends BaseEntity> {
                         newWorkCallBack.onSuccess(response, what);
                     }
                 } else {
-                    cellBackError(response, what,url,paramsMap);
+                    cellBackError(response, what,url,bodyParamStr);
                 }
             } else {
-                cellBackError(response, what,url,paramsMap);
+                cellBackError(response, what,url,bodyParamStr);
             }
         }
     }
 
-    private void cellBackError(T response, int what,String url, Map<String, String> paramsMap) {
+    private void cellBackError(T response, int what,String url, String paramsMap) {
         if (newWorkCallBack != null) {
             String errorMsg = "";
             if (response.getResult() != null) {

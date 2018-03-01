@@ -81,6 +81,7 @@ import java.util.Map;
 
 import io.vov.vitamio.utils.NumberUtil;
 
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_COMPANY_NAME;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_RECEIVE_FINISH;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_BATCH_ENTITIES;
 import static com.runwise.supply.firstpage.EditBatchActivity.INTENT_KEY_PRODUCT;
@@ -173,6 +174,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     CategoryRespone categoryRespone;
 
+    String companyName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,6 +183,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.receive_layout);
         setTitleRigthIcon(true, R.drawable.search);
+
+        companyName = (String) SPUtils.get(getActivityContext(),FILE_KEY_COMPANY_NAME,"");
+
         Bundle bundle = getIntent().getExtras();
         lbean = bundle.getParcelable("order");
         isSettle = lbean.isIsTwoUnit();
@@ -270,13 +276,24 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }
         } else {
             setTitleText(true, "收货");
-            String source = (String) SPUtils.get(getActivityContext(),String.valueOf(lbean.getOrderID()),"");
+            String source = (String) SPUtils.get(getActivityContext(),companyName+String.valueOf(lbean.getOrderID()),"");
             if (!TextUtils.isEmpty(source)){
                 ReceiveBeanList receiveBeanList = new ReceiveBeanList(source);
                 List<ReceiveBean> beanList = receiveBeanList.getList();
+                boolean isEmpty = true;
                 for (ReceiveBean receiveBean:beanList){
                     countMap.put(String.valueOf(receiveBean.getProductId()), receiveBean);
+                    if (receiveBean.getCount() != 0){
+                        isEmpty = false;
+                    }
                 }
+                //如果从缓存那里获取每个商品的收货数量为0，那重置回初始值,每个商品的数量和对应的库存数量一致
+                if (isEmpty){
+                    for (ReceiveBean receiveBean:beanList){
+                        receiveBean.setCount(receiveBean.getProductUomQty());
+                    }
+                }
+
                 for (OrderResponse.ListBean.LinesBean bean : datas) {
                     totalQty += bean.getActualSendNum();
                 }
@@ -726,7 +743,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     list.add(bean);
                 }
                 receiveBeanList.setList(list);
-                SPUtils.put(getActivityContext(),String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
+                SPUtils.put(getActivityContext(),companyName+String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
                 if (mode == 1) {
                     dialog.setTitle("提示");
                     dialog.setMessage("确认取消点货?");
@@ -1272,7 +1289,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             list.add(bean);
         }
         receiveBeanList.setList(list);
-        SPUtils.put(getActivityContext(),String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
+        SPUtils.put(getActivityContext(),companyName+String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
         if (mode == 1) {
             dialog.setTitle("提示");
             dialog.setMessage("确认取消点货?");

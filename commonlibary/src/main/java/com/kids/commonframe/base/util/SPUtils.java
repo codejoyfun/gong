@@ -329,6 +329,7 @@ public class SPUtils {
         SPUtils.put(context, FILE_KEY_HOST, "");
         Constant.BASE_URL = Constant.UNLOGIN_URL;
         SPUtils.put(context, FILE_KEY_PLACE_ORDER_CACHE, "");
+
     }
 
     /**
