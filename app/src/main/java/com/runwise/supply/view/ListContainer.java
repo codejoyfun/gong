@@ -40,7 +40,7 @@ public class ListContainer extends LinearLayout {
         super(context);
     }
 
-    private void init(List<ProductBasicList.ListBean> foodBeanList,List<String> categoryList) {
+    public void init(List<ProductBasicList.ListBean> foodBeanList,List<String> categoryList) {
         this.foodBeanList = foodBeanList;
         mCategoryList = categoryList;
         typeAdapter = new TypeAdapter(categoryList);

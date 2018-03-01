@@ -20,6 +20,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.CategoryChildResponse;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.view.ListContainer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,15 +38,11 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public static final String INTENT_KEY_CATEGORY = "ap_category";
     public static final String INTENT_KEY_FIRST = "first";
 
-    private static final int REQUEST_CATEGORY_CHILD = 0;
     private String mCategory;
-    @ViewInject(R.id.rv_sub_category)
-    private RecyclerView mRvSubCategory;//子类别的列表view
-    @ViewInject(R.id.fl_product_list_container)
-    private View vContainer;
+    @ViewInject(R.id.listcontainer)
+    private ListContainer mListContainer;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout mLoadingLayout;
-    private SubCategoryAdapter mSubCategoryAdapter;
     private String mCurrentSubCategory = null;
     private List<String> mCategoryChildList;//子类别列表
 
@@ -53,23 +50,16 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
+        mListContainer.init();
 
-        mSubCategoryAdapter = new SubCategoryAdapter();
-        mRvSubCategory.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mRvSubCategory.setAdapter(mSubCategoryAdapter);
-        mRvSubCategory.setVisibility(View.GONE);
 
         //按比例设置二级分类列表宽度
-        mRvSubCategory.getLayoutParams().width = (int) (GlobalConstant.screenW * 0.2);
-        mRvSubCategory.requestLayout();
+//        mRvSubCategory.getLayoutParams().width = (int) (GlobalConstant.screenW * 0.2);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getArguments().getBoolean(INTENT_KEY_FIRST, false)) {
-            onSelected();
-        }
     }
 
     @Override
@@ -91,27 +81,12 @@ public class ProductCategoryFragment extends NetWorkFragment {
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         mLoadingLayout.setOnRetryClickListener(v -> {
-            //mLoadingLayout.setStatusLoading();
             requestChildCategory();
         });
         mLoadingLayout.onFailure(errMsg, R.drawable.nonocitify_icon);
     }
 
-//    boolean isLoaded = false;
 
-    /**
-     * 每次当前tab被选择的时候调用
-     * 查询子类别
-     */
-    public void onSelected() {
-//        if(!isAdded() || isLoaded)return;
-//        isLoaded = true;
-        if (mLoadingLayout != null) {
-            mLoadingLayout.setStatusLoading();
-            //查询二级分类
-            requestChildCategory();
-        }
-    }
     HashMap<String, List<ProductBasicList.ListBean>> mChildProductMap;
     public HashMap<String, List<ProductBasicList.ListBean>> getChildProductMap(){
         return mChildProductMap;

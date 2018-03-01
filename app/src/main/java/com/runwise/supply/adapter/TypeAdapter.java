@@ -55,7 +55,6 @@ public class TypeAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
 		} else {
 			helper.setVisible(R.id.item_badge, false);
 		}
-
 	}
 
 	public void setChecked(int checked) {
