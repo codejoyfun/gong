@@ -36,14 +36,37 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
     ProductActivityV2.ProductCountSetter productCountSetter;
     boolean canSeePrice = false;
     DecimalFormat df = new DecimalFormat("#.##");
+    private List<ProductBasicList.ListBean> mData;
 
     public ProductAdapterV2(@Nullable List<ProductBasicList.ListBean> data) {
         super(R.layout.item_product_with_subcategory, data);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        mData = data;
+    }
+
+    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter){
+        this.productCountSetter = productCountSetter;
     }
 
     @Override
     protected void convert(BaseViewHolder baseViewHolder, ProductBasicList.ListBean listBean) {
+
+        if (baseViewHolder.getAdapterPosition() == 0) {
+            baseViewHolder.setVisible(R.id.stick_header, true)
+                    .setText(R.id.tv_header, listBean.getCategoryChild())
+                    .setTag(R.id.food_main, FIRST_STICKY_VIEW);
+        } else {
+            if (!TextUtils.equals(listBean.getCategoryChild(), mData.get(baseViewHolder.getAdapterPosition() - 1).getCategoryChild())) {
+                baseViewHolder.setVisible(R.id.stick_header, true)
+                        .setText(R.id.tv_header, listBean.getCategoryChild())
+                        .setTag(R.id.food_main, HAS_STICKY_VIEW);
+            } else {
+                baseViewHolder.setVisible(R.id.stick_header, false)
+                        .setTag(R.id.food_main, NONE_STICKY_VIEW);
+            }
+        }
+        baseViewHolder.getConvertView().setContentDescription(listBean.getCategoryChild());
+
         //标签
         if (TextUtils.isEmpty(listBean.getProductTag())) {
             baseViewHolder.getView(R.id.iv_product_sale).setVisibility(View.GONE);
@@ -76,7 +99,7 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
                     //防止double的问题
                     currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
                     if (currentNum < 0) currentNum = 0;
-                    baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(count) + listBean.getSaleUom());
+                    baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
                     productCountSetter.setCount(listBean, currentNum);
                     if (currentNum == 0) {
                         v.setVisibility(View.INVISIBLE);
@@ -98,7 +121,7 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
             public void onClick(View v) {
                 double currentNum = productCountSetter.getCount(listBean);
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
-                baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(count) + listBean.getSaleUom());
+                baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
                 productCountSetter.setCount(listBean, currentNum);
                 if (currentNum == 1) {//0变到1
                     baseViewHolder.getView(R.id.iv_product_reduce).setVisibility(View.VISIBLE);

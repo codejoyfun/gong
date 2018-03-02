@@ -159,17 +159,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         addedPros = getIntent().getParcelableArrayListExtra(INTENT_KEY_ADDED_PRODUCTS);
         loadingLayout = (LoadingLayout) findViewById(R.id.loadingLayout);
         loadingLayout.setOnRetryClickListener(this);
-        getCache();//获取缓存
-        updateBottomBar();//更新底部bar
-        String status = RunwiseService.getStatus();
-            showIProgressDialog();
-            Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
-            startService(startIntent);
+        showIProgressDialog();
+        Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
+        startService(startIntent);
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_TYPE_SERVICE);
         mMyBroadcastReceiver = new MyBroadcastReceiver();
-        localBroadcastManager.registerReceiver(mMyBroadcastReceiver , filter);
+        localBroadcastManager.registerReceiver(mMyBroadcastReceiver, filter);
     }
 
     @Override
@@ -195,14 +192,18 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         CartCache cartCache = CartManager.getInstance(this).loadCart();
         if (cartCache != null && cartCache.getListBeans() != null) {
             for (ProductBasicList.ListBean bean : cartCache.getListBeans()) {
-//                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(bean.getProductID()+"");
-//                if(basicBean==null){
-//                    //记录下架
-//                    bean.setInvalid(true);
-//                    mSetInvalid.add(bean);
-//                }else{
-//                    bean.setInvalid(false);
-//                }
+                for (ProductBasicList.ListBean listBean : mListBeans) {
+                    if (listBean.getProductID() == bean.getProductID()) {
+                        listBean.setActualQty(bean.getActualQty());
+                        listBean.setRemark(bean.getRemark());
+                        listBean.setInvalid(bean.isInvalid());
+                        listBean.setCacheSelected(bean.isCacheSelected());
+                        listBean.setCount(bean.getCount());
+                        listBean.setPresetQty(bean.getPresetQty());
+                        bean = listBean;
+                        break;
+                    }
+                }
                 bean.setCartAddedTime(0);//用于排序，设置为0表示是读缓存的，永远排在新加的后边
                 mMapCount.put(bean, bean.getActualQty());//可能下架的商品也加进去
                 mMapRemarks.put(bean, bean.getRemark());
@@ -263,6 +264,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         return mProductMap;
     }
 
+    List<ProductBasicList.ListBean> mListBeans;
+
     /**
      * 查询类别
      */
@@ -271,14 +274,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
         mProductMap = new HashMap<>();
         try {
-            List<ProductBasicList.ListBean> listBeans;
-            listBeans = ProductBasicUtils.getBasicArr();
-            if (listBeans == null || listBeans.isEmpty()) {
-                listBeans = dbUtils.findAll(ProductBasicList.ListBean.class);
-                ProductBasicUtils.setBasicArr(listBeans);
+            mListBeans = ProductBasicUtils.getBasicArr();
+            if (mListBeans == null || mListBeans.isEmpty()) {
+                mListBeans = dbUtils.findAll(ProductBasicList.ListBean.class);
+                ProductBasicUtils.setBasicArr(mListBeans);
             }
-            for (int i = 0; i < listBeans.size(); i++) {
-                ProductBasicList.ListBean bean = listBeans.get(i);
+            getCache();//获取缓存
+            updateBottomBar();//更新底部bar
+            for (int i = 0; i < mListBeans.size(); i++) {
+                ProductBasicList.ListBean bean = mListBeans.get(i);
                 String categoryParent = bean.getCategoryParent();
                 if (TextUtils.isEmpty(categoryParent)) {
                     categoryParent = "其他";
@@ -381,10 +385,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 int position = tab.getPosition();
                 mViewPagerCategoryFrags.setCurrentItem(position);
                 mTypeWindow.dismiss();
-
-                //刷新当前fragment
-                ProductCategoryFragment fragment = mAdapterVp.fragmentList.get(position);
-                fragment.onSelected();
             }
 
             @Override
@@ -465,7 +465,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 saveCache();
                 getCache();
 //                showCart(true);
-                mAdapterVp.fragmentList.get(mViewPagerCategoryFrags.getCurrentItem()).refresh();
                 MobclickAgent.onEvent(getActivityContext(), EVENT_ID_SHOPPING_CART);
                 break;
             case R.id.tv_order_resume:
@@ -859,7 +858,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if (getItemViewType(position) == 1) {
                 return;
             }
-
             ViewHolder holder = (ViewHolder) viewholder;
             holder.listBean = mmProductList.get(position);
             holder.mmTvName.setText(holder.listBean.getName());
@@ -1177,11 +1175,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case ACTION_TYPE_SERVICE:
-                    dismissIProgressDialog();
                     String status = intent.getStringExtra(INTENT_KEY_STATUS);
                     if (status.equals(getString(R.string.service_finish))) {
                         //刷新商品列表
                         requestCategory();
+                        dismissIProgressDialog();
                     }
                     break;
             }

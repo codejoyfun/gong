@@ -2,11 +2,14 @@ package com.runwise.supply.view;
 
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -18,6 +21,7 @@ import com.kids.commonframe.base.util.CommonUtils;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductAdapterV2;
 import com.runwise.supply.adapter.TypeAdapter;
+import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.List;
@@ -32,19 +36,34 @@ public class ListContainer extends LinearLayout {
     private boolean move;
     private int index;
     private Context mContext;
-    public ProductAdapterV2 foodAdapter;
+
+    public ProductAdapterV2 getProductAdapterV2() {
+        return mProductAdapterV2;
+    }
+
+    public void setProductAdapterV2(ProductAdapterV2 productAdapterV2) {
+        mProductAdapterV2 = productAdapterV2;
+    }
+
+    public ProductAdapterV2 mProductAdapterV2;
     private TextView tvStickyHeaderView;
     private View stickView;
+
+    private float MILLISECONDS_PER_INCH = 1f;  //修改可以改变数据,越大速度越慢
 
     public ListContainer(Context context) {
         super(context);
     }
 
-    public void init(List<ProductBasicList.ListBean> foodBeanList,List<String> categoryList) {
+    public void init(List<ProductBasicList.ListBean> foodBeanList, List<String> categoryList, ProductActivityV2.ProductCountSetter productCountSetter) {
         this.foodBeanList = foodBeanList;
         mCategoryList = categoryList;
         typeAdapter = new TypeAdapter(categoryList);
         RecyclerView recyclerView1 = (RecyclerView) findViewById(R.id.recycler1);
+        if (mCategoryList.size() == 0){
+            recyclerView1.setVisibility(View.GONE);
+            findViewById(R.id.stick_header).setVisibility(View.GONE);
+        }
         recyclerView1.setLayoutManager(new LinearLayoutManager(mContext));
         View view = new View(mContext);
         view.setMinimumHeight(CommonUtils.dip2px(mContext, 50));
@@ -74,7 +93,10 @@ public class ListContainer extends LinearLayout {
         recyclerView2 = (RecyclerView) findViewById(R.id.recycler2);
         linearLayoutManager = new LinearLayoutManager(mContext);
         recyclerView2.setLayoutManager(linearLayoutManager);
+//        recyclerView2.setLayoutManager(getFastSmoothScrollToPosition());
         ((DefaultItemAnimator) recyclerView2.getItemAnimator()).setSupportsChangeAnimations(false);
+        setUpProductRecyclerView();
+        mProductAdapterV2.setProductCountSetter(productCountSetter);
     }
 
     public ListContainer(Context context, @Nullable AttributeSet attrs) {
@@ -90,6 +112,7 @@ public class ListContainer extends LinearLayout {
         //然后区分情况
         if (n <= firstItem) {
             //当要置顶的项在当前显示的第一个项的前面时
+//            recyclerView2.smoothScrollToPosition(n);
             recyclerView2.scrollToPosition(n);
         } else if (n <= lastItem) {
             //当要置顶的项已经在屏幕上显示时
@@ -98,18 +121,28 @@ public class ListContainer extends LinearLayout {
         } else {
             //当要置顶的项在当前显示的最后一项的后面时
             recyclerView2.scrollToPosition(n);
+//            recyclerView2.smoothScrollToPosition(n);
             //这里这个变量是用在RecyclerView滚动监听里面的
-            move = true;
+//            move = true;
+//            new android.os.Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    recyclerView2.smoothScrollToPosition(n);
+//                    move = true;
+//                }
+//            },1000);
+
+
         }
     }
 
 
-    public void setAddClick() {
-        foodAdapter = new ProductAdapterV2(foodBeanList);
-        recyclerView2.setAdapter(foodAdapter);
+    public void setUpProductRecyclerView() {
+        mProductAdapterV2 = new ProductAdapterV2(foodBeanList);
         stickView = findViewById(R.id.stick_header);
+        mProductAdapterV2.bindToRecyclerView(recyclerView2);
         tvStickyHeaderView = (TextView) findViewById(R.id.tv_header);
-        tvStickyHeaderView.setText("类别0");
+        tvStickyHeaderView.setText(foodBeanList.get(0).getCategoryChild());
         recyclerView2.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -156,5 +189,29 @@ public class ListContainer extends LinearLayout {
                 }
             }
         });
+    }
+
+    private LinearLayoutManager getFastSmoothScrollToPosition() {
+        linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false) {
+            @Override
+            public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+                LinearSmoothScroller linearSmoothScroller =
+                        new LinearSmoothScroller(recyclerView.getContext()) {
+                            @Override
+                            public PointF computeScrollVectorForPosition(int targetPosition) {
+                                return linearLayoutManager.computeScrollVectorForPosition(targetPosition);
+                            }
+                            @Override
+                            protected float calculateSpeedPerPixel
+                                    (DisplayMetrics displayMetrics) {
+                                return MILLISECONDS_PER_INCH / displayMetrics.density;
+                                //返回滑动一个pixel需要多少毫秒
+                            }
+                        };
+                linearSmoothScroller.setTargetPosition(position);
+                startSmoothScroll(linearSmoothScroller);
+            }
+        };
+        return linearLayoutManager;
     }
 }
