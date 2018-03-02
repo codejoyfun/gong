@@ -108,7 +108,7 @@ public class ProductImageDialog extends Dialog {
 
 //        final int count = mCountMap.get(mListBean)==null?0:mCountMap.get(mListBean);
         double count = productCountSetter.getCount(mListBean);
-        mTvProductCount.setText(NumberUtil.getIOrD(count)+mListBean.getUom());
+        mTvProductCount.setText(NumberUtil.getIOrD(count)+mListBean.getSaleUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
             mTvProductCount.setVisibility(View.VISIBLE);
@@ -128,7 +128,7 @@ public class ProductImageDialog extends Dialog {
             StringBuffer sb1 = new StringBuffer();
                 sb1.append("¥").append(df.format(Double.valueOf(mListBean.getPrice())));
                 mTvProductPrice.setText(sb1.toString());
-                mTvProductPriceUnit.setText("/"+mListBean.getUom());
+                mTvProductPriceUnit.setText("/"+mListBean.getSaleUom());
         } else {
             mTvProductPrice.setVisibility(View.GONE);
             mTvProductPriceUnit.setVisibility(View.GONE);
@@ -154,7 +154,7 @@ public class ProductImageDialog extends Dialog {
                     //防止double的问题
                     currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
                     if(currentNum<0)currentNum = 0;
-                    mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + mListBean.getUom());
+                    mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + mListBean.getSaleUom());
 //                    mCountMap.put(mListBean, currentNum);
                     productCountSetter.setCount(mListBean,currentNum);
                     if (currentNum == 0) {
@@ -173,7 +173,7 @@ public class ProductImageDialog extends Dialog {
                 }
                 currentNum = productCountSetter.getCount(mListBean);
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
-                mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + mListBean.getUom());
+                mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + mListBean.getSaleUom());
 //                mCountMap.put(mListBean, currentNum);
                 productCountSetter.setCount(mListBean,currentNum);
                 if (currentNum == 1) {//0变到1

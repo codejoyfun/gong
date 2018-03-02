@@ -214,4 +214,11 @@ public class ListContainer extends LinearLayout {
         };
         return linearLayoutManager;
     }
+    public TypeAdapter getTypeAdapter() {
+        return typeAdapter;
+    }
+
+    public void setTypeAdapter(TypeAdapter typeAdapter) {
+        this.typeAdapter = typeAdapter;
+    }
 }

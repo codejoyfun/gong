@@ -51,7 +51,8 @@ public class ProductCategoryFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         requestChildCategory();
-
+        HashMap<String, Long> childBadges = ((ProductActivityV2)getActivity()).getChildBadges();
+        mListContainer.getTypeAdapter().updateBadge(childBadges);
         //按比例设置二级分类列表宽度
 //        mRvSubCategory.getLayoutParams().width = (int) (GlobalConstant.screenW * 0.2);
     }
@@ -202,11 +203,17 @@ public class ProductCategoryFragment extends NetWorkFragment {
      */
     @Subscribe
     public void updateProductCount(ProductCountUpdateEvent event){
+        List<ProductBasicList.ListBean> listBeans = mChildProductMap.get(event.bean.getCategoryChild());
         if (event.getException()!=null&& event.getException().getClass() == ProductAdapterV2.class){
+            if (listBeans != null){
+                ((ProductActivityV2)getActivity()).initChildBadges();
+                mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2)getActivity()).getChildBadges());
+            }
             return;
         }
-        List<ProductBasicList.ListBean> listBeans = mChildProductMap.get(event.bean.getCategoryChild());
         if(listBeans != null){
+            ((ProductActivityV2)getActivity()).initChildBadges();
+            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2)getActivity()).getChildBadges());
             for (ProductBasicList.ListBean listBean:listBeans){
                 if (listBean.getProductID() == event.bean.getProductID()){
                     mListContainer.getProductAdapterV2().notifyDataSetChanged();

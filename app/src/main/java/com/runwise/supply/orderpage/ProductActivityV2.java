@@ -209,10 +209,35 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mMapRemarks.put(bean, bean.getRemark());
                 if (bean.isCacheSelected()) mmSelected.add(bean.getProductID());
             }
+            initChildBadges();
             //检查购物车商品有效性
             checkValid(cartCache.getListBeans());
         } else {
             mFirstGetShopCartCache = false;
+        }
+    }
+
+    public HashMap<String, Long> getChildBadges() {
+        return mChildBadges;
+    }
+
+    HashMap<String, Long> mChildBadges;
+    public void initChildBadges() {
+        mChildBadges = new HashMap<>();
+        for (ProductBasicList.ListBean listBean : mMapCount.keySet()) {
+            if (listBean.isInvalid()){
+                continue;
+            }
+           double productCount =  mMapCount.get(listBean);
+            if (productCount == 0){
+                continue;
+            }
+            Long count = mChildBadges.get(listBean.getCategoryChild());
+            if (count == null) {
+                mChildBadges.put(listBean.getCategoryChild(), 1L);
+            } else {
+                mChildBadges.put(listBean.getCategoryChild(), count + 1);
+            }
         }
     }
 
@@ -620,8 +645,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             }
                         }
                     }
-
                 }
+                initChildBadges();
                 updateBottomBar();//更新底部bar
                 if (mFirstGetShopCartCache) {
                     showCart(false);
@@ -647,6 +672,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if (event.count != 0) mmSelected.add(event.bean.getProductID());
             else mmSelected.remove(event.bean.getProductID());
             notifySelectAll();
+            if (event.count == 0){
+                mMapCount.remove(event.bean);
+            }else{
+                mMapCount.put(event.bean,event.count);
+            }
         }
         updateBottomBar();
     }
@@ -982,16 +1012,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     mmCbCheck.setChecked(true);
                     break;
                 case R.id.iv_item_cart_minus://减少
-//                    count = mMapCount.containsKey(listBean)?mMapCount.get(listBean):0;
-//                    mMapCount.put(listBean,--count);
                     count = mCountSetter.getCount(listBean);
                     count = BigDecimal.valueOf(count).subtract(BigDecimal.ONE).doubleValue();
                     if (count < 0) count = 0;
                     mCountSetter.setCount(listBean, count);
+//                    mMapCount.put(listBean,count);
                     if (count == 0) {
                         //从购物车中删除
 //                        mmProductList.remove(listBean);
-//                        mMapCount.remove(listBean);
                         mSetInvalid.remove(listBean);
                         if (mSetInvalid.size() == 0) {
                             initProductListData();
@@ -1013,6 +1041,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             listBean.setRemark(remark);
                             mCountSetter.setRemark(listBean);
                             mMapCount.put(listBean, value);
+                            if (value == 0){
+                                mMapCount.remove(listBean);
+                                mSetInvalid.remove(listBean);
+                                if (mSetInvalid.size() == 0) {
+                                    initProductListData();
+                                }
+                                mmCartAdapter.notifyChanged();
+                            }
                             EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, value));
                             mmTvCount.setText(NumberUtil.getIOrD(value) + listBean.getSaleUom());
                             if (!TextUtils.isEmpty(remark)) {
