@@ -117,7 +117,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
         }
         mLoadingLayout.setVisibility(View.GONE);
 
-        mListContainer.init(mProductList,categoryList,((ProductActivityV2)getActivity()).getProductCountSetter());
+        mListContainer.init(mCategory,mProductList,categoryList,((ProductActivityV2)getActivity()).getProductCountSetter());
 
         //根据子类别加入fragment
         //适配没有二级分类,加一个空的tag

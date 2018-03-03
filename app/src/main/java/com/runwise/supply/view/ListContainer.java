@@ -55,10 +55,10 @@ public class ListContainer extends LinearLayout {
         super(context);
     }
 
-    public void init(List<ProductBasicList.ListBean> foodBeanList, List<String> categoryList, ProductActivityV2.ProductCountSetter productCountSetter) {
+    public void init(String category,List<ProductBasicList.ListBean> foodBeanList, List<String> categoryList, ProductActivityV2.ProductCountSetter productCountSetter) {
         this.foodBeanList = foodBeanList;
         mCategoryList = categoryList;
-        typeAdapter = new TypeAdapter(categoryList);
+        typeAdapter = new TypeAdapter(categoryList,category);
         RecyclerView recyclerView1 = (RecyclerView) findViewById(R.id.recycler1);
         if (mCategoryList.size() == 0){
             recyclerView1.setVisibility(View.GONE);

@@ -19,11 +19,13 @@ public class TypeAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
     private List<String> data;
     public boolean fromClick;
     private String typeStr;
+    private String category;
     private HashMap<String, Long> badges = new HashMap<>();
 
-    public TypeAdapter(@Nullable List<String> data) {
+    public TypeAdapter(@Nullable List<String> data,String category) {
         super(R.layout.item_subcategory, data);
         this.data = data;
+        this.category = category;
         if (data != null && data.size() > 0) {
             typeStr = data.get(0);
         }
@@ -50,8 +52,9 @@ public class TypeAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
                     .setTypeface(R.id.tv_name, Typeface.DEFAULT)
             ;
         }
-        if (badges.containsKey(item) && badges.get(item) > 0) {
-            helper.setVisible(R.id.item_badge, true).setText(R.id.item_badge, String.valueOf(badges.get(item)));
+        String key = category+"&"+item;
+        if (badges.containsKey(key) && badges.get(key) > 0) {
+            helper.setVisible(R.id.item_badge, true).setText(R.id.item_badge, String.valueOf(badges.get(key)));
         } else {
             helper.setVisible(R.id.item_badge, false);
         }

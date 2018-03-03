@@ -209,12 +209,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mMapRemarks.put(bean, bean.getRemark());
                 if (bean.isCacheSelected()) mmSelected.add(bean.getProductID());
             }
-            initChildBadges();
+
             //检查购物车商品有效性
             checkValid(cartCache.getListBeans());
         } else {
             mFirstGetShopCartCache = false;
         }
+        initChildBadges();
     }
 
     public HashMap<String, Long> getChildBadges() {
@@ -222,24 +223,28 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     }
 
     HashMap<String, Long> mChildBadges;
+
     public void initChildBadges() {
         mChildBadges = new HashMap<>();
         for (ProductBasicList.ListBean listBean : mMapCount.keySet()) {
-            if (listBean.isInvalid()){
+            if (listBean.isInvalid()) {
                 continue;
             }
-           double productCount =  mMapCount.get(listBean);
-            if (productCount == 0){
+            double productCount = mMapCount.get(listBean);
+            if (productCount == 0) {
                 continue;
             }
-            Long count = mChildBadges.get(listBean.getCategoryChild());
+            String key = listBean.getCategoryParent() + "&" + listBean.getCategoryChild();
+            Long count = mChildBadges.get(key);
             if (count == null) {
-                mChildBadges.put(listBean.getCategoryChild(), 1L);
+                mChildBadges.put(key, 1L);
             } else {
-                mChildBadges.put(listBean.getCategoryChild(), count + 1);
+                mChildBadges.put(key, count + 1);
             }
         }
+        setupTabIconsNum();
     }
+
 
     List<ProductBasicList.ListBean> mListToCheck;//记录需要查询有效性的商品，用于设置结果
 
@@ -341,16 +346,18 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         setupViewPager();
     }
 
+    ArrayList<String> mTitles;
+
     protected void setupViewPager() {
         List<ProductCategoryFragment> categoryFragmentList = new ArrayList<>();
-        List<String> titles = new ArrayList<>();
+        mTitles = new ArrayList<>();
         for (String category : categoryResponse.getCategoryList()) {
-            titles.add(category);
+            mTitles.add(category);
             categoryFragmentList.add(newCategoryFragment(category));
         }
         categoryFragmentList.get(0).getArguments().putBoolean(INTENT_KEY_FIRST, true);
-        initUI(titles, categoryFragmentList);
-        initPopWindow((ArrayList<String>) titles);
+        initUI(mTitles, categoryFragmentList);
+        initPopWindow((ArrayList<String>) mTitles);
     }
 
     /**
@@ -407,6 +414,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                changeTabSelect(tab);
                 int position = tab.getPosition();
                 mViewPagerCategoryFrags.setCurrentItem(position);
                 mTypeWindow.dismiss();
@@ -414,7 +422,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                changeTabNormal(tab);
             }
 
             @Override
@@ -422,12 +430,74 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
             }
         });
-
+        setupTabIcons();
+        changeTabSelect(smartTabLayout.getTabAt(0));
         //统一不不显示下拉
         if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             smartTabLayout.setTabMode(TabLayout.MODE_FIXED);
         }
+        setupTabIconsNum();
+    }
+    HashMap<String, Long> mBadges;
+    private void setupTabIconsNum() {
+        if (mChildBadges == null||mTitles == null){
+            return;
+        }
+        mBadges = new HashMap<>();
+        Iterator iter = mChildBadges.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String key = (String) entry.getKey();
+            Long val = (Long) entry.getValue();
+            key = key.split("&")[0];
+            if (mBadges.get(key) == null){
+                mBadges.put(key,val);
+            }else{
+                mBadges.put(key,mBadges.get(key)+val);
+            }
+        }
+        for (int i = 0; i < mTitles.size(); i++) {
+            TextView itemBadge = (TextView) smartTabLayout.getTabAt(i).getCustomView().findViewById(R.id.item_badge);
+            if (mBadges.containsKey(mTitles.get(i)) && mBadges.get(mTitles.get(i)) > 0) {
+                itemBadge.setVisibility(View.VISIBLE);
+                itemBadge.setText(String.valueOf(mBadges.get(mTitles.get(i))));
+            } else {
+                itemBadge.setVisibility(View.INVISIBLE);
+            }
+
+        }
+    }
+
+    private void setupTabIcons() {
+        for (int i = 0; i < mTitles.size(); i++) {
+            smartTabLayout.getTabAt(i).setCustomView(getTabView(i));
+        }
+    }
+
+    public View getTabView(int position) {
+        View view = LayoutInflater.from(this).inflate(R.layout.item_category, null);
+        TextView txt_title = (TextView) view.findViewById(R.id.tv_name);
+        txt_title.setText(mTitles.get(position));
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewPagerCategoryFrags.setCurrentItem(position);
+            }
+        });
+        return view;
+    }
+
+    private void changeTabSelect(TabLayout.Tab tab) {
+        View view = tab.getCustomView();
+        TextView txt_title = (TextView) view.findViewById(R.id.tv_name);
+        txt_title.setTextColor(Color.parseColor("#6BB400"));
+    }
+
+    private void changeTabNormal(TabLayout.Tab tab) {
+        View view = tab.getCustomView();
+        TextView txt_title = (TextView) view.findViewById(R.id.tv_name);
+        txt_title.setTextColor(Color.BLACK);
     }
 
     /**
@@ -672,10 +742,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if (event.count != 0) mmSelected.add(event.bean.getProductID());
             else mmSelected.remove(event.bean.getProductID());
             notifySelectAll();
-            if (event.count == 0){
+            if (event.count == 0) {
                 mMapCount.remove(event.bean);
-            }else{
-                mMapCount.put(event.bean,event.count);
+            } else {
+                mMapCount.put(event.bean, event.count);
             }
         }
         updateBottomBar();
@@ -1041,7 +1111,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             listBean.setRemark(remark);
                             mCountSetter.setRemark(listBean);
                             mMapCount.put(listBean, value);
-                            if (value == 0){
+                            if (value == 0) {
                                 mMapCount.remove(listBean);
                                 mSetInvalid.remove(listBean);
                                 if (mSetInvalid.size() == 0) {
