@@ -49,7 +49,7 @@ public class ListContainer extends LinearLayout {
     private TextView tvStickyHeaderView;
     private View stickView;
 
-    private float MILLISECONDS_PER_INCH = 1f;  //修改可以改变数据,越大速度越慢
+    private float MILLISECONDS_PER_INCH = 0.01f;  //修改可以改变数据,越大速度越慢
 
     public ListContainer(Context context) {
         super(context);
@@ -92,8 +92,8 @@ public class ListContainer extends LinearLayout {
         });
         recyclerView2 = (RecyclerView) findViewById(R.id.recycler2);
         linearLayoutManager = new LinearLayoutManager(mContext);
-        recyclerView2.setLayoutManager(linearLayoutManager);
-//        recyclerView2.setLayoutManager(getFastSmoothScrollToPosition());
+//        recyclerView2.setLayoutManager(linearLayoutManager);
+        recyclerView2.setLayoutManager(getFastSmoothScrollToPosition());
         ((DefaultItemAnimator) recyclerView2.getItemAnimator()).setSupportsChangeAnimations(false);
         setUpProductRecyclerView();
         mProductAdapterV2.setProductCountSetter(productCountSetter);
@@ -113,17 +113,18 @@ public class ListContainer extends LinearLayout {
         if (n <= firstItem) {
             //当要置顶的项在当前显示的第一个项的前面时
 //            recyclerView2.smoothScrollToPosition(n);
-            recyclerView2.scrollToPosition(n);
+            recyclerView2.smoothScrollToPosition(n);
         } else if (n <= lastItem) {
             //当要置顶的项已经在屏幕上显示时
             int top = recyclerView2.getChildAt(n - firstItem).getTop();
             recyclerView2.scrollBy(0, top);
         } else {
             //当要置顶的项在当前显示的最后一项的后面时
-            recyclerView2.scrollToPosition(n);
-//            recyclerView2.smoothScrollToPosition(n);
+//            linearLayoutManager.scrollToPositionWithOffset(n, 0);
+//            recyclerView2.scrollToPosition(n);
+            recyclerView2.smoothScrollToPosition(n);
             //这里这个变量是用在RecyclerView滚动监听里面的
-//            move = true;
+            move = true;
 //            new android.os.Handler().postDelayed(new Runnable() {
 //                @Override
 //                public void run() {

@@ -64,6 +64,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -125,6 +126,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     protected ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
     protected ProductTypePopup mTypeWindow;//商品类型弹出框
+
 
     CategoryRespone categoryResponse;
     public static final String INTENT_KEY_BACKAP = "backap";
@@ -439,9 +441,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
         setupTabIconsNum();
     }
+
     HashMap<String, Long> mBadges;
+
     private void setupTabIconsNum() {
-        if (mChildBadges == null||mTitles == null){
+        if (mChildBadges == null || mTitles == null) {
             return;
         }
         mBadges = new HashMap<>();
@@ -451,10 +455,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             String key = (String) entry.getKey();
             Long val = (Long) entry.getValue();
             key = key.split("&")[0];
-            if (mBadges.get(key) == null){
-                mBadges.put(key,val);
-            }else{
-                mBadges.put(key,mBadges.get(key)+val);
+            if (mBadges.get(key) == null) {
+                mBadges.put(key, val);
+            } else {
+                mBadges.put(key, mBadges.get(key) + val);
             }
         }
         for (int i = 0; i < mTitles.size(); i++) {
@@ -514,6 +518,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         mTvTotalPrice = (TextView) findViewById(R.id.tv_product_total_price);
         mRlCartContainer = (RelativeLayout) findViewById(R.id.rl_cart_container);
         mmCbSelectAll = (CheckBox) findViewById(R.id.cb_cart_select_all);
+
+
         findViewById(R.id.title_iv_left).setOnClickListener(this);
         findViewById(R.id.iv_open).setOnClickListener(this);
         findViewById(R.id.iv_product_cart).setOnClickListener(this);
@@ -730,6 +736,26 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
     }
 
+
+    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
+        String desc = "";
+        int count = 0;
+        int productCount = 0;
+        for (ProductBasicList.ListBean listBean : mmProductList) {
+            if (listBean.getCategoryParent().equals(categoryParent)
+                    && listBean.getCategoryChild().equals(categoryChild)) {
+                count++;
+                productCount += mMapCount.get(listBean);
+            }
+        }
+        if (TextUtils.isEmpty(categoryChild)) {
+            desc = categoryParent + "(" + count + "种,共" + productCount+"件)";
+        } else {
+            desc = categoryParent + "/" + categoryChild + "(" + count + "种,共" + productCount+"件)";
+        }
+        return desc;
+    }
+
     /**
      * 在列表页更新商品选择数量
      *
@@ -839,7 +865,41 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     CheckBox mmCbSelectAll;
     @ViewInject(R.id.tv_cart_del)
     TextView mmTvDelete;
+    @ViewInject(R.id.stick_header)
+    View mVStickHeader;
+    @ViewInject(R.id.tv_header)
+    TextView mTvHeader;
+
     protected HashSet<Integer> mmSelected = new HashSet<>();//记录购物车中勾选的项目
+
+    private void setUpRvCart() {
+        mmRvCart.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                View stickyInfoView = recyclerView.findChildViewUnder(mVStickHeader.getMeasuredWidth() / 2, 5);
+                if (stickyInfoView != null && stickyInfoView.getContentDescription() != null) {
+                    mTvHeader.setText(String.valueOf(stickyInfoView.getContentDescription()));
+                }
+                View transInfoView = recyclerView.findChildViewUnder(mVStickHeader.getMeasuredWidth() / 2, mVStickHeader.getMeasuredHeight
+                        () + 1);
+                if (transInfoView != null && transInfoView.getTag() != null) {
+                    int transViewStatus = (int) transInfoView.getTag();
+                    int dealtY = transInfoView.getTop() - mVStickHeader.getMeasuredHeight();
+                    if (transViewStatus == CartAdapter.HAS_STICKY_VIEW) {
+                        if (transInfoView.getTop() > 0) {
+                            mVStickHeader.setTranslationY(dealtY);
+                        } else {
+                            mVStickHeader.setTranslationY(0);
+                        }
+                    } else if (transViewStatus == CartAdapter.NONE_STICKY_VIEW) {
+                        mVStickHeader.setTranslationY(0);
+                    }
+                }
+            }
+        });
+    }
+
 
     /**
      * 初始化购物车弹框
@@ -847,6 +907,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     protected void initCartViews() {
         mmRvCart = (RecyclerView) findViewById(R.id.rv_cart);
         mmTvDelete = (TextView) findViewById(R.id.tv_cart_del);
+        mTvHeader = (TextView) findViewById(R.id.tv_header);
         mmRvCart.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mmCartAdapter = new CartAdapter();
         mmRvCart.setAdapter(mmCartAdapter);
@@ -877,7 +938,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 customDialog.setRightBtnListener("删除", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
-
+                        List<ProductBasicList.ListBean> deleteBeanList = new ArrayList<>();
                         Iterator<ProductBasicList.ListBean> it = mMapCount.keySet().iterator();
                         while (it.hasNext()) {
                             ProductBasicList.ListBean item = it.next();
@@ -885,17 +946,20 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                                 it.remove();
                                 mmProductList.remove(item);
                                 mmSelected.remove(item.getProductID());
+                                deleteBeanList.add(item);
                             }
                         }
                         mmCartAdapter.notifyChanged();
                         ToastUtil.show(ProductActivityV2.this, "删除成功");
-                        EventBus.getDefault().post(new ProductCountUpdateEvent());
+                        initChildBadges();
+                        EventBus.getDefault().post(new ProductCountUpdateEvent(deleteBeanList));
                     }
                 });
                 customDialog.show();
             }
         });
         initProductListData();
+        setUpRvCart();
     }
 
     /**
@@ -916,6 +980,21 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             else if (p1.getCartAddedTime() != 0 && p2.getCartAddedTime() == 0) return -1;
             return (int) (p2.getCartAddedTime() - p1.getCartAddedTime());
         });
+        LinkedHashMap<String, List<ProductBasicList.ListBean>> linkedHashMap = new LinkedHashMap<>();
+        //按一级和二级分类分组
+        for (ProductBasicList.ListBean bean : mmProductList) {
+            String key = bean.getCategoryParent() + "&" + bean.getCategoryChild();
+            List<ProductBasicList.ListBean> listBeans = linkedHashMap.get(key);
+            if (listBeans == null) {
+                listBeans = new ArrayList<>();
+            }
+            listBeans.add(bean);
+            linkedHashMap.put(key, listBeans);
+        }
+        mmProductList.clear();
+        for (List<ProductBasicList.ListBean> listBeanList : linkedHashMap.values()) {
+            mmProductList.addAll(listBeanList);
+        }
         //加入下架商品
         if (mSetInvalid.size() > 0) {
             mmProductList.add(new ProductBasicList.ListBean());//加入头部
@@ -942,6 +1021,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
      * 购物车的adapter
      */
     protected class CartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        public static final int FIRST_STICKY_VIEW = 1;
+        public static final int HAS_STICKY_VIEW = 2;
+        public static final int NONE_STICKY_VIEW = 3;
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -987,8 +1069,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 holder.mmTvAdd.setEnabled(true);
                 holder.mmTvReduce.setEnabled(true);
             }
-
-
             if (TextUtils.isEmpty(holder.listBean.getProductTag())) {
                 holder.mmTvTag.setVisibility(View.GONE);
             } else {
@@ -1004,6 +1084,28 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
 
             holder.mmCbCheck.setChecked(mmSelected.contains(holder.listBean.getProductID()));
+            if (TextUtils.isEmpty(holder.listBean.getCategoryChild())) {
+                holder.itemView.setContentDescription(holder.listBean.getCategoryParent());
+            } else {
+                holder.itemView.setContentDescription(holder.listBean.getCategoryParent() + "/" + holder.listBean.getCategoryChild());
+            }
+
+            if (position == 0) {
+                holder.mVStickHeader.setVisibility(View.VISIBLE);
+                holder.mVProductMain.setTag(FIRST_STICKY_VIEW);
+                holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild()));
+            } else {
+                if (!TextUtils.equals(holder.listBean.getCategoryParent(), mmProductList.get(position - 1).getCategoryParent()) ||
+                        !TextUtils.equals(holder.listBean.getCategoryChild(), mmProductList.get(position - 1).getCategoryChild())) {
+                    holder.mVStickHeader.setVisibility(View.VISIBLE);
+                    holder.mVProductMain.setTag(HAS_STICKY_VIEW);
+                    holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild()));
+                } else {
+                    holder.mVProductMain.setTag(NONE_STICKY_VIEW);
+                    holder.mVStickHeader.setVisibility(View.GONE);
+                }
+            }
+
         }
 
         @Override
@@ -1043,6 +1145,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         TextView mmTvRemark;
         ImageView mmTvAdd;
         ImageView mmTvReduce;
+        View mVStickHeader;
+        TextView mTvHeader;
+        View mVProductMain;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -1057,6 +1162,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mmTvAdd = (ImageView) itemView.findViewById(R.id.iv_item_cart_add);
             mmTvAdd.setOnClickListener(this);
             mmTvReduce = (ImageView) itemView.findViewById(R.id.iv_item_cart_minus);
+            mVStickHeader = itemView.findViewById(R.id.stick_header);
+            mVProductMain = itemView.findViewById(R.id.product_main);
+            mTvHeader = (TextView) itemView.findViewById(R.id.tv_header);
             mmTvReduce.setOnClickListener(this);
             mmTvCount.setOnClickListener(this);
         }
@@ -1080,6 +1188,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, count));
                     mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
                     mmCbCheck.setChecked(true);
+                    mmCartAdapter.notifyChanged();
                     break;
                 case R.id.iv_item_cart_minus://减少
                     count = mCountSetter.getCount(listBean);
@@ -1089,7 +1198,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 //                    mMapCount.put(listBean,count);
                     if (count == 0) {
                         //从购物车中删除
-//                        mmProductList.remove(listBean);
+                        mmProductList.remove(listBean);
                         mSetInvalid.remove(listBean);
                         if (mSetInvalid.size() == 0) {
                             initProductListData();
@@ -1100,6 +1209,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     }
                     EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, count));
                     mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+                    mmCartAdapter.notifyChanged();
                     break;
                 case R.id.tv_item_cart_count:
                     double currentCount = mCountSetter.getCount(listBean);
@@ -1130,6 +1240,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                             }
 
                             mmCbCheck.setChecked(true);
+                            mmCartAdapter.notifyChanged();
                         }
                     }).show();
                     break;

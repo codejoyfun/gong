@@ -43,7 +43,7 @@ public class TypeAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
                 .setTag(R.id.item_main, item);
         if (helper.getAdapterPosition() == checked) {
             helper.setBackgroundColor(R.id.item_main, Color.WHITE)
-                    .setTextColor(R.id.tv_name, Color.BLACK)
+                    .setTextColor(R.id.tv_name, ContextCompat.getColor(mContext, R.color.tab_text_on_color))
                     .setTypeface(R.id.tv_name, Typeface.DEFAULT_BOLD)
             ;
         } else {
@@ -53,11 +53,14 @@ public class TypeAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
             ;
         }
         String key = category+"&"+item;
-        if (badges.containsKey(key) && badges.get(key) > 0) {
-            helper.setVisible(R.id.item_badge, true).setText(R.id.item_badge, String.valueOf(badges.get(key)));
-        } else {
-            helper.setVisible(R.id.item_badge, false);
+        if (badges != null){
+            if (badges.containsKey(key) && badges.get(key) > 0) {
+                helper.setVisible(R.id.item_badge, true).setText(R.id.item_badge, String.valueOf(badges.get(key)));
+            } else {
+                helper.setVisible(R.id.item_badge, false);
+            }
         }
+
     }
 
     public void setChecked(int checked) {

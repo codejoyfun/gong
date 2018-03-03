@@ -23,6 +23,7 @@
     <color name="black">#000</color>
     <color name="group_head">#f7f7f7</color>
     <color name="second_color">#595959</color>
+    <color name="sub_badge_text">#FA9B9A</color>
 
 
 </resources>

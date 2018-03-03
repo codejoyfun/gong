@@ -101,4 +101,9 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">10sp</item>
     </style>
+    <style name="sub_badge_style" parent="badge_style">
+        <item name="android:background">@drawable/sub_badge_bg</item>
+        <item name="android:textColor">@color/sub_badge_text</item>
+    </style>
+
 </resources>

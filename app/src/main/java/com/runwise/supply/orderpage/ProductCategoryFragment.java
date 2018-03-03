@@ -203,7 +203,25 @@ public class ProductCategoryFragment extends NetWorkFragment {
      */
     @Subscribe
     public void updateProductCount(ProductCountUpdateEvent event){
-        List<ProductBasicList.ListBean> listBeans = mChildProductMap.get(event.bean.getCategoryChild());
+        List<ProductBasicList.ListBean> listBeans = null;
+        if (event.bean != null){
+            listBeans = mChildProductMap.get(event.bean.getCategoryChild());
+        }else{
+            //购物车商品删除调用的逻辑
+            ((ProductActivityV2)getActivity()).initChildBadges();
+            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2)getActivity()).getChildBadges());
+            for (ProductBasicList.ListBean listBean:event.beanList){
+                if (listBean .getCategoryParent().equals(mCategory)){
+                    for (int i = 0;i<mProductList.size();i++){
+                        ProductBasicList.ListBean tempListBean = mProductList.get(i);
+                        if (tempListBean.getProductID() == listBean.getProductID()){
+                            mListContainer.getProductAdapterV2().notifyItemChanged(i);
+                        }
+                    }
+                }
+            }
+        }
+
         if (event.getException()!=null&& event.getException().getClass() == ProductAdapterV2.class){
             if (listBeans != null){
                 ((ProductActivityV2)getActivity()).initChildBadges();

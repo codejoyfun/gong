@@ -44,6 +44,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -96,8 +97,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
     Button mBtnSubmit;
     @BindView(R.id.rl_bottom)
     RelativeLayout mRlBottom;
-    @BindView(R.id.tv_product_list)
-    TextView mTvProductList;
     @BindView(R.id.rv_product_list)
     RecyclerView mRvProductList;
 
@@ -161,6 +160,21 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     List<ProductBasicList.ListBean> getProductData() {
         mProductList = getIntent().getParcelableArrayListExtra(INTENT_KEY_PRODUCTS);
+        LinkedHashMap<String, List<ProductBasicList.ListBean>> linkedHashMap = new LinkedHashMap<>();
+        //按一级和二级分类分组
+        for (ProductBasicList.ListBean bean : mProductList) {
+            String key = bean.getCategoryParent() + "&" + bean.getCategoryChild();
+            List<ProductBasicList.ListBean> listBeans = linkedHashMap.get(key);
+            if (listBeans == null) {
+                listBeans = new ArrayList<>();
+            }
+            listBeans.add(bean);
+            linkedHashMap.put(key, listBeans);
+        }
+        mProductList.clear();
+        for (List<ProductBasicList.ListBean> listBeanList : linkedHashMap.values()) {
+            mProductList.addAll(listBeanList);
+        }
         return mProductList;
     }
 

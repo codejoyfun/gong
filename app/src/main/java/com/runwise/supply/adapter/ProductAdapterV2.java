@@ -52,7 +52,7 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
     protected void convert(BaseViewHolder baseViewHolder, ProductBasicList.ListBean listBean) {
 
         if (baseViewHolder.getAdapterPosition() == 0) {
-            baseViewHolder.setVisible(R.id.stick_header, true)
+            baseViewHolder.setVisible(R.id.stick_header, !TextUtils.isEmpty(listBean.getCategoryChild()))
                     .setText(R.id.tv_header, listBean.getCategoryChild())
                     .setTag(R.id.food_main, FIRST_STICKY_VIEW);
         } else {

@@ -26,6 +26,10 @@ import io.vov.vitamio.utils.NumberUtil;
 
 public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitProductAdapter.ViewHolder>{
 
+    public static final int FIRST_STICKY_VIEW = 1;
+    public static final int HAS_STICKY_VIEW = 2;
+    public static final int NONE_STICKY_VIEW = 3;
+
     List<ProductBasicList.ListBean> mListBeanList;
     private boolean canSeePrice = false;
 
@@ -59,6 +63,42 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         }else{
             holder.mTvSalesPromotion.setVisibility(View.VISIBLE);
         }
+
+
+        if (position == 0) {
+            holder.mVStickHeader.setVisibility(View.VISIBLE);
+            holder.mVProductMain.setTag(FIRST_STICKY_VIEW);
+            holder.mTvHeader.setText(getCategoryCountInfo(listBean.getCategoryParent(), listBean.getCategoryChild()));
+        } else {
+            if (!TextUtils.equals(listBean.getCategoryParent(), mListBeanList.get(position - 1).getCategoryParent()) ||
+                    !TextUtils.equals(listBean.getCategoryChild(), mListBeanList.get(position - 1).getCategoryChild())) {
+                holder.mVStickHeader.setVisibility(View.VISIBLE);
+                holder.mVProductMain.setTag(HAS_STICKY_VIEW);
+                holder.mTvHeader.setText(getCategoryCountInfo(listBean.getCategoryParent(), listBean.getCategoryChild()));
+            } else {
+                holder.mVProductMain.setTag(NONE_STICKY_VIEW);
+                holder.mVStickHeader.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
+        String desc = "";
+        int count = 0;
+        int productCount = 0;
+        for (ProductBasicList.ListBean listBean : mListBeanList) {
+            if (listBean.getCategoryParent().equals(categoryParent)
+                    && listBean.getCategoryChild().equals(categoryChild)) {
+                count++;
+                productCount += listBean.getActualQty();
+            }
+        }
+        if (TextUtils.isEmpty(categoryChild)) {
+            desc = categoryParent + "(" + count + "种,共" + productCount+"件)";
+        } else {
+            desc = categoryParent + "/" + categoryChild + "(" + count + "种,共" + productCount+"件)";
+        }
+        return desc;
     }
 
     @Override
@@ -81,6 +121,13 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         TextView mTvProductUnit;
         @BindView(R.id.tv_item_order_submit_remark)
         TextView mTvRemark;
+
+        @BindView(R.id.stick_header)
+        View mVStickHeader;
+        @BindView(R.id.tv_header)
+        TextView mTvHeader;
+        @BindView(R.id.product_main)
+        View mVProductMain;
 
         public ViewHolder(View itemView) {
             super(itemView);
