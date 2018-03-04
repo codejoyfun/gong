@@ -325,7 +325,7 @@ public class SPUtils {
     public static void loginOut(Context context) {
         SPUtils.put(context, "sign", "");
         SPUtils.put(context, "mLogin", false);
-        SPUtils.put(context, "userInfo", "");
+        SPUtils.put(context, FILE_KEY_USER_INFO, "");
         SPUtils.put(context, FILE_KEY_DB_NAME, "LBZ-Golive-01");
         SPUtils.put(context, FILE_KEY_HOST, "");
         Constant.BASE_URL = Constant.UNLOGIN_URL;

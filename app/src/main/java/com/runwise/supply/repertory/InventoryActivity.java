@@ -80,7 +80,7 @@ public class InventoryActivity extends NetWorkActivity {
         setContentView(R.layout.activity_inventory_list);
         setTitleText(true,"盘点单");
         showBackBtn();
-        setTitleRightIcon2(true,R.drawable.nav_add);
+        setTitleRightText(true,"添加");
         dragLayout.setOverDrag(false);
         mInventoryBean = (InventoryResponse.InventoryBean) getIntent().getSerializableExtra(INTENT_KEY_INVENTORY_BEAN);
 
@@ -216,7 +216,7 @@ public class InventoryActivity extends NetWorkActivity {
         return editRepertoryListFragment;
     }
 
-    @OnClick({R.id.tv_inventory_commit,R.id.tv_inventory_cache,R.id.title_iv_rigth2})
+    @OnClick({R.id.tv_inventory_commit,R.id.tv_inventory_cache,R.id.title_tv_rigth})
     public void onBtnClicked(View v){
         switch (v.getId()){
             case R.id.tv_inventory_commit:
@@ -230,7 +230,7 @@ public class InventoryActivity extends NetWorkActivity {
             case R.id.tv_inventory_cache:
                 finish();
                 break;
-            case R.id.title_iv_rigth2:
+            case R.id.title_tv_rigth:
                 //增加新商品，传入已有商品进行过滤
                 Intent intent = new Intent(this,EditRepertoryAddActivity.class);
                 ArrayList<Integer> filters = new ArrayList<>();

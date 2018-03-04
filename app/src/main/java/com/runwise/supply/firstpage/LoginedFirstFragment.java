@@ -105,7 +105,7 @@ import static com.runwise.supply.repertory.InventoryActivity.INTENT_KEY_INVENTOR
  * Created by libin on 2017/7/13.
  */
 
-public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapter.DoActionInterface,LoadingLayoutInterface {
+public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapter.DoActionInterface, LoadingLayoutInterface {
     private static final int FROMORDER = 0;
     private static final int FROMLB = 1;
     private static final int FROMDB = 2;
@@ -193,7 +193,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 if (mSumMoneyData == null) {
                     return;
                 }
-                if (SPUtils.isLogin(getActivity())&&mSumMoneyData != null) {
+                if (SPUtils.isLogin(getActivity()) && mSumMoneyData != null) {
                     Intent intent = new Intent(mContext, ProcurementLimitActivity.class);
                     intent.putExtra(KEY_SUM_MONEY_DATA, mSumMoneyData);
                     startActivity(intent);
@@ -461,10 +461,13 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     InventoryResponse.InventoryBean inventoryBean = inventoryResult.getList().get(0);
                     //有确认中的盘点单，则显示
                     boolean isInProgresss = "confirm".equals(inventoryBean.getState());
+                    InventoryCacheManager.getInstance(getActivity()).setCurrentInventoryId(inventoryBean.getInventoryID());
                     if (isInProgresss) {
                         if (getActivity() != null)
                             InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
-                        inventoryList.add(inventoryBean);
+                        if (inventoryBean.getCreateUser().equals(userInfo.getUsername())) {
+                            inventoryList.add(inventoryBean);
+                        }
                     } else {//没有确认中的盘点单
                         if (getActivity() != null)
                             InventoryCacheManager.getInstance(getActivity()).setIsInventory(false);
@@ -495,7 +498,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             case REQUEST_UNREAD:
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
                 DetailResult.ListBean bean = PlatformNotificationManager.getInstance(getActivity()).getLastMessage();
-                if (unReadData.getUnread() || (bean!=null && !bean.isSeen())) {
+                if (unReadData.getUnread() || (bean != null && !bean.isSeen())) {
                     mTvHint.setVisibility(View.VISIBLE);
                 } else {
                     mTvHint.setVisibility(View.GONE);
@@ -519,8 +522,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             } else {
                 loadingLayout.onSuccess(adapter.getCount(), "暂无在途订单", R.drawable.default_icon_ordernone);
             }
-            if (!mRequestReturnListSuccess){
-                loadingLayout.onFailure("",R.drawable.default_icon_checkconnection);
+            if (!mRequestReturnListSuccess) {
+                loadingLayout.onFailure("", R.drawable.default_icon_checkconnection);
             }
         }
     }
@@ -548,7 +551,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 //            case REQUEST_TRANSFER_IN:
 //            case REQUEST_TRANSFER_OUT:
             case FROMRETURN:
-                ToastUtil.show(getActivity(),errMsg);
+                ToastUtil.show(getActivity(), errMsg);
                 mRequestReturnListSuccess = false;
                 returnRequesting = false;
                 checkSuccess();
@@ -740,6 +743,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 dialog.show();
                 break;
             case FINISH_RETURN:
+                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
                 mSelectBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
                 dialog.setTitle("提示");
                 dialog.setMessageGravity();
@@ -1074,6 +1078,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         if (event.isShow && !isNoticeClose) {
             //用户当前未点关闭，并且正在盘点中
             mViewNotice.setVisibility(View.VISIBLE);
+            TextView mTvNotice = (TextView) mViewNotice.findViewById(R.id.tv_notice);
+            if (inventoryList!=null&&inventoryList.size()>0){
+                mTvNotice.setText(inventoryList.get(0).getCreateUser() + "正在盘点中，请尽快完成！");
+            }
             //关闭按钮
             mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v -> {
                 isNoticeClose = true;
@@ -1084,7 +1092,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             mViewNotice.setVisibility(View.GONE);
         }
     }
-boolean mRequestReturnListSuccess = true;
+
+    boolean mRequestReturnListSuccess = true;
+
     @Override
     public void retryOnClick(View view) {
         requestReturnList(true);

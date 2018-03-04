@@ -19,7 +19,6 @@ import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
-import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
@@ -115,7 +114,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
         List<OrderMsgDetail.OrderBean.LinesBean> typeList = new ArrayList<>();
         for (OrderMsgDetail.OrderBean.LinesBean bean : prodectList){
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(bean.getProductID()));
-            if (listBean != null && listBean.getCategory().equals(type)){
+            if (listBean != null && listBean.getCategoryParent().equals(type)){
                 typeList.add(bean);
             }
         }

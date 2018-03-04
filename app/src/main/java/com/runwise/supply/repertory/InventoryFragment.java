@@ -222,10 +222,12 @@ public class InventoryFragment extends NetWorkFragment {
         Queue<View> cacheLotView = new ArrayDeque<>();
         int colorBgChanged;
         int colorBgUnChanged;
+        int colorMore;
 
         InventoryAdapter(){
             colorBgUnChanged = Color.parseColor("#ffffff");
             colorBgChanged = Color.parseColor("#FFF3FBED");
+            colorMore = Color.parseColor("#fe451d");
         }
 
         @Override
@@ -247,6 +249,13 @@ public class InventoryFragment extends NetWorkFragment {
                 viewHolder.mmIvArrow.setVisibility(View.VISIBLE);
                 viewHolder.mmTvTheoretical.setVisibility(View.VISIBLE);
                 viewHolder.mmEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getEditNum()));
+//                盘盈的数量标红
+                if (inventoryProduct.getEditNum() > inventoryProduct.getTheoreticalQty()){
+                    viewHolder.mmEtCount.setTextColor(colorMore);
+                }else{
+                    viewHolder.mmEtCount.setTextColor(getResources().getColor(R.color.color2e2e2e));
+                }
+
                 viewHolder.mmTvTheoretical.setText("/"+NumberUtil.getIOrD(inventoryProduct.getTheoreticalQty()));
                 viewHolder.mmTvUom.setText(inventoryProduct.getProduct().getProductUom());
 

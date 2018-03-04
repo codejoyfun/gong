@@ -263,6 +263,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                         dialog.show();
                         break;
                     case TALLY:
+                        if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
                         if (bean != null) {
                             Intent tIntent = new Intent(mContext, ReceiveActivity.class);
                             Bundle tBundle = new Bundle();
@@ -273,6 +274,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                         }
                         break;
                     case TALLYING:
+                        if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
                         if (bean != null) {
                             String name = bean.getTallyingUserName();
                             dialog.setMessageGravity();
@@ -297,6 +299,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                         }
                         break;
                     case RECEIVE://正常收货
+                        if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
                         if (bean != null) {
                             Intent reIntent = new Intent(mContext, ReceiveActivity.class);
                             Bundle reBundle = new Bundle();
@@ -307,6 +310,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                         }
                         break;
                     case SETTLERECEIVE:
+                        if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
                         //点货，计入结算单位
                         Intent sIntent = new Intent(mContext, ReceiveActivity.class);
                         Bundle sBundle = new Bundle();
@@ -316,6 +320,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                         startActivity(sIntent);
                         break;
                     case SELFTALLY:
+                        if(InventoryCacheManager.getInstance(this).checkIsInventory(this))return;
                         dialog.setMessageGravity();
                         dialog.setMessage("您已经点过货了，应由其他人完成收货");
                         dialog.setModel(CustomDialog.RIGHT);

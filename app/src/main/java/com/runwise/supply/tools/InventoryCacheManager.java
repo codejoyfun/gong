@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * 缓存盘点单信息
- *
+ * <p>
  * Created by Dong on 2017/12/9.
  */
 
@@ -36,20 +36,22 @@ public class InventoryCacheManager {
     private static final String PREF_NAME = "inventory2_";
     private static final String PREF_BRIEF = "inventory_list_items2";
     private static final String PREF_KEY_IS_INVENTORY = "is_inventory";
+    private static final String PREF_KEY_CURRENT_INVENTORY_ID = "pref_key_current_inventory_id";
+    private static final int INVAILD_INVENTORY_ID = -1;
     private SharedPreferences mInventoryPrefs;
     private SharedPreferences mListPrefs;
     private SharedPreferences mPrefs;
 
-    private InventoryCacheManager(Context context){
-        mInventoryPrefs = context.getSharedPreferences(PREF_NAME,0);
-        mListPrefs = context.getSharedPreferences(PREF_BRIEF,0);
+    private InventoryCacheManager(Context context) {
+        mInventoryPrefs = context.getSharedPreferences(PREF_NAME, 0);
+        mListPrefs = context.getSharedPreferences(PREF_BRIEF, 0);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     private static InventoryCacheManager sInstance;
 
-    public static InventoryCacheManager getInstance(Context context){
-        if(sInstance==null){
+    public static InventoryCacheManager getInstance(Context context) {
+        if (sInstance == null) {
             sInstance = new InventoryCacheManager(context);
         }
         return sInstance;
@@ -57,47 +59,51 @@ public class InventoryCacheManager {
 
     /**
      * 缓存盘点信息
+     *
      * @param inventoryBean
      */
-    public void saveInventory(InventoryResponse.InventoryBean inventoryBean){
-        SPUtils.saveObject(mInventoryPrefs,String.valueOf(inventoryBean.getInventoryID()),inventoryBean);
+    public void saveInventory(InventoryResponse.InventoryBean inventoryBean) {
+        SPUtils.saveObject(mInventoryPrefs, String.valueOf(inventoryBean.getInventoryID()), inventoryBean);
         //保存一份简要的信息用于首页显示
         InventoryBrief inventoryBrief = new InventoryBrief();
         inventoryBrief.setInventoryID(inventoryBean.getInventoryID());
         inventoryBrief.setCreateUser(GlobalApplication.getInstance().getUserName());
         inventoryBrief.setCreateTime(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
         inventoryBrief.setName(inventoryBean.getName());
-        SPUtils.saveObject(mListPrefs,String.valueOf(inventoryBrief.getInventoryID()),inventoryBrief);
+        SPUtils.saveObject(mListPrefs, String.valueOf(inventoryBrief.getInventoryID()), inventoryBrief);
     }
 
     /**
      * 加载缓存的盘点信息
+     *
      * @param inventoryID
      * @return
      */
-    public InventoryResponse.InventoryBean loadInventory(int inventoryID){
-        return (InventoryResponse.InventoryBean)SPUtils.readObject(mInventoryPrefs,String.valueOf(inventoryID));
+    public InventoryResponse.InventoryBean loadInventory(int inventoryID) {
+        return (InventoryResponse.InventoryBean) SPUtils.readObject(mInventoryPrefs, String.valueOf(inventoryID));
     }
 
     /**
      * 删除缓存的盘点信息
+     *
      * @param inventoryID
      */
-    public void removeInventory(int inventoryID){
+    public void removeInventory(int inventoryID) {
         mInventoryPrefs.edit().remove(String.valueOf(inventoryID)).apply();//删掉详情
         mListPrefs.edit().remove(String.valueOf(inventoryID)).apply();//删掉列表项
     }
 
     /**
      * 返回所有的缓存的盘点单的列表
+     *
      * @return
      */
-    public List<InventoryBrief> loadInventoryBrief(){
+    public List<InventoryBrief> loadInventoryBrief() {
         List<InventoryBrief> dataList = new ArrayList<>();
         try {
-            Map<String,?> mapAll = mListPrefs.getAll();
-            for(Map.Entry entry:mapAll.entrySet()){
-                String string = (String)entry.getValue();
+            Map<String, ?> mapAll = mListPrefs.getAll();
+            for (Map.Entry entry : mapAll.entrySet()) {
+                String string = (String) entry.getValue();
                 if (TextUtils.isEmpty(string)) {
                     continue;
                 } else {
@@ -121,48 +127,64 @@ public class InventoryCacheManager {
         return dataList;
     }
 
+    public void setCurrentInventoryId(int inventoryId) {
+        mPrefs.edit().putInt(PREF_KEY_CURRENT_INVENTORY_ID, inventoryId).apply();
+    }
+
+    public int getCurrentInventoryId() {
+        return mPrefs.getInt(PREF_KEY_CURRENT_INVENTORY_ID, INVAILD_INVENTORY_ID);
+    }
+
     /**
      * 设置是否盘点中
+     *
      * @param isInventory
      */
-    public void setIsInventory(boolean isInventory){
-        mPrefs.edit().putBoolean(PREF_KEY_IS_INVENTORY,isInventory).apply();
+    public void setIsInventory(boolean isInventory) {
+        mPrefs.edit().putBoolean(PREF_KEY_IS_INVENTORY, isInventory).apply();
     }
 
     /**
      * 获取是否盘点中
+     *
      * @return
      */
-    public boolean isInventoryInProgress(){
-        return mPrefs.getBoolean(PREF_KEY_IS_INVENTORY,false);
+    public boolean isInventoryInProgress() {
+        return mPrefs.getBoolean(PREF_KEY_IS_INVENTORY, false);
     }
 
     /**
      * 获取是否盘点中,并弹提示
+     *
      * @return
      */
-    public boolean checkIsInventory(Context context){
-        if(isInventoryInProgress()){
-            Toast.makeText(context,"当前门店仓库盘点中，请先完成或取消！",Toast.LENGTH_LONG).show();
+    public boolean checkIsInventory(Context context) {
+        if (isInventoryInProgress()) {
+            int inventoryId = getCurrentInventoryId();
+            if (inventoryId != INVAILD_INVENTORY_ID) {
+                InventoryResponse.InventoryBean inventoryBean = getInstance(context).loadInventory(inventoryId);
+                Toast.makeText(context, inventoryBean.getCreateUser() + "正在盘点中，请先完成或取消！", Toast.LENGTH_LONG).show();
+            }
             return true;
         }
         return false;
     }
 
     boolean shouldShow = false;
-    public void shouldShowInventoryInProgress(boolean shouldShow){
+
+    public void shouldShowInventoryInProgress(boolean shouldShow) {
         EventBus.getDefault().post(new ShowInventoryNoticeEvent(shouldShow));
         this.shouldShow = shouldShow;
     }
 
-    public boolean shouldShowInventoryInProgress(){
+    public boolean shouldShowInventoryInProgress() {
         return shouldShow;
     }
 
     /**
      * 首页的盘点信息
      */
-    public static class InventoryBrief implements Serializable{
+    public static class InventoryBrief implements Serializable {
         private int inventoryID;
         private String createTime;
         private String createUser;
