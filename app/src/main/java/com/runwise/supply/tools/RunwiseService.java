@@ -20,7 +20,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_VERSION_PRODUCT_LIST;
 
 /**
@@ -89,8 +89,12 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 BaseEntity.ResultBean resultBean = result.getResult();
                 ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
                 SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
+                SPUtils.saveObject(getApplicationContext(),FILE_KEY_PRODUCT_CATEGORY_LIST,productListResponse.getCategory());
+                List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST);
+                if (categoryBeans == null){
+                    int i = 0;
+                }
                 putProductsToDB(productListResponse.getProducts());
-                SPUtils.saveObject(getApplicationContext(),FILE_KEY_PRODUCT_CATEGORY,productListResponse.getCategory());
                 sendServiceStatus(getString(R.string.service_finish));
                 break;
         }

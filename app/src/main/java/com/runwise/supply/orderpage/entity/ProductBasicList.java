@@ -51,7 +51,7 @@ public class ProductBasicList implements Serializable,Parcelable {
         this.list = list;
     }
 
-    public static class ListBean implements Serializable,Parcelable {
+    public static class ListBean implements Serializable,Parcelable,Cloneable {
         /**
          * name : 黑鱼（大型）
          * image : {"imageMedium":"/gongfu/image/product/8/image_medium/","image":"/gongfu/image/product/8/image/","imageSmall":"/gongfu/image/product/8/image_small/","imageID":8}
@@ -117,6 +117,17 @@ public class ProductBasicList implements Serializable,Parcelable {
         public static final String TRACKING_TYPE_NONE = "none";
 
         public ListBean() {
+        }
+
+        @Override
+        public Object clone() {
+            ListBean listBean = null;
+            try{
+                listBean = (ListBean)super.clone();
+            }catch(CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+            return listBean;
         }
 
 

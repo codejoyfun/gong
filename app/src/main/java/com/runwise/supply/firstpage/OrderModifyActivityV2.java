@@ -59,6 +59,9 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setCategory(lb.getCategory());
             listBean.setStockType(lb.getStockType());
             listBean.setRemark(lb.getRemark());
+            listBean.setCategoryParent(lb.getCategoryParent());
+            listBean.setCategoryChild(lb.getCategoryChild());
+
             listBeans.add(listBean);
             mMapCount.put(listBean,lb.getProductUomQty());
             mMapRemarks.put(listBean,lb.getRemark());

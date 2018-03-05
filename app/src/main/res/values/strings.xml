@@ -18,4 +18,5 @@
 
     <string name="scroll_behavior">@string/appbar_scrolling_view_behavior</string>
     <string name="detail_header_behavior">com.k.neleme.detail.DetailHeaderBehavior</string>
+    <string name="sales_promotion">促销商品</string>
 </resources>

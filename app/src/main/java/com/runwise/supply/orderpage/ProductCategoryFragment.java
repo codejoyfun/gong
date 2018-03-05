@@ -11,10 +11,12 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductAdapterV2;
+import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.CategoryChildResponse;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -24,9 +26,9 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
 
 
 /**
@@ -51,8 +53,10 @@ public class ProductCategoryFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         requestChildCategory();
-        HashMap<String, Long> childBadges = ((ProductActivityV2)getActivity()).getChildBadges();
-        mListContainer.getTypeAdapter().updateBadge(childBadges);
+        HashMap<String, Long> childBadges = ((ProductActivityV2) getActivity()).getChildBadges();
+        if (mListContainer.getTypeAdapter() != null){
+            mListContainer.getTypeAdapter().updateBadge(childBadges);
+        }
         //按比例设置二级分类列表宽度
 //        mRvSubCategory.getLayoutParams().width = (int) (GlobalConstant.screenW * 0.2);
     }
@@ -81,18 +85,32 @@ public class ProductCategoryFragment extends NetWorkFragment {
 
 
     HashMap<String, List<ProductBasicList.ListBean>> mChildProductMap;
-    public HashMap<String, List<ProductBasicList.ListBean>> getChildProductMap(){
+
+    public HashMap<String, List<ProductBasicList.ListBean>> getChildProductMap() {
         return mChildProductMap;
     }
+
     List<ProductBasicList.ListBean> mProductList = new ArrayList<>();
+
     public void requestChildCategory() {
         //查询二级分类
         HashMap<String, List<ProductBasicList.ListBean>> productMap = ((ProductActivityV2) getActivity()).getProductMap();
         List<ProductBasicList.ListBean> listBeans = productMap.get(mCategory);
-
+        if (listBeans == null) {
+            mListContainer.setVisibility(View.GONE);
+            return;
+        }
         mChildProductMap = new HashMap<>();
+//        促销商品
+        ArrayList<ProductBasicList.ListBean> salesPromotionList = new ArrayList<>();
         for (int i = 0; i < listBeans.size(); i++) {
             ProductBasicList.ListBean bean = listBeans.get(i);
+//            二级分类是促销商品
+            if (!TextUtils.isEmpty(bean.getCategoryChild()) && bean.getProductTag().equals(getString(R.string.sales_promotion))){
+                ProductBasicList.ListBean cloneListBean = (ProductBasicList.ListBean) bean.clone();
+                cloneListBean.setCategoryChild(getString(R.string.sales_promotion));
+                salesPromotionList.add(cloneListBean);
+            }
             String categoryChild = bean.getCategoryChild();
             List<ProductBasicList.ListBean> beanList;
             if (mChildProductMap.containsKey(categoryChild)) {
@@ -104,20 +122,31 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 mChildProductMap.put(categoryChild, beanList);
             }
         }
+        mChildProductMap.put(getString(R.string.sales_promotion),salesPromotionList);
         List<String> categoryList = new ArrayList<>();
         mProductList.clear();
-        Iterator iter = mChildProductMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String categoryChild = (String) entry.getKey();
-            mProductList.addAll((ArrayList<ProductBasicList.ListBean>) entry.getValue());
-            if (!TextUtils.isEmpty(categoryChild)){
-                categoryList.add(categoryChild);
+        List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getActivity(), FILE_KEY_PRODUCT_CATEGORY_LIST);
+        for (ProductListResponse.CategoryBean categoryBean : categoryBeans) {
+            if (categoryBean.getCategoryParent().equals(mCategory)) {
+//                没有二级分类
+                if (categoryBean.getCategoryChild() == null || categoryBean.getCategoryChild().size() == 0) {
+                    mProductList.addAll(listBeans);
+                }else{
+                    for (String categoryChild : categoryBean.getCategoryChild()) {
+                        List<ProductBasicList.ListBean> beans = mChildProductMap.get(categoryChild);
+                        if (beans != null) {
+                            mProductList.addAll(beans);
+                        }
+                        if (!TextUtils.isEmpty(categoryChild)) {
+                            categoryList.add(categoryChild);
+                        }
+                    }
+                }
+                break;
             }
         }
         mLoadingLayout.setVisibility(View.GONE);
-
-        mListContainer.init(mCategory,mProductList,categoryList,((ProductActivityV2)getActivity()).getProductCountSetter());
+        mListContainer.init(mCategory, mProductList, categoryList, ((ProductActivityV2) getActivity()).getProductCountSetter());
 
         //根据子类别加入fragment
         //适配没有二级分类,加一个空的tag
@@ -199,22 +228,23 @@ public class ProductCategoryFragment extends NetWorkFragment {
 
     /**
      * 其它地方修改
+     *
      * @param event
      */
     @Subscribe
-    public void updateProductCount(ProductCountUpdateEvent event){
+    public void updateProductCount(ProductCountUpdateEvent event) {
         List<ProductBasicList.ListBean> listBeans = null;
-        if (event.bean != null){
+        if (event.bean != null) {
             listBeans = mChildProductMap.get(event.bean.getCategoryChild());
-        }else{
+        } else {
             //购物车商品删除调用的逻辑
-            ((ProductActivityV2)getActivity()).initChildBadges();
-            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2)getActivity()).getChildBadges());
-            for (ProductBasicList.ListBean listBean:event.beanList){
-                if (listBean .getCategoryParent().equals(mCategory)){
-                    for (int i = 0;i<mProductList.size();i++){
+            ((ProductActivityV2) getActivity()).initChildBadges();
+            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
+            for (ProductBasicList.ListBean listBean : event.beanList) {
+                if (listBean.getCategoryParent().equals(mCategory)) {
+                    for (int i = 0; i < mProductList.size(); i++) {
                         ProductBasicList.ListBean tempListBean = mProductList.get(i);
-                        if (tempListBean.getProductID() == listBean.getProductID()){
+                        if (tempListBean.getProductID() == listBean.getProductID()) {
                             mListContainer.getProductAdapterV2().notifyItemChanged(i);
                         }
                     }
@@ -222,18 +252,18 @@ public class ProductCategoryFragment extends NetWorkFragment {
             }
         }
 
-        if (event.getException()!=null&& event.getException().getClass() == ProductAdapterV2.class){
-            if (listBeans != null){
-                ((ProductActivityV2)getActivity()).initChildBadges();
-                mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2)getActivity()).getChildBadges());
+        if (event.getException() != null && event.getException().getClass() == ProductAdapterV2.class) {
+            if (listBeans != null) {
+                ((ProductActivityV2) getActivity()).initChildBadges();
+                mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
             }
             return;
         }
-        if(listBeans != null){
-            ((ProductActivityV2)getActivity()).initChildBadges();
-            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2)getActivity()).getChildBadges());
-            for (ProductBasicList.ListBean listBean:listBeans){
-                if (listBean.getProductID() == event.bean.getProductID()){
+        if (listBeans != null) {
+            ((ProductActivityV2) getActivity()).initChildBadges();
+            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
+            for (ProductBasicList.ListBean listBean : listBeans) {
+                if (listBean.getProductID() == event.bean.getProductID()) {
                     mListContainer.getProductAdapterV2().notifyDataSetChanged();
                     break;
                 }

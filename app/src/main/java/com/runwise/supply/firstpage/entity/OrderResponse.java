@@ -113,6 +113,7 @@ public class OrderResponse {
         private List<ProductAlteredBean> productAltered;
         private boolean isActualSendOrder;
 
+
         public List<ProductAlteredBean> getProductAltered() {
             return productAltered;
         }
@@ -1147,6 +1148,8 @@ public class OrderResponse {
             private String remark;//备注
             private double actualSendNum;//实际发货数量
             private String saleUom;//实际发货数量
+            private String categoryParent;
+            private String categoryChild;
 
 
             //自定义字段
@@ -1394,6 +1397,21 @@ public class OrderResponse {
             public void setSaleUom(String saleUom) {
                 this.saleUom = saleUom;
             }
+            public String getCategoryParent() {
+                return categoryParent;
+            }
+
+            public void setCategoryParent(String categoryParent) {
+                this.categoryParent = categoryParent;
+            }
+
+            public String getCategoryChild() {
+                return categoryChild;
+            }
+
+            public void setCategoryChild(String categoryChild) {
+                this.categoryChild = categoryChild;
+            }
 
             public static class LotListBean implements Parcelable {
                 /**
@@ -1549,6 +1567,9 @@ public class OrderResponse {
                 dest.writeString(remark);
                 dest.writeDouble(actualSendNum);
                 dest.writeString(saleUom);
+                dest.writeString(categoryParent);
+                dest.writeString(categoryChild);
+
             }
 
             public LinesBean() {
@@ -1586,6 +1607,8 @@ public class OrderResponse {
                 remark = in.readString();
                 actualSendNum = in.readDouble();
                 saleUom = in.readString();
+                categoryParent = in.readString();
+                categoryChild = in.readString();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

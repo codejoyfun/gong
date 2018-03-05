@@ -52,18 +52,19 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
     protected void convert(BaseViewHolder baseViewHolder, ProductBasicList.ListBean listBean) {
 
         if (baseViewHolder.getAdapterPosition() == 0) {
-            baseViewHolder.setVisible(R.id.stick_header, !TextUtils.isEmpty(listBean.getCategoryChild()))
-                    .setText(R.id.tv_header, listBean.getCategoryChild())
+            String headText = listBean.getCategoryChild();
+            baseViewHolder.setVisible(R.id.stick_header, !TextUtils.isEmpty(headText))
+                    .setText(R.id.tv_header, headText)
                     .setTag(R.id.food_main, FIRST_STICKY_VIEW);
         } else {
-            if (!TextUtils.equals(listBean.getCategoryChild(), mData.get(baseViewHolder.getAdapterPosition() - 1).getCategoryChild())) {
-                baseViewHolder.setVisible(R.id.stick_header, true)
-                        .setText(R.id.tv_header, listBean.getCategoryChild())
-                        .setTag(R.id.food_main, HAS_STICKY_VIEW);
-            } else {
-                baseViewHolder.setVisible(R.id.stick_header, false)
-                        .setTag(R.id.food_main, NONE_STICKY_VIEW);
-            }
+                if (!TextUtils.equals(listBean.getCategoryChild(), mData.get(baseViewHolder.getAdapterPosition() - 1).getCategoryChild())) {
+                    baseViewHolder.setVisible(R.id.stick_header, true)
+                            .setText(R.id.tv_header, listBean.getCategoryChild())
+                            .setTag(R.id.food_main, HAS_STICKY_VIEW);
+                } else {
+                    baseViewHolder.setVisible(R.id.stick_header, false)
+                            .setTag(R.id.food_main, NONE_STICKY_VIEW);
+                }
         }
         baseViewHolder.getConvertView().setContentDescription(listBean.getCategoryChild());
 

@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
@@ -42,6 +43,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CartCache;
 import com.runwise.supply.entity.CategoryRespone;
+import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.entity.ProductValidateRequest;
 import com.runwise.supply.entity.ProductValidateResponse;
 import com.runwise.supply.event.ProductCountUpdateEvent;
@@ -72,6 +74,7 @@ import java.util.Set;
 import io.vov.vitamio.utils.NumberUtil;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CONTINUE_TO_CHOOSE;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SHOPPING_CART;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_XUAN_HAO_L;
@@ -336,12 +339,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         }
 
         List<String> categoryList = new ArrayList<>();
-        Iterator iter = mProductMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            String categoryParent = (String) entry.getKey();
-            categoryList.add(categoryParent);
-        }
+        List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST);
+    for (ProductListResponse.CategoryBean categoryBean:categoryBeans){
+        categoryList.add(categoryBean.getCategoryParent());
+    }
         categoryResponse = new CategoryRespone();
         categoryResponse.setCategoryList(categoryList);
         loadingLayout.onSuccess(categoryResponse.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
@@ -749,9 +750,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
         }
         if (TextUtils.isEmpty(categoryChild)) {
-            desc = categoryParent + "(" + count + "种,共" + productCount+"件)";
+            desc = categoryParent + "(" + count + "种,共" + productCount + "件)";
         } else {
-            desc = categoryParent + "/" + categoryChild + "(" + count + "种,共" + productCount+"件)";
+            desc = categoryParent + "/" + categoryChild + "(" + count + "种,共" + productCount + "件)";
         }
         return desc;
     }

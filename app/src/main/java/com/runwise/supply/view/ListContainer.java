@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.kids.commonframe.base.util.CommonUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductAdapterV2;
 import com.runwise.supply.adapter.TypeAdapter;
@@ -55,14 +56,18 @@ public class ListContainer extends LinearLayout {
         super(context);
     }
 
-    public void init(String category,List<ProductBasicList.ListBean> foodBeanList, List<String> categoryList, ProductActivityV2.ProductCountSetter productCountSetter) {
+    public void init(String category, List<ProductBasicList.ListBean> foodBeanList, List<String> categoryList, ProductActivityV2.ProductCountSetter productCountSetter) {
         this.foodBeanList = foodBeanList;
         mCategoryList = categoryList;
-        typeAdapter = new TypeAdapter(categoryList,category);
+        typeAdapter = new TypeAdapter(categoryList, category);
         RecyclerView recyclerView1 = (RecyclerView) findViewById(R.id.recycler1);
-        if (mCategoryList.size() == 0){
+        if (mCategoryList.size() == 0) {
             recyclerView1.setVisibility(View.GONE);
             findViewById(R.id.stick_header).setVisibility(View.GONE);
+        }
+        if (foodBeanList.size() == 0) {
+            recyclerView2.setVisibility(View.GONE);
+            return;
         }
         recyclerView1.setLayoutManager(new LinearLayoutManager(mContext));
         View view = new View(mContext);
@@ -79,13 +84,18 @@ public class ListContainer extends LinearLayout {
                     typeAdapter.fromClick = true;
                     typeAdapter.setChecked(i);
                     String type = view.getTag().toString();
+                    boolean findIt = false;
                     for (int ii = 0; ii < finalFoodBeanList.size(); ii++) {
                         ProductBasicList.ListBean typeBean = finalFoodBeanList.get(ii);
                         if (typeBean.getCategoryChild().equals(type)) {
+                            findIt = true;
                             index = ii;
                             moveToPosition(index);
                             break;
                         }
+                    }
+                    if (!findIt) {
+                        ToastUtil.show(getContext(), "该分类下没有商品!");
                     }
                 }
             }
@@ -202,6 +212,7 @@ public class ListContainer extends LinearLayout {
                             public PointF computeScrollVectorForPosition(int targetPosition) {
                                 return linearLayoutManager.computeScrollVectorForPosition(targetPosition);
                             }
+
                             @Override
                             protected float calculateSpeedPerPixel
                                     (DisplayMetrics displayMetrics) {
@@ -215,6 +226,7 @@ public class ListContainer extends LinearLayout {
         };
         return linearLayoutManager;
     }
+
     public TypeAdapter getTypeAdapter() {
         return typeAdapter;
     }

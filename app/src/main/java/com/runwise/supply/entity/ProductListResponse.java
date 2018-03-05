@@ -2,13 +2,14 @@ package com.runwise.supply.entity;
 
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by mike on 2018/2/27.
  */
 
-public class ProductListResponse {
+public class ProductListResponse implements Serializable{
 
     int version;
     List<ProductBasicList.ListBean> products;
@@ -37,9 +38,9 @@ public class ProductListResponse {
         this.category = category;
     }
 
-    public class CategoryBean{
+    public class CategoryBean implements Serializable{
         private String categoryParent;
-        private String categoryChild;
+        private List<String> categoryChild;
 
         public String getCategoryParent() {
             return categoryParent;
@@ -48,12 +49,11 @@ public class ProductListResponse {
         public void setCategoryParent(String categoryParent) {
             this.categoryParent = categoryParent;
         }
-
-        public String getCategoryChild() {
+        public List<String> getCategoryChild() {
             return categoryChild;
         }
 
-        public void setCategoryChild(String categoryChild) {
+        public void setCategoryChild(List<String> categoryChild) {
             this.categoryChild = categoryChild;
         }
     }
