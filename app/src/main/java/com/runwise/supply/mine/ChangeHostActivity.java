@@ -17,16 +17,20 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
-import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -285,6 +289,12 @@ private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017
     @Override
     public void onSuccess(BaseEntity result, int where) {
         SPUtils.loginOut(mContext);
+        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+        try {
+            dbUtils.deleteAll(ProductBasicList.ListBean.class);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
         SelfOrderTimeStatisticsUtil.clear();
         //退出登录
         EventBus.getDefault().post(new UserLogoutEvent());

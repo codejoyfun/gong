@@ -1,11 +1,17 @@
 package com.runwise.supply.adapter;
 
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
@@ -21,14 +27,16 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.vov.vitamio.utils.NumberUtil;
 
 /**
  * Created by mike on 2018/3/1.
  */
 
-public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean, BaseViewHolder> {
-
+public class ProductAdapterV2 extends RecyclerView.Adapter<ProductAdapterV2.ViewHolder> {
+    //    ProductBasicList.ListBean
     public static final int FIRST_STICKY_VIEW = 1;
     public static final int HAS_STICKY_VIEW = 2;
     public static final int NONE_STICKY_VIEW = 3;
@@ -39,57 +47,87 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
     private List<ProductBasicList.ListBean> mData;
 
     public ProductAdapterV2(@Nullable List<ProductBasicList.ListBean> data) {
-        super(R.layout.item_product_with_subcategory, data);
+//        super(R.layout.item_product_with_subcategory, data);
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
         mData = data;
     }
 
-    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter){
+    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter) {
         this.productCountSetter = productCountSetter;
     }
 
-    @Override
-    protected void convert(BaseViewHolder baseViewHolder, ProductBasicList.ListBean listBean) {
 
-        if (baseViewHolder.getAdapterPosition() == 0) {
-            String headText = listBean.getCategoryChild();
-            baseViewHolder.setVisible(R.id.stick_header, !TextUtils.isEmpty(headText))
-                    .setText(R.id.tv_header, headText)
-                    .setTag(R.id.food_main, FIRST_STICKY_VIEW);
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_with_subcategory, null);
+        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        ViewHolder viewHolder = new ViewHolder(view);
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position,List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
         } else {
-                if (!TextUtils.equals(listBean.getCategoryChild(), mData.get(baseViewHolder.getAdapterPosition() - 1).getCategoryChild())) {
-                    baseViewHolder.setVisible(R.id.stick_header, true)
-                            .setText(R.id.tv_header, listBean.getCategoryChild())
-                            .setTag(R.id.food_main, HAS_STICKY_VIEW);
-                } else {
-                    baseViewHolder.setVisible(R.id.stick_header, false)
-                            .setTag(R.id.food_main, NONE_STICKY_VIEW);
-                }
+            ProductBasicList.ListBean listBean = mData.get(position);
+            double count = productCountSetter.getCount(listBean);
+            holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+            //先根据集合里面对应个数初始化一次
+            if (count > 0) {
+                holder.mTvProductCount.setVisibility(View.VISIBLE);
+                holder.mIvProductReduce.setVisibility(View.VISIBLE);
+                holder.mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
+            } else {
+                holder.mTvProductCount.setVisibility(View.INVISIBLE);
+                holder.mIvProductReduce.setVisibility(View.INVISIBLE);
+                holder.mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
+            }
         }
-        baseViewHolder.getConvertView().setContentDescription(listBean.getCategoryChild());
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        ProductBasicList.ListBean listBean = mData.get(position);
+        if (holder.getAdapterPosition() == 0) {
+            String headText = listBean.getCategoryChild();
+            holder.mStickHeader.setVisibility(!TextUtils.isEmpty(headText)?View.VISIBLE:View.GONE);
+            holder.mTvHeader.setText(headText);
+            holder.mFoodMain.setTag(FIRST_STICKY_VIEW);
+        } else {
+            if (!TextUtils.equals(listBean.getCategoryChild(), mData.get(holder.getAdapterPosition() - 1).getCategoryChild())) {
+                holder.mStickHeader.setVisibility(View.VISIBLE);
+                holder.mTvHeader.setText(listBean.getCategoryChild());
+                holder.mFoodMain.setTag(HAS_STICKY_VIEW);
+            } else {
+                holder.mStickHeader.setVisibility(View.GONE);
+                holder.mFoodMain.setTag(NONE_STICKY_VIEW);
+            }
+        }
+        holder.itemView.setContentDescription(listBean.getCategoryChild());
 
         //标签
         if (TextUtils.isEmpty(listBean.getProductTag())) {
-            baseViewHolder.getView(R.id.iv_product_sale).setVisibility(View.GONE);
+            holder.mIvProductSale.setVisibility(View.GONE);
         } else {
-            baseViewHolder.getView(R.id.iv_product_sale).setVisibility(View.VISIBLE);
+            holder.mIvProductSale.setVisibility(View.VISIBLE);
         }
         double count = productCountSetter.getCount(listBean);
-        baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(count) + listBean.getSaleUom());
+        holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
-            baseViewHolder.getView(R.id.tv_product_count).setVisibility(View.VISIBLE);
-            baseViewHolder.getView(R.id.iv_product_reduce).setVisibility(View.VISIBLE);
-            baseViewHolder.setBackgroundRes(R.id.iv_product_add, R.drawable.ic_order_btn_add_green_part);
+            holder.mTvProductCount.setVisibility(View.VISIBLE);
+            holder.mIvProductReduce.setVisibility(View.VISIBLE);
+            holder.mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
         } else {
-            baseViewHolder.getView(R.id.tv_product_count).setVisibility(View.INVISIBLE);
-            baseViewHolder.getView(R.id.iv_product_reduce).setVisibility(View.INVISIBLE);
-            baseViewHolder.setBackgroundRes(R.id.iv_product_add, R.drawable.order_btn_add_gray);
+            holder.mTvProductCount.setVisibility(View.INVISIBLE);
+            holder.mIvProductReduce.setVisibility(View.INVISIBLE);
+            holder.mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
         }
         /**
          * 减
          */
-        baseViewHolder.setOnClickListener(R.id.iv_product_reduce, new View.OnClickListener() {
+        holder.mIvProductReduce.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -100,12 +138,12 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
                     //防止double的问题
                     currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
                     if (currentNum < 0) currentNum = 0;
-                    baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
+                    holder.mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
                     productCountSetter.setCount(listBean, currentNum);
                     if (currentNum == 0) {
                         v.setVisibility(View.INVISIBLE);
-                        baseViewHolder.getView(R.id.tv_product_count).setVisibility(View.INVISIBLE);
-                        baseViewHolder.setBackgroundRes(R.id.iv_product_add, R.drawable.order_btn_add_gray);
+                        holder.mTvProductCount.setVisibility(View.INVISIBLE);
+                        holder.mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
                     }
                     ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(listBean, currentNum);
                     productCountUpdateEvent.setException(ProductAdapterV2.this);
@@ -117,17 +155,17 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
         /**
          * 加
          */
-        baseViewHolder.setOnClickListener(R.id.iv_product_add, new View.OnClickListener() {
+        holder.mIvProductAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 double currentNum = productCountSetter.getCount(listBean);
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
-                baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
+                holder.mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
                 productCountSetter.setCount(listBean, currentNum);
                 if (currentNum == 1) {//0变到1
-                    baseViewHolder.getView(R.id.iv_product_reduce).setVisibility(View.VISIBLE);
-                    baseViewHolder.getView(R.id.tv_product_count).setVisibility(View.VISIBLE);
-                    baseViewHolder.setBackgroundRes(R.id.iv_product_add, R.drawable.ic_order_btn_add_green_part);
+                    holder.mIvProductReduce.setVisibility(View.VISIBLE);
+                    holder.mTvProductCount.setVisibility(View.VISIBLE);
+                    holder.mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
                 ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(listBean, currentNum);
                 productCountUpdateEvent.setException(ProductAdapterV2.this);
@@ -137,11 +175,11 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
         /**
          * 点击数量展示输入对话框
          */
-        baseViewHolder.setOnClickListener(R.id.tv_product_count, new View.OnClickListener() {
+        holder.mTvProductCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 double currentCount = productCountSetter.getCount(listBean);
-                new ProductValueDialog(mContext, listBean.getName(), currentCount, productCountSetter.getRemark(listBean), new ProductValueDialog.IProductDialogCallback() {
+                new ProductValueDialog(holder.itemView.getContext(), listBean.getName(), currentCount, productCountSetter.getRemark(listBean), new ProductValueDialog.IProductDialogCallback() {
                     @Override
                     public void onInputValue(double value, String remark) {
 
@@ -149,15 +187,15 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
                         listBean.setRemark(remark);
                         productCountSetter.setRemark(listBean);
                         if (value == 0) {
-                            baseViewHolder.getView(R.id.iv_product_reduce).setVisibility(View.INVISIBLE);
-                            baseViewHolder.getView(R.id.tv_product_count).setVisibility(View.INVISIBLE);
-                            baseViewHolder.setBackgroundRes(R.id.iv_product_add, R.drawable.order_btn_add_gray);
+                            holder.mIvProductReduce.setVisibility(View.INVISIBLE);
+                            holder.mTvProductCount.setVisibility(View.INVISIBLE);
+                            holder.mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
                         } else {
-                            baseViewHolder.getView(R.id.iv_product_reduce).setVisibility(View.VISIBLE);
-                            baseViewHolder.getView(R.id.tv_product_count).setVisibility(View.VISIBLE);
-                            baseViewHolder.setBackgroundRes(R.id.iv_product_add, R.drawable.ic_order_btn_add_green_part);
+                            holder.mIvProductReduce.setVisibility(View.VISIBLE);
+                            holder.mTvProductCount.setVisibility(View.VISIBLE);
+                            holder.mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                         }
-                        baseViewHolder.setText(R.id.tv_product_count, NumberUtil.getIOrD(value) + listBean.getSaleUom());
+                        holder.mTvProductCount.setText(NumberUtil.getIOrD(value) + listBean.getSaleUom());
                         ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(listBean, (int) value);
                         productCountUpdateEvent.setException(ProductAdapterV2.this);
                         EventBus.getDefault().post(productCountUpdateEvent);
@@ -166,34 +204,78 @@ public class ProductAdapterV2 extends BaseQuickAdapter<ProductBasicList.ListBean
             }
         });
 
-        baseViewHolder.setText(R.id.tv_product_name, listBean.getName());
-        baseViewHolder.setText(R.id.tv_product_code, listBean.getDefaultCode());
-        baseViewHolder.setText(R.id.tv_product_content, listBean.getUnit());
+        holder.mTvProductName.setText(listBean.getName());
+        holder.mTvProductCode.setText(listBean.getDefaultCode());
+        holder.mTvProductContent.setText(listBean.getUnit());
 
         if (canSeePrice) {
             StringBuffer sb1 = new StringBuffer();
             sb1.append("¥").append(df.format(Double.valueOf(listBean.getPrice())));
 
-            baseViewHolder.setText(R.id.tv_product_price, sb1.toString());
-            baseViewHolder.setText(R.id.tv_product_price_unit, "/" + listBean.getSaleUom());
+            holder.mTvProductPrice.setText(sb1.toString());
+            holder.mTvProductPriceUnit.setText("/" + listBean.getSaleUom());
         } else {
-            baseViewHolder.getView(R.id.tv_product_price).setVisibility(View.GONE);
-            baseViewHolder.getView(R.id.tv_product_price_unit).setVisibility(View.GONE);
+            holder.mTvProductPrice.setVisibility(View.GONE);
+            holder.mTvProductPriceUnit.setVisibility(View.GONE);
         }
         if (listBean.getImage() != null) {
-            FrecoFactory.getInstance(mContext).displayWithoutHost(baseViewHolder.getView(R.id.sdv_product_image), listBean.getImage().getImageSmall());
+            FrecoFactory.getInstance(holder.itemView.getContext()).displayWithoutHost(holder.mSdvProductImage, listBean.getImage().getImageSmall());
+
         }
 
-        baseViewHolder.setOnClickListener(R.id.sdv_product_image,new View.OnClickListener() {
+        holder.mSdvProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProductImageDialog productImageDialog = new ProductImageDialog(mContext);
+                ProductImageDialog productImageDialog = new ProductImageDialog(holder.itemView.getContext());
                 productImageDialog.setListBean(listBean);
                 productImageDialog.setProductCountSetter(productCountSetter);
                 productImageDialog.show();
             }
         });
-
     }
 
+    @Override
+    public int getItemCount() {
+        return mData.size();
+    }
+
+    public List<ProductBasicList.ListBean> getData() {
+        return mData;
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.tv_header)
+        TextView mTvHeader;
+        @BindView(R.id.stick_header)
+        FrameLayout mStickHeader;
+        @BindView(R.id.sdv_product_image)
+        SimpleDraweeView mSdvProductImage;
+        @BindView(R.id.tv_product_name)
+        TextView mTvProductName;
+        @BindView(R.id.tv_product_code)
+        TextView mTvProductCode;
+        @BindView(R.id.v_line)
+        View mVLine;
+        @BindView(R.id.tv_product_content)
+        TextView mTvProductContent;
+        @BindView(R.id.iv_product_sale)
+        TextView mIvProductSale;
+        @BindView(R.id.tv_product_price)
+        TextView mTvProductPrice;
+        @BindView(R.id.tv_product_price_unit)
+        TextView mTvProductPriceUnit;
+        @BindView(R.id.iv_product_reduce)
+        ImageButton mIvProductReduce;
+        @BindView(R.id.tv_product_count)
+        TextView mTvProductCount;
+        @BindView(R.id.iv_product_add)
+        ImageButton mIvProductAdd;
+        @BindView(R.id.food_main)
+        LinearLayout mFoodMain;
+
+        ViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
 }

@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -299,7 +300,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         return mProductMap;
     }
 
+    public List<ProductBasicList.ListBean> getListBeans() {
+        return mListBeans;
+    }
+
     List<ProductBasicList.ListBean> mListBeans;
+
+
 
     /**
      * 查询类别
@@ -333,16 +340,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     mProductMap.put(categoryParent, beanList);
                 }
             }
-
         } catch (DbException e) {
             e.printStackTrace();
         }
 
         List<String> categoryList = new ArrayList<>();
         List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST);
-    for (ProductListResponse.CategoryBean categoryBean:categoryBeans){
-        categoryList.add(categoryBean.getCategoryParent());
-    }
+        for (ProductListResponse.CategoryBean categoryBean : categoryBeans) {
+            categoryList.add(categoryBean.getCategoryParent());
+        }
         categoryResponse = new CategoryRespone();
         categoryResponse.setCategoryList(categoryList);
         loadingLayout.onSuccess(categoryResponse.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
@@ -413,13 +419,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         mAdapterVp = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, repertoryEntityFragmentList);
         mViewPagerCategoryFrags.setAdapter(mAdapterVp);
         smartTabLayout.setupWithViewPager(mViewPagerCategoryFrags);
-        mViewPagerCategoryFrags.setOffscreenPageLimit(titles.size());
+        mViewPagerCategoryFrags.setOffscreenPageLimit(2);
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 changeTabSelect(tab);
                 int position = tab.getPosition();
                 mViewPagerCategoryFrags.setCurrentItem(position);
+                repertoryEntityFragmentList.get(position).setUserVisibleHint(true);
+
                 mTypeWindow.dismiss();
             }
 
@@ -455,7 +463,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             Long val = (Long) entry.getValue();
-            key = key.split("&")[0];
+            String[] keys = key.split("&");
+            if (keys.length == 0){
+                continue;
+            }
+            key = keys[0];
             if (mBadges.get(key) == null) {
                 mBadges.put(key, val);
             } else {
@@ -538,6 +550,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     //    @OnClick({R.id.title_iv_left, R.id.addBtn, R.id.iv_open, R.id.iv_product_cart,
 //            R.id.tv_order_resume, R.id.rl_cart_container, R.id.title_iv_rigth2})
+    ProductSearchFragment mProductSearchFragment;
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
@@ -1388,6 +1401,16 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     public static final String ACTION_TYPE_SERVICE = "action_type_service";
 
+    ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            //todo 这里写你要在界面加载完成后执行的操作。
+            dismissIProgressDialog();
+
+            smartTabLayout.getViewTreeObserver().removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
+        }
+    };
+
     public class MyBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -1397,7 +1420,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     if (status.equals(getString(R.string.service_finish))) {
                         //刷新商品列表
                         requestCategory();
-                        dismissIProgressDialog();
+
+                        smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                     }
                     break;
             }

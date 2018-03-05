@@ -30,6 +30,11 @@ import java.util.List;
 public class ListContainer extends LinearLayout {
 
     public TypeAdapter typeAdapter;
+
+    public RecyclerView getRecyclerView2() {
+        return recyclerView2;
+    }
+
     private RecyclerView recyclerView2;
     private LinearLayoutManager linearLayoutManager;
     private List<ProductBasicList.ListBean> foodBeanList;
@@ -61,7 +66,8 @@ public class ListContainer extends LinearLayout {
         mCategoryList = categoryList;
         typeAdapter = new TypeAdapter(categoryList, category);
         RecyclerView recyclerView1 = (RecyclerView) findViewById(R.id.recycler1);
-        if (mCategoryList.size() == 0) {
+        recyclerView2 = (RecyclerView) findViewById(R.id.recycler2);
+        if (mCategoryList == null||mCategoryList.size() == 0) {
             recyclerView1.setVisibility(View.GONE);
             findViewById(R.id.stick_header).setVisibility(View.GONE);
         }
@@ -100,7 +106,6 @@ public class ListContainer extends LinearLayout {
                 }
             }
         });
-        recyclerView2 = (RecyclerView) findViewById(R.id.recycler2);
         linearLayoutManager = new LinearLayoutManager(mContext);
 //        recyclerView2.setLayoutManager(linearLayoutManager);
         recyclerView2.setLayoutManager(getFastSmoothScrollToPosition());
@@ -151,7 +156,7 @@ public class ListContainer extends LinearLayout {
     public void setUpProductRecyclerView() {
         mProductAdapterV2 = new ProductAdapterV2(foodBeanList);
         stickView = findViewById(R.id.stick_header);
-        mProductAdapterV2.bindToRecyclerView(recyclerView2);
+        recyclerView2.setAdapter(mProductAdapterV2);
         tvStickyHeaderView = (TextView) findViewById(R.id.tv_header);
         tvStickyHeaderView.setText(foodBeanList.get(0).getCategoryChild());
         recyclerView2.setOnTouchListener(new OnTouchListener() {

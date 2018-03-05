@@ -2,11 +2,10 @@ package com.runwise.supply.orderpage;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
@@ -18,7 +17,6 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductAdapterV2;
 import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.event.ProductCountUpdateEvent;
-import com.runwise.supply.orderpage.entity.CategoryChildResponse;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.ListContainer;
 
@@ -27,6 +25,8 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import io.vov.vitamio.utils.NumberUtil;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
 
@@ -46,19 +46,35 @@ public class ProductCategoryFragment extends NetWorkFragment {
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout mLoadingLayout;
     private String mCurrentSubCategory = null;
-    private List<String> mCategoryChildList;//子类别列表
+
+    private boolean isLive = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isLive = true;
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         requestChildCategory();
         HashMap<String, Long> childBadges = ((ProductActivityV2) getActivity()).getChildBadges();
-        if (mListContainer.getTypeAdapter() != null){
+        if (mListContainer.getTypeAdapter() != null) {
             mListContainer.getTypeAdapter().updateBadge(childBadges);
         }
         //按比例设置二级分类列表宽度
 //        mRvSubCategory.getLayoutParams().width = (int) (GlobalConstant.screenW * 0.2);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isLive = false;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser&&isLive){
+
+        }
     }
 
     @Override
@@ -93,20 +109,45 @@ public class ProductCategoryFragment extends NetWorkFragment {
     List<ProductBasicList.ListBean> mProductList = new ArrayList<>();
 
     public void requestChildCategory() {
+        long mStartTime;
+        mStartTime = System.currentTimeMillis();
         //查询二级分类
-        HashMap<String, List<ProductBasicList.ListBean>> productMap = ((ProductActivityV2) getActivity()).getProductMap();
-        List<ProductBasicList.ListBean> listBeans = productMap.get(mCategory);
+        List<ProductBasicList.ListBean> listBeans = ((ProductActivityV2) getActivity()).getProductMap().get(mCategory);
+        //        促销商品
+        ArrayList<ProductBasicList.ListBean> salesPromotionList = new ArrayList<>();
         if (listBeans == null) {
-            mListContainer.setVisibility(View.GONE);
-            return;
+            switch (mCategory) {
+                case "全部":
+                    mLoadingLayout.setVisibility(View.GONE);
+//                    ((ProductActivityV2) getActivity()).getListBeans()
+                    mListContainer.init(mCategory, ((ProductActivityV2) getActivity()).getListBeans(), null, ((ProductActivityV2) getActivity()).getProductCountSetter());
+                    android.util.Log.i("onGlobalLayout 全部", String.valueOf(mStartTime - System.currentTimeMillis()));
+                    return;
+                case "促销商品":
+                    //            一级分类是促销商品
+                    listBeans = ((ProductActivityV2) getActivity()).getListBeans();
+                    for (int i = 0; i < listBeans.size(); i++) {
+                        ProductBasicList.ListBean bean = listBeans.get(i);
+                        if (mCategory.equals(getString(R.string.sales_promotion)) && bean.getProductTag().equals(getString(R.string.sales_promotion))) {
+                            salesPromotionList.add(bean);
+                        }
+                    }
+                    mLoadingLayout.setVisibility(View.GONE);
+                    mListContainer.init(mCategory, salesPromotionList, null, ((ProductActivityV2) getActivity()).getProductCountSetter());
+                    android.util.Log.i("onGlobalLayout 促销商品", String.valueOf(mStartTime - System.currentTimeMillis()));
+                    return;
+                default:
+                    mListContainer.setVisibility(View.GONE);
+                    return;
+            }
+
         }
         mChildProductMap = new HashMap<>();
-//        促销商品
-        ArrayList<ProductBasicList.ListBean> salesPromotionList = new ArrayList<>();
+
         for (int i = 0; i < listBeans.size(); i++) {
             ProductBasicList.ListBean bean = listBeans.get(i);
 //            二级分类是促销商品
-            if (!TextUtils.isEmpty(bean.getCategoryChild()) && bean.getProductTag().equals(getString(R.string.sales_promotion))){
+            if (!TextUtils.isEmpty(bean.getCategoryChild()) && bean.getProductTag().equals(getString(R.string.sales_promotion))) {
                 ProductBasicList.ListBean cloneListBean = (ProductBasicList.ListBean) bean.clone();
                 cloneListBean.setCategoryChild(getString(R.string.sales_promotion));
                 salesPromotionList.add(cloneListBean);
@@ -122,7 +163,8 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 mChildProductMap.put(categoryChild, beanList);
             }
         }
-        mChildProductMap.put(getString(R.string.sales_promotion),salesPromotionList);
+
+        mChildProductMap.put(getString(R.string.sales_promotion), salesPromotionList);
         List<String> categoryList = new ArrayList<>();
         mProductList.clear();
         List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getActivity(), FILE_KEY_PRODUCT_CATEGORY_LIST);
@@ -131,7 +173,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
 //                没有二级分类
                 if (categoryBean.getCategoryChild() == null || categoryBean.getCategoryChild().size() == 0) {
                     mProductList.addAll(listBeans);
-                }else{
+                } else {
                     for (String categoryChild : categoryBean.getCategoryChild()) {
                         List<ProductBasicList.ListBean> beans = mChildProductMap.get(categoryChild);
                         if (beans != null) {
@@ -147,83 +189,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
         }
         mLoadingLayout.setVisibility(View.GONE);
         mListContainer.init(mCategory, mProductList, categoryList, ((ProductActivityV2) getActivity()).getProductCountSetter());
-
-        //根据子类别加入fragment
-        //适配没有二级分类,加一个空的tag
-        CategoryChildResponse categoryChildResponse = new CategoryChildResponse();
-        categoryChildResponse.setCategoryChild(categoryList);
-
-        //检查接口返回的二级分类和现有的是否一致
-        boolean isNeedUpdate = false;//是否需要刷新二级分类
-        if (mCategoryChildList == null) {//初次进入，没有子分类
-            isNeedUpdate = true;
-        } else if (categoryChildResponse.getCategoryChild() != null) {
-            if (mCategoryChildList.size() != categoryChildResponse.getCategoryChild().size()) {//原有子分类数量不一样
-                isNeedUpdate = true;
-            } else {
-                for (int i = 0; i < mCategoryChildList.size(); i++) {
-                    String childCategory = mCategoryChildList.get(i);
-                    if (!childCategory.equals(categoryChildResponse.getCategoryChild().get(i))) {
-                        isNeedUpdate = true;
-                        break;
-                    }
-                }
-            }
-        } else {
-            isNeedUpdate = true;
-        }
-
-        if (!isNeedUpdate) {
-            ProductListFragmentV2 fragment = (ProductListFragmentV2) getChildFragmentManager().findFragmentByTag(mCurrentSubCategory);
-            fragment.refresh(true);
-            return;
-        }
-    }
-
-    /**
-     * 子分类列表adapter
-     */
-    private class SubCategoryAdapter extends RecyclerView.Adapter<ViewHolder> {
-        int selectColor = getResources().getColor(R.color.color4bb400);
-        int unSelectColor = getResources().getColor(R.color.color999999);
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            return new ViewHolder(inflater.inflate(R.layout.item_sub_category, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            String subCategory = mCategoryChildList.get(position);
-            holder.mmSubCategory = subCategory;
-            holder.mmTvSubCategory.setText(subCategory);
-            if (mCurrentSubCategory.equals(holder.mmTvSubCategory.getText())) {
-                holder.mmTvSubCategory.setTextColor(selectColor);
-            } else {
-                holder.mmTvSubCategory.setTextColor(unSelectColor);
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mCategory == null || mCategoryChildList == null ? 0 : mCategoryChildList.size();
-        }
-    }
-
-    private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        String mmSubCategory;
-        TextView mmTvSubCategory;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            mmTvSubCategory = (TextView) itemView.findViewById(R.id.tv_sub_category);
-            mmTvSubCategory.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-        }
+        android.util.Log.i("onGlobalLayout "+mCategory, String.valueOf(mStartTime - System.currentTimeMillis()));
     }
 
     /**
@@ -235,7 +201,23 @@ public class ProductCategoryFragment extends NetWorkFragment {
     public void updateProductCount(ProductCountUpdateEvent event) {
         List<ProductBasicList.ListBean> listBeans = null;
         if (event.bean != null) {
-            listBeans = mChildProductMap.get(event.bean.getCategoryChild());
+//            一级分类是全部或促销
+            if (mChildProductMap == null){
+                if (mListContainer.getProductAdapterV2() == null){
+                    return;
+                }
+                List<ProductBasicList.ListBean> sourceList = mListContainer.getProductAdapterV2().getData();
+                for (int i = 0;i< sourceList.size();i++) {
+                    ProductBasicList.ListBean listBean = sourceList.get(i);
+                    if (listBean.getProductID() == event.bean.getProductID()) {
+                        refreshItemView(i,listBean);
+                        break;
+                    }
+                }
+                return;
+            }else{
+                listBeans = mChildProductMap.get(event.bean.getCategoryChild());
+            }
         } else {
             //购物车商品删除调用的逻辑
             ((ProductActivityV2) getActivity()).initChildBadges();
@@ -245,7 +227,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
                     for (int i = 0; i < mProductList.size(); i++) {
                         ProductBasicList.ListBean tempListBean = mProductList.get(i);
                         if (tempListBean.getProductID() == listBean.getProductID()) {
-                            mListContainer.getProductAdapterV2().notifyItemChanged(i);
+                            refreshItemView(i,listBean);
                         }
                     }
                 }
@@ -256,6 +238,13 @@ public class ProductCategoryFragment extends NetWorkFragment {
             if (listBeans != null) {
                 ((ProductActivityV2) getActivity()).initChildBadges();
                 mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
+                for (int i = 0;i< listBeans.size();i++) {
+                    ProductBasicList.ListBean listBean = listBeans.get(i);
+                    if (listBean.getProductID() == event.bean.getProductID()) {
+                        refreshItemView(i,listBean);
+                        break;
+                    }
+                }
             }
             return;
         }
@@ -269,8 +258,32 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 }
             }
         }
+    }
 
-
+    private void refreshItemView(int i,ProductBasicList.ListBean listBean){
+        LinearLayoutManager layoutManager = (LinearLayoutManager) mListContainer.getRecyclerView2().getLayoutManager();
+        int firstItem = layoutManager.findFirstVisibleItemPosition();
+        int lastItem = layoutManager.findLastVisibleItemPosition();
+//                        可见刷新
+        if (i>=firstItem&&i<=lastItem){
+            int realPosition = i-firstItem;
+            View childView = mListContainer.getRecyclerView2().getChildAt(realPosition);
+            TextView tvProductCount = (TextView) childView.findViewById(R.id.tv_product_count);
+            ImageView mIvProductReduce = (ImageView) childView.findViewById(R.id.iv_product_reduce);
+            ImageView mIvProductAdd = (ImageView) childView.findViewById(R.id.iv_product_add);
+            double count = ((ProductActivityV2) getActivity()).getProductCountSetter().getCount(listBean);
+            tvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+            //先根据集合里面对应个数初始化一次
+            if (count > 0) {
+                tvProductCount.setVisibility(View.VISIBLE);
+                mIvProductReduce.setVisibility(View.VISIBLE);
+                mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
+            } else {
+                tvProductCount.setVisibility(View.INVISIBLE);
+                mIvProductReduce.setVisibility(View.INVISIBLE);
+                mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
+            }
+        }
     }
 
 }

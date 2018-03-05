@@ -200,6 +200,12 @@ public class MainActivity extends NetWorkActivity {
     private void logout() {
         SPUtils.loginOut(mContext);
         SelfOrderTimeStatisticsUtil.clear();
+        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+        try {
+            dbUtils.deleteAll(ProductBasicList.ListBean.class);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
         MessageFragment.isLogin = false;
         GlobalApplication.getInstance().cleanUesrInfo();
         JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);

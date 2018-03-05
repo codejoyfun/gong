@@ -65,7 +65,9 @@ public class TypeAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
 
     public void setChecked(int checked) {
         this.checked = checked;
-        typeStr = data.get(checked);
+        if (data != null){
+            typeStr = data.get(checked);
+        }
         notifyDataSetChanged();
     }
 
@@ -77,11 +79,13 @@ public class TypeAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
         if (type.equals(typeStr)) {
             return;
         }
-        for (int i = 0; i < data.size(); i++) {
-            if (data.get(i).equals(type) && i != checked) {
-                setChecked(i);
-                moveToPosition(i);
-                break;
+        if (data != null){
+            for (int i = 0; i < data.size(); i++) {
+                if (data.get(i).equals(type) && i != checked) {
+                    setChecked(i);
+                    moveToPosition(i);
+                    break;
+                }
             }
         }
     }

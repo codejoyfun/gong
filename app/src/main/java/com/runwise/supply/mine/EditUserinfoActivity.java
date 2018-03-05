@@ -24,13 +24,15 @@ import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ImageUtils;
-import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomBottomDialog;
 import com.kids.commonframe.base.view.CustomUploadDialog;
 import com.kids.commonframe.config.Constant;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -43,6 +45,8 @@ import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.mine.entity.UploadImg;
 import com.runwise.supply.orderpage.CartManager;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
@@ -130,6 +134,12 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
+                DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+                try {
+                    dbUtils.deleteAll(ProductBasicList.ListBean.class);
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
                 SelfOrderTimeStatisticsUtil.clear();
                 MobclickAgent.onProfileSignOff();
                 MessageFragment.isLogin = false;

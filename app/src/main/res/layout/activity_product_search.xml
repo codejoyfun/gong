@@ -47,16 +47,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp">
-        <com.handmark.pulltorefresh.library.PullToRefreshListView
+        <android.support.v7.widget.RecyclerView
             xmlns:ptr="http://schemas.android.com/apk/res-auto"
             android:id="@+id/pullListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:divider="#dcdcdc"
+            android:dividerHeight="0dp"
             android:fadingEdge="none"
             android:fadingEdgeLength="0dp"
-            ptr:ptrAnimationStyle="flip">
-        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+            android:listSelector="#0000"
+            ptr:ptrAnimationStyle="flip"/>
         <com.kids.commonframe.base.view.LoadingLayout
             android:id="@+id/loadingLayout"
             android:layout_below="@id/titleLayout"
