@@ -139,7 +139,7 @@
             android:textColor="@color/textColorRed"
             android:textSize="16sp"
             android:layout_marginLeft="18dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:layout_marginTop="7dp"
             android:text=""/>
 

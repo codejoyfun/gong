@@ -23,10 +23,12 @@ import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.event.InventoryEditEvent;
 import com.runwise.supply.fragment.TabFragment;
+import com.runwise.supply.mine.entity.CheckResult;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditRepertoryResult;
 import com.runwise.supply.repertory.entity.EditRequest;
 import com.runwise.supply.repertory.entity.NewAdd;
+import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.umeng.analytics.MobclickAgent;
 
@@ -40,11 +42,11 @@ import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
 
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ADD_INVENTORY_PRODUCT;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SUBMIT_THE_INVENTORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.repertory.EditRepertoryAddActivity.INTENT_FILTER;
 import static com.runwise.supply.repertory.InventoryFragment.INTENT_CATEGORY;
-import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ADD_INVENTORY_PRODUCT;
-import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SUBMIT_THE_INVENTORY;
 
 /**
  * 新界面的盘点
@@ -73,6 +75,7 @@ public class InventoryActivity extends NetWorkActivity {
     private double mInventoryTotal = 0;//盘点后总数
     private boolean isSubmitted = false;//是否提交，提交了则onStop不保存
     boolean mAddProduct = false;
+    public static final int REQUEST_CHECK_DETAIL = 1 << 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,11 +92,14 @@ public class InventoryActivity extends NetWorkActivity {
         mTvInventoryDate.setText(mInventoryBean.getCreateDate());
 //        initDialog();
         if (mInventoryBean.getLines() == null){
-            toast("该盘点单没有任何商品");
-            finish();
-            return;
+            Object request = null;
+            sendConnection("/api/inventory/line/"+mInventoryBean.getInventoryID(),request,REQUEST_CHECK_DETAIL,true,CheckResult.class);
+//            toast("该盘点单没有任何商品");
+//            finish();
+        }else{
+            getCategory();
         }
-        getCategory();
+
     }
 
     @Override
@@ -141,9 +147,47 @@ public class InventoryActivity extends NetWorkActivity {
                 EditRepertoryFinishActivity.start(this,total,mInventoryTotal);
                 InventoryCacheManager.getInstance(this).shouldShowInventoryInProgress(false);
                 finish();
+            case REQUEST_CHECK_DETAIL:
+                BaseEntity.ResultBean resultBean3 = result.getResult();
+                CheckResult checkResult = (CheckResult) resultBean3.getData();
+                if (checkResult.getList()!=null&&checkResult.getList().size()>0){
+                    mInventoryBean.setLines(transfrom(checkResult.getList().get(0).getLines()));
+                    getCategory();
+                }
+
                 break;
         }
     }
+
+    private List<InventoryResponse.InventoryProduct>  transfrom(List<PandianResult.InventoryBean.LinesBean> lines){
+        List<InventoryResponse.InventoryProduct> inventoryProducts = new ArrayList<>();
+        for (PandianResult.InventoryBean.LinesBean linesBean:lines){
+            InventoryResponse.InventoryProduct inventoryProduct = new InventoryResponse.InventoryProduct();
+
+            inventoryProduct.setUom(linesBean.getUom());
+            inventoryProduct.setActualQty(linesBean.getActualQty());
+            inventoryProduct.setCode(linesBean.getCode());
+
+            inventoryProduct.setDiff((int) linesBean.getDiff());
+            inventoryProduct.setEditNum(linesBean.getEditNum());
+            inventoryProduct.setInventoryLineID(linesBean.getInventoryLineID());
+
+            inventoryProduct.setLifeEndDate(linesBean.getLifeEndDate());
+            inventoryProduct.setLotID(linesBean.getLotID());
+            inventoryProduct.setLotNum(linesBean.getLotNum());
+
+            inventoryProduct.setProduct(linesBean.getProduct());
+            inventoryProduct.setProductID(linesBean.getProductID());
+            inventoryProduct.setTheoreticalQty(linesBean.getTheoreticalQty());
+
+            inventoryProduct.setLotList(linesBean.getLotList());
+            inventoryProduct.setUnitPrice(linesBean.getUnitPrice());
+
+            inventoryProducts.add(inventoryProduct);
+        }
+        return inventoryProducts;
+    }
+
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {

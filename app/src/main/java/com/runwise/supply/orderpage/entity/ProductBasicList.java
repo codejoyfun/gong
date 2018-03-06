@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Foreign;
 import com.lidroid.xutils.db.annotation.Id;
-import com.lidroid.xutils.db.annotation.NoAutoIncrement;
 
 import java.io.Serializable;
 import java.util.List;
@@ -91,9 +90,10 @@ public class ProductBasicList implements Serializable,Parcelable {
         private String unit;
         @Column
         private String productUom;
-        @Id
-        @NoAutoIncrement
+        @Column
         private int productID;
+        @Id
+        private int id;
         @Column
         private String tracking;
         @Column
@@ -420,6 +420,14 @@ public class ProductBasicList implements Serializable,Parcelable {
 
         public void setPresetQty(double presetQty) {
             this.presetQty = presetQty;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
         }
     }
 }

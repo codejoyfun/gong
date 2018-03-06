@@ -88,13 +88,29 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
             case REQUEST_CODE_PRODUCT_LIST:
                 BaseEntity.ResultBean resultBean = result.getResult();
                 ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
-                SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
-                SPUtils.saveObject(getApplicationContext(),FILE_KEY_PRODUCT_CATEGORY_LIST,productListResponse.getCategory());
-                putProductsToDB(productListResponse.getProducts());
+                if (productListResponse.getProducts()!= null&&productListResponse.getProducts().size()>0){
+                    deleteProductFromDB();
+                }
+                if (productListResponse != null){
+                    SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
+                    SPUtils.saveObject(getApplicationContext(),FILE_KEY_PRODUCT_CATEGORY_LIST,productListResponse.getCategory());
+                    putProductsToDB(productListResponse.getProducts());
+                }
+
                 sendServiceStatus(getString(R.string.service_finish));
                 break;
         }
     }
+
+    private void deleteProductFromDB(){
+        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+        try {
+            dbUtils.deleteAll(ProductBasicList.ListBean.class);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void putProductsToDB(List<ProductBasicList.ListBean> basicList) {
         DbUtils dbUtils = MyDbUtil.create(getApplicationContext());

@@ -323,6 +323,17 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mListBeans = dbUtils.findAll(ProductBasicList.ListBean.class);
                 ProductBasicUtils.setBasicArr(mListBeans);
             }
+
+//            Collections.sort(mListBeans,new Comparator<ProductBasicList.ListBean>() {
+//                @Override
+//                public int compare(ProductBasicList.ListBean o1, ProductBasicList.ListBean o2) {
+//                    if (o1.getId()>o2.getId()){
+//                        return 1;
+//                    }
+//                    return -1;
+//                }
+//            });
+
             getCache();//获取缓存
             updateBottomBar();//更新底部bar
             for (int i = 0; i < mListBeans.size(); i++) {
@@ -733,6 +744,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if (GlobalApplication.getInstance().getCanSeePrice()) {
                 mTvTotalPrice.setVisibility(View.VISIBLE);
                 mTvTotalPrice.setText("¥" + df.format(totalMoney));//TODO:format
+            }else{
+
             }
         }
     }

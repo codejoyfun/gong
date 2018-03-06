@@ -138,7 +138,11 @@ public class OrderSubmitActivity extends NetWorkActivity {
         }
         addScrollListener();
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
-
+        UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+        if (userInfo == null){
+            toast(R.string.session_expired);
+            finish();
+        }
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
@@ -173,7 +177,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         int count = 0;
         int productCount = 0;
         for (ProductBasicList.ListBean listBean : mListBeanList) {
-            if (listBean.getCategoryParent().equals(categoryParent)
+            if (listBean.getCategoryParent() != null&&listBean.getCategoryChild() != null&&listBean.getCategoryParent().equals(categoryParent)
                     && listBean.getCategoryChild().equals(categoryChild)) {
                 count++;
                 productCount += listBean.getActualQty();

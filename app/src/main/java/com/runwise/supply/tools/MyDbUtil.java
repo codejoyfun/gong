@@ -10,7 +10,7 @@ import com.runwise.supply.entity.RemUser;
  */
 
 public class MyDbUtil {
-    public static final int DB_VERSION = 3;
+    public static final int DB_VERSION = 4;
 
     public static DbUtils create(Context context) {
         DbUtils dbUtils = DbUtils.create(context, "runwise.db", DB_VERSION, new DbUtils.DbUpgradeListener() {
