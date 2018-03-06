@@ -82,7 +82,6 @@ boolean mFirst = true;
     @Override
     protected void getCache() {
         //不需要获取缓存
-
         if (mFirst){
             mFirst = false;
             Map<ProductBasicList.ListBean, Double> map = new HashMap<>();
