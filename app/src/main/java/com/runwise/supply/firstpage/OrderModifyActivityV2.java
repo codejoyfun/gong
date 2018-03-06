@@ -61,6 +61,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setRemark(lb.getRemark());
             listBean.setCategoryParent(lb.getCategoryParent());
             listBean.setCategoryChild(lb.getCategoryChild());
+            listBean.setSaleUom(lb.getSaleUom());
 
             listBeans.add(listBean);
             mMapCount.put(listBean,lb.getProductUomQty());
@@ -68,9 +69,10 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         }
         initSelectAll();
         super.onCreate(savedInstanceState);
-        showCart(true);
+//        showCart(true);
         mTvOrderCommit.setText("确认修改");
         checkValid(listBeans);
+        initChildBadges();
     }
 
     @Override

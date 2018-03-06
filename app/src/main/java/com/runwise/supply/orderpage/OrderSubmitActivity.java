@@ -99,6 +99,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
     RelativeLayout mRlBottom;
     @BindView(R.id.rv_product_list)
     RecyclerView mRvProductList;
+    @BindView(R.id.tv_header)
+    TextView tvStickyHeaderView;
+    @BindView(R.id.stick_header)
+    View stickView;
 
     CustomProgressDialog mCustomProgressDialog;
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
@@ -117,6 +121,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     private DateServiceDialog mCustomDatePickerDialog;
     DateServiceDialog.DateServiceListener mPickerClickListener;
+    private List<ProductBasicList.ListBean> mListBeanList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +136,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
             mTvTitle.setText("修改订单");
             mBtnSubmit.setText("修改订单");
         }
+        addScrollListener();
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
 
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
@@ -150,13 +157,69 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mCustomDatePickerDialog.setCurrentItem(selectedDate-1);
 
         OrderSubmitProductAdapter orderSubmitProductAdapter;
-        orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
+        mListBeanList =   getProductData();
+        orderSubmitProductAdapter = new OrderSubmitProductAdapter(mListBeanList);
         mRvProductList.setAdapter(orderSubmitProductAdapter);
 
         Object paramBean = null;
         sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
         updateBottomBar();
+        if (mListBeanList!= null && mListBeanList.size()>0){
+            tvStickyHeaderView.setText(getCategoryCountInfo(mListBeanList.get(0).getCategoryParent(),mListBeanList.get(0).getCategoryChild()));
+        }
     }
+    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
+        String desc = "";
+        int count = 0;
+        int productCount = 0;
+        for (ProductBasicList.ListBean listBean : mListBeanList) {
+            if (listBean.getCategoryParent().equals(categoryParent)
+                    && listBean.getCategoryChild().equals(categoryChild)) {
+                count++;
+                productCount += listBean.getActualQty();
+            }
+        }
+        if (TextUtils.isEmpty(categoryChild)) {
+            desc = categoryParent + "(" + count + "种,共" + productCount+"件)";
+        } else {
+            desc = categoryParent + "/" + categoryChild + "(" + count + "种,共" + productCount+"件)";
+        }
+        return desc;
+    }
+
+    private void addScrollListener(){
+        mRvProductList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                View stickyInfoView = recyclerView.findChildViewUnder(stickView.getMeasuredWidth() / 2, 5);
+                if (stickyInfoView != null && stickyInfoView.getContentDescription() != null) {
+                    tvStickyHeaderView.setText(String.valueOf(stickyInfoView.getContentDescription()));
+                }
+
+                View transInfoView = recyclerView.findChildViewUnder(stickView.getMeasuredWidth() / 2, stickView.getMeasuredHeight() + 1);
+                if (transInfoView != null && transInfoView.getTag() != null) {
+                    int transViewStatus = (int) transInfoView.getTag();
+                    int dealtY = transInfoView.getTop() - stickView.getMeasuredHeight();
+                    if (transViewStatus == OrderSubmitProductAdapter.HAS_STICKY_VIEW) {
+                        if (transInfoView.getTop() > 0) {
+                            stickView.setTranslationY(dealtY);
+                        } else {
+                            stickView.setTranslationY(0);
+                        }
+                    } else if (transViewStatus == OrderSubmitProductAdapter.NONE_STICKY_VIEW) {
+                        stickView.setTranslationY(0);
+                    }
+                }
+            }
+        });
+    }
+
 
     List<ProductBasicList.ListBean> getProductData() {
         mProductList = getIntent().getParcelableArrayListExtra(INTENT_KEY_PRODUCTS);

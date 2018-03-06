@@ -80,6 +80,7 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
                 holder.mVStickHeader.setVisibility(View.GONE);
             }
         }
+        holder.mVProductMain.setContentDescription(getCategoryCountInfo(listBean.getCategoryParent(), listBean.getCategoryChild()));
     }
 
     private String getCategoryCountInfo(String categoryParent, String categoryChild) {

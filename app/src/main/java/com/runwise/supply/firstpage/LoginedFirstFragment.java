@@ -465,6 +465,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     if (isInProgresss) {
                         if (getActivity() != null)
                             InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
+                        InventoryCacheManager.getInstance(getActivity()).saveInventory(inventoryBean);
                         if (inventoryBean.getCreateUser().equals(userInfo.getUsername())) {
                             inventoryList.add(inventoryBean);
                         }
@@ -1079,9 +1080,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             //用户当前未点关闭，并且正在盘点中
             mViewNotice.setVisibility(View.VISIBLE);
             TextView mTvNotice = (TextView) mViewNotice.findViewById(R.id.tv_notice);
-            if (inventoryList!=null&&inventoryList.size()>0){
-                mTvNotice.setText(inventoryList.get(0).getCreateUser() + "正在盘点中，请尽快完成！");
-            }
+            int currentInventoryId = InventoryCacheManager.getInstance(getActivity()).getCurrentInventoryId();
+            InventoryResponse.InventoryBean inventoryBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(currentInventoryId);
+                mTvNotice.setText(inventoryBean.getCreateUser() + "正在盘点中，请尽快完成！");
             //关闭按钮
             mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v -> {
                 isNoticeClose = true;

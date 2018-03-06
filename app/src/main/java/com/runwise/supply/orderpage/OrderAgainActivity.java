@@ -30,6 +30,7 @@ public class OrderAgainActivity extends ProductActivityV2 {
         super.onCreate(savedInstanceState);
         showCart(true);
         mPlaceOrderType = PLACE_ORDER_TYPE_AGAIN;
+        initChildBadges();
     }
 
     /**
@@ -45,6 +46,9 @@ public class OrderAgainActivity extends ProductActivityV2 {
             listBean.setProductUom(lb.getProductUom());
             listBean.setUnit(lb.getUnit());
             listBean.setRemark(lb.getRemark());
+            listBean.setCategoryParent(lb.getCategoryParent());
+            listBean.setCategoryChild(lb.getCategoryChild());
+            listBean.setSaleUom(lb.getSaleUom());
             if(mOrder.isNewType()){
                 listBean.setPrice(lb.getProductPrice());
                 listBean.setSettlePrice((float) lb.getProductSettlePrice());

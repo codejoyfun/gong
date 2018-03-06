@@ -122,20 +122,20 @@ public class ProductCategoryFragment extends NetWorkFragment {
                     mListContainer.init(mCategory, ((ProductActivityV2) getActivity()).getListBeans(), null, ((ProductActivityV2) getActivity()).getProductCountSetter());
                     android.util.Log.i("onGlobalLayout 全部", String.valueOf(mStartTime - System.currentTimeMillis()));
                     return;
-                case "促销商品":
-                    //            一级分类是促销商品
-                    listBeans = ((ProductActivityV2) getActivity()).getListBeans();
-                    for (int i = 0; i < listBeans.size(); i++) {
-                        ProductBasicList.ListBean bean = listBeans.get(i);
-                        if (mCategory.equals(getString(R.string.sales_promotion)) && bean.getProductTag().equals(getString(R.string.sales_promotion))) {
-                            salesPromotionList.add(bean);
-                        }
-                    }
-                    mLoadingLayout.setVisibility(View.GONE);
-                    mProductList = salesPromotionList;
-                    mListContainer.init(mCategory, salesPromotionList, null, ((ProductActivityV2) getActivity()).getProductCountSetter());
-                    android.util.Log.i("onGlobalLayout 促销商品", String.valueOf(mStartTime - System.currentTimeMillis()));
-                    return;
+//                case "促销商品":
+//                    //            一级分类是促销商品
+//                    listBeans = ((ProductActivityV2) getActivity()).getListBeans();
+//                    for (int i = 0; i < listBeans.size(); i++) {
+//                        ProductBasicList.ListBean bean = listBeans.get(i);
+//                        if (mCategory.equals(getString(R.string.sales_promotion)) && bean.getProductTag().equals(getString(R.string.sales_promotion))) {
+//                            salesPromotionList.add(bean);
+//                        }
+//                    }
+//                    mLoadingLayout.setVisibility(View.GONE);
+//                    mProductList = salesPromotionList;
+//                    mListContainer.init(mCategory, salesPromotionList, null, ((ProductActivityV2) getActivity()).getProductCountSetter());
+//                    android.util.Log.i("onGlobalLayout 促销商品", String.valueOf(mStartTime - System.currentTimeMillis()));
+//                    return;
                 default:
                     mListContainer.setVisibility(View.GONE);
                     return;
