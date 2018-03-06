@@ -10,7 +10,10 @@ import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.umeng.analytics.MobclickAgent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 再来一单
@@ -28,7 +31,6 @@ public class OrderAgainActivity extends ProductActivityV2 {
         initData();
         initSelectAll();
         super.onCreate(savedInstanceState);
-        showCart(true);
         mPlaceOrderType = PLACE_ORDER_TYPE_AGAIN;
         initChildBadges();
     }
@@ -68,10 +70,38 @@ public class OrderAgainActivity extends ProductActivityV2 {
             mMapRemarks.put(listBean,lb.getRemark());
         }
     }
-
+    boolean mFirst = true;
     @Override
     protected void getCache() {
         //empty,不需要缓存
+        if (mFirst){
+            mFirst = false;
+            Map<ProductBasicList.ListBean, Double> map = new HashMap<>();
+            for (ProductBasicList.ListBean listBean:mListBeans){
+                for (ProductBasicList.ListBean listBean1 :mMapCount.keySet()){
+                    if (listBean1.getProductID() == listBean.getProductID()){
+                        map.put(listBean,mMapCount.get(listBean1));
+                    }
+                }
+            }
+            mMapCount.clear();
+            mMapCount =  map;
+            mFirstGetShopCartCache = false;
+
+        }
+        showIProgressDialog();
+        checkValid(getSelectProductList());
+
+    }
+    private ArrayList<ProductBasicList.ListBean> getSelectProductList(){
+        ArrayList<ProductBasicList.ListBean> list = new ArrayList<>();
+        for(ProductBasicList.ListBean bean:mMapCount.keySet()){
+            if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
+            bean.setActualQty(mMapCount.get(bean));
+            bean.setRemark(mMapRemarks.get(bean));
+            list.add(bean);
+        }
+        return list;
     }
 
     @Override

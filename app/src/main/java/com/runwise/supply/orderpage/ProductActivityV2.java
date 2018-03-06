@@ -144,7 +144,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     DecimalFormat df = new DecimalFormat("#.##");
 
-    boolean mFirstGetShopCartCache = true;
+    protected boolean mFirstGetShopCartCache = true;
 
     protected int mPlaceOrderType = PLACE_ORDER_TYPE_SELF;
     public static final int PLACE_ORDER_TYPE_ALWAYS = 1 << 0;
@@ -307,7 +307,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         return mListBeans;
     }
 
-    List<ProductBasicList.ListBean> mListBeans;
+    protected  List<ProductBasicList.ListBean> mListBeans;
 
 
     /**
@@ -614,9 +614,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             case R.id.rl_bottom_bar:
                 saveCache();
                 getCache();
-                if (mPlaceOrderType == PLACE_ORDER_TYPE_AGAIN){
-                    showCart(true);
-                }
+//                if (mPlaceOrderType == PLACE_ORDER_TYPE_AGAIN){
+//                    showCart(true);
+//                }
 //                showCart(true);
                 MobclickAgent.onEvent(getActivityContext(), EVENT_ID_SHOPPING_CART);
                 break;
@@ -1381,7 +1381,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
         @Override
         public double getCount(ProductBasicList.ListBean bean) {
-            return mMapCount.get(bean) == null ? 0 : mMapCount.get(bean);
+            if (mMapCount.get(bean) == null){
+                return 0;
+            }else{
+               return mMapCount.get(bean);
+            }
         }
 
         @Override
