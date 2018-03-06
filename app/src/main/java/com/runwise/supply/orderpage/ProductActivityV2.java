@@ -419,7 +419,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         mAdapterVp = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, repertoryEntityFragmentList);
         mViewPagerCategoryFrags.setAdapter(mAdapterVp);
         smartTabLayout.setupWithViewPager(mViewPagerCategoryFrags);
-        mViewPagerCategoryFrags.setOffscreenPageLimit(2);
+        mViewPagerCategoryFrags.setOffscreenPageLimit(titles.size());
         smartTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
