@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -31,6 +32,10 @@ import io.vov.vitamio.utils.NumberUtil;
  */
 
 public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
+
+    public static final int FIRST_STICKY_VIEW = 1;
+    public static final int HAS_STICKY_VIEW = 2;
+    public static final int NONE_STICKY_VIEW = 3;
     DecimalFormat df = new DecimalFormat("#.##");
     Context mContext;
     boolean canSeePrice = false;
@@ -59,13 +64,29 @@ public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             //有其它子分类和没有其它子分类layout有不同，但是id必须是一样的
-            if(hasOtherSub) convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
-            else convertView = View.inflate(mContext,R.layout.item_product_without_subcategory,null);
+            convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
             ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+
+        if (position == 0) {
+            String headText = bean.getCategoryChild();
+            viewHolder.mStickHeader.setVisibility(!TextUtils.isEmpty(headText)?View.VISIBLE:View.GONE);
+            viewHolder.mTvHeader.setText(headText);
+            viewHolder.mStickHeader.setTag(FIRST_STICKY_VIEW);
+        } else {
+            if (!TextUtils.equals(bean.getCategoryChild(), mList.get(position - 1).getCategoryChild())) {
+                viewHolder.mStickHeader.setVisibility(View.VISIBLE);
+                viewHolder.mTvHeader.setText(bean.getCategoryChild());
+                viewHolder.mStickHeader.setTag(HAS_STICKY_VIEW);
+            } else {
+                viewHolder.mStickHeader.setVisibility(View.GONE);
+                viewHolder.mStickHeader.setTag(NONE_STICKY_VIEW);
+            }
+        }
+        convertView.setContentDescription(bean.getCategoryChild());
 
         //标签
         if(TextUtils.isEmpty(bean.getProductTag())){
@@ -229,5 +250,9 @@ public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
         TextView tvContent;
         @ViewInject(R.id.iv_product_sale)
         TextView tvProductTag;
+        @ViewInject(R.id.tv_header)
+        TextView mTvHeader;
+        @ViewInject(R.id.stick_header)
+        FrameLayout mStickHeader;
     }
 }

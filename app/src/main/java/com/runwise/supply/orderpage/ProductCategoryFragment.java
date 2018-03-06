@@ -2,7 +2,6 @@ package com.runwise.supply.orderpage;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,7 +13,6 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.adapter.ProductAdapterV2;
 import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -208,7 +206,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 if (mListContainer.getProductAdapterV2() == null){
                     return;
                 }
-                List<ProductBasicList.ListBean> sourceList = mListContainer.getProductAdapterV2().getData();
+                List<ProductBasicList.ListBean> sourceList = mListContainer.getProductAdapterV2().getList();
                 for (int i = 0;i< sourceList.size();i++) {
                     ProductBasicList.ListBean listBean = sourceList.get(i);
                     if (listBean.getProductID() == event.bean.getProductID()) {
@@ -236,7 +234,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
             }
         }
 
-        if (event.getException() != null && event.getException().getClass() == ProductAdapterV2.class) {
+        if (event.getException() != null && event.getException().getClass() == ProductAdapter.class) {
             if (listBeans != null) {
                 ((ProductActivityV2) getActivity()).initChildBadges();
                 mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
@@ -264,9 +262,8 @@ public class ProductCategoryFragment extends NetWorkFragment {
     }
 
     private void refreshItemView(int i,ProductBasicList.ListBean listBean){
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mListContainer.getRecyclerView2().getLayoutManager();
-        int firstItem = layoutManager.findFirstVisibleItemPosition();
-        int lastItem = layoutManager.findLastVisibleItemPosition();
+        int firstItem = mListContainer.getRecyclerView2().getFirstVisiblePosition();
+        int lastItem = mListContainer.getRecyclerView2().getLastVisiblePosition();
 //                        可见刷新
         if (i>=firstItem&&i<=lastItem){
             int realPosition = i-firstItem;

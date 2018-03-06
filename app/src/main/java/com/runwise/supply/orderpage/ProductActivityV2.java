@@ -307,7 +307,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     List<ProductBasicList.ListBean> mListBeans;
 
 
-
     /**
      * 查询类别
      */
@@ -458,13 +457,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             return;
         }
         mBadges = new HashMap<>();
+        Long totalCount = 0L;
         Iterator iter = mChildBadges.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             Long val = (Long) entry.getValue();
+            totalCount += val;
             String[] keys = key.split("&");
-            if (keys.length == 0){
+            if (keys.length == 0) {
                 continue;
             }
             key = keys[0];
@@ -474,6 +475,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mBadges.put(key, mBadges.get(key) + val);
             }
         }
+        mBadges.put("全部", totalCount);
+
+
         for (int i = 0; i < mTitles.size(); i++) {
             TextView itemBadge = (TextView) smartTabLayout.getTabAt(i).getCustomView().findViewById(R.id.item_badge);
             if (mBadges.containsKey(mTitles.get(i)) && mBadges.get(mTitles.get(i)) > 0) {
@@ -551,6 +555,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     //    @OnClick({R.id.title_iv_left, R.id.addBtn, R.id.iv_open, R.id.iv_product_cart,
 //            R.id.tv_order_resume, R.id.rl_cart_container, R.id.title_iv_rigth2})
     ProductSearchFragment mProductSearchFragment;
+
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
