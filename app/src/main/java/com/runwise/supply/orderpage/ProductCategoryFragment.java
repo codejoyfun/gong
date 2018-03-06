@@ -120,6 +120,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 case "全部":
                     mLoadingLayout.setVisibility(View.GONE);
 //                    ((ProductActivityV2) getActivity()).getListBeans()
+                    mProductList = ((ProductActivityV2) getActivity()).getListBeans();
                     mListContainer.init(mCategory, ((ProductActivityV2) getActivity()).getListBeans(), null, ((ProductActivityV2) getActivity()).getProductCountSetter());
                     android.util.Log.i("onGlobalLayout 全部", String.valueOf(mStartTime - System.currentTimeMillis()));
                     return;
@@ -133,6 +134,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
                         }
                     }
                     mLoadingLayout.setVisibility(View.GONE);
+                    mProductList = salesPromotionList;
                     mListContainer.init(mCategory, salesPromotionList, null, ((ProductActivityV2) getActivity()).getProductCountSetter());
                     android.util.Log.i("onGlobalLayout 促销商品", String.valueOf(mStartTime - System.currentTimeMillis()));
                     return;
@@ -223,7 +225,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
             ((ProductActivityV2) getActivity()).initChildBadges();
             mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
             for (ProductBasicList.ListBean listBean : event.beanList) {
-                if (listBean.getCategoryParent().equals(mCategory)) {
+                if (listBean.getCategoryParent().equals(mCategory)||mCategory.equals("全部")||mCategory.equals("促销商品")) {
                     for (int i = 0; i < mProductList.size(); i++) {
                         ProductBasicList.ListBean tempListBean = mProductList.get(i);
                         if (tempListBean.getProductID() == listBean.getProductID()) {
@@ -251,9 +253,10 @@ public class ProductCategoryFragment extends NetWorkFragment {
         if (listBeans != null) {
             ((ProductActivityV2) getActivity()).initChildBadges();
             mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
-            for (ProductBasicList.ListBean listBean : listBeans) {
+            for (int i = 0;i< listBeans.size();i++) {
+                ProductBasicList.ListBean listBean = listBeans.get(i);
                 if (listBean.getProductID() == event.bean.getProductID()) {
-                    mListContainer.getProductAdapterV2().notifyDataSetChanged();
+                    refreshItemView(i,listBean);
                     break;
                 }
             }
