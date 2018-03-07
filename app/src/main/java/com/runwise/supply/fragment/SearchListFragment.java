@@ -153,7 +153,7 @@ public class SearchListFragment extends NetWorkFragment {
             viewHolder.content.setText(bean.getUnit());
             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
             double count = mProductCountSetter.getCount(bean);
-            viewHolder.mTvProductCount.setText(NumberUtil.getIOrD(count) + bean.getProductUom());
+            viewHolder.mTvProductCount.setText(NumberUtil.getIOrD(count) + bean.getStockUom());
 
             if (count > 0) {
                 viewHolder.mTvProductCount.setVisibility(View.VISIBLE);

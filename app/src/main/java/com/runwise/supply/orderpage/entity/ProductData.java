@@ -62,6 +62,25 @@ public class ProductData implements Serializable{
         private String remark;//备注
         private double count;
 
+        public String getStockUom() {
+            return stockUom;
+        }
+
+        public void setStockUom(String stockUom) {
+            this.stockUom = stockUom;
+        }
+
+        public String getSaleUom() {
+            return saleUom;
+        }
+
+        public void setSaleUom(String saleUom) {
+            this.saleUom = saleUom;
+        }
+
+        private String stockUom;//库存单位
+        private String saleUom;//销售单位
+
 
         public String getProductUom() {
             return productUom;

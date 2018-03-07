@@ -288,28 +288,39 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     }
                 }
                 //如果从缓存那里获取每个商品的收货数量为0，那重置回初始值,每个商品的数量和对应的库存数量一致
-                if (isEmpty){
-                    for (ReceiveBean receiveBean:beanList){
-                        receiveBean.setCount(receiveBean.getProductUomQty());
-                    }
-                }
+//                if (isEmpty){
+//                    for (ReceiveBean receiveBean:beanList){
+//                        receiveBean.setCount(receiveBean.getProductUomQty());
+//                    }
+//                }
 
                 for (OrderResponse.ListBean.LinesBean bean : datas) {
                     totalQty += bean.getActualSendNum();
                 }
                 updatePbProgress();
             }else{
+
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
-                    receiveBean.setCount(linesBean.getActualSendNum());
+                    if (lbean.isActual()){
+                        receiveBean.setCount(linesBean.getActualSendNum());
+                    }else{
+                        receiveBean.setCount(linesBean.getProductUomQty());
+                    }
                     receiveBean.setTracking(linesBean.getTracking());
                     if (linesBean.getTracking().equals("lot")) {
                         List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
                         ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
                         lotBean.setLot_name("");
-                        lotBean.setHeight(linesBean.getActualSendNum());
-                        lotBean.setQty((int) linesBean.getActualSendNum());
+                        if (lbean.isActual()){
+                            lotBean.setHeight(linesBean.getActualSendNum());
+                            lotBean.setQty((int) linesBean.getActualSendNum());
+                        }else{
+                            lotBean.setHeight(linesBean.getProductUomQty());
+                            lotBean.setQty((int) linesBean.getProductUomQty());
+                        }
+
                         lotBean.setProduce_datetime(TimeUtils.getYMD(new Date()));
                         lot_list.add(lotBean);
                         receiveBean.setLot_list(lot_list);
