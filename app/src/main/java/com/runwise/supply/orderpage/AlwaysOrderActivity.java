@@ -53,6 +53,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
         ViewUtils.inject(this);
         initLoadingImgs();
         mPlaceOrderType = PLACE_ORDER_TYPE_ALWAYS;
+//        startRequest();
 
     }
 

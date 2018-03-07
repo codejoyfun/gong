@@ -134,6 +134,7 @@ android {
         _360 {}
         version_upgrade {}
         pu_gong_ying {}
+        qq {}
     }
 //批量处理
     productFlavors.all {
