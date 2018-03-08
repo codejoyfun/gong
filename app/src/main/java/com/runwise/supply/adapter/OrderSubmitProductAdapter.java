@@ -12,7 +12,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.List;
 
@@ -26,10 +26,14 @@ import io.vov.vitamio.utils.NumberUtil;
 
 public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitProductAdapter.ViewHolder>{
 
-    List<ProductData.ListBean> mListBeanList;
+    public static final int FIRST_STICKY_VIEW = 1;
+    public static final int HAS_STICKY_VIEW = 2;
+    public static final int NONE_STICKY_VIEW = 3;
+
+    List<ProductBasicList.ListBean> mListBeanList;
     private boolean canSeePrice = false;
 
-    public OrderSubmitProductAdapter(List<ProductData.ListBean> listBeanList){
+    public OrderSubmitProductAdapter(List<ProductBasicList.ListBean> listBeanList){
         mListBeanList = listBeanList;
         canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
     }
@@ -42,16 +46,16 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ProductData.ListBean listBean = mListBeanList.get(position);
+        ProductBasicList.ListBean listBean = mListBeanList.get(position);
         if (listBean.getImage() != null){
             FrecoFactory.getInstance(holder.itemView.getContext()).disPlay(holder.mSdvProduct, Constant.BASE_URL+listBean.getImage().getImageSmall());
         }
         holder.mTvProductCount.setText(NumberUtil.getIOrD(listBean.getActualQty()));
         holder.mTvProductName.setText(listBean.getName());
-        holder.mTvProductUnit.setText(listBean.getUom());
+        holder.mTvProductUnit.setText(listBean.getSaleUom());
         holder.mTvRemark.setText(listBean.getRemark()==null?"":"备注："+listBean.getRemark());
         StringBuilder sb = new StringBuilder();
-        if(canSeePrice)sb.append("¥").append(NumberUtil.getIOrD(listBean.getPrice())).append("/").append(listBean.getProductUom()).append(" | ");
+        if(canSeePrice)sb.append("¥").append(NumberUtil.getIOrD(listBean.getPrice())).append("/").append(listBean.getSaleUom()).append(" | ");
         sb.append(listBean.getUnit());
         holder.mTvProductPrice.setText(sb.toString());
         if(TextUtils.isEmpty(listBean.getProductTag())){
@@ -59,6 +63,43 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         }else{
             holder.mTvSalesPromotion.setVisibility(View.VISIBLE);
         }
+
+
+        if (position == 0) {
+            holder.mVStickHeader.setVisibility(View.VISIBLE);
+            holder.mVProductMain.setTag(FIRST_STICKY_VIEW);
+            holder.mTvHeader.setText(getCategoryCountInfo(listBean.getCategoryParent(), listBean.getCategoryChild()));
+        } else {
+            if (!TextUtils.equals(listBean.getCategoryParent(), mListBeanList.get(position - 1).getCategoryParent()) ||
+                    !TextUtils.equals(listBean.getCategoryChild(), mListBeanList.get(position - 1).getCategoryChild())) {
+                holder.mVStickHeader.setVisibility(View.VISIBLE);
+                holder.mVProductMain.setTag(HAS_STICKY_VIEW);
+                holder.mTvHeader.setText(getCategoryCountInfo(listBean.getCategoryParent(), listBean.getCategoryChild()));
+            } else {
+                holder.mVProductMain.setTag(NONE_STICKY_VIEW);
+                holder.mVStickHeader.setVisibility(View.GONE);
+            }
+        }
+        holder.mVProductMain.setContentDescription(getCategoryCountInfo(listBean.getCategoryParent(), listBean.getCategoryChild()));
+    }
+
+    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
+        String desc = "";
+        int count = 0;
+        int productCount = 0;
+        for (ProductBasicList.ListBean listBean : mListBeanList) {
+            if (listBean.getCategoryParent().equals(categoryParent)
+                    && listBean.getCategoryChild().equals(categoryChild)) {
+                count++;
+                productCount += listBean.getActualQty();
+            }
+        }
+        if (TextUtils.isEmpty(categoryChild)) {
+            desc = categoryParent + "(" + count + "种,共" + productCount+"件)";
+        } else {
+            desc = categoryParent + "/" + categoryChild + "(" + count + "种,共" + productCount+"件)";
+        }
+        return desc;
     }
 
     @Override
@@ -81,6 +122,13 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
         TextView mTvProductUnit;
         @BindView(R.id.tv_item_order_submit_remark)
         TextView mTvRemark;
+
+        @BindView(R.id.stick_header)
+        View mVStickHeader;
+        @BindView(R.id.tv_header)
+        TextView mTvHeader;
+        @BindView(R.id.product_main)
+        View mVProductMain;
 
         public ViewHolder(View itemView) {
             super(itemView);

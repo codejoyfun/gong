@@ -173,7 +173,7 @@ public class ProcurementFragment extends NetWorkFragment implements LoadingLayou
 //                    }
                 }
                 viewHolder.content.setText(sb.toString());
-                viewHolder.tvCount.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())) + basicBean.getProductUom());
+                viewHolder.tvCount.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())) + basicBean.getStockUom());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
                 if (isHead(position)){
                     viewHolder.rl_head.setVisibility(View.VISIBLE);

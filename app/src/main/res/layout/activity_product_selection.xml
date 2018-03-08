@@ -97,7 +97,7 @@
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:layout_marginTop="127dp"
             layout="@layout/dialog_cart"/>
     </RelativeLayout>
@@ -134,13 +134,26 @@
         <TextView
             android:id="@+id/tv_product_total_price"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_toRightOf="@+id/iv_product_cart"
-            android:layout_centerVertical="true"
             android:textColor="@color/textColorRed"
             android:textSize="16sp"
             android:layout_marginLeft="18dp"
+            android:visibility="invisible"
+            android:layout_marginTop="7dp"
+            android:text=""/>
+
+        <TextView
+            android:id="@+id/tv_product_total_count"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_toRightOf="@+id/iv_product_cart"
+            android:textColor="#999999"
+            android:textSize="14sp"
+            android:layout_marginLeft="18dp"
             android:visibility="gone"
+            android:layout_below="@id/tv_product_total_price"
+            android:layout_marginBottom="7dp"
             android:text=""/>
         <TextView
             android:id="@+id/tv_order_commit"

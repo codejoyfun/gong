@@ -8,11 +8,15 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kids.commonframe.base.UserInfo;
 import com.kids.commonframe.base.bean.LogoutFromJpushEvent;
 import com.kids.commonframe.base.bean.UserLogoutEvent;
-import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.img.ImagePipelineConfigFactory;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.exception.DbException;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.runwise.supply.message.MessageFragment;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.MyDbUtil;
 import com.umeng.commonsdk.UMConfigure;
 
 import org.greenrobot.eventbus.EventBus;
@@ -60,6 +64,12 @@ public class GlobalApplication extends MultiDexApplication {
     @Subscribe(threadMode = ThreadMode.MAIN)
    public void onLogout(LogoutFromJpushEvent logoutFromJpushEvent){
         SPUtils.loginOut(this);
+        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+        try {
+            dbUtils.deleteAll(ProductBasicList.ListBean.class);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
         SelfOrderTimeStatisticsUtil.clear();
         MessageFragment.isLogin = false;
         GlobalApplication.getInstance().cleanUesrInfo();

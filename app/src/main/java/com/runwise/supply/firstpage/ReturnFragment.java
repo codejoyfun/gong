@@ -1,6 +1,7 @@
 package com.runwise.supply.firstpage;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,8 +22,6 @@ import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnBean;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.orderpage.ProductBasicUtils;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -77,7 +76,6 @@ public class ReturnFragment extends BaseFragment {
             ViewHolder viewHolder = null;
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
             String pId = String.valueOf(bean.getProductID());
-            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.return_list_item, null);
@@ -86,23 +84,21 @@ public class ReturnFragment extends BaseFragment {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            if (basicBean != null) {
-                viewHolder.name.setText(basicBean.getName());
-                if (basicBean.getImage() != null)
-                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
-                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append(" | ").append(basicBean.getUnit());
+                viewHolder.name.setText(bean.getName());
+                if (!TextUtils.isEmpty(bean.getImageMedium()))
+                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImageMedium());
+                StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+                sb.append(" | ").append(bean.getUnit());
                 if (canSeePrice) {
                     sb.append("\n").append(bean.getPriceUnit()).append("元/").append(bean.getProductUom());
                 }
                 viewHolder.content.setText(sb.toString());
-            }
             viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (callback != null) {
                         ReturnBean rb = new ReturnBean();
-                        rb.setName(basicBean.getName());
+                        rb.setName(bean.getName());
                         rb.setpId(bean.getProductID());
                         double max = bean.getDeliveredQty() - bean.getReturnAmount();
                         rb.setMaxReturnCount(max);

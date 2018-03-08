@@ -8,11 +8,13 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.OrderSubmitActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.entity.ImageBean;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 
@@ -32,9 +34,9 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
         bean = getIntent().getExtras().getParcelable("order");
         //初始化商品数据
         List<OrderResponse.ListBean.LinesBean> list = bean.getLines();
-        List<ProductData.ListBean> listBeans = new ArrayList<>();
+        List<ProductBasicList.ListBean> listBeans = new ArrayList<>();
         for (OrderResponse.ListBean.LinesBean lb : list) {
-            ProductData.ListBean listBean = new ProductData.ListBean();
+            ProductBasicList.ListBean listBean = new ProductBasicList.ListBean();
 //            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(this).get(lb.getProductID());
             listBean.setProductID(lb.getProductID());
             listBean.setTracking(lb.getTracking());
@@ -43,7 +45,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setUnit(lb.getUnit());
             //新建的单都是newtype了
             listBean.setPrice(lb.getProductPrice());
-            listBean.setSettlePrice(lb.getProductSettlePrice()+"");
+            listBean.setSettlePrice((float) lb.getProductSettlePrice());
             listBean.setImage(new ImageBean(lb.getImageMedium()));
 //            if(bean.isNewType()){
 //                listBean.setPrice(lb.getProductPrice());
@@ -57,34 +59,59 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
             listBean.setName(lb.getName());
             listBean.setDefaultCode(lb.getDefaultCode());
             listBean.setCategory(lb.getCategory());
-            listBean.setIsTwoUnit(lb.isTwoUnit());
             listBean.setStockType(lb.getStockType());
             listBean.setRemark(lb.getRemark());
+            listBean.setCategoryParent(lb.getCategoryParent());
+            listBean.setCategoryChild(lb.getCategoryChild());
+            listBean.setSaleUom(lb.getSaleUom());
+
             listBeans.add(listBean);
             mMapCount.put(listBean,lb.getProductUomQty());
             mMapRemarks.put(listBean,lb.getRemark());
         }
         initSelectAll();
         super.onCreate(savedInstanceState);
-        showCart(true);
-        mTvOrderCommit.setText("确认修改");
-        checkValid(listBeans);
-    }
+        initChildBadges();
 
+
+        mTvOrderCommit.setText("确认修改");
+//        checkValid(listBeans);
+
+    }
+boolean mFirst = true;
     @Override
     protected void getCache() {
         //不需要获取缓存
-        checkValid(getSelectProductList());
+        if (mFirst){
+            mFirst = false;
+            Map<ProductBasicList.ListBean, Double> map = new HashMap<>();
+            for (ProductBasicList.ListBean listBean:mListBeans){
+                for (ProductBasicList.ListBean listBean1 :mMapCount.keySet()){
+                    if (listBean1.getProductID() == listBean.getProductID()){
+                        map.put(listBean,mMapCount.get(listBean1));
+                    }
+                }
+            }
+            mMapCount.clear();
+            mMapCount =  map;
+            showCart(true);
+        }else{
+            checkValid(getSelectProductList());
+        }
+
     }
 
     @Override
     protected void saveCache() {
         //不需要保存
+
+
+
     }
 
-    private ArrayList<ProductData.ListBean> getSelectProductList(){
-        ArrayList<ProductData.ListBean> list = new ArrayList<>();
-        for(ProductData.ListBean bean:mMapCount.keySet()){
+    private ArrayList<ProductBasicList.ListBean> getSelectProductList(){
+        ArrayList<ProductBasicList.ListBean> list = new ArrayList<>();
+        for(ProductBasicList.ListBean bean:mMapCount.keySet()){
             if(bean.isInvalid() || mMapCount.get(bean)==0 || !mmSelected.contains(bean.getProductID()))continue;
             bean.setActualQty(mMapCount.get(bean));
             bean.setRemark(mMapRemarks.get(bean));
@@ -96,7 +123,7 @@ public class OrderModifyActivityV2 extends ProductActivityV2 {
     @Override
     protected void onOkClicked() {
         Intent intent = new Intent(this,OrderSubmitActivity.class);
-        ArrayList<ProductData.ListBean> list = getSelectProductList();
+        ArrayList<ProductBasicList.ListBean> list = getSelectProductList();
         intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS,list);
         intent.putExtra(OrderSubmitActivity.INTENT_KEY_ORDER, (Parcelable) bean);
         startActivity(intent);

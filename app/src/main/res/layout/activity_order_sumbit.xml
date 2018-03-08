@@ -136,15 +136,6 @@
         android:layout_marginRight="8dp"
         android:background="@drawable/bg_gray_corner">
 
-        <TextView
-            android:id="@+id/tv_product_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textColorThird"
-            android:background="@color/white"
-            android:textSize="@dimen/second_title"
-            android:padding="10dp"
-            android:text="商品列表"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_product_list"
@@ -152,8 +143,15 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_below="@id/tv_product_list"/>
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"/>
+
+        <include layout="@layout/view_stick_header"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignTop="@id/rv_product_list"
+            android:layout_marginTop="10dp"
+            android:paddingRight="10dp"/>
     </RelativeLayout>
 
 

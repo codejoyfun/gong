@@ -144,6 +144,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 if(cacheBean!=null)inventoryBean = cacheBean;
                 //有确认中的盘点单，则显示盘点通知
                 boolean isInProgresss = "confirm".equals(inventoryBean.getState());
+                InventoryCacheManager.getInstance(getActivity()).setCurrentInventoryId(inventoryBean.getInventoryID());
                 if(isInProgresss) {
                     if(getActivity()!=null)InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
                 }else{

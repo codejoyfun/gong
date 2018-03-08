@@ -185,7 +185,7 @@ public class PriceListFragment extends NetWorkFragment implements AdapterView.On
             if (Boolean.parseBoolean(bean.isIsTwoUnit())){
                 viewHolder.value.setText("￥"+ NumberUtil.getIOrD(bean.getSettlePrice()+"") + "/" +bean.getSettleUomId());
             }else{
-                viewHolder.value.setText("￥"+NumberUtil.getIOrD(bean.getPrice()+"") + "/" +bean.getUom());
+                viewHolder.value.setText("￥"+NumberUtil.getIOrD(bean.getPrice()+"") + "/" +bean.getProductUom());
             }
 
 

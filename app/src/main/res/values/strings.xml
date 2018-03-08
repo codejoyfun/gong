@@ -12,4 +12,11 @@
     <string name="return_order_request_success">订单编号：%1$s\n申请类型：退货</string>
     <string name="inventory_notice">当前门店仓库盘点中，请尽快完成！</string>
     <string name="fingerprint_notice0">"供鲜生" 的指纹识别</string>
+    <string name="service_start">服务启动</string>
+    <string name="service_finish">服务结束</string>
+    <string name="service_running">服务运行中</string>
+
+    <string name="scroll_behavior">@string/appbar_scrolling_view_behavior</string>
+    <string name="detail_header_behavior">com.k.neleme.detail.DetailHeaderBehavior</string>
+    <string name="sales_promotion">促销商品</string>
 </resources>

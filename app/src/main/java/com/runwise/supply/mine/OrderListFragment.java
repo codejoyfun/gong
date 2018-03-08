@@ -423,6 +423,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                                 startActivity(intent);
                                 break;
                             case SETTLERECEIVE:
+                                if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                                    return;
                                 //点货，计入结算单位
                                 Intent sIntent = new Intent(mContext, ReceiveActivity.class);
                                 Bundle sBundle = new Bundle();
@@ -432,6 +434,8 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                                 startActivity(sIntent);
                                 break;
                             case SELFTALLY:
+                                if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                                    return;
                                 dialog.setModel(CustomDialog.RIGHT);
                                 dialog.setMessageGravity();
                                 dialog.setMessage("您已经点过货了，应由其他人完成收货");

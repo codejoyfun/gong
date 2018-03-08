@@ -31,6 +31,8 @@ public class SPUtils {
     public static final String FILE_KEY_SELF_ORDER_ELAPSED_TIME = "file_key_self_order_elapsed_time";
     public static final String FILE_KEY_ALWAYS_ORDER_ELAPSED_TIME = "file_key_always_order_elapsed_time";
     public static final String FILE_KEY_SMART_ORDER_ELAPSED_TIME = "file_key_smart_order_elapsed_time";
+    public static final String FILE_KEY_VERSION_PRODUCT_LIST = "FILE_KEY_VERSION_PRODUCT_LIST";
+    public static final String FILE_KEY_PRODUCT_CATEGORY_LIST = "FILE_KEY_PRODUCT_CATEGORY_LIST";
 
 
 
@@ -323,11 +325,12 @@ public class SPUtils {
     public static void loginOut(Context context) {
         SPUtils.put(context, "sign", "");
         SPUtils.put(context, "mLogin", false);
-        SPUtils.put(context, "userInfo", "");
+        SPUtils.put(context, FILE_KEY_USER_INFO, "");
         SPUtils.put(context, FILE_KEY_DB_NAME, "LBZ-Golive-01");
         SPUtils.put(context, FILE_KEY_HOST, "");
         Constant.BASE_URL = Constant.UNLOGIN_URL;
         SPUtils.put(context, FILE_KEY_PLACE_ORDER_CACHE, "");
+        SPUtils.put(context, FILE_KEY_VERSION_PRODUCT_LIST, 0);
     }
 
     /**

@@ -35,7 +35,7 @@ import com.runwise.supply.entity.OrderChangedEvent;
 import com.runwise.supply.entity.OrderCommitResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.entity.CommitOrderRequest;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.DateServiceDialog;
 import com.umeng.analytics.MobclickAgent;
@@ -44,6 +44,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -96,10 +97,12 @@ public class OrderSubmitActivity extends NetWorkActivity {
     Button mBtnSubmit;
     @BindView(R.id.rl_bottom)
     RelativeLayout mRlBottom;
-    @BindView(R.id.tv_product_list)
-    TextView mTvProductList;
     @BindView(R.id.rv_product_list)
     RecyclerView mRvProductList;
+    @BindView(R.id.tv_header)
+    TextView tvStickyHeaderView;
+    @BindView(R.id.stick_header)
+    View stickView;
 
     CustomProgressDialog mCustomProgressDialog;
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
@@ -110,7 +113,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     public static final String INTENT_KEY_ORDER = "intent_key_order";
     OrderResponse.ListBean mOrder;
 
-    private ArrayList<ProductData.ListBean> mProductList;//选择的商品
+    private ArrayList<ProductBasicList.ListBean> mProductList;//选择的商品
     private TempOrderManager.TempOrder mTempOrder;//本地记录提交中的订单
     private boolean isSelfHelpOrder;//是否一般下单流程，是的话需要清空购物车缓存；再来一单、智能下单不需要清空购物车
     protected int mPlaceOrderType;
@@ -118,6 +121,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     private DateServiceDialog mCustomDatePickerDialog;
     DateServiceDialog.DateServiceListener mPickerClickListener;
+    private List<ProductBasicList.ListBean> mListBeanList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,8 +136,13 @@ public class OrderSubmitActivity extends NetWorkActivity {
             mTvTitle.setText("修改订单");
             mBtnSubmit.setText("修改订单");
         }
+        addScrollListener();
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
-
+        UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+        if (userInfo == null){
+            toast(R.string.session_expired);
+            finish();
+        }
         mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
@@ -151,16 +161,87 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mCustomDatePickerDialog.setCurrentItem(selectedDate-1);
 
         OrderSubmitProductAdapter orderSubmitProductAdapter;
-        orderSubmitProductAdapter = new OrderSubmitProductAdapter(getProductData());
+        mListBeanList =   getProductData();
+        orderSubmitProductAdapter = new OrderSubmitProductAdapter(mListBeanList);
         mRvProductList.setAdapter(orderSubmitProductAdapter);
 
         Object paramBean = null;
         sendConnection("/gongfu/v2/user/information", paramBean, REQUEST_USER_INFO, true, UserInfo.class);
         updateBottomBar();
+        if (mListBeanList!= null && mListBeanList.size()>0){
+            tvStickyHeaderView.setText(getCategoryCountInfo(mListBeanList.get(0).getCategoryParent(),mListBeanList.get(0).getCategoryChild()));
+        }
+    }
+    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
+        String desc = "";
+        int count = 0;
+        int productCount = 0;
+        for (ProductBasicList.ListBean listBean : mListBeanList) {
+            if (listBean.getCategoryParent() != null&&listBean.getCategoryChild() != null&&listBean.getCategoryParent().equals(categoryParent)
+                    && listBean.getCategoryChild().equals(categoryChild)) {
+                count++;
+                productCount += listBean.getActualQty();
+            }
+        }
+        if (TextUtils.isEmpty(categoryChild)) {
+            desc = categoryParent + "(" + count + "种,共" + productCount+"件)";
+        } else {
+            desc = categoryParent + "/" + categoryChild + "(" + count + "种,共" + productCount+"件)";
+        }
+        return desc;
     }
 
-    List<ProductData.ListBean> getProductData() {
+    private void addScrollListener(){
+        mRvProductList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                View stickyInfoView = recyclerView.findChildViewUnder(stickView.getMeasuredWidth() / 2, 5);
+                if (stickyInfoView != null && stickyInfoView.getContentDescription() != null) {
+                    tvStickyHeaderView.setText(String.valueOf(stickyInfoView.getContentDescription()));
+                }
+
+                View transInfoView = recyclerView.findChildViewUnder(stickView.getMeasuredWidth() / 2, stickView.getMeasuredHeight() + 1);
+                if (transInfoView != null && transInfoView.getTag() != null) {
+                    int transViewStatus = (int) transInfoView.getTag();
+                    int dealtY = transInfoView.getTop() - stickView.getMeasuredHeight();
+                    if (transViewStatus == OrderSubmitProductAdapter.HAS_STICKY_VIEW) {
+                        if (transInfoView.getTop() > 0) {
+                            stickView.setTranslationY(dealtY);
+                        } else {
+                            stickView.setTranslationY(0);
+                        }
+                    } else if (transViewStatus == OrderSubmitProductAdapter.NONE_STICKY_VIEW) {
+                        stickView.setTranslationY(0);
+                    }
+                }
+            }
+        });
+    }
+
+
+    List<ProductBasicList.ListBean> getProductData() {
         mProductList = getIntent().getParcelableArrayListExtra(INTENT_KEY_PRODUCTS);
+        LinkedHashMap<String, List<ProductBasicList.ListBean>> linkedHashMap = new LinkedHashMap<>();
+        //按一级和二级分类分组
+        for (ProductBasicList.ListBean bean : mProductList) {
+            String key = bean.getCategoryParent() + "&" + bean.getCategoryChild();
+            List<ProductBasicList.ListBean> listBeans = linkedHashMap.get(key);
+            if (listBeans == null) {
+                listBeans = new ArrayList<>();
+            }
+            listBeans.add(bean);
+            linkedHashMap.put(key, listBeans);
+        }
+        mProductList.clear();
+        for (List<ProductBasicList.ListBean> listBeanList : linkedHashMap.values()) {
+            mProductList.addAll(listBeanList);
+        }
         return mProductList;
     }
 
@@ -385,7 +466,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         request.setOrder_type_id("121");
         List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
-        for (ProductData.ListBean bean : mProductList) {
+        for (ProductBasicList.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
             double qty = bean.getActualQty();
@@ -445,7 +526,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         CommitOrderRequest request = new CommitOrderRequest();
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
-        for (ProductData.ListBean bean : mProductList) {
+        for (ProductBasicList.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();
             pBean.setProduct_id(bean.getProductID());
             double qty = bean.getActualQty();
@@ -470,7 +551,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     protected void updateBottomBar() {
         double totalMoney = 0;
         double totalNum = 0;
-        for (ProductData.ListBean bean : mProductList) {
+        for (ProductBasicList.ListBean bean : mProductList) {
             totalMoney = totalMoney + bean.getPrice() * bean.getActualQty();
             totalNum = totalNum + bean.getActualQty();
         }

@@ -3,7 +3,6 @@ package com.runwise.supply.orderpage;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
@@ -15,12 +14,15 @@ import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
-import com.runwise.supply.entity.ProductListRequest;
 import com.runwise.supply.event.ProductCountUpdateEvent;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -62,19 +64,6 @@ public class ProductListFragmentV2 extends NetWorkFragment{
         hasOtherSub = getArguments().getBoolean(INTENT_KEY_HAS_OTHER_SUB,false);
         mProductAdapter = new ProductAdapter(getActivity(),hasOtherSub);
         pullListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
-        pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
-        mRefreshFooter = LayoutInflater.from(getActivity()).inflate(R.layout.refresh_footer,null,false);
-        pullListView.getRefreshableView().addFooterView(mRefreshFooter);
-        mRefreshFooter.setVisibility(View.GONE);
-        pullListView.setPullToRefreshOverScrollEnabled(false);
-        pullListView.setScrollingWhileRefreshingEnabled(true);
-        pullListView.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
-            @Override
-            public void onLastItemVisible() {
-                mRefreshFooter.setVisibility(View.VISIBLE);
-                loadMore();
-            }
-        });
         pullListView.setAdapter(mProductAdapter);
 
         pullListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -112,13 +101,6 @@ public class ProductListFragmentV2 extends NetWorkFragment{
         return R.layout.fragment_products;
     }
 
-    /**
-     * 加载更多
-     */
-    protected void loadMore(){
-        mPz++;
-        requestData(REQUEST_PRODUCT_MORE);
-    }
 
     /**
      * 刷新
@@ -131,7 +113,22 @@ public class ProductListFragmentV2 extends NetWorkFragment{
     }
 
     protected void requestData(int where){
-        sendConnection("/gongfu/v3/product/list",new ProductListRequest(mLimit,mPz,mKeyword,mCategory,mSubCategory),where,false,ProductData.class);
+        HashMap<String, List<ProductBasicList.ListBean>> mChildProductMap = ((ProductCategoryFragment)getParentFragment()).getChildProductMap();
+        List<ProductBasicList.ListBean> childProducts = mChildProductMap.get(mSubCategory);
+        if (childProducts == null){
+            childProducts = new ArrayList<>();
+        }
+        mProductAdapter.clear();
+        mProductAdapter.appendData(childProducts);
+        mProductAdapter.notifyDataSetChanged();
+        pullListView.onFooterRefreshComplete(childProducts.size(),mLimit,Integer.MAX_VALUE);
+        mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+        if (childProducts!=null&&childProducts.size()<mLimit){
+            pullListView.getLvFooterLoadingFrame().setVisibility(View.VISIBLE);
+        }else{
+            pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
+        }
+
     }
 
     /**
@@ -148,39 +145,6 @@ public class ProductListFragmentV2 extends NetWorkFragment{
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-        switch (where) {
-            case REQUEST_PRODUCT_REFRESH:
-                ProductData productData = (ProductData)result.getResult().getData();
-                mProductAdapter.clear();
-                mProductAdapter.appendData(productData.getList());
-                mProductAdapter.notifyDataSetChanged();
-                pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,Integer.MAX_VALUE);
-                mLoadingLayout.onSuccess(mProductAdapter.getCount(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
-                if (productData.getList()!=null&&productData.getList().size()<mLimit){
-                    pullListView.getLvFooterLoadingFrame().setVisibility(View.VISIBLE);
-                }else{
-                    pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
-                }
-                break;
-            case REQUEST_PRODUCT_MORE:
-                mRefreshFooter.setVisibility(View.GONE);
-                productData = (ProductData)result.getResult().getData();
-                mProductAdapter.appendData(productData.getList());
-                if(productData.getList()!=null && productData.getList().size()!=0){
-                    pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,Integer.MAX_VALUE);
-                    if (productData.getList().size()<mLimit){
-                        pullListView.getLvFooterLoadingFrame().setVisibility(View.VISIBLE);
-                    }else{
-                        pullListView.getLvFooterLoadingFrame().setVisibility(View.GONE);
-                    }
-                }else{
-                    pullListView.onFooterRefreshComplete(productData.getList().size(),mLimit,mProductAdapter.getCount());
-                    pullListView.getLvFooterLoadingFrame().setVisibility(View.VISIBLE);
-
-                }
-                mProductAdapter.notifyDataSetChanged();
-                break;
-        }
     }
 
     @Override

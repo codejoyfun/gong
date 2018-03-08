@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkFragment;
@@ -27,6 +28,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 import com.runwise.supply.firstpage.OrderDetailActivity;
 import com.runwise.supply.mine.entity.SearchKeyAct;
@@ -359,6 +361,12 @@ public class StockFragment extends NetWorkFragment implements LoadingLayoutInter
     public void showNotice(ShowInventoryNoticeEvent showInventoryNoticeEvent) {
         if (showInventoryNoticeEvent.isShow && !isClose) {
             mViewNotice.setVisibility(View.VISIBLE);
+
+            TextView mTvNotice = (TextView) mViewNotice.findViewById(R.id.tv_notice);
+            int currentInventoryId = InventoryCacheManager.getInstance(getActivity()).getCurrentInventoryId();
+            InventoryResponse.InventoryBean inventoryBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(currentInventoryId);
+            mTvNotice.setText(inventoryBean.getCreateUser() + "正在盘点中，请尽快完成！");
+
             mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v -> {
                 isClose = true;
                 mViewNotice.setVisibility(View.GONE);

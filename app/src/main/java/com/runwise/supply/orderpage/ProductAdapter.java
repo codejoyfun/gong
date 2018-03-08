@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -16,7 +17,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
-import com.runwise.supply.orderpage.entity.ProductData;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.ProductImageDialog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -30,7 +31,11 @@ import io.vov.vitamio.utils.NumberUtil;
  * Created by Dong on 2017/11/28.
  */
 
-public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
+public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
+
+    public static final int FIRST_STICKY_VIEW = 1;
+    public static final int HAS_STICKY_VIEW = 2;
+    public static final int NONE_STICKY_VIEW = 3;
     DecimalFormat df = new DecimalFormat("#.##");
     Context mContext;
     boolean canSeePrice = false;
@@ -55,17 +60,33 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
     @Override
     protected View getExView(int position, View convertView, ViewGroup parent) {
         final ViewHolder viewHolder;
-        final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
+        final ProductBasicList.ListBean bean = (ProductBasicList.ListBean) mList.get(position);
         if (convertView == null) {
             viewHolder = new ViewHolder();
             //有其它子分类和没有其它子分类layout有不同，但是id必须是一样的
-            if(hasOtherSub) convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
-            else convertView = View.inflate(mContext,R.layout.item_product_without_subcategory,null);
+            convertView = View.inflate(mContext, R.layout.item_product_with_subcategory, null);
             ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+
+        if (position == 0) {
+            String headText = bean.getCategoryChild();
+            viewHolder.mStickHeader.setVisibility(!TextUtils.isEmpty(headText)?View.VISIBLE:View.GONE);
+            viewHolder.mTvHeader.setText(headText);
+            viewHolder.mStickHeader.setTag(FIRST_STICKY_VIEW);
+        } else {
+            if (!TextUtils.equals(bean.getCategoryChild(), mList.get(position - 1).getCategoryChild())) {
+                viewHolder.mStickHeader.setVisibility(View.VISIBLE);
+                viewHolder.mTvHeader.setText(bean.getCategoryChild());
+                viewHolder.mStickHeader.setTag(HAS_STICKY_VIEW);
+            } else {
+                viewHolder.mStickHeader.setVisibility(View.GONE);
+                viewHolder.mStickHeader.setTag(NONE_STICKY_VIEW);
+            }
+        }
+        convertView.setContentDescription(bean.getCategoryChild());
 
         //标签
         if(TextUtils.isEmpty(bean.getProductTag())){
@@ -76,7 +97,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 
 //        final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
         double count = productCountSetter.getCount(bean);
-        viewHolder.tvCount.setText(NumberUtil.getIOrD(count)+bean.getUom());
+        viewHolder.tvCount.setText(NumberUtil.getIOrD(count)+bean.getSaleUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
             viewHolder.tvCount.setVisibility(View.VISIBLE);
@@ -102,7 +123,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                     //防止double的问题
                     currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
                     if(currentNum<0)currentNum = 0;
-                    viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getUom());
+                    viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getSaleUom());
 //                    mCountMap.put(bean, currentNum);
                     productCountSetter.setCount(bean,currentNum);
                     if (currentNum == 0) {
@@ -129,7 +150,7 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 //                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
                 double currentNum = productCountSetter.getCount(bean);
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
-                viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getUom());
+                viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getSaleUom());
 //                mCountMap.put(bean, currentNum);
                 productCountSetter.setCount(bean,currentNum);
                 if (currentNum == 1) {//0变到1
@@ -166,11 +187,11 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
                         }else{
                             viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                             viewHolder.tvCount.setVisibility(View.VISIBLE);
-                            viewHolder.tvCount.setText(value+bean.getUom());
+                            viewHolder.tvCount.setText(value+bean.getSaleUom());
                             viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
 //                            mCountMap.put(bean,value);
                         }
-                        viewHolder.tvCount.setText(value + bean.getUom());
+                        viewHolder.tvCount.setText(value + bean.getSaleUom());
                         ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,(int)value);
                         productCountUpdateEvent.setException(ProductAdapter.this);
                         EventBus.getDefault().post(productCountUpdateEvent);
@@ -185,15 +206,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
 
         if (canSeePrice) {
             StringBuffer sb1 = new StringBuffer();
-            if (bean.isIsTwoUnit()) {
-                sb1.append("¥").append(df.format(Double.valueOf(bean.getSettlePrice())));
-                viewHolder.tvPrice.setText(sb1.toString());
-                viewHolder.tvPriceUnit.setText("/"+bean.getSettleUomId());
-            } else {
                 sb1.append("¥").append(df.format(Double.valueOf(bean.getPrice())));
                 viewHolder.tvPrice.setText(sb1.toString());
-                viewHolder.tvPriceUnit.setText("/"+bean.getUom());
-            }
+                viewHolder.tvPriceUnit.setText("/"+bean.getSaleUom());
         } else {
             viewHolder.tvPrice.setVisibility(View.GONE);
             viewHolder.tvPriceUnit.setVisibility(View.GONE);
@@ -235,5 +250,9 @@ public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
         TextView tvContent;
         @ViewInject(R.id.iv_product_sale)
         TextView tvProductTag;
+        @ViewInject(R.id.tv_header)
+        TextView mTvHeader;
+        @ViewInject(R.id.stick_header)
+        FrameLayout mStickHeader;
     }
 }
