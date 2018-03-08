@@ -112,12 +112,13 @@ public class ReturnDetailActivity extends NetWorkActivity {
     private ImageView ivOpen;
 
     private ReturnOrderBean.ListBean bean;
-    public static final int REQUEST_CODE_UPLOAD = 1<<0;
+    public static final int REQUEST_CODE_UPLOAD = 1 << 0;
 
     private boolean hasAttatchment = false;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,7 +146,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
         dateTv.setVisibility(View.INVISIBLE);
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("return");
-        if (bean != null){
+        if (bean != null) {
             String deliveryType = bean.getDeliveryType();
             //不显示
             if (bean.getState().equals("process")) {
@@ -158,28 +159,26 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 }else{
                     rlBottom.setVisibility(View.GONE);
                 }
-            } else {
-                rlBottom.setVisibility(View.GONE);
+            }
                 payStateTv.setVisibility(View.VISIBLE);
                 payStateValue.setVisibility(View.VISIBLE);
                 uploadBtn.setVisibility(View.VISIBLE);
-            }
 
-            hasAttatchment = bean.getHasAttachment() >0;
+
+            hasAttatchment = bean.getHasAttachment() > 0;
             updateReturnView();
-        }
-        else{
+        } else {
             rlBottom.setVisibility(View.GONE);
         }
     }
 
-    private void updateReturnView(){
-        if (!hasAttatchment){
+    private void updateReturnView() {
+        if (!hasAttatchment) {
             payStateTv.setText("退货凭证: ");
             payStateValue.setText("未有退货凭证");
             uploadBtn.setText("上传退货凭证");
 
-        }else{
+        } else {
             payStateTv.setText("退货凭证: ");
             payStateValue.setText("已有退货凭证");
             uploadBtn.setText("查看退货凭证");
@@ -225,41 +224,42 @@ public class ReturnDetailActivity extends NetWorkActivity {
             String deliveryType = bean.getDeliveryType();
             //不显示
             if (bean.getState().equals("process")) {
-                if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
+                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY) ||
                         deliveryType.equals(TYPE_VENDOR_DELIVERY)
-                        ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
-                        &&bean.isReturnThirdPartLog())
-                        ){
+                        || ((deliveryType.equals(TYPE_THIRD_PART_DELIVERY) || deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
+                        && bean.isReturnThirdPartLog())
+                        ) {
                     rlBottom.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     rlBottom.setVisibility(View.GONE);
                 }
             } else {
                 rlBottom.setVisibility(View.GONE);
-                payStateTv.setVisibility(View.VISIBLE);
-                payStateValue.setVisibility(View.VISIBLE);
-                uploadBtn.setVisibility(View.VISIBLE);
             }
+            payStateTv.setVisibility(View.VISIBLE);
+            payStateValue.setVisibility(View.VISIBLE);
+            uploadBtn.setVisibility(View.VISIBLE);
 
-            hasAttatchment = bean.getHasAttachment() >0;
+            hasAttatchment = bean.getHasAttachment() > 0;
             updateReturnView();
             setUpDataForViewPage();
         }
     }
+
     private void setUpDataForViewPage() {
         List<Fragment> orderProductFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         HashMap<String, ArrayList<ReturnOrderBean.ListBean.LinesBean>> map = new HashMap<>();
         titles.add("全部");
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
-            map.put(category,new ArrayList<ReturnOrderBean.ListBean.LinesBean>());
+            map.put(category, new ArrayList<ReturnOrderBean.ListBean.LinesBean>());
         }
 
         for (ReturnOrderBean.ListBean.LinesBean linesBean : listDatas) {
             ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(linesBean.getProductID()));
-            if (listBean != null && !TextUtils.isEmpty(listBean.getCategory())){
+            if (listBean != null && !TextUtils.isEmpty(listBean.getCategory())) {
                 ArrayList<ReturnOrderBean.ListBean.LinesBean> linesBeen = map.get(listBean.getCategory());
                 if (linesBeen == null) {
                     linesBeen = new ArrayList<>();
@@ -269,7 +269,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
             }
         }
 
-        for(String category:categoryRespone.getCategoryList()){
+        for (String category : categoryRespone.getCategoryList()) {
             ArrayList<ReturnOrderBean.ListBean.LinesBean> value = map.get(category);
             orderProductFragmentList.add(newProductFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
@@ -296,7 +296,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 int position = tab.getPosition();
                 viewpager.setCurrentItem(position);
                 mProductTypeWindow.dismiss();
-                if(dragLayout.getState()== DragTopLayout.PanelState.EXPANDED)dragLayout.toggleTopView();
+                if (dragLayout.getState() == DragTopLayout.PanelState.EXPANDED)
+                    dragLayout.toggleTopView();
             }
 
             @Override
@@ -309,10 +310,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
 
             }
         });
-        if(titles.size()<=TAB_EXPAND_COUNT){
+        if (titles.size() <= TAB_EXPAND_COUNT) {
             ivOpen.setVisibility(View.GONE);
             tablayout.setTabMode(TabLayout.MODE_FIXED);
-        }else{
+        } else {
             ivOpen.setVisibility(View.VISIBLE);
             tablayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
@@ -323,12 +324,14 @@ public class ReturnDetailActivity extends NetWorkActivity {
         ReturnProductFragment returnProductFragment = new ReturnProductFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(returnProductFragment.BUNDLE_KEY_LIST, value);
-        bundle.putParcelable(returnProductFragment.BUNDLE_KEY_BEAN,bean);
+        bundle.putParcelable(returnProductFragment.BUNDLE_KEY_BEAN, bean);
         returnProductFragment.setArguments(bundle);
         return returnProductFragment;
     }
+
     private PopupWindow mProductTypeWindow;
     ProductTypeAdapter mProductTypeAdapter;
+
     private void initPopWindow(ArrayList<String> typeList) {
         View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
@@ -347,10 +350,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 mProductTypeWindow.dismiss();
                 viewpager.setCurrentItem(position);
                 tablayout.getTabAt(position).select();
-                for (int i = 0;i < mProductTypeAdapter.selectList.size();i++){
-                    mProductTypeAdapter.selectList.set(i,new Boolean(false));
+                for (int i = 0; i < mProductTypeAdapter.selectList.size(); i++) {
+                    mProductTypeAdapter.selectList.set(i, new Boolean(false));
                 }
-                mProductTypeAdapter.selectList.set(position,new Boolean(true));
+                mProductTypeAdapter.selectList.set(position, new Boolean(true));
                 mProductTypeAdapter.notifyDataSetChanged();
             }
         });
@@ -369,7 +372,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
     }
 
     //R.id.top_view设置onclick，防止点击dragview收起
-    @OnClick({R.id.title_iv_left, R.id.gotoStateBtn, R.id.doBtn,R.id.uploadBtn,R.id.tv_open,R.id.top_view})
+    @OnClick({R.id.title_iv_left, R.id.gotoStateBtn, R.id.doBtn, R.id.uploadBtn, R.id.tv_open, R.id.top_view})
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
@@ -379,7 +382,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 Intent intent = new Intent(mContext, OrderStateActivity.class);
                 intent.putExtra("mode", true);
                 //intent.putStringArrayListExtra("tracker",(ArrayList<String>) bean.getStateTracker());
-                intent.putExtra("order",(Parcelable) bean);
+                intent.putExtra("order", (Parcelable) bean);
                 startActivity(intent);
                 break;
             case R.id.doBtn:
@@ -401,16 +404,16 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 uIntent.putExtra("orderid", bean.getReturnOrderID());
                 uIntent.putExtra("ordername", bean.getName());
                 uIntent.putExtra("hasattachment", hasAttatchment);
-                startActivityForResult(uIntent,REQUEST_CODE_UPLOAD);
+                startActivityForResult(uIntent, REQUEST_CODE_UPLOAD);
                 break;
             case R.id.tv_open:
                 if (dragLayout.getState() == DragTopLayout.PanelState.EXPANDED) {
                     dragLayout.toggleTopView();
                     canShow = true;
-                }else{
-                    if (mProductTypeWindow.isShowing()){
+                } else {
+                    if (mProductTypeWindow.isShowing()) {
                         mProductTypeWindow.dismiss();
-                    }else{
+                    } else {
                         showPopWindow();
                     }
                 }
@@ -418,7 +421,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                     @Override
                     public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
                         if (panelState == DragTopLayout.PanelState.COLLAPSED) {
-                            if (canShow){
+                            if (canShow) {
                                 showPopWindow();
                                 canShow = false;
                             }
@@ -442,8 +445,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 break;
         }
     }
+
     boolean canShow = false;
-    private void showPopWindow(){
+
+    private void showPopWindow() {
         int y = findViewById(R.id.title_bar).getHeight() + tablayout.getHeight();
         mProductTypeWindow.showAtLocation(findViewById(R.id.rl_content), Gravity.NO_GRAVITY, 0, y);
         mProductTypeAdapter.setSelectIndex(viewpager.getCurrentItem());
@@ -453,16 +458,18 @@ public class ReturnDetailActivity extends NetWorkActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK || resultCode == 200){
-            if (requestCode == REQUEST_CODE_UPLOAD){
+        if (resultCode == RESULT_OK || resultCode == 200) {
+            if (requestCode == REQUEST_CODE_UPLOAD) {
                 //刷新界面
-                hasAttatchment = data.getBooleanExtra("has",false);
+                hasAttatchment = data.getBooleanExtra("has", false);
                 EventBus.getDefault().post(new ReturnActivityRefreshEvent());
                 updateReturnView();
             }
         }
     }
+
     CategoryRespone categoryRespone;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -473,7 +480,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-                loadingLayout.onSuccess(1,"暂无数据");
+                loadingLayout.onSuccess(1, "暂无数据");
                 break;
             case FINISHRETURN:
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
