@@ -288,11 +288,11 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     }
                 }
                 //如果从缓存那里获取每个商品的收货数量为0，那重置回初始值,每个商品的数量和对应的库存数量一致
-//                if (isEmpty){
-//                    for (ReceiveBean receiveBean:beanList){
-//                        receiveBean.setCount(receiveBean.getProductUomQty());
-//                    }
-//                }
+                if (isEmpty){
+                    for (ReceiveBean receiveBean:beanList){
+                        receiveBean.setCount(receiveBean.getProductUomQty());
+                    }
+                }
 
                 for (OrderResponse.ListBean.LinesBean bean : datas) {
                     totalQty += bean.getActualSendNum();
