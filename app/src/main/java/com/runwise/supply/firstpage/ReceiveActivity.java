@@ -293,13 +293,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         receiveBean.setCount(receiveBean.getProductUomQty());
                     }
                 }
-
                 for (OrderResponse.ListBean.LinesBean bean : datas) {
                     totalQty += bean.getActualSendNum();
                 }
                 updatePbProgress();
             }else{
-
+                boolean isEmpty = true;
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
@@ -308,6 +307,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     }else{
                         receiveBean.setCount(linesBean.getProductUomQty());
                     }
+                    if (receiveBean.getCount() != 0){
+                        isEmpty = false;
+                    }
+
                     receiveBean.setTracking(linesBean.getTracking());
                     if (linesBean.getTracking().equals("lot")) {
                         List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
@@ -326,6 +329,12 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         receiveBean.setLot_list(lot_list);
                     }
                     countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
+                }
+                //如果从缓存那里获取每个商品的收货数量为0，那重置回初始值,每个商品的数量和对应的库存数量一致
+                if (isEmpty){
+                    for (ReceiveBean receiveBean:countMap.values()){
+                        receiveBean.setCount(receiveBean.getProductUomQty());
+                    }
                 }
                 setDefalutProgressBar();
             }

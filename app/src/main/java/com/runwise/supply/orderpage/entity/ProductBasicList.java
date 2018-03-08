@@ -120,6 +120,14 @@ public class ProductBasicList implements Serializable,Parcelable {
         }
 
         @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof ListBean){
+                return ((ListBean)obj).getProductID() == productID;
+            }
+            return false;
+        }
+
+        @Override
         public Object clone() {
             ListBean listBean = null;
             try{
