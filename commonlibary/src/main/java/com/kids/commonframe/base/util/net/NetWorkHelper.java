@@ -609,10 +609,10 @@ public class NetWorkHelper<T extends BaseEntity> {
                         headerMap.put("X-Odoo-Db", Constant.UNLOGIN_DB);
                 }
             }
-            headerMap.put("Phone_type", android.os.Build.MODEL);
+            headerMap.put("phone_type", android.os.Build.MODEL);
             headerMap.put("system_version", android.os.Build.VERSION.RELEASE);
             headerMap.put("app_version", CommonUtils.getVersionName(context));
-            headerMap.put("singal", MobileUtil.getNetWorkStatus(context));
+            headerMap.put("signal", MobileUtil.getNetWorkStatus(context));
             LogUtils.e("Headers:" + headerMap.toString());
             return headerMap;
         }

@@ -168,6 +168,12 @@ public class UmengUtil {
      * 下单商品列表key
      */
     public static final String ORDER_PRODUCTS_TYPE = "下单内容";
-
-
+    /**
+     * 计算点击商品分类的次数
+     */
+    public static final String EVENT_ID_CLICK_PRODUCT_CATEGORY = "click_product_category";
+    /**
+     * 商品分类key
+     */
+    public static final String KEY_CATEGORY = "category";
 }

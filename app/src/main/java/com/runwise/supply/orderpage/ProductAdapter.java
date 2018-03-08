@@ -18,6 +18,7 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.LongPressUtil;
 import com.runwise.supply.view.ProductImageDialog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -137,6 +138,22 @@ public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
                     EventBus.getDefault().post(productCountUpdateEvent);
                 }
 
+            }
+        });
+        LongPressUtil longPressUtil = new LongPressUtil();
+        longPressUtil.setUpEvent(viewHolder.inputMBtn, new LongPressUtil.CallBack() {
+            @Override
+            public void call() {
+                viewHolder.tvCount.setText(0 + bean.getSaleUom());
+                productCountSetter.setCount(bean, 0);
+
+                viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
+                viewHolder.tvCount.setVisibility(View.INVISIBLE);
+                viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
+
+                ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean, 0);
+                productCountUpdateEvent.setException(ProductAdapter.this);
+                EventBus.getDefault().post(productCountUpdateEvent);
             }
         });
 

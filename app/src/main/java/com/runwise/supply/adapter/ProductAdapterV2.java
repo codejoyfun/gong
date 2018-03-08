@@ -152,6 +152,7 @@ public class ProductAdapterV2 extends RecyclerView.Adapter<ProductAdapterV2.View
 
             }
         });
+
         /**
          * 加
          */
@@ -278,4 +279,5 @@ public class ProductAdapterV2 extends RecyclerView.Adapter<ProductAdapterV2.View
             ButterKnife.bind(this, view);
         }
     }
+
 }

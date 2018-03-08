@@ -51,6 +51,7 @@ import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.LongPressUtil;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.RunwiseService;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -77,9 +78,11 @@ import io.vov.vitamio.utils.NumberUtil;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CLICK_PRODUCT_CATEGORY;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CONTINUE_TO_CHOOSE;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SHOPPING_CART;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_XUAN_HAO_L;
+import static com.kids.commonframe.base.util.UmengUtil.KEY_CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PLACE_ORDER_TYPE;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
@@ -308,7 +311,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         return mListBeans;
     }
 
-    protected  List<ProductBasicList.ListBean> mListBeans;
+    protected List<ProductBasicList.ListBean> mListBeans;
 
 
     /**
@@ -334,7 +337,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     bean.setCategoryParent("其他");
                 }
 
-                if (!TextUtils.isEmpty(bean.getProductTag())){
+                if (!TextUtils.isEmpty(bean.getProductTag())) {
                     List<ProductBasicList.ListBean> beanList;
                     if (mProductMap.containsKey(bean.getProductTag())) {
                         beanList = mProductMap.get(bean.getProductTag());
@@ -359,8 +362,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         } catch (DbException e) {
             e.printStackTrace();
         }
-
-
 
         List<String> categoryList = new ArrayList<>();
         List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST);
@@ -446,8 +447,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 int position = tab.getPosition();
                 mViewPagerCategoryFrags.setCurrentItem(position);
                 repertoryEntityFragmentList.get(position).setUserVisibleHint(true);
-
                 mTypeWindow.dismiss();
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(KEY_CATEGORY, titles.get(position));
+                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_CLICK_PRODUCT_CATEGORY, map);
             }
 
             @Override
@@ -527,7 +530,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     public View getTabView(int position) {
         View view = LayoutInflater.from(this).inflate(R.layout.item_category, null);
-        view.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT,WRAP_CONTENT));
+        view.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         TextView txt_title = (TextView) view.findViewById(R.id.tv_name);
         txt_title.setText(mTitles.get(position));
         view.setOnClickListener(new View.OnClickListener() {
@@ -724,7 +727,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mTvCartCount.setVisibility(View.VISIBLE);
                 mTvOrderCommit.setEnabled(true);
                 mTvProductTotalCount.setVisibility(View.VISIBLE);
-                mTvProductTotalCount.setText(NumberUtil.getIOrD(totalPieces)+"件商品");
+                mTvProductTotalCount.setText(NumberUtil.getIOrD(totalPieces) + "件商品");
             } else {
                 mTvCartCount.setVisibility(View.GONE);
                 mTvOrderCommit.setEnabled(false);
@@ -734,7 +737,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if (GlobalApplication.getInstance().getCanSeePrice()) {
                 mTvTotalPrice.setVisibility(View.VISIBLE);
                 mTvTotalPrice.setText("¥" + df.format(totalMoney));//TODO:format
-            }else{
+            } else {
 
             }
         }
@@ -936,7 +939,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (mVStickHeader == null){
+                if (mVStickHeader == null) {
                     return;
                 }
                 View stickyInfoView = recyclerView.findChildViewUnder(mVStickHeader.getMeasuredWidth() / 2, 5);
@@ -1168,6 +1171,24 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     holder.mVStickHeader.setVisibility(View.GONE);
                 }
             }
+            LongPressUtil longPressUtil = new LongPressUtil();
+            longPressUtil.setUpEvent(holder.mmTvReduce, new LongPressUtil.CallBack() {
+                @Override
+                public void call() {
+                    mCountSetter.setCount(holder.listBean, 0);
+//                    mMapCount.put(listBean,count);
+                    //从购物车中删除
+                    mmProductList.remove(holder.listBean);
+                    mSetInvalid.remove(holder.listBean);
+                    if (mSetInvalid.size() == 0) {
+                        initProductListData();
+                    }
+                    mmCartAdapter.notifyChanged();
+                    EventBus.getDefault().post(new ProductCountUpdateEvent(holder.listBean, 0));
+                    holder.mmTvCount.setText(0 + holder.listBean.getSaleUom());
+                    mmCartAdapter.notifyChanged();
+                }
+            });
 
         }
 
@@ -1384,10 +1405,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
         @Override
         public double getCount(ProductBasicList.ListBean bean) {
-            if (mMapCount.get(bean) == null){
+            if (mMapCount.get(bean) == null) {
                 return 0;
-            }else{
-               return mMapCount.get(bean);
+            } else {
+                return mMapCount.get(bean);
             }
         }
 

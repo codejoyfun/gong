@@ -25,8 +25,13 @@ import com.runwise.supply.adapter.TypeAdapter;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductAdapter;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.umeng.analytics.MobclickAgent;
 
+import java.util.HashMap;
 import java.util.List;
+
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CLICK_PRODUCT_CATEGORY;
+import static com.kids.commonframe.base.util.UmengUtil.KEY_CATEGORY;
 
 public class ListContainer extends LinearLayout {
 
@@ -104,6 +109,9 @@ public class ListContainer extends LinearLayout {
                     if (!findIt) {
                         ToastUtil.show(getContext(), "该分类下没有商品!");
                     }
+                    HashMap<String,String> map = new HashMap<>();
+                    map.put(KEY_CATEGORY,type);
+                    MobclickAgent.onEvent(getContext(), EVENT_ID_CLICK_PRODUCT_CATEGORY,map);
                 }
             }
         });
