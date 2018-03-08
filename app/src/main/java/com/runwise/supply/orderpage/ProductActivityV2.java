@@ -176,6 +176,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         filter.addAction(ACTION_TYPE_SERVICE);
         mMyBroadcastReceiver = new MyBroadcastReceiver();
         localBroadcastManager.registerReceiver(mMyBroadcastReceiver, filter);
+
     }
 
     @Override
@@ -323,17 +324,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mListBeans = dbUtils.findAll(ProductBasicList.ListBean.class);
                 ProductBasicUtils.setBasicArr(mListBeans);
             }
-
-//            Collections.sort(mListBeans,new Comparator<ProductBasicList.ListBean>() {
-//                @Override
-//                public int compare(ProductBasicList.ListBean o1, ProductBasicList.ListBean o2) {
-//                    if (o1.getId()>o2.getId()){
-//                        return 1;
-//                    }
-//                    return -1;
-//                }
-//            });
-
             getCache();//获取缓存
             updateBottomBar();//更新底部bar
             for (int i = 0; i < mListBeans.size(); i++) {
@@ -1481,13 +1471,15 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 case ACTION_TYPE_SERVICE:
                     String status = intent.getStringExtra(INTENT_KEY_STATUS);
                     if (status.equals(getString(R.string.service_finish))) {
-                        //刷新商品列表
-                        requestCategory();
 
+                        //刷新商品列表
+                        startRequest();
                         smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                     }
                     break;
             }
         }
     }
+
+
 }

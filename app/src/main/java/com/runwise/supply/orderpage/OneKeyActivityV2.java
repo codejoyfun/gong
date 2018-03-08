@@ -17,6 +17,8 @@ import com.runwise.supply.entity.OneKeyRequest;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 智能下单，继承自手动下单
@@ -100,6 +102,16 @@ public class OneKeyActivityV2 extends ProductActivityV2 {
                     }
                 }
                 requestCategory();
+                Map<ProductBasicList.ListBean, Double> map = new HashMap<>();
+                for (ProductBasicList.ListBean listBean:mListBeans){
+                    for (ProductBasicList.ListBean listBean1 :mMapCount.keySet()){
+                        if (listBean1.getProductID() == listBean.getProductID()){
+                            map.put(listBean,mMapCount.get(listBean1));
+                        }
+                    }
+                }
+                mMapCount.clear();
+                mMapCount =  map;
                 initSelectAll();
                 updateBottomBar();
                 showCart(true);
