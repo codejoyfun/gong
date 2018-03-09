@@ -19,4 +19,8 @@
     <string name="scroll_behavior">@string/appbar_scrolling_view_behavior</string>
     <string name="detail_header_behavior">com.k.neleme.detail.DetailHeaderBehavior</string>
     <string name="sales_promotion">促销商品</string>
+    <string name="title_activity_order_v2">OrderActivityV2</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -604,18 +604,23 @@
         <activity android:name=".orderpage.TransferOutSuccessActivity" />
         <activity android:name=".orderpage.OrderSubmitActivity" />
         <activity android:name=".firstpage.OrderProductDiffActivity" />
-        <activity android:name=".firstpage.MessageActivity"></activity>
+        <activity android:name=".firstpage.MessageActivity" />
 
-        <service android:name="com.runwise.supply.tools.RunwiseService"/>
+        <service android:name=".tools.RunwiseService" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.runwise.supply.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <activity
+            android:name=".mine.OrderActivityListV2"
+            android:label="@string/title_activity_order_v2"></activity>
     </application>
 
 </manifest>

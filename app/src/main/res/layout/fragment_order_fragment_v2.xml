@@ -1,0 +1,123 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_tab"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/rl_order_state_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_order_state"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="全部状态"
+                android:textColor="@color/second_color"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/iv_order_state"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/tv_order_state"
+                android:src="@drawable/order_ico_arrow" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_order_time_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_order_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="全部时间"
+                android:textColor="@color/second_color"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/iv_order_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/tv_order_time"
+                android:src="@drawable/order_ico_arrow" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pullListView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/ll_tab"
+        android:divider="#dcdcdc"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:listSelector="#0000"
+        ptr:ptrAnimationStyle="flip" />
+
+
+    <com.kids.commonframe.base.view.LoadingLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_tab"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/rl_order_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="42dp"
+        android:background="#66000000"
+        android:visibility="visible">
+
+        <ListView
+            android:id="@+id/lv_order_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:divider="#dcdcdc"
+            android:dividerHeight="0.5dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_order_time"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="42dp"
+        android:background="#66000000"
+        android:visibility="visible">
+
+        <ListView
+            android:id="@+id/lv_order_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:divider="#dcdcdc"
+            android:dividerHeight="0.5dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -168,6 +168,7 @@ public class InventoryActivity extends NetWorkActivity {
                 EditRepertoryFinishActivity.start(this, total, mInventoryTotal);
                 InventoryCacheManager.getInstance(this).shouldShowInventoryInProgress(false);
                 finish();
+                break;
             case REQUEST_CHECK_DETAIL:
                 BaseEntity.ResultBean resultBean3 = result.getResult();
                 CheckResult checkResult = (CheckResult) resultBean3.getData();

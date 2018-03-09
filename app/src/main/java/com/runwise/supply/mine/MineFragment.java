@@ -309,7 +309,7 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.itemLayout_1:
-                intent = new Intent(mContext, OrderActivity.class);
+                intent = new Intent(mContext, OrderActivityListV2.class);
                 intent.putExtra("position", 1);
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);

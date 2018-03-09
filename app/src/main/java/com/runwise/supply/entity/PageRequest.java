@@ -20,6 +20,7 @@ public class PageRequest {
     private int order_id;
     private String waybill_id;
     private int date_type;
+    private String state;
 
     public int getDate_type() {
         return date_type;
@@ -75,5 +76,13 @@ public class PageRequest {
 
     public void setWaybill_id(String waybill_id) {
         this.waybill_id = waybill_id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }
