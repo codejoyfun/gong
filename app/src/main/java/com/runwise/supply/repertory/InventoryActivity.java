@@ -191,7 +191,7 @@ public class InventoryActivity extends NetWorkActivity {
             inventoryProduct.setCode(linesBean.getCode());
 
             inventoryProduct.setDiff((int) linesBean.getDiff());
-            inventoryProduct.setEditNum(linesBean.getEditNum());
+//            inventoryProduct.setEditNum(linesBean.getEditNum());
             inventoryProduct.setInventoryLineID(linesBean.getInventoryLineID());
 
             inventoryProduct.setLifeEndDate(linesBean.getLifeEndDate());
