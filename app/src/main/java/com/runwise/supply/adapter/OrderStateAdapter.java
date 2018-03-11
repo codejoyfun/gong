@@ -24,6 +24,11 @@ public class OrderStateAdapter extends IBaseAdapter<OrderStateAdapter.OrderState
     ArrayList<OrderStateBean> mOrderStateBeanList = new ArrayList<>();
 
     public OrderStateAdapter() {
+        refresh();
+    }
+
+    private void refresh(){
+        mOrderStateBeanList.clear();
         for (int i = 0; i < mTitles.length; i++) {
             OrderStateBean orderStateBean = new OrderStateBean();
             orderStateBean.state = mTitles[i];
@@ -35,6 +40,12 @@ public class OrderStateAdapter extends IBaseAdapter<OrderStateAdapter.OrderState
         setData(mOrderStateBeanList);
     }
 
+
+    public void setTitles(String[] titles) {
+        mTitles = titles;
+        refresh();
+
+    }
 
     @Override
     public OrderStateBean getItem(int position) {

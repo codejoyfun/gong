@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -29,7 +28,6 @@ import com.runwise.supply.LoginActivity;
 import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferListActivity;
-import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.ObservableScrollView;
@@ -39,10 +37,8 @@ import com.umeng.analytics.MobclickAgent;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import io.vov.vitamio.utils.NumberUtil;
-
+import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_USER_GUIDE;
 import static com.runwise.supply.R.id.rl_procurement;
-import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DATA;
 
 /**
  * Created by myChaoFile on 16/10/13.
@@ -50,7 +46,6 @@ import static com.runwise.supply.mine.ProcurementLimitActivity.KEY_SUM_MONEY_DAT
 
 public class MineFragment extends NetWorkFragment {
     private final int REQUEST_SYSTEM = 1;
-    private final int REQUEST_SUM = 2;
     private static final int REQUEST_USERINFO = 3;
     private static final int REQUEST_USERINFO_PROCUMENT = 4;
     private static final int REQUEST_USERINFO_TRANSFER = 5;
@@ -63,31 +58,11 @@ public class MineFragment extends NetWorkFragment {
     private SimpleDraweeView mineHead;
     private UserInfo userInfo;
     boolean isLogin;
-    @ViewInject(R.id.ratingbarPeisong)
-    private RatingBar ratingbarPeisong;
-    @ViewInject(R.id.peisongStr)
-    private TextView peisongStr;
-    @ViewInject(R.id.peisongImg)
-    private ImageView peisongImg;
-
-    @ViewInject(R.id.ratingbarZhiliang)
-    private RatingBar ratingbarZhiliang;
-    @ViewInject(R.id.zhiliangStr)
-    private TextView zhiliangStr;
-    @ViewInject(R.id.zhiliangImg)
-    private ImageView zhiliangImg;
     String number = "02037574563";
 
-    @ViewInject(R.id.moneySum)
-    private TextView moneySum;
-    @ViewInject(R.id.moneyNuit)
-    private TextView moneyNuit;
-    @ViewInject(R.id.showText)
-    private TextView showText;
 
     @ViewInject(R.id.orderRed)
     private View orderRed;
-    private SumMoneyData sumMoneyData;
 
     @ViewInject(R.id.observableScrollView)
     private ObservableScrollView observableScrollView;
@@ -129,25 +104,7 @@ public class MineFragment extends NetWorkFragment {
 
             FrecoFactory.getInstance(mContext).disPlay(mineHead, Constant.BASE_URL + userInfo.getAvatarUrl());
             minePhone.setText(userInfo.getUsername());
-
-            ratingbarPeisong.setRating((float) userInfo.getCateringServiceScore());
-            peisongStr.setText(NumberUtil.formatOneBit(String.valueOf(userInfo.getCateringServiceScore())));
-            if ("-1".equals(userInfo.getCateringServiceTrend())) {
-                peisongImg.setImageResource(R.drawable.tag_down);
-            } else {
-                peisongImg.setImageResource(R.drawable.tag_up);
-            }
-
-            ratingbarZhiliang.setRating((float) userInfo.getCateringQualityScore());
-            zhiliangStr.setText(NumberUtil.formatOneBit(String.valueOf(userInfo.getCateringQualityScore())));
-            if ("-1".equals(userInfo.getCateringQualityTrend())) {
-                zhiliangImg.setImageResource(R.drawable.tag_down);
-            } else {
-                zhiliangImg.setImageResource(R.drawable.tag_up);
-            }
         }
-        Object request = null;
-        sendConnection("/api/sale/shop/info", request, REQUEST_SUM, false, SumMoneyData.class);
     }
 
     private void requestUserInfo() {
@@ -178,13 +135,6 @@ public class MineFragment extends NetWorkFragment {
                 }
             }
         });
-        ratingbarPeisong.setRating(0);
-        peisongStr.setText(0.0 + "");
-        peisongImg.setImageResource(R.drawable.tag_up);
-
-        ratingbarZhiliang.setRating(0);
-        zhiliangStr.setText(0.0 + "");
-        zhiliangImg.setImageResource(R.drawable.tag_down);
     }
 
     @Override
@@ -240,27 +190,6 @@ public class MineFragment extends NetWorkFragment {
                     ToastUtil.show(mContext, "没有门店调拨权限");
                 }
                 break;
-            case REQUEST_SUM:
-                sumMoneyData = (SumMoneyData) result.getResult().getData();
-                if (GlobalApplication.getInstance().getCanSeePrice()) {
-                    if (sumMoneyData.getTotal_amount() > 10000) {
-                        double price = sumMoneyData.getTotal_amount() / 10000;
-                        moneySum.setText(UserUtils.formatPrice(price + "") + "");
-                        moneyNuit.setText("万元");
-                        moneyNuit.setVisibility(View.VISIBLE);
-                    } else {
-                        moneySum.setText(UserUtils.formatPrice(sumMoneyData.getTotal_amount() + "") + "");
-                        moneyNuit.setVisibility(View.VISIBLE);
-                        moneyNuit.setText("元");
-                    }
-                    showText.setText("上周采购额");
-                } else {
-                    moneySum.setText(sumMoneyData.getTotal_number() + "");
-                    moneyNuit.setText("件");
-                    moneyNuit.setVisibility(View.VISIBLE);
-                    showText.setText("上周采购量");
-                }
-                break;
         }
     }
 
@@ -269,8 +198,7 @@ public class MineFragment extends NetWorkFragment {
 
     }
 
-    @OnClick({R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_2, R.id.itemLayout_3, R.id.itemLayout_4,
-            R.id.rl_stocktaking_record, R.id.rl_price_list, R.id.rl_bill, rl_procurement, R.id.ll_cai_gou_e, R.id.rl_transfer})
+    @OnClick({R.id.rl_user_guide,R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_3, R.id.itemLayout_4, R.id.rl_price_list, R.id.rl_bill, rl_procurement, R.id.rl_transfer})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -309,34 +237,21 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.itemLayout_1:
-                intent = new Intent(mContext, OrderActivityListV2.class);
+                intent = new Intent(mContext, OrderListActivityV2.class);
                 intent.putExtra("position", 1);
-                if (UserUtils.checkLogin(intent, mContext)) {
-                    startActivity(intent);
-                }
-                break;
-            case R.id.itemLayout_2:
-                intent = new Intent(mContext, OrderActivity.class);
-                intent.putExtra("position", 2);
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             //退货记录
             case R.id.itemLayout_3:
-                intent = new Intent(mContext, ReturnActivity.class);
-                if (UserUtils.checkLogin(intent, mContext)) {
-                    startActivity(intent);
-                }
-                break;
-            case R.id.itemLayout_4:
-                intent = new Intent(mContext, OrderActivity.class);
+                intent = new Intent(mContext, OrderListActivityV2.class);
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             //盘点记录
-            case R.id.rl_stocktaking_record:
+            case R.id.itemLayout_4:
                 intent = new Intent(mContext, CheckActivity.class);
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
@@ -377,17 +292,16 @@ public class MineFragment extends NetWorkFragment {
             case rl_procurement:
                 refreshProcument();
                 break;
-            case R.id.ll_cai_gou_e:
-                if (SPUtils.isLogin(getActivity())&&sumMoneyData != null) {
-                    intent = new Intent(mContext, ProcurementLimitActivity.class);
-                    intent.putExtra(KEY_SUM_MONEY_DATA, sumMoneyData);
-                    startActivity(intent);
-                }
-                break;
             case R.id.rl_transfer://门店调拨
                 if (SPUtils.isLogin(getActivity())) {
                     refreshTransfer();
                 }
+                break;
+            case R.id.rl_user_guide:
+                MobclickAgent.onEvent(getActivity(), EVENT_ID_USER_GUIDE);
+                intent = new Intent(mContext,UserGuideActivity.class);
+                startActivity(intent);
+                break;
         }
 
     }

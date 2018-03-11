@@ -619,7 +619,7 @@
         </provider>
 
         <activity
-            android:name=".mine.OrderActivityListV2"
+            android:name=".mine.OrderListActivityV2"
             android:label="@string/title_activity_order_v2"></activity>
     </application>
 

@@ -14,6 +14,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.fragment.OrderListFragmentV2;
+import com.runwise.supply.fragment.ReturnListFragmentV2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class OrderActivityListV2 extends NetWorkActivity {
+public class OrderListActivityV2 extends NetWorkActivity {
 
     String[] mTitles = new String[]{"订单", "退货单"};
     @BindView(R.id.title_iv_left)
@@ -45,12 +46,12 @@ public class OrderActivityListV2 extends NetWorkActivity {
     }
 
     private void setUpViewPage() {
-       ArrayList<Fragment> fragments = new ArrayList<>();
-        for (int i = 0; i < mTitles.length; i++) {
-            OrderListFragmentV2 orderFragmentListV2 = new OrderListFragmentV2();
-            fragments.add(orderFragmentListV2);
-        }
-        mTabPageIndicatorAdapter = new TabPageIndicatorAdapter(getSupportFragmentManager(),mTitles,fragments);
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        OrderListFragmentV2 orderFragmentListV2 = new OrderListFragmentV2();
+        fragments.add(orderFragmentListV2);
+        ReturnListFragmentV2 returnListFragmentV2 = new ReturnListFragmentV2();
+        fragments.add(returnListFragmentV2);
+        mTabPageIndicatorAdapter = new TabPageIndicatorAdapter(getSupportFragmentManager(), mTitles, fragments);
         mVpProductFragments.setAdapter(mTabPageIndicatorAdapter);
         mIndicator.setupWithViewPager(mVpProductFragments);
         mVpProductFragments.setOffscreenPageLimit(mTitles.length);

@@ -47,6 +47,10 @@ import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.CustomDatePickerDialog;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -202,7 +206,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
         return "";
     }
 
-    private void setTime(String timeDesc){
+    private void setTime(String timeDesc) {
         switch (timeDesc) {
             case "全部时间":
                 mStartTime = "";
@@ -319,41 +323,41 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
     }
 
     @OnClick({R.id.rl_order_state_text, R.id.rl_order_time_text, R.id.rl_order_state, R.id.rl_order_time})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.rl_order_state_text:
-                if (mRlOrderState.getVisibility() == View.GONE) {
-                    mRlOrderState.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_from_top_200));
-                    mRlOrderState.setVisibility(View.VISIBLE);
-                    mRlOrderTime.setVisibility(View.GONE);
-                    mIvOrderState.setRotation(180);
-                } else {
+        public void onViewClicked(View view) {
+            switch (view.getId()) {
+                case R.id.rl_order_state_text:
+                    if (mRlOrderState.getVisibility() == View.GONE) {
+                        mRlOrderState.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_from_top_200));
+                        mRlOrderState.setVisibility(View.VISIBLE);
+                        mRlOrderTime.setVisibility(View.GONE);
+                        mIvOrderState.setRotation(180);
+                    } else {
+                        mRlOrderState.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
+                        mRlOrderState.setVisibility(View.GONE);
+                        mIvOrderState.setRotation(0);
+                    }
+                    break;
+                case R.id.rl_order_time_text:
+                    if (mRlOrderTime.getVisibility() == View.GONE) {
+                        mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_from_top_200));
+                        mRlOrderTime.setVisibility(View.VISIBLE);
+                        mRlOrderState.setVisibility(View.GONE);
+                        mIvOrderTime.setRotation(180);
+                    } else {
+                        mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
+                        mRlOrderTime.setVisibility(View.GONE);
+                        mIvOrderTime.setRotation(0);
+                    }
+                    break;
+                case R.id.rl_order_state:
                     mRlOrderState.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
                     mRlOrderState.setVisibility(View.GONE);
-                    mIvOrderState.setRotation(0);
-                }
-                break;
-            case R.id.rl_order_time_text:
-                if (mRlOrderTime.getVisibility() == View.GONE) {
-                    mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_from_top_200));
-                    mRlOrderTime.setVisibility(View.VISIBLE);
-                    mRlOrderState.setVisibility(View.GONE);
-                    mIvOrderTime.setRotation(180);
-                } else {
+                    break;
+                case R.id.rl_order_time:
                     mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
                     mRlOrderTime.setVisibility(View.GONE);
-                    mIvOrderTime.setRotation(0);
-                }
-                break;
-            case R.id.rl_order_state:
-                mRlOrderState.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
-                mRlOrderState.setVisibility(View.GONE);
-                break;
-            case R.id.rl_order_time:
-                mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
-                mRlOrderTime.setVisibility(View.GONE);
-                break;
-        }
+                    break;
+            }
     }
 
     @Override
@@ -385,7 +389,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
     public void retryOnClick(View view) {
         mLoadingLayout.setStatusLoading();
         page = 1;
-        requestOrderList(false, mState,REQUEST_MAIN, page, mStartTime, mEndTime);
+        requestOrderList(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
     }
 
     /**
@@ -427,7 +431,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                                  ViewGroup parent) {
             CarInfoListAdapter.ViewHolder holder = null;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_step_pay, null);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_step_pay_new, null);
                 holder = new CarInfoListAdapter.ViewHolder();
                 ViewUtils.inject(holder, convertView);
                 convertView.setTag(holder);
@@ -441,7 +445,6 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 holder.payStatus.setText("待确认");
                 holder.payBtn.setVisibility(View.VISIBLE);
                 holder.payBtn.setText("取消订单");
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_1_tocertain);
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -464,7 +467,6 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
             else if ("sale".equals(bean.getState())) {
                 holder.payBtn.setVisibility(View.GONE);
                 holder.payStatus.setText("已确认");
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_2_certain);
             }
             //已发货
             else if ("peisong".equals(bean.getState())) {
@@ -484,7 +486,6 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                     btnText = "收货";
                 }
                 holder.payBtn.setText(btnText);
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_3_delivering);
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -551,7 +552,6 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 });
                 holder.payStatus.setText("待评价");
                 holder.payBtn.setVisibility(View.GONE);
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_2_certain);
                 holder.payBtn.setVisibility(View.VISIBLE);
                 holder.payBtn.setText("评价");
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
@@ -582,14 +582,12 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 });
                 holder.payStatus.setText("已评价");
                 holder.payBtn.setVisibility(View.GONE);
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_5_rated);
             }
             //已取消cancel
             else {
                 holder.payStatus.setText("订单关闭");
                 holder.payBtn.setVisibility(View.VISIBLE);
                 holder.payBtn.setText("删除订单");
-                holder.orderStatus.setImageResource(R.drawable.state_restaurant_6_closed);
                 holder.payBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -608,19 +606,25 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                     }
                 });
             }
-            holder.payTitle.setText(bean.getName());
-            holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
-            if (bean.getState().equals(Constant.ORDER_STATE_DONE) || bean.getState().equals(Constant.ORDER_STATE_RATED)) {
-                holder.patSum.setText("共" + NumberUtil.getIOrD(bean.getDeliveredQty()) + "件商品");
+//            尚未收货和评价
+            if (!"done".equals(bean.getState()) && !"rated".equals(bean.getState())) {
+                holder.payTitle.setText("预计" + formatTimeStr(bean.getEstimatedDate()) + "送达");
             } else {
-                holder.patSum.setText("共" + NumberUtil.getIOrD(bean.getAmount()) + "件商品");
+                holder.payTitle.setText(bean.getEstimatedDate());
+            }
+            holder.payDate.setText(bean.getName());
+
+            StringBuffer descStringBuffer = new StringBuffer();
+
+            if (bean.getState().equals(Constant.ORDER_STATE_DONE) || bean.getState().equals(Constant.ORDER_STATE_RATED)) {
+                descStringBuffer.append(NumberUtil.getIOrD(bean.getDeliveredQty()) + "件商品");
+            } else {
+                descStringBuffer.append(NumberUtil.getIOrD(bean.getAmount()) + "件商品");
             }
             if (GlobalApplication.getInstance().getCanSeePrice()) {
-                holder.payMoney.setVisibility(View.VISIBLE);
-                holder.payMoney.setText("共" + NumberUtil.getIOrD(bean.getAmountTotal()));
-            } else {
-                holder.payMoney.setVisibility(View.GONE);
+                descStringBuffer.append(",¥" + NumberUtil.getIOrD(bean.getAmountTotal()));
             }
+            holder.patSum.setText(descStringBuffer.toString());
             if (bean.getHasReturn() > 0) {
                 holder.returnTv.setVisibility(View.VISIBLE);
             } else {
@@ -635,6 +639,17 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
             return convertView;
         }
 
+        SimpleDateFormat sdfSource = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat sdfTarget = new SimpleDateFormat("MM月dd日", Locale.getDefault());
+
+        private String formatTimeStr(String str) {
+            try {
+                return sdfTarget.format(sdfSource.parse(str));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return str;
+            }
+        }
 
         class ViewHolder {
             @ViewInject(R.id.payTitle)
