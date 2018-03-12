@@ -28,12 +28,12 @@ import com.runwise.supply.GlobalApplication;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderStateAdapter;
 import com.runwise.supply.adapter.OrderTimeAdapter;
+import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.entity.ReturnActivityRefreshEvent;
 import com.runwise.supply.firstpage.ReturnDetailActivity;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
+import com.runwise.supply.firstpage.entity.ReturnResponse;
 import com.runwise.supply.mine.OrderDataType;
-import com.runwise.supply.mine.entity.MsgList;
-import com.runwise.supply.mine.entity.MsgResult;
 import com.runwise.supply.mine.entity.ReturnData;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.CustomDatePickerDialog;
@@ -50,7 +50,7 @@ import io.vov.vitamio.utils.NumberUtil;
  * Created by mike on 2018/3/11.
  */
 
-public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView.OnItemClickListener,LoadingLayoutInterface {
+public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView.OnItemClickListener, LoadingLayoutInterface {
     private static final int REQUEST_MAIN = 1;
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
@@ -87,6 +87,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
     private int page = 1;
     public OrderDataType orderDataType;
     private List<ReturnOrderBean.ListBean> allList;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +97,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 
         OrderStateAdapter orderStateAdapter = new OrderStateAdapter();
 
-        String[] mTitles = new String[]{"全部状态", "待确认","退货中", "已完成"};
+        String[] mTitles = new String[]{"全部状态", "待确认", "退货中", "已完成"};
         orderStateAdapter.setTitles(mTitles);
 
         mLvOrderState.setAdapter(orderStateAdapter);
@@ -135,7 +136,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 
         adapter = new CarInfoListAdapter();
 
-        if(mOnRefreshListener2 == null){
+        if (mOnRefreshListener2 == null) {
             mOnRefreshListener2 = new PullToRefreshBase.OnRefreshListener2<ListView>() {
                 @Override
                 public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -143,12 +144,12 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                             DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
                     refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
                     page = 1;
-                    requestData(false, REQUEST_START, page, 10);
+                    requestData(true, mState, REQUEST_START, page, mStartTime, mEndTime);
                 }
 
                 @Override
                 public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-                    requestData(false, REQUEST_DEN, (++page) , 10);
+                    requestData(true, mState, REQUEST_DEN, page, mStartTime, mEndTime);
                 }
             };
 
@@ -156,7 +157,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        requestData(false, REQUEST_MAIN, page, 10);
+        requestData(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
         loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
     }
@@ -164,7 +165,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(ReturnActivityRefreshEvent returnActivityRefreshEvent) {
         Object param = null;
-        sendConnection("/API/v2/return_order/list", param, PRODUCT_GET, true, ReturnData.class);
+        sendConnection("/api/order/list", param, PRODUCT_GET, true, ReturnData.class);
     }
 
     //    退货单状态：
@@ -248,10 +249,12 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             case R.id.rl_order_state:
                 mRlOrderState.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
                 mRlOrderState.setVisibility(View.GONE);
+                mIvOrderState.setRotation(0);
                 break;
             case R.id.rl_order_time:
                 mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
                 mRlOrderTime.setVisibility(View.GONE);
+                mIvOrderTime.setRotation(0);
                 break;
         }
     }
@@ -281,46 +284,49 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 //    }
 
 
-    public void requestData (boolean showDialog,int where, int page,int limit) {
-//        PageRequest request = new PageRequest();
-//        request.setLimit(limit);
-//        request.setPz(page);
-//        sendConnection("message/list.json",request,where,showDialog,MsgResult.class);
-        Object param = null;
-        sendConnection("/API/v2/return_order/list",param,PRODUCT_GET,false, ReturnData.class);
+    public void requestData(boolean showDialog, String state, int where, int page, String startTime, String endTime) {
+        PageRequest request = new PageRequest();
+        request.setLimit(10);
+        request.setPz(page);
+        request.setState(state);
+        request.setStart(startTime);
+        request.setEnd(endTime);
+        request.setIsReturn(true);
+        sendConnection("/api/order/list", request, where, showDialog, ReturnResponse.class);
     }
 
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
+        ReturnResponse repertoryEntity;
         switch (where) {
             case REQUEST_MAIN:
-                MsgResult mainResult = (MsgResult)result;
-                MsgList mainListResult = mainResult.getData();
-//                adapter.setData(mainListResult.getEntities());
-                loadingLayout.onSuccess(adapter.getCount(),"",R.drawable.news);
+                repertoryEntity = (ReturnResponse) result.getResult().getData();
+                allList = repertoryEntity.getList();
+                adapter.setData(allList);
+                loadingLayout.onSuccess(allList.size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
             case REQUEST_START:
-                MsgResult startResult = (MsgResult) result;
-                MsgList startListResult = startResult.getData();
-//                adapter.setData(startListResult.getEntities());
+                repertoryEntity = (ReturnResponse) result.getResult().getData();
+                allList = repertoryEntity.getList();
+                adapter.setData(allList);
                 pullListView.onRefreshComplete(Integer.MAX_VALUE);
+                loadingLayout.onSuccess(allList.size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
                 break;
             case REQUEST_DEN:
-                MsgResult endResult = (MsgResult) result;
-                MsgList sndListResult = endResult.getData();
-                if (sndListResult.getEntities() != null && !sndListResult.getEntities().isEmpty()) {
-//                    adapter.appendData(sndListResult.getEntities());
+                repertoryEntity = (ReturnResponse) result.getResult().getData();
+                allList = repertoryEntity.getList();
+                if (allList != null && allList.size() > 0) {
+                    adapter.appendData(allList);
                     pullListView.onRefreshComplete(Integer.MAX_VALUE);
-                }
-                else {
+                } else {
                     pullListView.onRefreshComplete(adapter.getCount());
                 }
                 break;
             case PRODUCT_GET:
-                ReturnData repertoryEntity = (ReturnData)result.getResult().getData();
-                allList = repertoryEntity.getAllList();
+                repertoryEntity = (ReturnResponse) result.getResult().getData();
+                allList = repertoryEntity.getList();
                 adapter.setData(allList);
                 loadingLayout.onSuccess(allList.size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
                 break;
@@ -329,16 +335,16 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        ToastUtil.show(mContext,errMsg);
+        ToastUtil.show(mContext, errMsg);
 //        loadingLayout.onFailure("",R.drawable.no_network);
         pullListView.onRefreshComplete(Integer.MAX_VALUE);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean)parent.getAdapter().getItem(position);
-        Intent intent = new Intent(mContext,ReturnDetailActivity.class);
-        intent.putExtra("rid",bean.getReturnOrderID()+"");
+        ReturnOrderBean.ListBean bean = (ReturnOrderBean.ListBean) parent.getAdapter().getItem(position);
+        Intent intent = new Intent(mContext, ReturnDetailActivity.class);
+        intent.putExtra("rid", bean.getReturnOrderID() + "");
         startActivity(intent);
     }
 
@@ -352,7 +358,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
     public void retryOnClick(View view) {
         loadingLayout.setStatusLoading();
         page = 1;
-        requestData(false, REQUEST_MAIN, page, 10);
+        requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
     }
 
 
@@ -364,39 +370,39 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             if (convertView == null) {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.item_return_list, null);
                 holder = new CarInfoListAdapter.ViewHolder();
-                ViewUtils.inject(holder,convertView);
+                ViewUtils.inject(holder, convertView);
                 convertView.setTag(holder);
-            }
-            else {
+            } else {
                 holder = (CarInfoListAdapter.ViewHolder) convertView.getTag();
             }
             ReturnOrderBean.ListBean bean = mList.get(position);
 
-            if("process".equals(bean.getState())) {
+            if ("process".equals(bean.getState())) {
                 holder.payStatus.setText("退货中");
-                holder.orderStatus.setImageResource(R.drawable.state_delivery_7_return);
             }
             //已发货
-            else if("done".equals(bean.getState())) {
+            else if ("done".equals(bean.getState())) {
                 holder.payStatus.setText("已退货");
-                holder.orderStatus.setImageResource(R.drawable.state_delivery_7_return);
-            }
-            else  {
+            } else {
                 holder.payStatus.setText("已退货");
-                holder.orderStatus.setImageResource(R.drawable.state_delivery_7_return);
             }
 
-            holder.payTitle.setText(bean.getName());
-            holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
-            holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getAmount())+"件商品");
-            if(GlobalApplication.getInstance().getCanSeePrice()) {
-                holder.payMoney.setVisibility(View.VISIBLE);
-                holder.payMoney.setText("共"+bean.getAmountTotal());
+            if ("draft".equals(bean.getState())){
+                holder.payStatus.setText("待确认");
+                holder.payBtn.setVisibility(View.VISIBLE);
+            }else{
+                holder.payBtn.setVisibility(View.GONE);
             }
-            else {
-                holder.payMoney.setVisibility(View.GONE);
+
+            holder.payTitle.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
+            holder.payDate.setText(bean.getName());
+            StringBuffer descStringBuffer = new StringBuffer();
+            descStringBuffer.append(bean.getTypeQty()+"种 "+NumberUtil.getIOrD(bean.getAmount()) + "件商品");
+            if (GlobalApplication.getInstance().getCanSeePrice()) {
+                descStringBuffer.append(",¥" + bean.getAmountTotal());
             }
-//            holder.payMoney.setText(bean.getAmountTotal()+"");
+            holder.patSum.setText(descStringBuffer.toString());
+
             return convertView;
         }
 
@@ -409,8 +415,8 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             TextView payDate;
             @ViewInject(R.id.patSum)
             TextView patSum;
-            @ViewInject(R.id.payMoney)
-            TextView payMoney;
+            @ViewInject(R.id.payBtn)
+            TextView payBtn;
             @ViewInject(R.id.orderStatus)
             ImageView orderStatus;
         }

@@ -178,10 +178,10 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/iv_product_cart"
             android:gravity="center"
-            android:text="差异商品(888种)"
+            android:text="差异商品(0种)"
             android:textColor="#2E2E2E"
             android:textSize="14sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_product_total_price"
@@ -190,12 +190,12 @@
             android:layout_alignParentBottom="true"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/iv_product_cart"
-            android:text="¥119.0"
+            android:text="¥0.0"
             android:gravity="center"
             android:paddingBottom="5dp"
             android:textColor="@color/textColorRed"
             android:textSize="16sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
 
         <TextView

@@ -84,9 +84,9 @@ public class TempOrderActivity extends NetWorkActivity {
             sb.append(" | ").append(bean.getUnit());
             boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
             if (canSeePrice){
-                sb.append("\n").append(UserUtils.formatPrice(String.valueOf(bean.getPrice()))).append("元/").append(bean.getProductUom());
+                sb.append("\n").append(UserUtils.formatPrice(String.valueOf(bean.getPrice()))).append("元/").append(bean.getSaleUom());
             }
-            vh.unit1.setText(bean.getProductUom());
+            vh.unit1.setText(bean.getSaleUom());
             vh.content.setText(sb.toString());
         }
 

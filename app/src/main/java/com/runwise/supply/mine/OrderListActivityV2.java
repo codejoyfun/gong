@@ -1,5 +1,7 @@
 package com.runwise.supply.mine;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -37,6 +39,15 @@ public class OrderListActivityV2 extends NetWorkActivity {
 
     TabPageIndicatorAdapter mTabPageIndicatorAdapter;
 
+    public static final String INTENT_KEY_POSITION = "intent_key_position";
+
+    public static Intent getStartIntent(int position, Context context){
+        Intent intent = new Intent(context,OrderListActivityV2.class);
+        intent.putExtra(INTENT_KEY_POSITION,position);
+        return intent;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +66,8 @@ public class OrderListActivityV2 extends NetWorkActivity {
         mVpProductFragments.setAdapter(mTabPageIndicatorAdapter);
         mIndicator.setupWithViewPager(mVpProductFragments);
         mVpProductFragments.setOffscreenPageLimit(mTitles.length);
+        int position = getIntent().getIntExtra(INTENT_KEY_POSITION,0);
+        mVpProductFragments.setCurrentItem(position);
     }
 
 

@@ -22,6 +22,8 @@ public class PageRequest {
     private int date_type;
     private String state;
 
+    private boolean isReturn;
+
     public int getDate_type() {
         return date_type;
     }
@@ -84,5 +86,13 @@ public class PageRequest {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public boolean isIsReturn() {
+        return isReturn;
+    }
+
+    public void setIsReturn(boolean isReturn) {
+        this.isReturn = isReturn;
     }
 }

@@ -112,8 +112,15 @@ public class OrderResponse {
         private boolean isActual;
         private List<ProductAlteredBean> productAltered;
         private boolean isActualSendOrder;
+        private int typeQty;
 
+        public int getTypeQty() {
+            return typeQty;
+        }
 
+        public void setTypeQty(int typeQty) {
+            this.typeQty = typeQty;
+        }
         public List<ProductAlteredBean> getProductAltered() {
             return productAltered;
         }
@@ -204,6 +211,7 @@ public class OrderResponse {
             isActual = in.readByte() != 0;
             productAltered = in.createTypedArrayList(ProductAlteredBean.CREATOR);
             isActualSendOrder = in.readByte() != 0;
+            typeQty = in.readInt();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -617,6 +625,7 @@ public class OrderResponse {
             dest.writeByte((byte) (isActual ? 1 : 0));
             dest.writeTypedList(productAltered);
             dest.writeByte((byte) (isActualSendOrder ? 1 : 0));
+            dest.writeInt(typeQty);
         }
 
 

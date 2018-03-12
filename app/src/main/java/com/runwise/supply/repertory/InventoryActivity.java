@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -43,6 +44,7 @@ import com.runwise.supply.repertory.entity.EditRequest;
 import com.runwise.supply.repertory.entity.NewAdd;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
+import com.runwise.supply.tools.RunwiseKeyBoard;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -119,7 +121,9 @@ public class InventoryActivity extends NetWorkActivity {
         } else {
             getCategory();
         }
-
+        if (!GlobalApplication.getInstance().getCanSeePrice()) {
+            mTvProductTotalPrice.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -148,6 +152,7 @@ public class InventoryActivity extends NetWorkActivity {
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage();
                 initCartViews();
+                updateBottomBar();
                 break;
             case INVENTORY_COMMIT:
                 isSubmitted = true;
@@ -282,7 +287,7 @@ public class InventoryActivity extends NetWorkActivity {
         return editRepertoryListFragment;
     }
 
-    @OnClick({R.id.tv_inventory_commit, R.id.tv_inventory_cache, R.id.title_tv_rigth,R.id.rl_cart_container,R.id.rl_bottom_bar})
+    @OnClick({R.id.tv_inventory_commit, R.id.tv_inventory_cache, R.id.title_tv_rigth, R.id.rl_cart_container, R.id.rl_bottom_bar})
     public void onBtnClicked(View v) {
         switch (v.getId()) {
             case R.id.tv_inventory_commit:
@@ -474,35 +479,29 @@ public class InventoryActivity extends NetWorkActivity {
     * 不计算下架的
     */
     protected void updateBottomBar() {
-        if (getDiffInventoryProductList().size() == 0) {
-            mTvProductTotalPrice.setVisibility(View.INVISIBLE);
-            mTvProductTotalCount.setVisibility(View.INVISIBLE);
+        //计算总价,总量
+        double totalMoney = 0;
+        double totalPieces = getDiffInventoryProductList().size();
+        for (InventoryResponse.InventoryProduct bean : getDiffInventoryProductList()) {
+            totalMoney = totalMoney + (bean.getEditNum() - bean.getTheoreticalQty()) * bean.getUnitPrice();
+        }
+
+        if (totalPieces != 0) {
+            mTvProductTotalCount.setText("差异商品(" + NumberUtil.getIOrD(totalPieces) + "种)");
         } else {
-            //计算总价,总量
-            double totalMoney = 0;
-            double totalPieces = getDiffInventoryProductList().size();
-            for (InventoryResponse.InventoryProduct bean : getDiffInventoryProductList()) {
-                totalMoney = totalMoney + (bean.getEditNum() - bean.getTheoreticalQty())*bean.getUnitPrice();
-            }
+            mTvProductTotalCount.setText("差异商品(0种)");
+        }
 
-            if (totalPieces != 0) {
-                mTvProductTotalCount.setVisibility(View.VISIBLE);
-                mTvProductTotalCount.setText("差异商品("+NumberUtil.getIOrD(totalPieces)+"种)");
+        if (GlobalApplication.getInstance().getCanSeePrice()) {
+            mTvProductTotalPrice.setVisibility(View.VISIBLE);
+            if (totalMoney >= 0) {
+                mTvProductTotalPrice.setTextColor(Color.parseColor("#FF3B30"));
             } else {
-                mTvProductTotalCount.setVisibility(View.GONE);
+                mTvProductTotalPrice.setTextColor(Color.parseColor("#7bbd4f"));
             }
-
-            if (GlobalApplication.getInstance().getCanSeePrice()) {
-                mTvProductTotalPrice.setVisibility(View.VISIBLE);
-                if (totalMoney>=0){
-                    mTvProductTotalPrice.setTextColor(Color.parseColor("#FF3B30"));
-                }else{
-                    mTvProductTotalPrice.setTextColor(Color.parseColor("#7bbd4f"));
-                }
-                mTvProductTotalPrice.setText("¥" + df.format(totalMoney));//TODO:format
-            } else {
-                mTvProductTotalPrice.setVisibility(View.GONE);
-            }
+            mTvProductTotalPrice.setText("¥" + df.format(totalMoney));//TODO:format
+        } else {
+            mTvProductTotalPrice.setVisibility(View.GONE);
         }
     }
 
@@ -553,6 +552,24 @@ public class InventoryActivity extends NetWorkActivity {
         mVStickHeader = findViewById(R.id.stick_header);
         mInventoryAdapter = new InventoryAdapter(getDiffInventoryProductList());
         mmRvCart.setAdapter(mInventoryAdapter);
+        mmRvCart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                InventoryResponse.InventoryProduct inventoryProduct = (InventoryResponse.InventoryProduct) mInventoryAdapter.getItem(position);
+
+
+                RunwiseKeyBoard runwiseKeyBoard = new RunwiseKeyBoard(getActivityContext());
+                runwiseKeyBoard.setUp(inventoryProduct, new RunwiseKeyBoard.SetCountListener() {
+                    @Override
+                    public void onSetCount(double count) {
+                        inventoryProduct.setEditNum(Double.valueOf(count));
+                        EventBus.getDefault().post(new InventoryEditEvent());
+                    }
+                });
+                runwiseKeyBoard.show();
+            }
+        });
 //        initProductListData();
 //        setUpRvCart();
     }
@@ -560,7 +577,7 @@ public class InventoryActivity extends NetWorkActivity {
     private List<InventoryResponse.InventoryProduct> getDiffInventoryProductList() {
         List<InventoryResponse.InventoryProduct> inventoryProducts = new ArrayList<>();
 
-        if (mInventoryBean.getLines() != null){
+        if (mInventoryBean.getLines() != null) {
             for (InventoryResponse.InventoryProduct inventoryProduct : mInventoryBean.getLines()) {
                 if (inventoryProduct.getEditNum() != inventoryProduct.getTheoreticalQty()) {
                     inventoryProducts.add(inventoryProduct);

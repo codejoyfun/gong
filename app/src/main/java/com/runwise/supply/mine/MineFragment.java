@@ -237,15 +237,14 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.itemLayout_1:
-                intent = new Intent(mContext, OrderListActivityV2.class);
-                intent.putExtra("position", 1);
+                intent = OrderListActivityV2.getStartIntent(0,getActivity());
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             //退货记录
             case R.id.itemLayout_3:
-                intent = new Intent(mContext, OrderListActivityV2.class);
+                intent = OrderListActivityV2.getStartIntent(1,getActivity());
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }

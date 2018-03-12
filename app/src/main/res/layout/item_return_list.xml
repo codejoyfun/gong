@@ -15,9 +15,11 @@
 
         <ImageView
             android:id="@+id/orderStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/state_restaurant_4_received"
+            android:layout_width="8dp"
+            android:layout_height="28dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/order_point"
             />
         <LinearLayout
             android:layout_width="0dp"
@@ -35,26 +37,28 @@
                     android:id="@+id/payTitle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textColor="#3b3b3b"
-                    android:textSize="16sp"
+                    android:layout_height="30dp"
                     android:text="efwf"
+                    android:gravity="center|left"
+                    android:textStyle="bold"
+                    android:textColor="#2E2E2E"
+                    android:textSize="18sp"
                     />
                 <TextView
                     android:id="@+id/payStatus"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="30dp"
                     android:textSize="15sp"
                     android:textColor="#4b4b4b"
+                    android:gravity="center|top"
                     android:text="efw"
-                    android:layout_marginTop="2dp"
                     />
             </LinearLayout>
             <TextView
                 android:id="@+id/payDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 android:textColor="#9b9b9b"
                 android:text="fewfew"
 
@@ -63,27 +67,27 @@
                 android:id="@+id/patSum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
                 android:textColor="#3b3b3b"
+                android:textSize="14sp"
                 android:text="fewfew"
                 android:layout_marginTop="10dp"
                 android:maxLines="1"
-                android:drawableLeft="@drawable/icon_item"
-                android:drawablePadding="6dp"
-                />
+                android:drawablePadding="6dp"/>
 
             <TextView
-                android:id="@+id/payMoney"
-                android:layout_width="match_parent"
+                android:id="@+id/payBtn"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#ffff"
-                android:textSize="14sp"
-                android:textColor="#3b3b3b"
-                android:text="wefew"
-                android:layout_marginTop="2dp"
-                android:drawableLeft="@drawable/icon_price"
-                android:drawablePadding="6dp"
-                />
+                android:layout_gravity="right"
+                android:background="@drawable/bg_green_gradient_selector"
+                android:paddingBottom="5dp"
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
+                android:paddingTop="5dp"
+                android:text="取消申请"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
         </LinearLayout>
 
     </LinearLayout>

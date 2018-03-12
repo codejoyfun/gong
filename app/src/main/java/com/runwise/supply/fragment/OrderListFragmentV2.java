@@ -45,7 +45,7 @@ import com.runwise.supply.orderpage.OrderAgainActivity;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.view.CustomDatePickerDialog;
+import com.runwise.supply.view.OrderDateSelectDialog;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -100,6 +100,8 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
     private int page = 1;
     CarInfoListAdapter adapter;
 
+    OrderDateSelectDialog mOrderDateSelectDialog;
+
     public OrderListFragmentV2() {
         // Required empty public constructor
     }
@@ -127,7 +129,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 mIvOrderState.setRotation(0);
                 mTvOrderState.setText(orderStateAdapter.getItem(position).state);
                 mState = getState(orderStateAdapter.getItem(position).state);
-
+                requestOrderList(true, mState, REQUEST_START, page, mStartTime, mEndTime);
             }
         });
         OrderTimeAdapter orderTimeAdapter = new OrderTimeAdapter();
@@ -142,6 +144,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 mTvOrderTime.setText(orderTimeAdapter.getItem(position).state);
                 mIvOrderTime.setRotation(0);
                 setTime(orderTimeAdapter.getItem(position).state);
+
             }
         });
 //        初始化订单列表
@@ -176,6 +179,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
         mLoadingLayout.setStatusLoading();
         requestOrderList(false, "", REQUEST_MAIN, page, mStartTime, mEndTime);
         mLoadingLayout.setOnRetryClickListener(this);
+        mOrderDateSelectDialog = new OrderDateSelectDialog(getActivity());
     }
 
     //    退货单状态：
@@ -211,18 +215,21 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
             case "全部时间":
                 mStartTime = "";
                 mEndTime = "";
+                requestOrderList(true, mState, REQUEST_START, page, mStartTime, mEndTime);
                 break;
             case "本周":
                 mStartTime = TimeUtils.getThisWeekStart();
                 mEndTime = TimeUtils.getThisWeekEnd();
+                requestOrderList(true, mState, REQUEST_START, page, mStartTime, mEndTime);
                 break;
             case "上周":
                 mStartTime = TimeUtils.getPerWeekStart();
                 mEndTime = TimeUtils.getPerWeekEnd();
+                requestOrderList(true, mState, REQUEST_START, page, mStartTime, mEndTime);
                 break;
             case "自定义区间":
-                CustomDatePickerDialog customDatePickerDialog = new CustomDatePickerDialog(getActivity());
-                customDatePickerDialog.show();
+                mOrderDateSelectDialog.show();
+//                new CustomDatePickerDialog(getActivity()).show();
                 break;
         }
 
@@ -239,7 +246,8 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
         request.setPz(page);
         request.setStart(startTime);
         request.setEnd(endTime);
-        sendConnection("/gongfu/order/list", request, where, showDialog, OrderResponse.class);
+        request.setState(state);
+        sendConnection("/api/order/list", request, where, showDialog, OrderResponse.class);
     }
 
 
@@ -617,9 +625,9 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
             StringBuffer descStringBuffer = new StringBuffer();
 
             if (bean.getState().equals(Constant.ORDER_STATE_DONE) || bean.getState().equals(Constant.ORDER_STATE_RATED)) {
-                descStringBuffer.append(NumberUtil.getIOrD(bean.getDeliveredQty()) + "件商品");
+                descStringBuffer.append(bean.getTypeQty()+"种 "+NumberUtil.getIOrD(bean.getDeliveredQty()) + "件商品");
             } else {
-                descStringBuffer.append(NumberUtil.getIOrD(bean.getAmount()) + "件商品");
+                descStringBuffer.append(bean.getTypeQty()+"种 "+NumberUtil.getIOrD(bean.getAmount()) + "件商品");
             }
             if (GlobalApplication.getInstance().getCanSeePrice()) {
                 descStringBuffer.append(",¥" + NumberUtil.getIOrD(bean.getAmountTotal()));

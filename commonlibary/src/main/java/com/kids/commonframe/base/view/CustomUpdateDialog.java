@@ -3,22 +3,16 @@ package com.kids.commonframe.base.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.kids.commonframe.R;
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.CheckVersionManager;
 import com.kids.commonframe.base.VersionUpdateResponse;
-import com.kids.commonframe.config.Constant;
 
 
 /**
@@ -101,8 +95,7 @@ public class CustomUpdateDialog extends Dialog {
 
 		mTvVersion.setText("最新版本（"+bean.getVersionName()+"）");
 		StringBuilder sbContent = new StringBuilder("更新内容：\n");
-		sbContent.append(bean.getDescription())
-				.append("\n如有任何问题与建议，欢迎通过“用户反馈”告诉我们，我们会尽快回复");
+		sbContent.append(bean.getDescription());
 		updateContext.setText(sbContent.toString());
 		cancle.setOnClickListener(new View.OnClickListener() {
 			@Override
