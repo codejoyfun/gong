@@ -21,7 +21,9 @@ import android.widget.TextView;
 import com.bigkoo.pickerview.adapter.NumericWheelAdapter;
 import com.bigkoo.pickerview.lib.WheelView;
 import com.bigkoo.pickerview.listener.OnItemSelectedListener;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.R;
+import com.runwise.supply.tools.TimeUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -129,6 +131,11 @@ public class OrderDateSelectDialog extends Dialog {
         mPickerOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if ( TimeUtils.getTimeStampByYMD(wheelMainStart.getTime1()) > TimeUtils.getTimeStampByYMD(wheelMainEnd.getTime1())){
+                    ToastUtil.show(getContext(),"开始日期大于结束日期!");
+                    return;
+                }
                 if (mPickerClickListener != null) {
                     mPickerClickListener.doPickClick(wheelMainStart.getTime(),
                             wheelMainEnd.getTime());

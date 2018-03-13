@@ -116,7 +116,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 mIvOrderState.setRotation(0);
                 mTvOrderState.setText(orderStateAdapter.getItem(position).state);
                 mState = getState(orderStateAdapter.getItem(position).state);
-
+                requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
             }
         });
         OrderTimeAdapter orderTimeAdapter = new OrderTimeAdapter();
@@ -133,6 +133,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 }
                 mIvOrderTime.setRotation(0);
                 setTime(orderTimeAdapter.getItem(position).state);
+
             }
         });
 
@@ -217,14 +218,17 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             case "全部时间":
                 mStartTime = "";
                 mEndTime = "";
+                requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
                 break;
             case "本周":
                 mStartTime = TimeUtils.getThisWeekStart();
                 mEndTime = TimeUtils.getThisWeekEnd();
+                requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
                 break;
             case "上周":
                 mStartTime = TimeUtils.getPerWeekStart();
                 mEndTime = TimeUtils.getPerWeekEnd();
+                requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
                 break;
             case "自定义区间":
                 mOrderDateSelectDialog.show();

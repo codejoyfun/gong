@@ -113,6 +113,15 @@ public class OrderResponse {
         private List<ProductAlteredBean> productAltered;
         private boolean isActualSendOrder;
         private int typeQty;
+        private String time;
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
 
         public int getTypeQty() {
             return typeQty;
@@ -212,6 +221,7 @@ public class OrderResponse {
             productAltered = in.createTypedArrayList(ProductAlteredBean.CREATOR);
             isActualSendOrder = in.readByte() != 0;
             typeQty = in.readInt();
+            time = in.readString();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -626,6 +636,7 @@ public class OrderResponse {
             dest.writeTypedList(productAltered);
             dest.writeByte((byte) (isActualSendOrder ? 1 : 0));
             dest.writeInt(typeQty);
+            dest.writeString(time);
         }
 
 

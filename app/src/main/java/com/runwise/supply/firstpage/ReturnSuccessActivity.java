@@ -6,8 +6,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseActivity;
 import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.message.OrderMsgDetailActivity;
@@ -43,7 +45,7 @@ public class ReturnSuccessActivity extends BaseActivity {
         showBackBtn();
         finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
         String text;
-        if(GlobalApplication.getInstance().getCanSeePrice()){
+        if (GlobalApplication.getInstance().getCanSeePrice()) {
             text = "退货数量: " +
                     NumberUtil.getIOrD(finishReturnResponse.getReturnOrder().getAmount()) +
                     "件\n" +
@@ -51,7 +53,7 @@ public class ReturnSuccessActivity extends BaseActivity {
                     finishReturnResponse.getReturnOrder().getAmountTotal() +
                     "\n退货成功时间: " +
                     finishReturnResponse.getReturnOrder().getDoneDate();
-        }else{
+        } else {
             text = "退货数量: " +
                     NumberUtil.getIOrD(finishReturnResponse.getReturnOrder().getAmount()) +
                     "件\n" +
@@ -90,10 +92,15 @@ public class ReturnSuccessActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.uploadBtn:
-                Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
-                uIntent.putExtra("orderid", finishReturnResponse.getReturnOrder().getReturnOrderID());
-                uIntent.putExtra("ordername", finishReturnResponse.getReturnOrder().getName());
-                startActivityForResult(uIntent, REQUEST_CODE_UPLOAD);
+//                Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
+//                uIntent.putExtra("orderid", finishReturnResponse.getReturnOrder().getReturnOrderID());
+//                uIntent.putExtra("ordername", finishReturnResponse.getReturnOrder().getName());
+//                startActivityForResult(uIntent, REQUEST_CODE_UPLOAD);
+                ActivityManager.getInstance().finishAll();
+                Intent intent1 = new Intent(this, MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.putExtra(INTENT_KEY_TAB,0);
+                startActivity(intent1);
                 break;
         }
     }

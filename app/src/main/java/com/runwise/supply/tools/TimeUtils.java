@@ -44,6 +44,15 @@ public class TimeUtils {
         }
     }
 
+    public static long getTimeStampByYMD(String time) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            return format.parse(time).getTime();
+        } catch (Exception e) {
+            return 0l;
+        }
+    }
+
     public static String getFormatTime3(long time) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

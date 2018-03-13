@@ -205,10 +205,10 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked){
-                        mQuestionEt.append(checkBox.getText());
+                            mQuestionEt.append(checkBox.getText()+",");
                     }else{
                         String content = mQuestionEt.getText().toString();
-                        String newContent = content.replaceAll(checkBox.getText().toString(), "");
+                        String newContent = content.replaceAll(checkBox.getText().toString()+",", "");
                         mQuestionEt.setText(newContent);
                     }
                 }

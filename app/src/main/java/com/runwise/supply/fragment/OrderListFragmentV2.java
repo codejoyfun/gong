@@ -628,12 +628,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                     }
                 });
             }
-//            尚未收货和评价
-            if (!"done".equals(bean.getState()) && !"rated".equals(bean.getState())) {
-                holder.payTitle.setText("预计" + formatTimeStr(bean.getEstimatedDate()) + "送达");
-            } else {
-                holder.payTitle.setText(bean.getEstimatedDate());
-            }
+            holder.payTitle.setText(bean.getTime());
             holder.payDate.setText(bean.getName());
 
             StringBuffer descStringBuffer = new StringBuffer();

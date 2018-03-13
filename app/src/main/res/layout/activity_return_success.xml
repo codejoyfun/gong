@@ -65,7 +65,7 @@
             android:layout_marginLeft="15dp"
             android:background="@drawable/upload_btn_circle"
             android:gravity="center"
-            android:text="上传退货凭证"
+            android:text="回到首页"
             android:textColor="#333333" />
     </LinearLayout>
 

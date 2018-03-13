@@ -177,6 +177,7 @@
                         android:textColor="#333333"
                         android:layout_marginLeft="7dp"
                         android:id="@+id/moneyTv"/>
+
                 </LinearLayout>
             </LinearLayout>
             <View
