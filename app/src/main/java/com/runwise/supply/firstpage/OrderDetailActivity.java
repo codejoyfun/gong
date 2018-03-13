@@ -86,6 +86,8 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
     public static final int PRODUCT_DETAIL = 5;
     public static final int REQUEST_USERINFO_TRANSFER = 6;
     public static final int REQUEST_DELETE_ORDER = 7;
+
+
     private ListBean bean;
     private List<OrderResponse.ListBean.LinesBean> listDatas = new ArrayList<>();
     private List<OrderResponse.ListBean.LinesBean> typeDatas = new ArrayList<>();

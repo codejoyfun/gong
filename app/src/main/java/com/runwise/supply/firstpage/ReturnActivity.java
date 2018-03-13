@@ -1,7 +1,5 @@
 package com.runwise.supply.firstpage;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,11 +47,13 @@ import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnBean;
 import com.runwise.supply.firstpage.entity.ReturnRequest;
+import com.runwise.supply.firstpage.entity.TagResponse;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.StatusBarUtil;
+import com.runwise.supply.view.AutoLinefeedLayout;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -76,6 +76,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 
 public class ReturnActivity extends NetWorkActivity implements ReturnFragment.ReturnCallback {
     private static final int RETURN = 0;
+    public static final int REQUEST_GET_RETURN_TAG = 8;
     @ViewInject(R.id.indicator)
     private TabLayout smartTabLayout;
     @ViewInject(R.id.viewPager)
@@ -109,14 +110,19 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         if (lbean != null && lbean.getLines() != null) {
             datas.addAll(lbean.getLines());
         }
-        initPopWindow();
         requestCategory();
+        requestReturnOrderTags();
     }
 
     private void requestCategory() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+    }
+
+    private void requestReturnOrderTags() {
+        Object obj = null;
+        sendConnection("/gongfu/assess/tag/list", obj, REQUEST_GET_RETURN_TAG, false, TagResponse.class);
     }
 
 
@@ -190,7 +196,36 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         sendConnection(sb.toString(), rr, RETURN, true, FinishReturnResponse.class);
     }
 
-    private void initPopWindow() {
+    private void addTags(AutoLinefeedLayout autoLinefeedLayout, List<String> tags) {
+        for (String tag : tags) {
+            CheckBox checkBox = (CheckBox) LayoutInflater.from(getActivityContext()).inflate(R.layout.item_return_tag, null);
+            checkBox.setText(tag);
+            autoLinefeedLayout.addView(checkBox);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked){
+                        mQuestionEt.append(checkBox.getText());
+                    }else{
+                        String content = mQuestionEt.getText().toString();
+                        String newContent = content.replaceAll(checkBox.getText().toString(), "");
+                        mQuestionEt.setText(newContent);
+                    }
+                }
+            });
+        }
+    }
+    private void resetAutoLinefeedLayout(){
+        List<String> tags = new ArrayList<>();
+        int childCount = autoLinefeedLayout.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            CheckBox checkBox = (CheckBox) autoLinefeedLayout.getChildAt(i);
+            checkBox.setChecked(false);
+        }
+    }
+    EditText mQuestionEt;
+    AutoLinefeedLayout autoLinefeedLayout;
+    private void initPopWindow(TagResponse tagResponse) {
         dialogView = LayoutInflater.from(this).inflate(R.layout.return_pop_layout, null);
         mPopWindow = new PopupWindow(dialogView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
         mPopWindow.setFocusable(true);
@@ -202,6 +237,9 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 mPopWindow.dismiss();
             }
         });
+        mQuestionEt = (EditText) dialogView.findViewById(R.id.questionEt);
+        autoLinefeedLayout = (AutoLinefeedLayout) dialogView.findViewById(R.id.all_return_tag);
+        addTags(autoLinefeedLayout, tagResponse.getReturnOrderTags());
         final EditText editText = (EditText) dialogView.findViewById(R.id.editText);
         isCountChange = true;
         editText.setText("0");
@@ -209,17 +247,13 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         isCountChange = false;
         ImageButton input_minus = (ImageButton) dialogView.findViewById(R.id.input_minus);
         ImageButton input_add = (ImageButton) dialogView.findViewById(R.id.input_add);
-        final CheckBox cb1 = (CheckBox) dialogView.findViewById(R.id.cb1);
-        final CheckBox cb2 = (CheckBox) dialogView.findViewById(R.id.cb2);
-        final CheckBox cb3 = (CheckBox) dialogView.findViewById(R.id.cb3);
-        final EditText questionEt = (EditText) dialogView.findViewById(R.id.questionEt);
         Button sureBtn = (Button) dialogView.findViewById(R.id.sureBtn);
         input_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentRb != null) {
                     String strValue = editText.getText().toString();
-                    currentEditCount = TextUtils.isEmpty(strValue)?0:Double.valueOf(strValue);
+                    currentEditCount = TextUtils.isEmpty(strValue) ? 0 : Double.valueOf(strValue);
                     if (currentEditCount + 1 <= currentRb.getMaxReturnCount()) {
                         currentEditCount = currentEditCount + 1;
                         isCountChange = true;
@@ -235,7 +269,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             @Override
             public void onClick(View v) {
                 String strValue = editText.getText().toString();
-                currentEditCount = TextUtils.isEmpty(strValue)?0:Double.valueOf(strValue);
+                currentEditCount = TextUtils.isEmpty(strValue) ? 0 : Double.valueOf(strValue);
                 currentEditCount = currentEditCount - 1;
                 if (currentEditCount < 0) currentEditCount = 0;
                 isCountChange = true;
@@ -246,6 +280,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         });
         editText.addTextChangedListener(new TextWatcher() {
             String previousText;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 previousText = s.toString();
@@ -253,7 +288,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.toString().startsWith("."))return;
+                if (s.toString().startsWith(".")) return;
                 double maxCanReturnCount = currentRb.getMaxReturnCount();
                 double currentCount = TextUtils.isEmpty(s.toString()) ? 0 : Double.valueOf(s.toString());
                 if (currentCount > maxCanReturnCount) {
@@ -276,62 +311,20 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 
             }
         });
-        cb1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    questionEt.append("商品损坏");
-                    cb1.setTextColor(Color.parseColor("#6BB400"));
-                } else {
-                    String content = questionEt.getText().toString();
-                    String newContent = content.replaceAll("商品损坏", "");
-                    questionEt.setText(newContent);
-                    cb1.setTextColor(Color.parseColor("#999999"));
-                }
-            }
-        });
-        cb2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    questionEt.append("包装损坏");
-                    cb2.setTextColor(Color.parseColor("#6BB400"));
-                } else {
-                    String content = questionEt.getText().toString();
-                    String newContent = content.replaceAll("包装损坏", "");
-                    questionEt.setText(newContent);
-                    cb2.setTextColor(Color.parseColor("#999999"));
-                }
-            }
-        });
-        cb3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    questionEt.append("商品与包装不符合");
-                    cb3.setTextColor(Color.parseColor("#6BB400"));
-                } else {
-                    String content = questionEt.getText().toString();
-                    String newContent = content.replaceAll("商品与包装不符合", "");
-                    questionEt.setText(newContent);
-                    cb3.setTextColor(Color.parseColor("#999999"));
-                }
-            }
-        });
         sureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentRb != null) {
                     //这里有个删除的动作
                     String strValue = editText.getText().toString();
-                    double value = TextUtils.isEmpty(strValue)?0:new BigDecimal(strValue).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                    double value = TextUtils.isEmpty(strValue) ? 0 : new BigDecimal(strValue).setScale(2, RoundingMode.HALF_UP).doubleValue();
                     if (value == 0) {
                         if (countMap.containsKey(String.valueOf(currentRb.getpId()))) {
                             countMap.remove(String.valueOf(currentRb.getpId()));
                         }
                     } else {
                         currentRb.setReturnCount(value);
-                        currentRb.setNote(questionEt.getText().toString());
+                        currentRb.setNote(mQuestionEt.getText().toString());
                         countMap.put(String.valueOf(currentRb.getpId()), currentRb);
                     }
                     //更新fragment列表内容
@@ -346,7 +339,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
     }
 
     CategoryRespone categoryRespone;
-
+    TagResponse mTagResponse;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
@@ -361,6 +354,10 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 setUpDataForViewPage();
+                break;
+            case REQUEST_GET_RETURN_TAG:
+                mTagResponse = (TagResponse) result.getResult().getData();
+                initPopWindow(mTagResponse);
                 break;
         }
     }
@@ -497,6 +494,10 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 
     @Override
     public void returnBtnClick(ReturnBean rb) {
+        if (mTagResponse == null){
+            toast("等待退货理由返回");
+            return;
+        }
         currentRb = rb;
         //同时
         if (!mPopWindow.isShowing()) {
@@ -506,9 +507,6 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             nameTv.setText(rb.getName());
             TextView tipTv = (TextView) dialogView.findViewById(R.id.tipTv);
             EditText questionEt = (EditText) dialogView.findViewById(R.id.questionEt);
-            CheckBox cb1 = (CheckBox) dialogView.findViewById(R.id.cb1);
-            CheckBox cb2 = (CheckBox) dialogView.findViewById(R.id.cb2);
-            CheckBox cb3 = (CheckBox) dialogView.findViewById(R.id.cb3);
             tipTv.setText("最多可申请" + NumberUtil.getIOrD(rb.getMaxReturnCount()) + "件");
             EditText et = (EditText) dialogView.findViewById(R.id.editText);
             if (countMap.containsKey(currentRb.getpId() + "")) {
@@ -519,10 +517,8 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 currentEditCount = 0;
                 et.setText(String.valueOf((int) currentEditCount));
                 questionEt.setText("");
+                resetAutoLinefeedLayout();
             }
-            cb1.setChecked(false);
-            cb2.setChecked(false);
-            cb3.setChecked(false);
         }
     }
 }

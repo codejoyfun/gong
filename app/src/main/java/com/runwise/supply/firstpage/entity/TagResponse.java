@@ -1,6 +1,5 @@
 package com.runwise.supply.firstpage.entity;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,5 +27,15 @@ public class TagResponse {
 
     HashMap<String,List<String>> quantity_tags;
     HashMap<String,List<String>> service_tags;
+
+    public List<String> getReturnOrderTags() {
+        return returnOrderTags;
+    }
+
+    public void setReturnOrderTags(List<String> returnOrderTags) {
+        this.returnOrderTags = returnOrderTags;
+    }
+
+    List<String> returnOrderTags;
 
 }
