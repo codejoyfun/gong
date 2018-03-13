@@ -771,7 +771,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 mSelectBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
                 dialog.setTitle("提示");
                 dialog.setMessageGravity();
-                dialog.setMessage("确认取消申请退货?");
+                dialog.setMessage("确认取消申请?");
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
