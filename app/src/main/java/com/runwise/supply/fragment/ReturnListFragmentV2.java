@@ -36,7 +36,7 @@ import com.runwise.supply.firstpage.entity.ReturnResponse;
 import com.runwise.supply.mine.OrderDataType;
 import com.runwise.supply.mine.entity.ReturnData;
 import com.runwise.supply.tools.TimeUtils;
-import com.runwise.supply.view.CustomDatePickerDialog;
+import com.runwise.supply.view.OrderDateSelectDialog;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -55,6 +55,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
     private static final int REQUEST_START = 2;
     private static final int REQUEST_DEN = 3;
     private static final int PRODUCT_GET = 4;
+    private static final int REQUEST_CANCEL_RETURN_ORDER = 5;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -87,6 +88,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
     private int page = 1;
     public OrderDataType orderDataType;
     private List<ReturnOrderBean.ListBean> allList;
+    OrderDateSelectDialog mOrderDateSelectDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,7 +125,9 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 orderTimeAdapter.notifyDataSetChanged();
                 mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
                 mRlOrderTime.setVisibility(View.GONE);
-                mTvOrderTime.setText(orderTimeAdapter.getItem(position).state);
+                if (position != orderTimeAdapter.getCount() - 1) {
+                    mTvOrderTime.setText(orderTimeAdapter.getItem(position).state);
+                }
                 mIvOrderTime.setRotation(0);
                 setTime(orderTimeAdapter.getItem(position).state);
             }
@@ -160,6 +164,19 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
         requestData(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
         loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
+        mOrderDateSelectDialog = new OrderDateSelectDialog(getActivity());
+        mOrderDateSelectDialog.setPickerClickListener(new OrderDateSelectDialog.PickerClickListener() {
+            @Override
+            public void doPickClick(String startYMD, String endYMD) {
+                mTvOrderTime.setText(startYMD + "-" + endYMD);
+                String[] startYMDArray = startYMD.split("/");
+                String[] endYMDArray = endYMD.split("/");
+                mStartTime = startYMDArray[0] + "-" + startYMDArray[1] + "-" + startYMDArray[2];
+                mEndTime = endYMDArray[0] + "-" + endYMDArray[1] + "-" + endYMDArray[2];
+                requestData(true, "", REQUEST_START, page, mStartTime, mEndTime);
+                mOrderDateSelectDialog.dismiss();
+            }
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -207,8 +224,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 mEndTime = TimeUtils.getPerWeekEnd();
                 break;
             case "自定义区间":
-                CustomDatePickerDialog customDatePickerDialog = new CustomDatePickerDialog(getActivity());
-                customDatePickerDialog.show();
+                mOrderDateSelectDialog.show();
                 break;
         }
 
@@ -295,6 +311,12 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
         sendConnection("/api/order/list", request, where, showDialog, ReturnResponse.class);
     }
 
+    private void cancelReturnOrder(int returnOrderId) {
+        String url = "/api/return_order/" + returnOrderId + "/cancel";
+        Object obj = null;
+        sendConnection(url, obj, REQUEST_CANCEL_RETURN_ORDER, true, BaseEntity.ResultBean.class);
+    }
+
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -329,6 +351,10 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 allList = repertoryEntity.getList();
                 adapter.setData(allList);
                 loadingLayout.onSuccess(allList.size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
+                break;
+            case REQUEST_CANCEL_RETURN_ORDER:
+                requestOrderList(true, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
+                ToastUtil.show(mContext, "取消申请退货成功");
                 break;
         }
     }
@@ -387,22 +413,27 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 holder.payStatus.setText("已退货");
             }
 
-            if ("draft".equals(bean.getState())){
+            if ("draft".equals(bean.getState())) {
                 holder.payStatus.setText("待确认");
                 holder.payBtn.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.payBtn.setVisibility(View.GONE);
             }
 
             holder.payTitle.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
             holder.payDate.setText(bean.getName());
             StringBuffer descStringBuffer = new StringBuffer();
-            descStringBuffer.append(bean.getTypeQty()+"种 "+NumberUtil.getIOrD(bean.getAmount()) + "件商品");
+            descStringBuffer.append(bean.getTypeQty() + "种 " + NumberUtil.getIOrD(bean.getAmount()) + "件商品");
             if (GlobalApplication.getInstance().getCanSeePrice()) {
                 descStringBuffer.append(",¥" + bean.getAmountTotal());
             }
             holder.patSum.setText(descStringBuffer.toString());
+            holder.payBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
+                }
+            });
             return convertView;
         }
 

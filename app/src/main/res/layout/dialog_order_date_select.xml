@@ -24,9 +24,13 @@
             android:textColor="@color/colorAccent"
             android:textSize="14sp" />
 
-        <View
+        <TextView
             android:layout_width="0dp"
-            android:layout_height="1px"
+            android:layout_height="match_parent"
+            android:text="选择订单日期"
+            android:textColor="#FF2E2E2E"
+            android:textSize="16sp"
+            android:gravity="center"
             android:layout_weight="1" />
 
         <TextView
@@ -81,6 +85,7 @@
         android:orientation="horizontal">
 
         <RelativeLayout
+            android:id="@+id/rl_start_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
@@ -97,7 +102,7 @@
                android:paddingLeft="10dp"
                android:paddingRight="10dp"
                 android:textColor="#FF4BB400"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
             <ImageView
                 android:layout_width="11dp"
                 android:layout_height="7dp"
@@ -109,6 +114,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_end_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
@@ -124,7 +130,7 @@
                 android:paddingBottom="5dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:textSize="14sp"/>
+                android:textSize="16sp"/>
 
             <ImageView
                 android:layout_width="11dp"
@@ -150,18 +156,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
-        <com.runwise.supply.view.timepacker.WheelView
+        <com.bigkoo.pickerview.lib.WheelView
             android:id="@+id/end_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-        <com.runwise.supply.view.timepacker.WheelView
+        <com.bigkoo.pickerview.lib.WheelView
             android:id="@+id/end_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <com.runwise.supply.view.timepacker.WheelView
+        <com.bigkoo.pickerview.lib.WheelView
             android:id="@+id/end_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -176,18 +182,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
-        <com.runwise.supply.view.timepacker.WheelView
+        <com.bigkoo.pickerview.lib.WheelView
             android:id="@+id/year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-        <com.runwise.supply.view.timepacker.WheelView
+        <com.bigkoo.pickerview.lib.WheelView
             android:id="@+id/month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <com.runwise.supply.view.timepacker.WheelView
+        <com.bigkoo.pickerview.lib.WheelView
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

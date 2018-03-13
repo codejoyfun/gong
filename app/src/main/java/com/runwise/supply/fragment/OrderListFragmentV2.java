@@ -141,7 +141,9 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 orderTimeAdapter.notifyDataSetChanged();
                 mRlOrderTime.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_to_top_200));
                 mRlOrderTime.setVisibility(View.GONE);
-                mTvOrderTime.setText(orderTimeAdapter.getItem(position).state);
+                if (position != orderTimeAdapter.getCount() - 1){
+                    mTvOrderTime.setText(orderTimeAdapter.getItem(position).state);
+                }
                 mIvOrderTime.setRotation(0);
                 setTime(orderTimeAdapter.getItem(position).state);
 
@@ -180,6 +182,18 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
         requestOrderList(false, "", REQUEST_MAIN, page, mStartTime, mEndTime);
         mLoadingLayout.setOnRetryClickListener(this);
         mOrderDateSelectDialog = new OrderDateSelectDialog(getActivity());
+        mOrderDateSelectDialog.setPickerClickListener(new OrderDateSelectDialog.PickerClickListener() {
+            @Override
+            public void doPickClick(String startYMD, String endYMD) {
+                mTvOrderTime.setText(startYMD+"-"+endYMD);
+                String[] startYMDArray = startYMD.split("/");
+                String[] endYMDArray = endYMD.split("/");
+                mStartTime = startYMDArray[0]+"-"+startYMDArray[1]+"-"+startYMDArray[2];
+                mEndTime = endYMDArray[0]+"-"+endYMDArray[1]+"-"+endYMDArray[2];
+                requestOrderList(true, "", REQUEST_START, page, mStartTime, mEndTime);
+                mOrderDateSelectDialog.dismiss();
+            }
+        });
     }
 
     //    退货单状态：

@@ -3,6 +3,7 @@ package com.runwise.supply.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -17,10 +18,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bigkoo.pickerview.adapter.NumericWheelAdapter;
+import com.bigkoo.pickerview.lib.WheelView;
+import com.bigkoo.pickerview.listener.OnItemSelectedListener;
 import com.runwise.supply.R;
-import com.runwise.supply.view.timepacker.NumericWheelAdapter;
-import com.runwise.supply.view.timepacker.OnWheelChangedListener;
-import com.runwise.supply.view.timepacker.WheelView;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -105,6 +106,13 @@ public class OrderDateSelectDialog extends Dialog {
         WheelMain wheelMainStart = initWheelView(timepickerview, false);
         WheelMain wheelMainEnd = initWheelView(timepickerview, true);
 
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        mTvEndDate.setText(year + "-" + month + "-" + day);
+        mTvStartDate.setText(year + "-" + month + "-" + day);
+
         window.getAttributes().gravity = Gravity.BOTTOM;
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -123,7 +131,7 @@ public class OrderDateSelectDialog extends Dialog {
             public void onClick(View v) {
                 if (mPickerClickListener != null) {
                     mPickerClickListener.doPickClick(wheelMainStart.getTime(),
-                            wheelMainEnd.getTime1());
+                            wheelMainEnd.getTime());
                     return;
                 }
                 if (null != animView) {
@@ -164,8 +172,10 @@ public class OrderDateSelectDialog extends Dialog {
         return wheelMain;
     }
 
+    int mSelectColor = Color.parseColor("#FF4BB400");
+    int mTextColor = Color.parseColor("#FF2E2E2E");
 
-    @OnClick({R.id.picker_channce, R.id.picker_ok, R.id.tv_start_date_tag, R.id.tv_end_date_tag, R.id.tv_start_date, R.id.tv_end_date})
+    @OnClick({R.id.picker_channce, R.id.picker_ok, R.id.rl_start_date, R.id.rl_end_date})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.picker_channce:
@@ -178,13 +188,21 @@ public class OrderDateSelectDialog extends Dialog {
                 break;
             case R.id.tv_end_date_tag:
                 break;
-            case R.id.tv_start_date:
+            case R.id.rl_start_date:
                 mLlTimepickerEnd.setVisibility(View.GONE);
                 mLlTimepickerStart.setVisibility(View.VISIBLE);
+                mIvStartDate.setVisibility(View.VISIBLE);
+                mIvEndDate.setVisibility(View.GONE);
+                mTvEndDate.setTextColor(mTextColor);
+                mTvStartDate.setTextColor(mSelectColor);
                 break;
-            case R.id.tv_end_date:
+            case R.id.rl_end_date:
                 mLlTimepickerEnd.setVisibility(View.VISIBLE);
                 mLlTimepickerStart.setVisibility(View.GONE);
+                mIvStartDate.setVisibility(View.GONE);
+                mIvEndDate.setVisibility(View.VISIBLE);
+                mTvEndDate.setTextColor(mSelectColor);
+                mTvStartDate.setTextColor(mTextColor);
                 break;
         }
     }
@@ -221,9 +239,9 @@ public class OrderDateSelectDialog extends Dialog {
         public void setView(View view) {
             this.view = view;
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.YEAR, +100);
+            calendar.add(Calendar.YEAR, 0);
             END_YEAR = calendar.get(Calendar.YEAR);
-            calendar.add(Calendar.YEAR, -200);
+            calendar.add(Calendar.YEAR, -10);
             START_YEAR = calendar.get(Calendar.YEAR);
         }
 
@@ -266,8 +284,7 @@ public class OrderDateSelectDialog extends Dialog {
             wv_year.setAdapter(new NumericWheelAdapter(START_YEAR, END_YEAR));// 设置"年"的显示数据
             wv_year.setCyclic(true);// 可循环滚动
             wv_year.setLabel("年");// 添加文字
-            wv_year.setCurrentItem(year - END_YEAR);// 初始化时显示的数据
-            wv_year.setCurrentItem(year - END_YEAR - 1);// 初始化时显示的数据
+            wv_year.setCurrentItem(year - START_YEAR);// 初始化时显示的数据
 
             // 月
             if (isEndTime) {
@@ -302,57 +319,111 @@ public class OrderDateSelectDialog extends Dialog {
             wv_day.setLabel("日");
             wv_day.setCurrentItem(day - 1);
 
-            // 添加"年"监听
-            OnWheelChangedListener wheelListener_year = new OnWheelChangedListener() {
-                public void onChanged(WheelView wheel, int oldValue,
-                                      int newValue) {
-                    int year_num = newValue + START_YEAR;
+
+            wv_year.setOnItemSelectedListener(new OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(int index) {
+                    int currentIndex = wv_day.getCurrentItem();
+                    int year_num = index + START_YEAR;
                     // 判断大小月及是否闰年,用来确定"日"的数据
                     if (list_big.contains(String.valueOf(wv_month
                             .getCurrentItem() + 1))) {
                         wv_day.setAdapter(new NumericWheelAdapter(1, 31));
+                        wv_day.setCurrentItem(currentIndex);
                     } else if (list_little.contains(String.valueOf(wv_month
                             .getCurrentItem() + 1))) {
                         wv_day.setAdapter(new NumericWheelAdapter(1, 30));
+                        if (currentIndex > 29) {
+                            wv_day.setCurrentItem(29);
+                        } else {
+                            wv_day.setCurrentItem(currentIndex);
+                        }
                     } else {
                         if ((year_num % 4 == 0 && year_num % 100 != 0)
-                                || year_num % 400 == 0)
+                                || year_num % 400 == 0) {
                             wv_day.setAdapter(new NumericWheelAdapter(1, 29));
-                        else
+                            if (currentIndex > 28) {
+                                wv_day.setCurrentItem(28);
+                            } else {
+                                wv_day.setCurrentItem(currentIndex);
+                            }
+                        } else {
                             wv_day.setAdapter(new NumericWheelAdapter(1, 28));
+                            if (currentIndex > 27) {
+                                wv_day.setCurrentItem(27);
+                            } else {
+                                wv_day.setCurrentItem(currentIndex);
+                            }
+                        }
+                    }
+                    if (isEndTime) {
+                        mTvEndDate.setText((START_YEAR + wv_year.getCurrentItem()) + "-" + (wv_month.getCurrentItem() + 1) + "-" + (wv_day.getCurrentItem() + 1));
+                    } else {
+                        mTvStartDate.setText((START_YEAR + wv_year.getCurrentItem()) + "-" + (wv_month.getCurrentItem() + 1) + "-" + (wv_day.getCurrentItem() + 1));
                     }
                 }
-            };
-            // 添加"月"监听
-            OnWheelChangedListener wheelListener_month = new OnWheelChangedListener() {
-                public void onChanged(WheelView wheel, int oldValue,
-                                      int newValue) {
-                    int month_num = newValue + 1;
+            });
+
+            wv_month.setOnItemSelectedListener(new OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(int index) {
+                    int month_num = index + 1;
+                    int currentIndex = wv_day.getCurrentItem();
                     // 判断大小月及是否闰年,用来确定"日"的数据
                     if (list_big.contains(String.valueOf(month_num))) {
                         wv_day.setAdapter(new NumericWheelAdapter(1, 31));
+                        wv_day.setCurrentItem(currentIndex);
                     } else if (list_little.contains(String.valueOf(month_num))) {
                         wv_day.setAdapter(new NumericWheelAdapter(1, 30));
+                        if (currentIndex > 29) {
+                            wv_day.setCurrentItem(29);
+                        } else {
+                            wv_day.setCurrentItem(currentIndex);
+                        }
                     } else {
                         if (((wv_year.getCurrentItem() + START_YEAR) % 4 == 0 && (wv_year
                                 .getCurrentItem() + START_YEAR) % 100 != 0)
-                                || (wv_year.getCurrentItem() + START_YEAR) % 400 == 0)
+                                || (wv_year.getCurrentItem() + START_YEAR) % 400 == 0) {
                             wv_day.setAdapter(new NumericWheelAdapter(1, 29));
-                        else
+                            if (currentIndex > 28) {
+                                wv_day.setCurrentItem(28);
+                            } else {
+                                wv_day.setCurrentItem(currentIndex);
+                            }
+                        } else {
                             wv_day.setAdapter(new NumericWheelAdapter(1, 28));
+                            if (currentIndex > 27) {
+                                wv_day.setCurrentItem(27);
+                            } else {
+                                wv_day.setCurrentItem(currentIndex);
+                            }
+                        }
+                    }
+                    if (isEndTime) {
+                        mTvEndDate.setText((START_YEAR + wv_year.getCurrentItem()) + "-" + (wv_month.getCurrentItem() + 1) + "-" + (wv_day.getCurrentItem() + 1));
+                    } else {
+                        mTvStartDate.setText((START_YEAR + wv_year.getCurrentItem()) + "-" + (wv_month.getCurrentItem() + 1) + "-" + (wv_day.getCurrentItem() + 1));
                     }
                 }
-            };
-            wv_year.addChangingListener(wheelListener_year);
-            wv_month.addChangingListener(wheelListener_month);
+            });
+            wv_day.setOnItemSelectedListener(new OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(int index) {
+                    if (isEndTime) {
+                        mTvEndDate.setText((START_YEAR + wv_year.getCurrentItem()) + "-" + (wv_month.getCurrentItem() + 1) + "-" + (index + 1));
+                    } else {
+                        mTvStartDate.setText((START_YEAR + wv_year.getCurrentItem()) + "-" + (wv_month.getCurrentItem() + 1) + "-" + (index + 1));
+                    }
+                }
+            });
         }
 
         public String getTime() {
             StringBuffer sb = new StringBuffer();
             sb.append((wv_year.getCurrentItem() + START_YEAR))
-                    .append("年")
+                    .append("/")
                     .append(String.format("%02d", wv_month.getCurrentItem() + 1))
-                    .append("月")
+                    .append("/")
                     .append(String.format("%02d", (wv_day.getCurrentItem() + 1)));
             return sb.toString();
         }
@@ -374,7 +445,7 @@ public class OrderDateSelectDialog extends Dialog {
      * @author shiye
      */
     public interface PickerClickListener {
-        public void doPickClick(String startYMD, String endYMD);
+        void doPickClick(String startYMD, String endYMD);
 
     }
 }
