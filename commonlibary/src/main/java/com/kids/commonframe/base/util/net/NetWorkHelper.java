@@ -512,10 +512,14 @@ public class NetWorkHelper<T extends BaseEntity> {
                 resultObj = paseInterface.paseResult(BaseEntity.class, parsed);
                 BaseEntity.ResultBean resultBean = resultObj.getResult();
                 if (resultBean != null && resultBean.getData() != null) {
-                    JSONObject jsonObject = (JSONObject) resultBean.getData();
-                    resultBean.setDataJson(jsonObject);
-                    Object object = JSON.parseObject(jsonObject.toJSONString(), targerClass);
-                    resultBean.setData(object);
+                    try{
+                        JSONObject jsonObject = (JSONObject) resultBean.getData();
+                        resultBean.setDataJson(jsonObject);
+                        Object object = JSON.parseObject(jsonObject.toJSONString(), targerClass);
+                        resultBean.setData(object);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 } else {
                     JSONObject jsonObject = JSONObject.parseObject(parsed);
                     try {

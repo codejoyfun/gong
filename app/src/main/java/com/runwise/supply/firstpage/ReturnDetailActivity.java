@@ -40,7 +40,6 @@ import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.entity.ReturnActivityRefreshEvent;
 import com.runwise.supply.event.IntEvent;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
-import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnDetailResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.fragment.ReturnProductFragment;
@@ -62,8 +61,6 @@ import io.vov.vitamio.utils.NumberUtil;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
-import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
-import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 
 /**
  * Created by libin on 2017/8/1.
@@ -72,6 +69,7 @@ import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VE
 public class ReturnDetailActivity extends NetWorkActivity {
     private static final int DETAIL = 0;
     private static final int FINISHRETURN = 1;
+    public static final int REQUEST_CANCEL_RETURN_ORDER = 1 << 1;
     @ViewInject(R.id.orderStateTv)
     private TextView orderStateTv;
     @ViewInject(R.id.tipTv)
@@ -115,7 +113,6 @@ public class ReturnDetailActivity extends NetWorkActivity {
     public static final int REQUEST_CODE_UPLOAD = 1 << 0;
 
     private boolean hasAttatchment = false;
-
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
 
@@ -147,23 +144,21 @@ public class ReturnDetailActivity extends NetWorkActivity {
         Bundle bundle = getIntent().getExtras();
         bean = bundle.getParcelable("return");
         if (bean != null) {
-            String deliveryType = bean.getDeliveryType();
+            rlBottom.setVisibility(View.VISIBLE);
             //不显示
             if (bean.getState().equals("process")) {
-                if(deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY)||
-                        deliveryType.equals(TYPE_VENDOR_DELIVERY)
-                        ||((deliveryType.equals(TYPE_THIRD_PART_DELIVERY)||deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
-                        &&bean.isReturnThirdPartLog())
-                        ){
-                    rlBottom.setVisibility(View.VISIBLE);
+                doBtn.setText("完成退货");
+            } else {
+                if (bean.getState().equals("draft")){
+                    doBtn.setText("取消申请");
                 }else{
                     rlBottom.setVisibility(View.GONE);
                 }
             }
-                payStateTv.setVisibility(View.VISIBLE);
-                payStateValue.setVisibility(View.VISIBLE);
-                uploadBtn.setVisibility(View.VISIBLE);
 
+            payStateTv.setVisibility(View.VISIBLE);
+            payStateValue.setVisibility(View.VISIBLE);
+            uploadBtn.setVisibility(View.VISIBLE);
 
             hasAttatchment = bean.getHasAttachment() > 0;
             updateReturnView();
@@ -175,13 +170,13 @@ public class ReturnDetailActivity extends NetWorkActivity {
     private void updateReturnView() {
         if (!hasAttatchment) {
             payStateTv.setText("退货凭证: ");
-            payStateValue.setText("未有退货凭证");
-            uploadBtn.setText("上传退货凭证");
+            payStateValue.setText("未有凭证");
+            uploadBtn.setText("上传凭证");
 
         } else {
             payStateTv.setText("退货凭证: ");
-            payStateValue.setText("已有退货凭证");
-            uploadBtn.setText("查看退货凭证");
+            payStateValue.setText("已有凭证");
+            uploadBtn.setText("查看凭证");
         }
     }
 
@@ -202,6 +197,8 @@ public class ReturnDetailActivity extends NetWorkActivity {
                     if (bean.getState().equals("process")) {
                         orderStateTv.setText("退货进行中");
 //                tipTv.setText("原销售订单：SO"+bean.getOrderID());
+                    } else if (bean.getState().equals("draft")) {
+                        orderStateTv.setText("退货单已提交");
                     } else {
                         orderStateTv.setText("退货成功");
                     }
@@ -220,22 +217,18 @@ public class ReturnDetailActivity extends NetWorkActivity {
 //            recyclerView.getLayoutParams().height = list.size() * CommonUtils.dip2px(mContext, 86);
             countTv.setText(NumberUtil.getIOrD(bean.getAmount()) + "件");
             ygMoneyTv.setText(bean.getAmountTotal() + "元");
-
-            String deliveryType = bean.getDeliveryType();
+            rlBottom.setVisibility(View.VISIBLE);
             //不显示
             if (bean.getState().equals("process")) {
-                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY) ||
-                        deliveryType.equals(TYPE_VENDOR_DELIVERY)
-                        || ((deliveryType.equals(TYPE_THIRD_PART_DELIVERY) || deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
-                        && bean.isReturnThirdPartLog())
-                        ) {
-                    rlBottom.setVisibility(View.VISIBLE);
-                } else {
+                doBtn.setText("完成退货");
+            } else {
+                if (bean.getState().equals("draft")){
+                    doBtn.setText("取消申请");
+                }else{
                     rlBottom.setVisibility(View.GONE);
                 }
-            } else {
-                rlBottom.setVisibility(View.GONE);
             }
+
             payStateTv.setVisibility(View.VISIBLE);
             payStateValue.setVisibility(View.VISIBLE);
             uploadBtn.setVisibility(View.VISIBLE);
@@ -386,18 +379,23 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 startActivity(intent);
                 break;
             case R.id.doBtn:
-                dialog.setMessageGravity();
-                dialog.setMessage("确认数量一致?");
-                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        Object request = null;
-                        sendConnection("/gongfu/v2/return_order/" +
-                                bean.getReturnOrderID() +
-                                "/done", request, FINISHRETURN, false, FinishReturnResponse.class);
-                    }
-                });
-                dialog.show();
+                if (bean.getState().equals("draft")) {
+                    cancelReturnOrder(bean.getReturnOrderID());
+                } else {
+                    dialog.setMessageGravity();
+                    dialog.setMessage("确认数量一致?");
+                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            Object request = null;
+                            sendConnection("/gongfu/v2/return_order/" +
+                                    bean.getReturnOrderID() +
+                                    "/done", request, FINISHRETURN, false, FinishReturnResponse.class);
+                        }
+                    });
+                    dialog.show();
+                }
+
                 break;
             case R.id.uploadBtn:
                 Intent uIntent = new Intent(mContext, UploadReturnPicActivity.class);
@@ -446,6 +444,22 @@ public class ReturnDetailActivity extends NetWorkActivity {
         }
     }
 
+    private void cancelReturnOrder(int returnOrderId) {
+        dialog.setTitle("提示");
+        dialog.setMessageGravity();
+        dialog.setMessage("确认取消申请退货?");
+        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+            @Override
+            public void doClickButton(Button btn, CustomDialog dialog) {
+                String url = "/api/return_order/" + returnOrderId + "/cancel";
+                Object obj = null;
+                sendConnection(url, obj, REQUEST_CANCEL_RETURN_ORDER, true, BaseEntity.ResultBean.class);
+            }
+        });
+        dialog.show();
+    }
+
+
     boolean canShow = false;
 
     private void showPopWindow() {
@@ -481,6 +495,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 loadingLayout.onSuccess(1, "暂无数据");
+
                 break;
             case FINISHRETURN:
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
@@ -494,6 +509,10 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();
                 updateUI();
+                break;
+            case REQUEST_CANCEL_RETURN_ORDER:
+                finish();
+                toast("取消申请退货成功!");
                 break;
         }
 

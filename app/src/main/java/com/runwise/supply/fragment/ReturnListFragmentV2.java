@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,6 +21,7 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -35,6 +37,7 @@ import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.firstpage.entity.ReturnResponse;
 import com.runwise.supply.mine.OrderDataType;
 import com.runwise.supply.mine.entity.ReturnData;
+import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.OrderDateSelectDialog;
 
@@ -148,12 +151,12 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                             DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
                     refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
                     page = 1;
-                    requestData(true, mState, REQUEST_START, page, mStartTime, mEndTime);
+                    requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
                 }
 
                 @Override
                 public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-                    requestData(true, mState, REQUEST_DEN, page, mStartTime, mEndTime);
+                    requestData(false, mState, REQUEST_DEN, page, mStartTime, mEndTime);
                 }
             };
 
@@ -353,7 +356,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 loadingLayout.onSuccess(allList.size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
                 break;
             case REQUEST_CANCEL_RETURN_ORDER:
-                requestOrderList(true, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
+                requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
                 ToastUtil.show(mContext, "取消申请退货成功");
                 break;
         }
@@ -420,7 +423,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 holder.payBtn.setVisibility(View.GONE);
             }
 
-            holder.payTitle.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
+            holder.payTitle.setText(bean.getTime());
             holder.payDate.setText(bean.getName());
             StringBuffer descStringBuffer = new StringBuffer();
             descStringBuffer.append(bean.getTypeQty() + "种 " + NumberUtil.getIOrD(bean.getAmount()) + "件商品");
@@ -431,6 +434,18 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             holder.payBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                        return;
+                    dialog.setMessage("您确定要取消申请退货吗?");
+                    dialog.setModel(CustomDialog.BOTH);
+                    dialog.setLeftBtnListener("不取消了", null);
+                    dialog.setRightBtnListener("取消申请", new CustomDialog.DialogListener() {
+                        @Override
+                        public void doClickButton(Button btn, CustomDialog dialog) {
+                            cancelReturnOrder(bean.getReturnOrderID());
+                        }
+                    });
+                    dialog.show();
 
                 }
             });

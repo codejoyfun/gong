@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,6 +56,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Queue;
 
@@ -345,6 +347,10 @@ public class InventoryActivity extends NetWorkActivity {
         } else {
             mInventoryBean.getLines().add(0, newBean.getInventoryProduct());
         }
+
+
+        //添加完盘点商品后,显示全部分类
+        viewpager.setCurrentItem(0);
         //adapter.notifyDataSetChanged();
         EventBus.getDefault().post(new InventoryEditEvent());
     }
@@ -473,6 +479,24 @@ public class InventoryActivity extends NetWorkActivity {
         updateBottomBar();//更新底部bar
     }
 
+    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
+        String desc = "";
+        int count = 0;
+        List<InventoryResponse.InventoryProduct> inventoryProductList =  getDiffInventoryProductList();
+        for (InventoryResponse.InventoryProduct listBean : inventoryProductList) {
+            if (listBean.getProduct().getCategoryParent().equals(categoryParent)
+                    && listBean.getProduct().getCategoryChild().equals(categoryChild)) {
+                count++;
+            }
+        }
+        if (TextUtils.isEmpty(categoryChild)) {
+            desc = categoryParent + "(" + count + "种)";
+        } else {
+            desc = categoryParent + "/" + categoryChild + "(" + count + "种)";
+        }
+        return desc;
+    }
+
     /*
     * 更新底部汇总
     * 只计算勾选的
@@ -584,6 +608,21 @@ public class InventoryActivity extends NetWorkActivity {
                 }
             }
         }
+        LinkedHashMap<String, List<InventoryResponse.InventoryProduct>> linkedHashMap = new LinkedHashMap<>();
+        for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
+            String key = inventoryProduct.getProduct().getCategoryParent() + "&" + inventoryProduct.getProduct().getCategoryChild();
+            List<InventoryResponse.InventoryProduct> listBeans = linkedHashMap.get(key);
+            if (listBeans == null) {
+                listBeans = new ArrayList<>();
+            }
+            listBeans.add(inventoryProduct);
+            linkedHashMap.put(key, listBeans);
+        }
+        inventoryProducts.clear();
+        for (List<InventoryResponse.InventoryProduct> listBeanList : linkedHashMap.values()) {
+            inventoryProducts.addAll(listBeanList);
+        }
+
         return inventoryProducts;
     }
 
@@ -728,6 +767,18 @@ public class InventoryActivity extends NetWorkActivity {
             if (inventoryProduct.getProduct().getImage() != null) {
                 FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(viewHolder.mmSdvImage, inventoryProduct.getProduct().getImage().getImage());
             }
+            if (position == 0) {
+                viewHolder.mStickHeader.setVisibility(View.VISIBLE);
+                viewHolder.mTvHeader.setText(getCategoryCountInfo(inventoryProduct.getProduct().getCategoryParent(), inventoryProduct.getProduct().getCategoryChild()));
+            } else {
+                if (!TextUtils.equals(inventoryProduct.getProduct().getCategoryParent(), mInventoryProductList.get(position - 1).getProduct().getCategoryParent()) ||
+                        !TextUtils.equals(inventoryProduct.getProduct().getCategoryChild(), mInventoryProductList.get(position - 1).getProduct().getCategoryChild())) {
+                    viewHolder.mStickHeader.setVisibility(View.VISIBLE);
+                    viewHolder.mTvHeader.setText(getCategoryCountInfo(inventoryProduct.getProduct().getCategoryParent(), inventoryProduct.getProduct().getCategoryChild()));
+                } else {
+                    viewHolder.mStickHeader.setVisibility(View.GONE);
+                }
+            }
             return convertView;
         }
     }
@@ -756,6 +807,10 @@ public class InventoryActivity extends NetWorkActivity {
         TextView mmTvTheoretical;
         @ViewInject(R.id.iv_callin_icon)
         ImageView mmIvArrow;
+        @ViewInject(R.id.tv_header)
+        TextView mTvHeader;
+        @ViewInject(R.id.stick_header)
+        FrameLayout mStickHeader;
     }
 
     /**

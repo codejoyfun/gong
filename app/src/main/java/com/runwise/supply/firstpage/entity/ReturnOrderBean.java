@@ -79,6 +79,7 @@ public class ReturnOrderBean implements Serializable {
         private List<String> stateTracker;
         private boolean returnThirdPartLog;
         private int typeQty;
+        private String time;
 
         public int getTypeQty() {
             return typeQty;
@@ -94,7 +95,13 @@ public class ReturnOrderBean implements Serializable {
         public void setReturnThirdPartLog(boolean returnThirdPartLog) {
             this.returnThirdPartLog = returnThirdPartLog;
         }
+        public String getTime() {
+            return time;
+        }
 
+        public void setTime(String time) {
+            this.time = time;
+        }
 
         public String getDeliveryType() {
             return deliveryType;
@@ -230,6 +237,7 @@ public class ReturnOrderBean implements Serializable {
             hasAttachment = in.readInt();
             returnThirdPartLog = in.readByte() != 0;
             typeQty = in.readInt();
+            time = in.readString();
             lines = in.createTypedArrayList(LinesBean.CREATOR);
             stateTracker = in.createStringArrayList();
         }
@@ -417,6 +425,7 @@ public class ReturnOrderBean implements Serializable {
             dest.writeInt(hasAttachment);
             dest.writeByte((byte)(returnThirdPartLog?1:0));
             dest.writeInt(typeQty);
+            dest.writeString(time);
             dest.writeTypedList(lines);
             dest.writeStringList(stateTracker);
         }

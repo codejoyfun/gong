@@ -43,8 +43,6 @@ import java.util.Locale;
 
 import io.vov.vitamio.utils.NumberUtil;
 
-import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY;
-import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 import static com.runwise.supply.firstpage.entity.OrderState.PEISONG;
 
 /**
@@ -299,7 +297,11 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.tvActualDelivery.setVisibility(View.GONE);
             viewHolder.imgIv.setImageResource(R.drawable.more_restaurant_returnrecord);
             viewHolder.titleTv.setText(bean.getName());
-            viewHolder.stateTv.setText("退货中");
+            if ("draft".equals(bean.getState())) {
+                viewHolder.stateTv.setText("待确认");
+            } else {
+                viewHolder.stateTv.setText("退货中");
+            }
             viewHolder.stateTv.setTextColor(Color.parseColor("#FA694D"));
             viewHolder.timeTv.setText(TimeUtils.getMMddHHmm(bean.getCreateDate()));
             StringBuffer sb = new StringBuffer("共");
@@ -365,14 +367,9 @@ public class OrderAdapter extends IBaseAdapter {
                 viewHolder.timelineLL.setVisibility(View.GONE);
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
             }
-            String deliveryType = bean.getDeliveryType();
-            if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY) ||
-                    deliveryType.equals(TYPE_VENDOR_DELIVERY)
-                    || ((deliveryType.equals(TYPE_THIRD_PART_DELIVERY) || deliveryType.equals(TYPE_THIRD_PART_DELIVERY))
-                    && bean.isReturnThirdPartLog())
-                    ) {
-                viewHolder.doBtn.setVisibility(View.VISIBLE);
-                viewHolder.doBtn.setText("完成退货");
+            String stateText = "";
+            if ("process".equals(bean.getState())) {
+                stateText = "完成退货";
                 viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -383,9 +380,29 @@ public class OrderAdapter extends IBaseAdapter {
 
                     }
                 });
-            } else {
+            }
+            if ("draft".equals(bean.getState())) {
+                stateText = "取消申请";
+                viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //根据状态进行不同的逻辑处理
+                        if (callback != null) {
+                            callback.doAction(OrderDoAction.CANCEL_RETURN_ORDER, position);
+                        }
+
+                    }
+                });
+            }
+
+            if (!TextUtils.isEmpty(stateText)){
+                viewHolder.doBtn.setVisibility(View.VISIBLE);
+                viewHolder.doBtn.setText(stateText);
+            }else{
                 viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
+
+
 
         }
 

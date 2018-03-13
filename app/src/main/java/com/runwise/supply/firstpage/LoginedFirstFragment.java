@@ -123,6 +123,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private static final int REQUEST_INVENTORY_LIST = 13;
     private static final int REQUEST_RECEIVE_AGAIN = 14;
     private static final int REQUEST_UNREAD = 15;
+    private static final int REQUEST_CANCEL_RETURN_ORDER = 16;
 
     long mTimeStartFROMORDER;
     long mTimeStartFROMLB;
@@ -163,6 +164,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     //需求为点击关闭后，下次进入需要重新显示，所以用成员变量标记是否被用户关闭
     private boolean isNoticeClose = false;//是否点击关闭了盘点中提示，防止每次刷到数据都重新显示
     private OrderResponse.ListBean mReceiveAgainOrder;//记录重新收货的订单
+
 
     public LoginedFirstFragment() {
     }
@@ -505,6 +507,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     mTvHint.setVisibility(View.GONE);
                 }
                 break;
+            case  REQUEST_CANCEL_RETURN_ORDER:
+                ToastUtil.show(mContext, "取消成功");
+                requestReturnList(false);
+                break;
         }
     }
 
@@ -760,9 +766,28 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 });
                 dialog.show();
                 break;
+            case CANCEL_RETURN_ORDER:
+                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
+                mSelectBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
+                dialog.setTitle("提示");
+                dialog.setMessageGravity();
+                dialog.setMessage("确认取消申请退货?");
+                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    @Override
+                    public void doClickButton(Button btn, CustomDialog dialog) {
+                        cancelReturnOrder(mSelectBean.getReturnOrderID());
+                    }
+                });
+                dialog.show();
+                break;
             default:
                 break;
         }
+    }
+    private void cancelReturnOrder(int returnOrderId) {
+        String url = "/api/return_order/" + returnOrderId + "/cancel";
+        Object obj = null;
+        sendConnection(url, obj, REQUEST_CANCEL_RETURN_ORDER, true, BaseEntity.ResultBean.class);
     }
 
     @Override

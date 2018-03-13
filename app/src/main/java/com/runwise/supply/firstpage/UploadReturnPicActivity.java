@@ -20,12 +20,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
 import com.android.internal.http.multipart.FilePart;
 import com.android.internal.http.multipart.Part;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -49,7 +43,10 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -107,6 +104,9 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
         if (hasAttachment){
             setTitleRightText(true,"修改");
             upLoadBtn.setVisibility(View.GONE);
+            if(picList.contains(ADDBUTTON)){
+                picList.remove(ADDBUTTON);
+            }
         }else{
             //没有才需要有默认
             if (picList.size() == 0){
@@ -176,7 +176,9 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
                 if (picList.size() < 3 && !picList.contains(ADDBUTTON)){
                     picList.add(ADDBUTTON);
                 }
+                adapter.setDatas(picList);
                 adapter.notifyDataSetChanged();
+                upLoadBtn.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -254,7 +256,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
                         picList.add(urlString);
                     }
                 }
-                if (picList.size() < 3){
+                if (picList.size() < 3&&adapter.isModifyMode){
                     picList.add(ADDBUTTON);
                 }
                 adapter.setDatas(picList);

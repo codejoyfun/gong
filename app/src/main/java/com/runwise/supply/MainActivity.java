@@ -70,7 +70,7 @@ import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PASSWORD;
 public class MainActivity extends NetWorkActivity {
     public static final String INTENT_KEY_TAB = "tab";
     //缓存全部商品列表的标识
-    private static final int QUERY_ALL = 1;
+//    private static final int QUERY_ALL = 1;
     private final int REQUEST_UNREAD = 2;
     private final int REQUEST_UPLOAD_VERSION = 3;
     private final int REQUEST_SYSTEM_UPGRADE_TIME = 4;
@@ -168,7 +168,7 @@ public class MainActivity extends NetWorkActivity {
                 logout();
                 return;
             }
-            queryProductList();
+//            queryProductList();
             //检查版本
             CheckVersionManager checkVersionManager = new CheckVersionManager(this);
             checkVersionManager.checkVersion(false);
@@ -296,12 +296,12 @@ public class MainActivity extends NetWorkActivity {
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
-            case QUERY_ALL:
-                BaseEntity.ResultBean resultBean = result.getResult();
-                ProductBasicList basicList = (ProductBasicList) resultBean.getData();
-                new Thread(new CachRunnale(basicList.getList())).start();
-//                LogUtils.e("onSuccessTime QUERY_ALL "+String.valueOf(System.currentTimeMillis() - mTimeStartQUERY_ALL));
-                break;
+//            case QUERY_ALL:
+//                BaseEntity.ResultBean resultBean = result.getResult();
+//                ProductBasicList basicList = (ProductBasicList) resultBean.getData();
+//                new Thread(new CachRunnale(basicList.getList())).start();
+////                LogUtils.e("onSuccessTime QUERY_ALL "+String.valueOf(System.currentTimeMillis() - mTimeStartQUERY_ALL));
+//                break;
             case REQUEST_UNREAD:
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
                 DetailResult.ListBean bean = PlatformNotificationManager.getInstance(this).getLastMessage();
@@ -410,7 +410,7 @@ public class MainActivity extends NetWorkActivity {
         if (mTabHost != null) {
             mTabHost.setCurrentTab(0);
         }
-        queryProductList();
+//        queryProductList();
     }
 
     @Override
@@ -483,11 +483,11 @@ public class MainActivity extends NetWorkActivity {
         sendConnection("/gongfu/v2/user/app/version/", versionRequest, REQUEST_UPLOAD_VERSION, false, null);
     }
 
-    private void queryProductList() {
-        Object request = null;
-        sendConnection("/gongfu/v3/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
-        mTimeStartQUERY_ALL = System.currentTimeMillis();
-    }
+//    private void queryProductList() {
+//        Object request = null;
+//        sendConnection("/gongfu/v3/product/list/", request, QUERY_ALL, false, ProductBasicList.class);
+//        mTimeStartQUERY_ALL = System.currentTimeMillis();
+//    }
 
     public int getCurrentTabIndex() {
         if (mTabHost == null) {

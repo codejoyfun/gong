@@ -89,6 +89,8 @@ public class EditHotResult {
             private String stockType;
 
             private String category;
+            private String categoryParent;
+            private String categoryChild;
             private String name;
             private String barcode;
             private ImageBean image;
@@ -98,6 +100,22 @@ public class EditHotResult {
             private int productID;
             private String productUom;
             private String stockUom;
+
+            public String getCategoryParent() {
+                return categoryParent;
+            }
+
+            public void setCategoryParent(String categoryParent) {
+                this.categoryParent = categoryParent;
+            }
+
+            public String getCategoryChild() {
+                return categoryChild;
+            }
+
+            public void setCategoryChild(String categoryChild) {
+                this.categoryChild = categoryChild;
+            }
 
             public String getStockUom() {
                 return stockUom;

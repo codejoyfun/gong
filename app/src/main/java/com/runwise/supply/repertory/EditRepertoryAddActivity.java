@@ -252,6 +252,11 @@ public class EditRepertoryAddActivity extends NetWorkActivity {
             product.setDefaultCode(productBean.getDefaultCode());
             product.setUnit(productBean.getUnit());
             product.setTracking(productBean.getTracking());
+
+            product.setCategory(productBean.getCategory());
+            product.setCategoryParent(productBean.getCategoryParent());
+            product.setCategoryChild(productBean.getCategoryChild());
+
             ProductBasicList.ListBean listBean = getBasicMap(EditRepertoryAddActivity.this).get(String.valueOf(productBean.getProductID()));
             if (listBean != null) {
                 product.setUom(listBean.getUom());
