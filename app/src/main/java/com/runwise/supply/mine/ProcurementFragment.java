@@ -24,8 +24,6 @@ import com.runwise.supply.R;
 import com.runwise.supply.entity.ProcurementRequest;
 import com.runwise.supply.mine.entity.ProcurementAddResult;
 import com.runwise.supply.mine.entity.ProcurementEntity;
-import com.runwise.supply.orderpage.ProductBasicUtils;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -153,11 +151,10 @@ public class ProcurementFragment extends NetWorkFragment implements LoadingLayou
             ischange = true;
             ischange = false;
 
-            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
-            if (basicBean != null) {
-                viewHolder.name.setText(basicBean.getName());
-                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append("  ").append(basicBean.getUnit());
+//            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
+                viewHolder.name.setText(bean.getName());
+                StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+                sb.append("  ").append(bean.getUnit());
                 DecimalFormat df = new DecimalFormat("#.##");
                 if (canSeePrice) {
 //                    if (basicBean.isIsTwoUnit()) {
@@ -173,8 +170,8 @@ public class ProcurementFragment extends NetWorkFragment implements LoadingLayou
 //                    }
                 }
                 viewHolder.content.setText(sb.toString());
-                viewHolder.tvCount.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())) + basicBean.getStockUom());
-                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
+                viewHolder.tvCount.setText(NumberUtil.getIOrD(String.valueOf(bean.getQty())) + bean.getStockUom());
+                FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImageMedium());
                 if (isHead(position)){
                     viewHolder.rl_head.setVisibility(View.VISIBLE);
                     ProcurementEntity.ListBean listBean = mHeadMap.get(position);
@@ -183,7 +180,6 @@ public class ProcurementFragment extends NetWorkFragment implements LoadingLayou
                 }else{
                     viewHolder.rl_head.setVisibility(View.GONE);
                 }
-            }
             return convertView;
         }
 

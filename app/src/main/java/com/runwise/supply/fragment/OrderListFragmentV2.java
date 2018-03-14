@@ -179,7 +179,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
         mPullListView.setAdapter(adapter);
         page = 1;
         mLoadingLayout.setStatusLoading();
-        requestOrderList(false, "", REQUEST_MAIN, page, mStartTime, mEndTime);
+        requestOrderList(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
         mLoadingLayout.setOnRetryClickListener(this);
         mOrderDateSelectDialog = new OrderDateSelectDialog(getActivity());
         mOrderDateSelectDialog.setPickerClickListener(new OrderDateSelectDialog.PickerClickListener() {
@@ -190,7 +190,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 String[] endYMDArray = endYMD.split("/");
                 mStartTime = startYMDArray[0]+"-"+startYMDArray[1]+"-"+startYMDArray[2];
                 mEndTime = endYMDArray[0]+"-"+endYMDArray[1]+"-"+endYMDArray[2];
-                requestOrderList(true, "", REQUEST_START, page, mStartTime, mEndTime);
+                requestOrderList(true, mState, REQUEST_START, page, mStartTime, mEndTime);
                 mOrderDateSelectDialog.dismiss();
             }
         });
@@ -255,6 +255,9 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
     String mState = "";
 
     private void requestOrderList(boolean showDialog, String state, int where, int page, String startTime, String endTime) {
+        if (where == REQUEST_MAIN||where == REQUEST_START){
+            page = 1;
+        }
         PageRequest request = new PageRequest();
         request.setLimit(10);
         request.setPz(page);

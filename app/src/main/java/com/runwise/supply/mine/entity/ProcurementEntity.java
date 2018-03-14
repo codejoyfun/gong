@@ -61,6 +61,52 @@ public class ProcurementEntity {
             private String qty;
             private int productID;
 
+            public String getImageMedium() {
+                return imageMedium;
+            }
+
+            public void setImageMedium(String imageMedium) {
+                this.imageMedium = imageMedium;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getDefaultCode() {
+                return defaultCode;
+            }
+
+            public void setDefaultCode(String defaultCode) {
+                this.defaultCode = defaultCode;
+            }
+
+            public String getUnit() {
+                return unit;
+            }
+
+            public void setUnit(String unit) {
+                this.unit = unit;
+            }
+
+            public String getStockUom() {
+                return stockUom;
+            }
+
+            public void setStockUom(String stockUom) {
+                this.stockUom = stockUom;
+            }
+
+            private String imageMedium;
+            private String name;
+            private String defaultCode;
+            private String unit;
+            private String stockUom;
+
             public String getQty() {
                 return qty;
             }

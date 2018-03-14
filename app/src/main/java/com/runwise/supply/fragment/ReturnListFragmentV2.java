@@ -37,7 +37,6 @@ import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.firstpage.entity.ReturnResponse;
 import com.runwise.supply.mine.OrderDataType;
-import com.runwise.supply.mine.entity.ReturnData;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
@@ -190,8 +189,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDataSynEvent(ReturnActivityRefreshEvent returnActivityRefreshEvent) {
-        Object param = null;
-        sendConnection("/api/order/list", param, PRODUCT_GET, true, ReturnData.class);
+        requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
     }
 
     //    退货单状态：
@@ -313,6 +311,9 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 
 
     public void requestData(boolean showDialog, String state, int where, int page, String startTime, String endTime) {
+        if (where == REQUEST_MAIN||where == REQUEST_START){
+            page = 1;
+        }
         PageRequest request = new PageRequest();
         request.setLimit(10);
         request.setPz(page);
@@ -364,12 +365,6 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 } else {
                     pullListView.onRefreshComplete(adapter.getCount());
                 }
-                break;
-            case PRODUCT_GET:
-                repertoryEntity = (ReturnResponse) result.getResult().getData();
-                allList = repertoryEntity.getList();
-                adapter.setData(allList);
-                loadingLayout.onSuccess(allList.size(), "哎呀！这里是空哒~~", R.drawable.default_icon_ordernone);
                 break;
             case REQUEST_CANCEL_RETURN_ORDER:
                 requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
@@ -431,6 +426,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                     holder.payStatus.setText("退货中");
                     if (bean.getDeliveryType().equals(TYPE_VENDOR_DELIVERY)) {
                         holder.payBtn.setVisibility(View.VISIBLE);
+                        holder.payBtn.setText("完成退货");
                         holder.payBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -443,7 +439,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
                                     @Override
                                     public void doClickButton(Button btn, CustomDialog dialog) {
-
+                                        finishReturn(bean.getReturnOrderID());
                                     }
                                 });
                                 dialog.show();
@@ -460,6 +456,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 case "draft":
                     holder.payStatus.setText("待审核");
                     holder.payBtn.setVisibility(View.VISIBLE);
+                    holder.payBtn.setText("取消申请");
                     holder.payBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

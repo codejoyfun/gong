@@ -33,6 +33,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
     public static final String TYPE_LOGIN_CONFICT = "login_confict";
     public static final String TYPE_SYSTEM_UPGRADE = "update";
     public static final String TYPE_ORDER = "sale.order";
+    public static final String TYPE_ORDER_RETURN = "return.sale.order";
     public static final String TYPE_PLATFORM_NOTICE = "platform_notification";//平台通知
     public static final String TYPE_ORDER_STATUS = "order_status";//跳转到订单状态
 
@@ -68,7 +69,7 @@ public class JPushCustomReceiver extends BroadcastReceiver {
         if (type.equals(TYPE_LOGIN_CONFICT)) {
             resetLoginStatus(context);
         }
-        if (type.equals(TYPE_ORDER)) {
+        if (type.equals(TYPE_ORDER)||type.equals(TYPE_ORDER_RETURN)) {
             //刷新订单列表
             String strId = jsonObject.optString("dataid");
             if (!TextUtils.isEmpty(strId) && TextUtils.isDigitsOnly(strId)) {

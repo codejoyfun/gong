@@ -101,19 +101,19 @@ public class NetWorkHelper<T extends BaseEntity> {
     public static long RESPONSE_CURRENT_TIME;
 
     public static void setRequestTimestamp() {
-        if (RESPONSE_TIME != 0){
-            REQUEST_TIMESTAMP = RESPONSE_TIME + SystemClock.elapsedRealtime()-RESPONSE_CURRENT_TIME;
-        }else{
+        if (RESPONSE_TIME != 0) {
+            REQUEST_TIMESTAMP = RESPONSE_TIME + SystemClock.elapsedRealtime() - RESPONSE_CURRENT_TIME;
+        } else {
             REQUEST_TIMESTAMP = System.currentTimeMillis();
         }
 
     }
 
     public static void setResponseTime(long responseTime) {
-            if (RESPONSE_TIME == 0) {
-                RESPONSE_TIME = responseTime;
-                RESPONSE_CURRENT_TIME = SystemClock.elapsedRealtime();
-            }
+        if (RESPONSE_TIME == 0) {
+            RESPONSE_TIME = responseTime;
+            RESPONSE_CURRENT_TIME = SystemClock.elapsedRealtime();
+        }
     }
 
     /**
@@ -198,7 +198,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      * @return
      */
     public long sendConnection(int method, String url, String[] argsKeys,
-                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList,long timeStamp) {
+                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList, long timeStamp) {
         if (argsKeys.length != argsValues.length) {
             throw new IllegalArgumentException("check your Params key or value length!");
         }
@@ -213,8 +213,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParamStr);
-        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParamStr);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass, url, bodyParamStr);
+        RequestErrorListener errorLietener = new RequestErrorListener(where, url, bodyParamStr);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
 
@@ -236,7 +236,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      * @param showDialog 是否显示进度条
      */
     public long sendConnection(int method, String url, String[] argsKeys,
-                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList,boolean useUnLoginDB) {
+                               String[] argsValues, int where, boolean showDialog, Class<?> targerClass, List<Part> partList, boolean useUnLoginDB) {
         setRequestTimestamp();
         long timeStamp = REQUEST_TIMESTAMP;
         if (argsKeys.length != argsValues.length) {
@@ -253,8 +253,8 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!url.contains("order/undone_orders/") && !url.contains("gongfu/v2/return_order/")) {
             LogUtils.e(url);
         }
-        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass,url,bodyParamStr);
-        RequestErrorListener errorLietener = new RequestErrorListener(where,url,bodyParamStr);
+        RequestSuccessListener<T> succeessLietener = new RequestSuccessListener<T>(where, targerClass, url, bodyParamStr);
+        RequestErrorListener errorLietener = new RequestErrorListener(where, url, bodyParamStr);
         HttpCallBack<T> httpCallback = new HttpCallBack<T>
                 (url, succeessLietener, errorLietener, where, method, bodyParams, bodyParamStr, partList, targerClass, timeStamp);
         httpCallback.setUseUnLoginDB(useUnLoginDB);
@@ -321,7 +321,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        return sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,false);
+        return sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null, false);
     }
 
     /**
@@ -333,7 +333,7 @@ public class NetWorkHelper<T extends BaseEntity> {
      * @param showDialog  对话框
      * @param targerClass 结果class类
      */
-    public void sendConnection(String host,String bizName, Object params, int where, boolean showDialog, Class<?> targerClass,boolean useUnLoginDB) {
+    public void sendConnection(String host, String bizName, Object params, int where, boolean showDialog, Class<?> targerClass, boolean useUnLoginDB) {
         this.setJsonParseType();
         if (params != null) {
             bodyParamStr = JSON.toJSONString(params);
@@ -347,7 +347,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, host + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,useUnLoginDB);
+        sendConnection(Method.POST, host + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null, useUnLoginDB);
     }
 
 
@@ -357,7 +357,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,false);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null, false);
     }
 
     public void sendConnection(String bizName, Map<String, String> paramMap, int where, boolean showDialog, Class<?> targerClass) {
@@ -367,7 +367,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null,false);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, null, false);
     }
 
     /**
@@ -385,7 +385,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         if (!TextUtils.isEmpty(url)) {
             Constant.BASE_URL = url;
         }
-        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList,false);
+        sendConnection(Method.POST, getHost(bizName) + bizName, new String[]{}, new String[]{}, where, showDialog, targerClass, partList, false);
     }
 
 
@@ -448,7 +448,8 @@ public class NetWorkHelper<T extends BaseEntity> {
 //    public static final String DEFAULT_DATABASE_NAME = "MFtest1025";
 //    public static final String DEFAULT_DATABASE_NAME = "MF-Test";
     public static final String DEFAULT_DATABASE_NAME = "MFTest1117";
-//    public static  String DEFAULT_DATABASE_NAME = "LBZ-Golive-01";
+
+    //    public static  String DEFAULT_DATABASE_NAME = "LBZ-Golive-01";
     // -------------------------------------------------
     private class HttpCallBack<M extends BaseEntity> extends BaseXmlRequest<T> {
         private Class<?> targerClass;
@@ -461,7 +462,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         private long timeStamp;
         private boolean useUnLoginDB = false;
 
-        public HttpCallBack(String url, Listener<T> listener, ErrorListener errorListener, int where, int method, Map<String, String> paramsMap, String paramsStr, List<Part> partList, Class<?> targerClass,long timeStamp) {
+        public HttpCallBack(String url, Listener<T> listener, ErrorListener errorListener, int where, int method, Map<String, String> paramsMap, String paramsStr, List<Part> partList, Class<?> targerClass, long timeStamp) {
             super(method, url, listener, errorListener);
             this.url = url;
             RetryPolicy policy = new DefaultRetryPolicy(DEFAULT_TIMEOUT_MS, DEFAULT_MAX_RETRIES, DEFAULT_BACKOFF_MULT);
@@ -512,12 +513,12 @@ public class NetWorkHelper<T extends BaseEntity> {
                 resultObj = paseInterface.paseResult(BaseEntity.class, parsed);
                 BaseEntity.ResultBean resultBean = resultObj.getResult();
                 if (resultBean != null && resultBean.getData() != null) {
-                    try{
+                    try {
                         JSONObject jsonObject = (JSONObject) resultBean.getData();
                         resultBean.setDataJson(jsonObject);
                         Object object = JSON.parseObject(jsonObject.toJSONString(), targerClass);
                         resultBean.setData(object);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
@@ -600,17 +601,16 @@ public class NetWorkHelper<T extends BaseEntity> {
 //			headerMap.put("api-token", apiToken);
 //			headerMap.put("deviceId", CommonUtils.getDeviceId(context));
 //			headerMap.put("X-Odoo-Db", (String)SPUtils.get(context,"X-Odoo-Db","LBZ20170607"));
-            if(useUnLoginDB){
+            if (useUnLoginDB) {
                 headerMap.put("X-Odoo-Db", Constant.UNLOGIN_DB);
-            }
-            else if(url.contains("/api/get/host")) {
+            } else if (url.contains("/api/get/host")) {
                 headerMap.put("X-Odoo-Db", Constant.UNLOGIN_DB);
-            }else{
-                if (SPUtils.isLogin(context)||url.contains("/gongfu/v2/authenticate")||SPUtils.isLoginConflict(context)
-                        ||url.contains("/gongfu/get_captcha")||url.contains("/gongfu/reset_password")){
-                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME,""));
-                }else{
-                        headerMap.put("X-Odoo-Db", Constant.UNLOGIN_DB);
+            } else {
+                if (SPUtils.isLogin(context) || url.contains("/gongfu/v2/authenticate") || SPUtils.isLoginConflict(context)
+                        || url.contains("/gongfu/get_captcha") || url.contains("/gongfu/reset_password")) {
+                    headerMap.put("X-Odoo-Db", (String) SPUtils.get(context, FILE_KEY_DB_NAME, ""));
+                } else {
+                    headerMap.put("X-Odoo-Db", Constant.UNLOGIN_DB);
                 }
             }
             headerMap.put("phone_type", android.os.Build.MODEL);
@@ -622,16 +622,16 @@ public class NetWorkHelper<T extends BaseEntity> {
         }
     }
 
-    public String getHost(String bizName){
-        if(bizName.contains("/api/get/host")) {
+    public String getHost(String bizName) {
+        if (bizName.contains("/api/get/host")) {
             return Constant.UNLOGIN_URL;
         }
         if (SPUtils.isLogin(context) || bizName.contains("/gongfu/v2/authenticate")
-                ||SPUtils.isLoginConflict(context)
-                ||bizName.contains("/api/user/agree_item_time")
-                ||bizName.contains("/gongfu/get_captcha")){
-            return (String) SPUtils.get(context, FILE_KEY_HOST,"");
-        }else{
+                || SPUtils.isLoginConflict(context)
+                || bizName.contains("/api/user/agree_item_time")
+                || bizName.contains("/gongfu/get_captcha")) {
+            return (String) SPUtils.get(context, FILE_KEY_HOST, "");
+        } else {
             return Constant.UNLOGIN_URL;
         }
     }
@@ -652,7 +652,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         private String url;
         private String bodyParamStr;
 
-        public RequestErrorListener(int what,String url,String bodyParamStr) {
+        public RequestErrorListener(int what, String url, String bodyParamStr) {
             this.what = what;
             this.url = url;
             this.bodyParamStr = bodyParamStr;
@@ -666,11 +666,16 @@ public class NetWorkHelper<T extends BaseEntity> {
             if (newWorkCallBack != null) {
                 BaseEntity baseEntity = new BaseEntity();
                 baseEntity.setMsg(error.getMessage());
-                if (errorMsg.contains("Session Expired")){
+                if (errorMsg.contains("Session Expired")) {
                     errorMsg = context.getString(R.string.session_expired);
                 }
-                newWorkCallBack.onFailure(errorMsg, (T) baseEntity, what);
-                UmengUtil.reportError(context, url+"\n"+"参数: "+bodyParamStr+"\n"+error.getMessage());
+                try{
+                    newWorkCallBack.onFailure(errorMsg, (T) baseEntity, what);
+                    UmengUtil.reportError(context, url + "\n" + "参数: " + bodyParamStr + "\n" + error.getMessage());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         }
     }
@@ -681,7 +686,7 @@ public class NetWorkHelper<T extends BaseEntity> {
         private Class targerClass;
         private String bodyParamStr;
 
-        public RequestSuccessListener(int what, Class targerClass,String url,String bodyParamStr) {
+        public RequestSuccessListener(int what, Class targerClass, String url, String bodyParamStr) {
             this.what = what;
             this.url = url;
             this.targerClass = targerClass;
@@ -698,15 +703,15 @@ public class NetWorkHelper<T extends BaseEntity> {
                         newWorkCallBack.onSuccess(response, what);
                     }
                 } else {
-                    cellBackError(response, what,url,bodyParamStr);
+                    cellBackError(response, what, url, bodyParamStr);
                 }
             } else {
-                cellBackError(response, what,url,bodyParamStr);
+                cellBackError(response, what, url, bodyParamStr);
             }
         }
     }
 
-    private void cellBackError(T response, int what,String url, String paramsMap) {
+    private void cellBackError(T response, int what, String url, String paramsMap) {
         if (newWorkCallBack != null) {
             String errorMsg = "";
             if (response.getResult() != null) {
@@ -720,17 +725,20 @@ public class NetWorkHelper<T extends BaseEntity> {
 //					ToastUtil.show(context,"登陆过期，请重新登陆");
                 }
             }
-            if (errorMsg.contains("Session Expired")){
+            if (errorMsg.contains("Session Expired")) {
                 errorMsg = context.getString(R.string.session_expired);
             }
-            newWorkCallBack.onFailure(errorMsg, response, what);
-            if (response.getError() != null){
-               String uMengErrorString =  ObjectTransformUtil.toString(response.getError().getData());
-                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+uMengErrorString);
-            }else{
-                UmengUtil.reportError(context, url+"\n"+"参数: "+paramsMap.toString()+"\n"+errorMsg);
+            try{
+                newWorkCallBack.onFailure(errorMsg, response, what);
+                if (response.getError() != null) {
+                    String uMengErrorString = ObjectTransformUtil.toString(response.getError().getData());
+                    UmengUtil.reportError(context, url + "\n" + "参数: " + paramsMap.toString() + "\n" + uMengErrorString);
+                } else {
+                    UmengUtil.reportError(context, url + "\n" + "参数: " + paramsMap.toString() + "\n" + errorMsg);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
-
         }
     }
 

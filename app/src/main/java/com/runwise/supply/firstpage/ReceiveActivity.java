@@ -769,7 +769,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     list.add(bean);
                 }
                 receiveBeanList.setList(list);
-                SPUtils.put(getActivityContext(), companyName + String.valueOf(lbean.getOrderID()), receiveBeanList.toString());
+                if(list.size() > 0){
+                    SPUtils.put(getActivityContext(), companyName + String.valueOf(lbean.getOrderID()), receiveBeanList.toString());
+                }
                 if (mode == 1) {
                     dialog.setTitle("提示");
                     dialog.setMessage("确认取消点货?");
@@ -1314,7 +1316,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             list.add(bean);
         }
         receiveBeanList.setList(list);
-        SPUtils.put(getActivityContext(), companyName + String.valueOf(lbean.getOrderID()), receiveBeanList.toString());
+        if (list.size() > 0){
+            SPUtils.put(getActivityContext(), companyName + String.valueOf(lbean.getOrderID()), receiveBeanList.toString());
+        }
         if (mode == 1) {
             dialog.setTitle("提示");
             dialog.setMessage("确认取消点货?");
