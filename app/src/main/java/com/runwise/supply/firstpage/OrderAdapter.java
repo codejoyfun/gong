@@ -235,10 +235,14 @@ public class OrderAdapter extends IBaseAdapter {
             drawableSb.append(bean.getState());
             if (!TextUtils.isEmpty(bean.getReceiveError()) && PEISONG.getName().equals(bean.getState())) {//收货失败
                 viewHolder.imgIv.setImageResource(R.drawable.state_restaurant_goosfailed);
+                viewHolder.mTvErrorInfo.setText(bean.getReceiveError());
+                viewHolder.mTvErrorInfo.setVisibility(View.VISIBLE);
             } else if (getResIdByDrawableName(drawableSb.toString()) == 0) {
                 viewHolder.imgIv.setImageResource(R.drawable.state_restaurant_draft);
+                viewHolder.mTvErrorInfo.setVisibility(View.GONE);
             } else {
                 viewHolder.imgIv.setImageResource(getResIdByDrawableName(drawableSb.toString()));
+                viewHolder.mTvErrorInfo.setVisibility(View.GONE);
             }
 
             //按钮
@@ -455,6 +459,8 @@ public class OrderAdapter extends IBaseAdapter {
         RelativeLayout mmRlRoot;
         @ViewInject(R.id.arrowArea)
         View mmViewArrowArea;
+        @ViewInject(R.id.tv_error_info)
+        TextView mTvErrorInfo;
     }
 
     private void setTimeLineContent(List<String> stList, RecyclerView recyclerView) {
@@ -544,6 +550,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.mmContainer.setBackgroundColor(mFailedColor);
             viewHolder.mmTvButton.setVisibility(View.VISIBLE);
             viewHolder.mmTvSubTitle.setText("--");
+//            viewHolder.mTvErrorInfo.setText();
         } else {
             viewHolder.mmIvClose.setVisibility(View.INVISIBLE);
             viewHolder.mmTvStatus.setText("提交中");

@@ -128,9 +128,10 @@
                 android:id="@+id/orderTimeTv"/>
             <LinearLayout
                 android:id="@+id/ll1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/orderTimeTv"
+                android:layout_toLeftOf="@+id/doBtn"
                 android:layout_marginTop="17dp"
                 android:layout_alignLeft="@id/orderNumLL"
                 android:orientation="vertical">
@@ -177,8 +178,18 @@
                         android:textColor="#333333"
                         android:layout_marginLeft="7dp"
                         android:id="@+id/moneyTv"/>
-
                 </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_error_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:drawablePadding="6dp"
+                    android:text=""
+                    android:maxLines="3"
+                    android:layout_marginLeft="21dp"
+                    android:textColor="@color/colore64340"
+                    android:textSize="14sp" />
             </LinearLayout>
             <View
                 android:id="@+id/line"

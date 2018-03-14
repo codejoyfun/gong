@@ -33,6 +33,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -213,6 +214,16 @@ public class InventoryFragment extends NetWorkFragment {
         mInventoryProductList = inventoryProducts;
         mInventoryAdapter.setData(inventoryProducts);
     }
+
+    public void addData(InventoryResponse.InventoryProduct inventoryProduct){
+        if (mInventoryProductList == null){
+            mInventoryProductList = new ArrayList<>();
+            mInventoryAdapter.setData(mInventoryProductList);
+        }
+        mInventoryProductList.add(0,inventoryProduct);
+        mInventoryAdapter.notifyDataSetChanged();
+    }
+
 
     /**
      * 盘点商品列表的adapter

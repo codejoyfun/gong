@@ -222,18 +222,18 @@ public class InventoryActivity extends NetWorkActivity {
     public void onFailure(String errMsg, BaseEntity result, int where) {
         ToastUtil.show(this, errMsg);
     }
-
+    List<String> mTitles;
     private void setUpDataForViewPage() {
         if (categoryRespone == null) {
             return;
         }
         orderProductFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
-        List<String> titles = new ArrayList<>();
+        mTitles = new ArrayList<>();
         HashMap<String, ArrayList<InventoryResponse.InventoryProduct>> map = new HashMap<>();
-        titles.add("全部");
+        mTitles.add("全部");
         for (String category : categoryRespone.getCategoryList()) {
-            titles.add(category);
+            mTitles.add(category);
             map.put(category, new ArrayList<>());
         }
 
@@ -257,7 +257,7 @@ public class InventoryActivity extends NetWorkActivity {
         //加入全部
         orderProductFragmentList.add(0, newProductFragment("", mInventoryBean.getLines()));
 
-        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, titles);
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, mTitles);
         viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
         viewpager.setOffscreenPageLimit(orderProductFragmentList.size());
         tablayout.setupWithViewPager(viewpager);//将TabLayout和ViewPager关联起来
@@ -348,7 +348,13 @@ public class InventoryActivity extends NetWorkActivity {
             mInventoryBean.getLines().add(0, newBean.getInventoryProduct());
         }
 
-
+        //找出商品的分类，并把它插入指定fragment
+        for (int i = 0;i<mTitles.size();i++){
+            if (newBean.getInventoryProduct().getProduct().getCategory().equals(mTitles.get(i))){
+                InventoryFragment inventoryFragment = (InventoryFragment) orderProductFragmentList.get(i);
+                inventoryFragment.addData(newBean.getInventoryProduct());
+            }
+        }
         //添加完盘点商品后,显示全部分类
         viewpager.setCurrentItem(0);
         //adapter.notifyDataSetChanged();
