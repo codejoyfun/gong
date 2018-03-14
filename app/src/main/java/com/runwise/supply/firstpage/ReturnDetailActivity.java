@@ -61,6 +61,7 @@ import io.vov.vitamio.utils.NumberUtil;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.firstpage.ReturnSuccessActivity.INTENT_KEY_RESULTBEAN;
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 
 /**
  * Created by libin on 2017/8/1.
@@ -147,7 +148,11 @@ public class ReturnDetailActivity extends NetWorkActivity {
             rlBottom.setVisibility(View.VISIBLE);
             //不显示
             if (bean.getState().equals("process")) {
-                doBtn.setText("完成退货");
+                if (bean.getDeliveryType().equals(TYPE_VENDOR_DELIVERY)){
+                    doBtn.setText("完成退货");
+                }else{
+                    rlBottom.setVisibility(View.GONE);
+                }
             } else {
                 if (bean.getState().equals("draft")){
                     doBtn.setText("取消申请");

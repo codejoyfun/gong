@@ -100,7 +100,7 @@ import static com.runwise.supply.orderpage.entity.ReceiveInfo.SEPARATOR;
  * Created by libin on 2017/7/16.
  */
 
-public class ReceiveActivity extends NetWorkActivity implements DoActionCallback,LoadingLayoutInterface/*, CaptureClient.Listener*/ {
+public class ReceiveActivity extends NetWorkActivity implements DoActionCallback, LoadingLayoutInterface/*, CaptureClient.Listener*/ {
     private static final int RECEIVE = 100;           //收货
     private static final int TALLYING = 200;          //点货
     private static final int DONE_TALLY = 300;          //第二个人完成点货
@@ -144,7 +144,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     private SimpleDraweeView productImage;
     private double totalQty;           //预计总的商品总数
     private OrderResponse.ListBean lbean;
-//    private CaptureClient mClient;
+    //    private CaptureClient mClient;
     TimePickerView pvCustomTime;
     WheelView wheelView;
 
@@ -184,7 +184,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         setContentView(R.layout.receive_layout);
         setTitleRigthIcon(true, R.drawable.search);
 
-        companyName = (String) SPUtils.get(getActivityContext(),FILE_KEY_COMPANY_NAME,"");
+        companyName = (String) SPUtils.get(getActivityContext(), FILE_KEY_COMPANY_NAME, "");
 
         Bundle bundle = getIntent().getExtras();
         lbean = bundle.getParcelable("order");
@@ -194,7 +194,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         if (mode == 1) {
             setTitleText(true, "点货");
         } else {
-           setTitleText(true, "收货");
+            setTitleText(true, "收货");
         }
         initPopWindow();
         initPopWindow2();       //单独初始化一下双单位的popview
@@ -202,9 +202,9 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //        mClient = new CaptureClient();
 //        mClient.setListener(this);
 //        mClient.connect();
-        if(lbean.getLines()==null || lbean.getLines().isEmpty()){
+        if (lbean.getLines() == null || lbean.getLines().isEmpty()) {
             requestOrderDetail();//没有传商品列表，需要查询订单详情
-        }else{
+        } else {
             initUI();
         }
     }
@@ -212,7 +212,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     /**
      * 获取到商品列表后更新界面
      */
-    private void initUI(){
+    private void initUI() {
         if (lbean != null && lbean.getLines() != null) {
             datas.addAll(lbean.getLines());
         }
@@ -223,27 +223,22 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 startOrEndTally(true);
             }
         }
-        productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
-        if (lbean.isNewType()) {//新版订单不用查商品信息
-            getCategory();
-            updateUI();
-        } else {
-            productBasicHelper.requestDetail(PRODUCT_DETAIL);
-        }
+        getCategory();
+        updateUI();
         setUpSearch();
     }
 
     /**
      * 需要查详情拿商品列表
      */
-    private void requestOrderDetail(){
+    private void requestOrderDetail() {
         Object request = null;
         StringBuffer sb = new StringBuffer("/gongfu/v2/order/");
         sb.append(lbean.getOrderID()).append("/");
         sendConnection(sb.toString(), request, ORDER_DETAIL, true, OrderDetailResponse.class);
     }
 
-    private void updateUI(){
+    private void updateUI() {
         if (mode == 1) {
             setTitleText(true, "点货");
             String tallyingUserName = lbean.getTallyingUserName();
@@ -276,20 +271,20 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             }
         } else {
             setTitleText(true, "收货");
-            String source = (String) SPUtils.get(getActivityContext(),companyName+String.valueOf(lbean.getOrderID()),"");
-            if (!TextUtils.isEmpty(source)){
+            String source = (String) SPUtils.get(getActivityContext(), companyName + String.valueOf(lbean.getOrderID()), "");
+            if (!TextUtils.isEmpty(source)) {
                 ReceiveBeanList receiveBeanList = new ReceiveBeanList(source);
                 List<ReceiveBean> beanList = receiveBeanList.getList();
                 boolean isEmpty = true;
-                for (ReceiveBean receiveBean:beanList){
+                for (ReceiveBean receiveBean : beanList) {
                     countMap.put(String.valueOf(receiveBean.getProductId()), receiveBean);
-                    if (receiveBean.getCount() != 0){
+                    if (receiveBean.getCount() != 0) {
                         isEmpty = false;
                     }
                 }
                 //如果从缓存那里获取每个商品的收货数量为0，那重置回初始值,每个商品的数量和对应的库存数量一致
-                if (isEmpty){
-                    for (ReceiveBean receiveBean:beanList){
+                if (isEmpty) {
+                    for (ReceiveBean receiveBean : beanList) {
                         receiveBean.setCount(receiveBean.getProductUomQty());
                     }
                 }
@@ -297,17 +292,17 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     totalQty += bean.getActualSendNum();
                 }
                 updatePbProgress();
-            }else{
+            } else {
                 boolean isEmpty = true;
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
-                    if (lbean.isActual()){
+                    if (lbean.isActual()) {
                         receiveBean.setCount(linesBean.getActualSendNum());
-                    }else{
+                    } else {
                         receiveBean.setCount(linesBean.getProductUomQty());
                     }
-                    if (receiveBean.getCount() != 0){
+                    if (receiveBean.getCount() != 0) {
                         isEmpty = false;
                     }
 
@@ -316,10 +311,10 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                         List<ReceiveRequest.ProductsBean.LotBean> lot_list = new ArrayList<>();
                         ReceiveRequest.ProductsBean.LotBean lotBean = new ReceiveRequest.ProductsBean.LotBean();
                         lotBean.setLot_name("");
-                        if (lbean.isActual()){
+                        if (lbean.isActual()) {
                             lotBean.setHeight(linesBean.getActualSendNum());
                             lotBean.setQty((int) linesBean.getActualSendNum());
-                        }else{
+                        } else {
                             lotBean.setHeight(linesBean.getProductUomQty());
                             lotBean.setQty((int) linesBean.getProductUomQty());
                         }
@@ -331,8 +326,8 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     countMap.put(String.valueOf(linesBean.getProductID()), receiveBean);
                 }
                 //如果从缓存那里获取每个商品的收货数量为0，那重置回初始值,每个商品的数量和对应的库存数量一致
-                if (isEmpty){
-                    for (ReceiveBean receiveBean:countMap.values()){
+                if (isEmpty) {
+                    for (ReceiveBean receiveBean : countMap.values()) {
                         receiveBean.setCount(receiveBean.getProductUomQty());
                     }
                 }
@@ -620,7 +615,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 double count = Double.valueOf(edEt.getText().toString());
                 if (count > 0) {
                     count = BigDecimal.valueOf(count).subtract(BigDecimal.ONE).doubleValue();
-                    if(count<0)count = 0;
+                    if (count < 0) count = 0;
                     edEt.setText(NumberUtil.getIOrD(count));
                 }
             }
@@ -630,7 +625,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             public void onClick(View v) {
                 double count = Double.valueOf(edEt.getText().toString());
                 count = BigDecimal.valueOf(count).add(BigDecimal.ONE).doubleValue();
-                if(count<0)count = 0;
+                if (count < 0) count = 0;
                 edEt.setText(NumberUtil.getIOrD(count));
 //                edEt.setSelection(String.valueOf(String.valueOf(count)).length());
             }
@@ -639,7 +634,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         sureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(edEt.getText().toString())){
+                if (TextUtils.isEmpty(edEt.getText().toString())) {
                     toast("输入数量不能为空!");
                     return;
                 }
@@ -674,7 +669,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mTvReceiveCountTag.setText("/" + NumberUtil.getIOrD(totalQty) + "件");
     }
 
-//    private PopupWindow mProductTypeWindow;
+    //    private PopupWindow mProductTypeWindow;
 //    ProductTypeAdapter mProductTypeAdapter;
     private ProductTypePopup mTypeWindow;
 
@@ -685,7 +680,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         mTypeWindow = new ProductTypePopup(this,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 DensityUtil.getScreenH(getActivityContext()) - y,
-                typeList,0);
+                typeList, 0);
         mTypeWindow.setViewPager(viewPager);
         mTypeWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
@@ -763,7 +758,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     list.add(bean);
                 }
                 receiveBeanList.setList(list);
-                SPUtils.put(getActivityContext(),companyName+String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
+                SPUtils.put(getActivityContext(), companyName + String.valueOf(lbean.getOrderID()), receiveBeanList.toString());
                 if (mode == 1) {
                     dialog.setTitle("提示");
                     dialog.setMessage("确认取消点货?");
@@ -786,7 +781,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 //如果无批次，提示请认真核对商品数量，确认收货无法修改哦！
                 //如果有批次，提示
                 String tip = TYPE_VENDOR_DELIVERY.equals(lbean.getDeliveryType()) ?
-                        "请认真核对商品数量和生产日期,确认收货后无法修改哦！":"请认真核对商品数量，确认收货无法修改哦！";
+                        "请认真核对商品数量和生产日期,确认收货后无法修改哦！" : "请认真核对商品数量，确认收货无法修改哦！";
                 if (mode == 2) {
                     tip = "确认完成收货?";
                 }
@@ -902,7 +897,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 receiveInfo.setCountList(countList.toString());
                 receiveInfo.setBatchNumberList(batchNumberList.toString());
             } else {
-                receiveInfo.setCount((int)bean.getCount());
+                receiveInfo.setCount((int) bean.getCount());
             }
             try {
                 dbUtils.saveOrUpdate(receiveInfo);
@@ -1173,7 +1168,6 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //            },400);
 
 
-
             //更新进度条
             updatePbProgress();
             //更新fragment列表内容
@@ -1309,7 +1303,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             list.add(bean);
         }
         receiveBeanList.setList(list);
-        SPUtils.put(getActivityContext(),companyName+String.valueOf(lbean.getOrderID()),receiveBeanList.toString());
+        SPUtils.put(getActivityContext(), companyName + String.valueOf(lbean.getOrderID()), receiveBeanList.toString());
         if (mode == 1) {
             dialog.setTitle("提示");
             dialog.setMessage("确认取消点货?");
@@ -1338,6 +1332,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         MobclickAgent.onPageStart("收货页面");
         MobclickAgent.onResume(this);          //统计时长
     }
+
     @Override
     protected void onPause() {
         super.onPause();

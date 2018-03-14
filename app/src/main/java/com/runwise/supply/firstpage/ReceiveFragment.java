@@ -33,7 +33,6 @@ import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.DataType;
-import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.swipmenu.SwipeMenu;
 import com.runwise.supply.view.swipmenu.SwipeMenuCreator;
@@ -104,8 +103,7 @@ public class ReceiveFragment extends BaseFragment {
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) datas.get(position);
                 String pId = String.valueOf(bean.getProductID());
-                ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-                adapter.setReceiveCount(bean.getProductUomQty(), basicBean, bean);
+                adapter.setReceiveCount(bean.getProductUomQty(),bean);
                 adapter.notifyDataSetChanged();
                 return false;
             }
@@ -144,8 +142,7 @@ public class ReceiveFragment extends BaseFragment {
     private List<OrderResponse.ListBean.LinesBean> findArrayByWord(String word) {
         List<OrderResponse.ListBean.LinesBean> findList = new ArrayList<>();
         for (OrderResponse.ListBean.LinesBean bean : datas) {
-            ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
-            if (basicBean.getName().contains(word)) {
+            if (bean.getName().contains(word)) {
                 findList.add(bean);
             }
         }
@@ -204,12 +201,7 @@ public class ReceiveFragment extends BaseFragment {
             String pId = String.valueOf(bean.getProductID());
 
             String tracking = null;
-            if (orderBean.isNewType() || !TextUtils.isEmpty(bean.getTracking())) {
                 tracking = bean.getTracking();
-            } else {
-                final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
-                tracking = basicBean.getTracking();
-            }
 //          if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean != null && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
             if (orderBean.getDeliveryType().equals("vendor_delivery") && ProductBasicList.ListBean.TRACKING_TYPE_LOT.equals(tracking)) {
                 return false;
@@ -224,8 +216,6 @@ public class ReceiveFragment extends BaseFragment {
                 return getNewTypeExView(position, convertView, parent);
             }
             final OrderResponse.ListBean.LinesBean bean = (OrderResponse.ListBean.LinesBean) mList.get(position);
-            String pId = String.valueOf(bean.getProductID());
-            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(pId);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.receive_list_item, null);
@@ -239,32 +229,29 @@ public class ReceiveFragment extends BaseFragment {
                 @Override
                 public void onClick(View v) {
                     ReceiveBean rb = new ReceiveBean();
-                    if (basicBean != null) {
-                        rb.setName(basicBean.getName());
+                    rb.setName(bean.getName());
 //                        rb.setCount((int)bean.getProductUomQty());
-                        rb.setCount(0);
-                        rb.setProductId(bean.getProductID());
-                        if (isSettle) {
-                            rb.setTwoUnit(true);
-                            rb.setUnit(basicBean.getSettleUomId());
-                        } else {
-                            rb.setTwoUnit(false);
-                        }
-                        if (callback != null) {
-                            callback.doAction(rb);
-                        }
+                    rb.setCount(0);
+                    rb.setProductId(bean.getProductID());
+                    if (isSettle) {
+                        rb.setTwoUnit(true);
+                        rb.setUnit(bean.getUnit());
+                    } else {
+                        rb.setTwoUnit(false);
+                    }
+                    if (callback != null) {
+                        callback.doAction(rb);
                     }
 
                 }
             });
-            if (basicBean != null) {
-                viewHolder.name.setText(basicBean.getName());
-                if (basicBean.getImage() != null)
-                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
-                StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-                sb.append(" | ").append(basicBean.getUnit());
+                viewHolder.name.setText(bean.getName());
+                if (bean.getImageMedium() != null)
+                    FrecoFactory.getInstance(mContext).disPlay(viewHolder.sdv, Constant.BASE_URL + bean.getImageMedium());
+                StringBuffer sb = new StringBuffer(bean.getDefaultCode());
+                sb.append(" | ").append(bean.getUnit());
                 String uom = bean.getProductUom();
-                if (!TextUtils.isEmpty(bean.getSaleUom())){
+                if (!TextUtils.isEmpty(bean.getSaleUom())) {
                     uom = bean.getSaleUom();
                 }
                 if (canSeePrice) {
@@ -274,7 +261,7 @@ public class ReceiveFragment extends BaseFragment {
                 viewHolder.countTv.setText(" " + uom);
                 viewHolder.mTvPurchaseCount.setText("订" + NumberUtil.getIOrD(bean.getProductUomQty()) + uom);
 
-                if (orderBean.getDeliveryType().equals("vendor_delivery") && basicBean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
+                if (orderBean.getDeliveryType().equals("vendor_delivery") && bean.getTracking().equals(ProductBasicList.ListBean.TRACKING_TYPE_LOT)) {
                     convertView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -292,7 +279,7 @@ public class ReceiveFragment extends BaseFragment {
                             } else {
                                 num = Integer.parseInt(numText);
                             }
-                            setReceiveCount(num, basicBean, bean);
+                            setReceiveCount(num,bean);
                         }
                     });
                 }
@@ -315,7 +302,6 @@ public class ReceiveFragment extends BaseFragment {
 //                        viewHolder.weightTv.setText("0" + basicBean.getSettleUomId());
                     }
                 }
-            }
             String str = viewHolder.receivedTv.getText().toString();
             if (!TextUtils.isEmpty(str)) {
                 double count = Double.parseDouble(str);
@@ -331,7 +317,7 @@ public class ReceiveFragment extends BaseFragment {
                 if (mode == 2) {
                     viewHolder.doBtn.setVisibility(View.INVISIBLE);
                     receiveStr.append(bean.getTallyingAmount());
-                    weightStr.append(bean.getSettleAmount()).append(basicBean.getSettleUomId());
+                    weightStr.append(bean.getSettleAmount()).append(bean.getSettleUomId());
                 } else {
                     viewHolder.doBtn.setVisibility(View.VISIBLE);
                     if (mode == 1) {
@@ -345,10 +331,10 @@ public class ReceiveFragment extends BaseFragment {
                         weightStr.append(rb.getTwoUnitValue()).append(rb.getUnit());
                     } else {
                         receiveStr.append("0");
-                        weightStr.append("0" + basicBean.getSettleUomId());
+                        weightStr.append("0" + bean.getSettleUomId());
                     }
                 }
-                receiveStr.append(" /" + NumberUtil.getIOrD(bean.getProductUomQty()) + basicBean.getUom());
+                receiveStr.append(" /" + NumberUtil.getIOrD(bean.getProductUomQty()) + bean.getSaleUom());
                 SpannableString builder = new SpannableString(receiveStr.toString());
                 int end = receiveStr.indexOf(" ");
                 builder.setSpan(new AbsoluteSizeSpan(16, true), 0, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -472,7 +458,7 @@ public class ReceiveFragment extends BaseFragment {
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());
             sb.append(" | ").append(bean.getUnit());
             String uom = bean.getProductUom();
-            if (!TextUtils.isEmpty(bean.getSaleUom())){
+            if (!TextUtils.isEmpty(bean.getSaleUom())) {
                 uom = bean.getSaleUom();
             }
 
@@ -520,10 +506,10 @@ public class ReceiveFragment extends BaseFragment {
                     if (!rb.isChange()) {
                         if (bean.getActualSendNum() != bean.getProductUomQty()) {
                             viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_count));
-                        }else{
+                        } else {
                             viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_input_count));
                         }
-                    }else{
+                    } else {
                         viewHolder.receivedTv.setTextColor(getResources().getColor(R.color.receive_input_count));
                     }
 //                        }

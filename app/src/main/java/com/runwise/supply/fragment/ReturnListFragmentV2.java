@@ -33,10 +33,12 @@ import com.runwise.supply.adapter.OrderTimeAdapter;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.entity.ReturnActivityRefreshEvent;
 import com.runwise.supply.firstpage.ReturnDetailActivity;
+import com.runwise.supply.firstpage.entity.FinishReturnResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.firstpage.entity.ReturnResponse;
 import com.runwise.supply.mine.OrderDataType;
 import com.runwise.supply.mine.entity.ReturnData;
+import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.OrderDateSelectDialog;
@@ -49,6 +51,8 @@ import java.util.List;
 import butterknife.Unbinder;
 import io.vov.vitamio.utils.NumberUtil;
 
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
+
 /**
  * Created by mike on 2018/3/11.
  */
@@ -59,6 +63,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
     private static final int REQUEST_DEN = 3;
     private static final int PRODUCT_GET = 4;
     private static final int REQUEST_CANCEL_RETURN_ORDER = 5;
+    private static final int REQUEST_FINISHRETURN = 6;
 
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
@@ -102,7 +107,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 
         OrderStateAdapter orderStateAdapter = new OrderStateAdapter();
 
-        String[] mTitles = new String[]{"全部状态", "待确认", "退货中", "已完成"};
+        String[] mTitles = new String[]{"全部状态", "待审核", "退货中", "已退货"};
         orderStateAdapter.setTitles(mTitles);
 
         mLvOrderState.setAdapter(orderStateAdapter);
@@ -203,12 +208,12 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
         switch (stateDesc) {
             case "全部状态":
                 return "";
-            case "待确认":
+            case "待审核":
                 return "draft";
             case "退货中":
                 return "process";
-            case "已完成":
-                return "rated";
+            case "已退货":
+                return "done";
         }
         return "";
     }
@@ -324,6 +329,13 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
         sendConnection(url, obj, REQUEST_CANCEL_RETURN_ORDER, true, BaseEntity.ResultBean.class);
     }
 
+    private void finishReturn(int returnOrderId) {
+        Object request = null;
+        sendConnection("/gongfu/v2/return_order/" +
+                returnOrderId +
+                "/done", request, REQUEST_FINISHRETURN, true, FinishReturnResponse.class);
+    }
+
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -362,6 +374,10 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             case REQUEST_CANCEL_RETURN_ORDER:
                 requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
                 ToastUtil.show(mContext, "取消申请退货成功");
+                break;
+            case REQUEST_FINISHRETURN:
+                requestData(false, mState, REQUEST_START, page, mStartTime, mEndTime);
+                ToastUtil.show(mContext, "退货成功");
                 break;
         }
     }
@@ -412,6 +428,30 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
 
             if ("process".equals(bean.getState())) {
                 holder.payStatus.setText("退货中");
+                if (bean.getDeliveryType().equals(TYPE_VENDOR_DELIVERY)) {
+                    holder.payBtn.setVisibility(View.VISIBLE);
+                    holder.payBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                                return;
+                            if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                                return;
+                            dialog.setMessage("确认数量一致?");
+                            dialog.setModel(CustomDialog.BOTH);
+                            dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                                @Override
+                                public void doClickButton(Button btn, CustomDialog dialog) {
+
+                                }
+                            });
+                            dialog.show();
+
+                        }
+                    });
+                } else {
+                    holder.payBtn.setVisibility(View.GONE);
+                }
             }
             //已发货
             else if ("done".equals(bean.getState())) {
@@ -421,8 +461,26 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             }
 
             if ("draft".equals(bean.getState())) {
-                holder.payStatus.setText("待确认");
+                holder.payStatus.setText("待审核");
                 holder.payBtn.setVisibility(View.VISIBLE);
+                holder.payBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                            return;
+                        dialog.setMessage("您确定要取消申请吗?");
+                        dialog.setModel(CustomDialog.BOTH);
+                        dialog.setLeftBtnListener("不取消了", null);
+                        dialog.setRightBtnListener("取消申请", new CustomDialog.DialogListener() {
+                            @Override
+                            public void doClickButton(Button btn, CustomDialog dialog) {
+                                cancelReturnOrder(bean.getReturnOrderID());
+                            }
+                        });
+                        dialog.show();
+
+                    }
+                });
             } else {
                 holder.payBtn.setVisibility(View.GONE);
             }
@@ -435,24 +493,6 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 descStringBuffer.append(",¥" + bean.getAmountTotal());
             }
             holder.patSum.setText(descStringBuffer.toString());
-            holder.payBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
-                        return;
-                    dialog.setMessage("您确定要取消申请退货吗?");
-                    dialog.setModel(CustomDialog.BOTH);
-                    dialog.setLeftBtnListener("不取消了", null);
-                    dialog.setRightBtnListener("取消申请", new CustomDialog.DialogListener() {
-                        @Override
-                        public void doClickButton(Button btn, CustomDialog dialog) {
-                            cancelReturnOrder(bean.getReturnOrderID());
-                        }
-                    });
-                    dialog.show();
-
-                }
-            });
             return convertView;
         }
 

@@ -43,6 +43,7 @@ import java.util.Locale;
 
 import io.vov.vitamio.utils.NumberUtil;
 
+import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean.TYPE_VENDOR_DELIVERY;
 import static com.runwise.supply.firstpage.entity.OrderState.PEISONG;
 
 /**
@@ -302,7 +303,7 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder.imgIv.setImageResource(R.drawable.more_restaurant_returnrecord);
             viewHolder.titleTv.setText(bean.getName());
             if ("draft".equals(bean.getState())) {
-                viewHolder.stateTv.setText("待确认");
+                viewHolder.stateTv.setText("待审核");
             } else {
                 viewHolder.stateTv.setText("退货中");
             }
@@ -372,7 +373,8 @@ public class OrderAdapter extends IBaseAdapter {
                 downArrow.setImageResource(R.drawable.login_btn_dropdown);
             }
             String stateText = "";
-            if ("process".equals(bean.getState())) {
+//            退货中的订单，只有直运订单才显示完成退货
+            if ("process".equals(bean.getState()) && bean.getDeliveryType().equals(TYPE_VENDOR_DELIVERY)) {
                 stateText = "完成退货";
                 viewHolder.doBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -399,13 +401,12 @@ public class OrderAdapter extends IBaseAdapter {
                 });
             }
 
-            if (!TextUtils.isEmpty(stateText)){
+            if (!TextUtils.isEmpty(stateText)) {
                 viewHolder.doBtn.setVisibility(View.VISIBLE);
                 viewHolder.doBtn.setText(stateText);
-            }else{
+            } else {
                 viewHolder.doBtn.setVisibility(View.INVISIBLE);
             }
-
 
 
         }

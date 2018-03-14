@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.kids.commonframe.base.util.SPUtils;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
-import com.runwise.supply.RegisterActivity;
 
 import java.text.DecimalFormat;
 
@@ -50,7 +49,11 @@ public class UserUtils {
     public static void setOrderStatus(String status, TextView label, ImageView icon, boolean normalOrder) {
         //待确认
         if("draft".equals(status)) {
-            label.setText("待确认");
+            if (!normalOrder){
+                label.setText("待审核");
+            }else{
+                label.setText("待确认");
+            }
             icon.setImageResource(R.drawable.state_restaurant_1_tocertain);
         }
         //已确认
