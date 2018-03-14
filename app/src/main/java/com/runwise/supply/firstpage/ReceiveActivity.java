@@ -289,7 +289,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                     }
                 }
                 for (OrderResponse.ListBean.LinesBean bean : datas) {
-                    totalQty += bean.getActualSendNum();
+                    totalQty += bean.getProductUomQty();
                 }
                 updatePbProgress();
             } else {
@@ -297,7 +297,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
                 for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
                     ReceiveBean receiveBean = new ReceiveBean();
                     receiveBean.setProductId(linesBean.getProductID());
-                    if (lbean.isActual()) {
+                    if (lbean.isActualSendOrder()) {
                         receiveBean.setCount(linesBean.getActualSendNum());
                     } else {
                         receiveBean.setCount(linesBean.getProductUomQty());
@@ -662,10 +662,21 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
     }
 
     private void setDefalutProgressBar() {
-        for (OrderResponse.ListBean.LinesBean bean : datas) {
-            totalQty += bean.getActualSendNum();
+        double totalActualSendQty = 0;
+        totalQty = 0;
+        if (lbean.isActualSendOrder()){
+            for (OrderResponse.ListBean.LinesBean bean : datas) {
+                totalQty += bean.getProductUomQty();
+                totalActualSendQty+=bean.getActualSendNum();
+            }
+        }else{
+            for (OrderResponse.ListBean.LinesBean bean : datas) {
+                totalQty += bean.getProductUomQty();
+            }
+            totalActualSendQty = totalQty;
         }
-        mTvReceiveCount.setText(NumberUtil.getIOrD(totalQty));
+
+        mTvReceiveCount.setText(NumberUtil.getIOrD(totalActualSendQty));
         mTvReceiveCountTag.setText("/" + NumberUtil.getIOrD(totalQty) + "件");
     }
 

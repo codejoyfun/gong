@@ -171,7 +171,7 @@ public class UploadReturnPicActivity extends NetWorkActivity implements UploadIn
                 setTitleRightText(false,"");
                 //上传按钮只有提交新图片后才有
 //                upLoadBtn.setVisibility(View.VISIBLE);
-//                upLoadBtn.setText("确认修改");
+                upLoadBtn.setText("确认修改");
                 adapter.setModifyMode(true);
                 if (picList.size() < 3 && !picList.contains(ADDBUTTON)){
                     picList.add(ADDBUTTON);

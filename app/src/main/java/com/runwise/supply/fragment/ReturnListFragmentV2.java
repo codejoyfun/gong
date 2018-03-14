@@ -425,64 +425,60 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 holder = (CarInfoListAdapter.ViewHolder) convertView.getTag();
             }
             ReturnOrderBean.ListBean bean = mList.get(position);
+            holder.payBtn.setVisibility(View.GONE);
+            switch (bean.getState()){
+                case "process":
+                    holder.payStatus.setText("退货中");
+                    if (bean.getDeliveryType().equals(TYPE_VENDOR_DELIVERY)) {
+                        holder.payBtn.setVisibility(View.VISIBLE);
+                        holder.payBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
+                                    return;
+                                if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                                    return;
+                                dialog.setMessage("确认数量一致?");
+                                dialog.setModel(CustomDialog.BOTH);
+                                dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                                    @Override
+                                    public void doClickButton(Button btn, CustomDialog dialog) {
 
-            if ("process".equals(bean.getState())) {
-                holder.payStatus.setText("退货中");
-                if (bean.getDeliveryType().equals(TYPE_VENDOR_DELIVERY)) {
+                                    }
+                                });
+                                dialog.show();
+
+                            }
+                        });
+                    } else {
+                        holder.payBtn.setVisibility(View.GONE);
+                    }
+                    break;
+                case "done":
+                    holder.payStatus.setText("已退货");
+                    break;
+                case "draft":
+                    holder.payStatus.setText("待审核");
                     holder.payBtn.setVisibility(View.VISIBLE);
                     holder.payBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
                                 return;
-                            if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
-                                return;
-                            dialog.setMessage("确认数量一致?");
+                            dialog.setMessage("您确定要取消申请吗?");
                             dialog.setModel(CustomDialog.BOTH);
-                            dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                            dialog.setLeftBtnListener("不取消了", null);
+                            dialog.setRightBtnListener("取消申请", new CustomDialog.DialogListener() {
                                 @Override
                                 public void doClickButton(Button btn, CustomDialog dialog) {
-
+                                    cancelReturnOrder(bean.getReturnOrderID());
                                 }
                             });
                             dialog.show();
 
                         }
                     });
-                } else {
-                    holder.payBtn.setVisibility(View.GONE);
-                }
-            }
-            //已发货
-            else if ("done".equals(bean.getState())) {
-                holder.payStatus.setText("已退货");
-            } else {
-                holder.payStatus.setText("已退货");
-            }
-
-            if ("draft".equals(bean.getState())) {
-                holder.payStatus.setText("待审核");
-                holder.payBtn.setVisibility(View.VISIBLE);
-                holder.payBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))
-                            return;
-                        dialog.setMessage("您确定要取消申请吗?");
-                        dialog.setModel(CustomDialog.BOTH);
-                        dialog.setLeftBtnListener("不取消了", null);
-                        dialog.setRightBtnListener("取消申请", new CustomDialog.DialogListener() {
-                            @Override
-                            public void doClickButton(Button btn, CustomDialog dialog) {
-                                cancelReturnOrder(bean.getReturnOrderID());
-                            }
-                        });
-                        dialog.show();
-
-                    }
-                });
-            } else {
-                holder.payBtn.setVisibility(View.GONE);
+                    break;
             }
 
             holder.payTitle.setText(bean.getTime());

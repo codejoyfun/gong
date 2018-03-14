@@ -92,6 +92,8 @@ public class InventoryActivity extends NetWorkActivity {
     private TextView mTvInventoryDate;
     @ViewInject(R.id.tv_inventory_cache)
     private TextView mTvInventoryCache;
+    @ViewInject(R.id.iv_product_cart)
+    private ImageView mIvProductCart;
     InventoryResponse.InventoryBean mInventoryBean;
     CategoryRespone categoryRespone;
     List<Fragment> orderProductFragmentList;
@@ -222,7 +224,9 @@ public class InventoryActivity extends NetWorkActivity {
     public void onFailure(String errMsg, BaseEntity result, int where) {
         ToastUtil.show(this, errMsg);
     }
+
     List<String> mTitles;
+
     private void setUpDataForViewPage() {
         if (categoryRespone == null) {
             return;
@@ -349,8 +353,8 @@ public class InventoryActivity extends NetWorkActivity {
         }
 
         //找出商品的分类，并把它插入指定fragment
-        for (int i = 0;i<mTitles.size();i++){
-            if (newBean.getInventoryProduct().getProduct().getCategory().equals(mTitles.get(i))){
+        for (int i = 0; i < mTitles.size(); i++) {
+            if (newBean.getInventoryProduct().getProduct().getCategory().equals(mTitles.get(i))) {
                 InventoryFragment inventoryFragment = (InventoryFragment) orderProductFragmentList.get(i);
                 inventoryFragment.addData(newBean.getInventoryProduct());
             }
@@ -488,7 +492,7 @@ public class InventoryActivity extends NetWorkActivity {
     private String getCategoryCountInfo(String categoryParent, String categoryChild) {
         String desc = "";
         int count = 0;
-        List<InventoryResponse.InventoryProduct> inventoryProductList =  getDiffInventoryProductList();
+        List<InventoryResponse.InventoryProduct> inventoryProductList = getDiffInventoryProductList();
         for (InventoryResponse.InventoryProduct listBean : inventoryProductList) {
             if (listBean.getProduct().getCategoryParent().equals(categoryParent)
                     && listBean.getProduct().getCategoryChild().equals(categoryChild)) {
@@ -518,8 +522,10 @@ public class InventoryActivity extends NetWorkActivity {
 
         if (totalPieces != 0) {
             mTvProductTotalCount.setText("差异商品(" + NumberUtil.getIOrD(totalPieces) + "种)");
+            mIvProductCart.setSelected(true);
         } else {
             mTvProductTotalCount.setText("差异商品(0种)");
+            mIvProductCart.setSelected(false);
         }
 
         if (GlobalApplication.getInstance().getCanSeePrice()) {
