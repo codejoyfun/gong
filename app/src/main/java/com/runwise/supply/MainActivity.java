@@ -51,6 +51,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.MainRepertoryFragment;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.PlatformNotificationManager;
+import com.runwise.supply.tools.RunwiseService;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
@@ -335,11 +336,11 @@ public class MainActivity extends NetWorkActivity {
         super.onResume();
         MobclickAgent.onResume(this);
         //每次首次进来，先获取基本商品列表,暂时缓存到内存里。
-//        if (SPUtils.isLogin(mContext)){
-//            queryProductList();
-//        }URL	http://develop.runwise.cn/gongfu/message/unread/
         login();
         if (isLogin) {
+//            首页再去拿商品列表
+            Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
+            startService(startIntent);
             Object request = null;
             sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
             mTimeStartREQUEST_UNREAD = System.currentTimeMillis();
