@@ -1,7 +1,6 @@
 package com.runwise.supply;
 
 import android.content.Intent;
-import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
