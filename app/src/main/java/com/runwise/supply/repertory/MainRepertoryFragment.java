@@ -14,7 +14,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
@@ -188,7 +188,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
         InventoryResponse inventoryResponse = new InventoryResponse();
         InventoryResponse.InventoryBean inventoryBean = new InventoryResponse.InventoryBean();
         inventoryBean.setCreateDate("2017-12-12");
-        inventoryBean.setCreateUser(GlobalApplication.getInstance().getUserName());
+        inventoryBean.setCreateUser(SampleApplicationLike.getInstance().getUserName());
         inventoryBean.setInventoryID(2312);
         inventoryResponse.setInventory(inventoryBean);
         inventoryBean.setLines(new ArrayList<>());

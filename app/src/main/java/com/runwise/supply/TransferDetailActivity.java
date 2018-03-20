@@ -112,7 +112,7 @@ public class TransferDetailActivity extends NetWorkActivity implements LoadingLa
         mTransferProductAdapter = new TransferProductAdapter(this);
         mRvProducts.setAdapter(mTransferProductAdapter);
         productBasicHelper = new ProductBasicHelper(this, netWorkHelper);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         mLoadingLayout.setOnRetryClickListener(this);
         showUI();
         requestData();
@@ -121,7 +121,7 @@ public class TransferDetailActivity extends NetWorkActivity implements LoadingLa
     private void showUI() {
         if (mTransferEntity == null) return;
         //是否是接收门店
-        isDestLocation = GlobalApplication.getInstance().loadUserInfo().getMendian().equals(mTransferEntity.getLocationDestName());
+        isDestLocation = SampleApplicationLike.getInstance().loadUserInfo().getMendian().equals(mTransferEntity.getLocationDestName());
         setTitleText(true, "调拨单详情");
         initViews();
         setStatusText();
@@ -461,7 +461,7 @@ public class TransferDetailActivity extends NetWorkActivity implements LoadingLa
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             if (getItemViewType(position) == TYPE_FOOTER) {
-//                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+//                boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
 //                if (!canSeePrice) {
 //                    view.findViewById(R.id.priceLL).setVisibility(View.GONE);
 //                }
@@ -528,7 +528,7 @@ public class TransferDetailActivity extends NetWorkActivity implements LoadingLa
             vh.name.setText(bean.getProductName());
             StringBuffer sb = new StringBuffer(bean.getProductCode());
             sb.append(" | ").append(bean.getProductUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
             if (canSeePrice) {
                 if (isTwoUnit && basicBean != null) {
                     sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getSettlePrice()))).append("元/").append(basicBean.getSettleUomId());

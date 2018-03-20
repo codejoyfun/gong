@@ -122,7 +122,7 @@ public class LoginRelogActivity extends NetWorkActivity {
                 break;
             case REQUEST_USERINFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);
                 JPushInterface.setAliasAndTags(getApplicationContext(), CommonUtils.getDeviceId(this), null, null);
                 SPUtils.setLogin(mContext, true);
                 SPUtils.setLoginConflict(getActivityContext(),false);

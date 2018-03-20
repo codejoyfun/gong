@@ -38,7 +38,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.ChangePhoneActivity;
 import com.runwise.supply.FindPasswordActivity;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.message.MessageFragment;
@@ -106,7 +106,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_edit_userinfo);
         capTempPhotoUrl = Uri.fromFile(new File(CommonUtils.getCachePath(mContext),"temp.jpg"));
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
 
         if( userInfo != null) {
             FrecoFactory.getInstance(this).disPlay(userHead, Constant.BASE_URL + userInfo.getAvatarUrl());
@@ -143,7 +143,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 SelfOrderTimeStatisticsUtil.clear();
                 MobclickAgent.onProfileSignOff();
                 MessageFragment.isLogin = false;
-                GlobalApplication.getInstance().cleanUesrInfo();
+                SampleApplicationLike.getInstance().cleanUesrInfo();
                 JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
                 //退出登录
                 ActivityManager.getInstance().finishAll();
@@ -156,7 +156,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
             case REQUEST_USERINFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
 //                userInfo.setAvatarUrl(userInfo.getAvatarUrl());
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);
                 Fresco.getImagePipeline().evictFromCache(updateImgUri);
                 FrecoFactory.getInstance(this).disPlay(userHead, updateImgUri);
                 dismissUploadDialog("头像上传成功!");
@@ -284,19 +284,19 @@ public class EditUserinfoActivity extends NetWorkActivity {
                     sendConnection("/gongfu/user/avatar", partList, REQUEST_UPLOAD_IMAGEFILE, false, UploadImg.class);
                     break;
                 case REQUEST_UPDATE_NAME:
-                    userInfo = GlobalApplication.getInstance().loadUserInfo();
+                    userInfo = SampleApplicationLike.getInstance().loadUserInfo();
 //                    userInfoName.setText(userInfo.getNickname());
                     break;
                 case REQUEST_UPDATE_AGE:
-                    userInfo = GlobalApplication.getInstance().loadUserInfo();
+                    userInfo = SampleApplicationLike.getInstance().loadUserInfo();
 //                    userInfoAge.setText(userInfo.getAge());
                     break;
                 case REQUEST_UPDATE_SEX:
-                    userInfo = GlobalApplication.getInstance().loadUserInfo();
+                    userInfo = SampleApplicationLike.getInstance().loadUserInfo();
 //                    userInfoSex.setText("2".equals(userInfo.getSex()) ? "女" : "男");
                     break;
                 case REQUEST_UPDATE_PHONENUMBER:
-                    userInfo = GlobalApplication.getInstance().loadUserInfo();
+                    userInfo = SampleApplicationLike.getInstance().loadUserInfo();
 //                    userInfoPhone.setText(userInfo.getPhone());
                     break;
             }

@@ -7,7 +7,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.kids.commonframe.base.util.SPUtils;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.ShowInventoryNoticeEvent;
 
@@ -67,7 +67,7 @@ public class InventoryCacheManager {
         //保存一份简要的信息用于首页显示
         InventoryBrief inventoryBrief = new InventoryBrief();
         inventoryBrief.setInventoryID(inventoryBean.getInventoryID());
-        inventoryBrief.setCreateUser(GlobalApplication.getInstance().getUserName());
+        inventoryBrief.setCreateUser(SampleApplicationLike.getInstance().getUserName());
         inventoryBrief.setCreateTime(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
         inventoryBrief.setName(inventoryBean.getName());
         SPUtils.saveObject(mListPrefs, String.valueOf(inventoryBrief.getInventoryID()), inventoryBrief);

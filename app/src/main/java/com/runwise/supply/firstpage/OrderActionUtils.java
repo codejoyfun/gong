@@ -2,7 +2,7 @@ package com.runwise.supply.firstpage;
 
 import android.text.TextUtils;
 
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.OrderState;
 
@@ -13,7 +13,7 @@ import static com.runwise.supply.firstpage.entity.OrderState.PEISONG;
  */
 
 public class OrderActionUtils {
-    private static String userName = GlobalApplication.getInstance().getUserName();
+    private static String userName = SampleApplicationLike.getInstance().getUserName();
     //通过订单状态，获取按钮上该显示什么字
     public static String getDoBtnTextByState(OrderResponse.ListBean bean) {
         String btnText = null;
@@ -73,7 +73,7 @@ public class OrderActionUtils {
             if(bean.getState().equals(PEISONG.getName()) && !TextUtils.isEmpty(bean.getReceiveError())){//收货失败
                 action = OrderDoAction.RECEIVE_AGAIN;//重新收货
             } else if (bean.isIsDoubleReceive()){//在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
-                String userName = GlobalApplication.getInstance().getUserName();
+                String userName = SampleApplicationLike.getInstance().getUserName();
                 if (bean.getTallyingUserName().equals(userName)){
                     action = OrderDoAction.SELFTALLY;
                 }else{

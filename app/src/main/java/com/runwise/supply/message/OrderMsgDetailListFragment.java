@@ -21,7 +21,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.OrderMsgDetail;
@@ -206,7 +206,7 @@ public class OrderMsgDetailListFragment extends NetWorkFragment implements Adapt
                 viewHolder.number.setText(productBean.getDefaultCode() + " | ");
                 viewHolder.content.setText(productBean.getUnit());
                 FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, productBean.getImage().getImageSmall());
-                if (GlobalApplication.getInstance().getCanSeePrice()) {
+                if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                     viewHolder.dateNumber.setVisibility(View.VISIBLE);
                     viewHolder.dateNumber.setText("¥"+ UserUtils.formatPrice(productBean.getPrice()+"")+"/"+bean.getProductUom());
                 }

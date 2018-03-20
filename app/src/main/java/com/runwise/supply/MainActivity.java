@@ -206,7 +206,7 @@ public class MainActivity extends NetWorkActivity {
             e.printStackTrace();
         }
         MessageFragment.isLogin = false;
-        GlobalApplication.getInstance().cleanUesrInfo();
+        SampleApplicationLike.getInstance().cleanUesrInfo();
         JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
         //退出登录
         ActivityManager.getInstance().finishAll();
@@ -347,7 +347,7 @@ public class MainActivity extends NetWorkActivity {
 
             //查询系统更新
             long currentTime = System.currentTimeMillis();
-            UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+            UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
             if (userInfo == null) return;
             DbUtils db = MyDbUtil.create(this);
             try {

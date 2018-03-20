@@ -21,7 +21,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferDetailActivity;
@@ -80,7 +80,7 @@ public class TransferListFragment extends NetWorkFragment implements AdapterView
         mPullListView.setAdapter(mTransferListAdapter);
         mPullListView.setOnRefreshListener(new PullToRefreshListener());
         //requestData(true, REQUEST_REFRESH, page, 10);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
     }
 
     public void refresh() {

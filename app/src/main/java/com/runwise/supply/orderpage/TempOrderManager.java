@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import com.kids.commonframe.base.bean.UserLogoutEvent;
 import com.kids.commonframe.base.util.SPUtils;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -46,7 +46,7 @@ public class TempOrderManager {
     }
 
     private TempOrderManager(Context context){
-        String prefName = PREF_NAME_PREFIX + GlobalApplication.getInstance().getUid();//按用户保存
+        String prefName = PREF_NAME_PREFIX + SampleApplicationLike.getInstance().getUid();//按用户保存
         mPrefs = context.getSharedPreferences(prefName,0);
     }
 

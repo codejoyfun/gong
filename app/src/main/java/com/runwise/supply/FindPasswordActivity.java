@@ -89,7 +89,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 		this.setTitleLeftIcon(true,R.drawable.marking);
 		String phoneNum = getIntent().getStringExtra("phoneNumber");
 		if(isLogin(this)){
-		    phoneNum = GlobalApplication.getInstance().loadUserInfo().getMobile();
+		    phoneNum = SampleApplicationLike.getInstance().loadUserInfo().getMobile();
 		    mPhonenNmber.setEnabled(false);
 		    mPhonenNmber.setTextColor(getResources().getColor(android.R.color.black));
 		    mPhonenNmber.setHint("未设置手机号");
@@ -172,7 +172,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 				ToastUtil.show(mContext, "密码修改成功");
 				//更新指纹识别
 				if(isLogin(this)){
-					UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+					UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
 					String password = mPassword.getText().toString();
 					String cipher = null;
 					try{
@@ -202,7 +202,7 @@ public class FindPasswordActivity extends NetWorkActivity {
                 SPUtils.loginOut(mContext);
 				SelfOrderTimeStatisticsUtil.clear();
                 MessageFragment.isLogin = false;
-                GlobalApplication.getInstance().cleanUesrInfo();
+                SampleApplicationLike.getInstance().cleanUesrInfo();
                 JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
 
                 CustomDialog customDialog = new CustomDialog(this);

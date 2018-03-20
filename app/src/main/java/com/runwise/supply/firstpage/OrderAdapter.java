@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.IBaseAdapter;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferInActivity;
 import com.runwise.supply.entity.InventoryResponse;
@@ -118,7 +118,7 @@ public class OrderAdapter extends IBaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
             ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
-            if (!GlobalApplication.getInstance().getCanSeePrice()) {
+            if (!SampleApplicationLike.getInstance().getCanSeePrice()) {
                 viewHolder.priceLL.setVisibility(View.GONE);
             }
         } else {
@@ -130,7 +130,7 @@ public class OrderAdapter extends IBaseAdapter {
         if (getItemViewType(position) == TYPE_ORDER) {
             final OrderResponse.ListBean bean = (OrderResponse.ListBean) mList.get(position);
             //未读红点
-            boolean unread = bean.isAsyncOrder() && !bean.isUserRead(GlobalApplication.getInstance().getUid());
+            boolean unread = bean.isAsyncOrder() && !bean.isUserRead(SampleApplicationLike.getInstance().getUid());
             if (unread) {
                 viewHolder.ivUnread.setVisibility(View.VISIBLE);
             } else {
@@ -534,7 +534,7 @@ public class OrderAdapter extends IBaseAdapter {
         TempOrderManager.TempOrder order = (TempOrderManager.TempOrder) mList.get(position);
         viewHolder.mmTvTitle.setText("预计" + formatTimeStr(order.getEstimateDate()) + "送达");
 
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             viewHolder.mmTvPrice.setVisibility(View.VISIBLE);
             viewHolder.mmTvPrice.setText(UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
         } else {
@@ -595,13 +595,13 @@ public class OrderAdapter extends IBaseAdapter {
             viewHolder = (TransferViewHolder) convertView.getTag();
         }
         final TransferEntity transferEntity = (TransferEntity) mList.get(position);
-        boolean isDest = GlobalApplication.getInstance().loadUserInfo().getMendian().equals(transferEntity.getLocationDestName());
+        boolean isDest = SampleApplicationLike.getInstance().loadUserInfo().getMendian().equals(transferEntity.getLocationDestName());
         viewHolder.mmIvIcon.setImageResource(isDest ? R.drawable.state_delivery_8_callin : R.drawable.state_delivery_8_callout);
 
         viewHolder.mmTvTitle.setText(transferEntity.getPickingName());
         viewHolder.mmTvCreateTime.setText(transferEntity.getDate());
         viewHolder.mmTvLocations.setText(transferEntity.getLocationName() + "\u2192" + transferEntity.getLocationDestName());
-        if (GlobalApplication.getInstance().getCanSeePrice())
+        if (SampleApplicationLike.getInstance().getCanSeePrice())
             viewHolder.mmTvPrice.setText(df.format(transferEntity.getTotalPrice()) + "元，" + NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
         else viewHolder.mmTvPrice.setText(NumberUtil.getIOrD(transferEntity.getTotalNum()) + "件商品");
         viewHolder.mmTvAction.setVisibility(View.VISIBLE);
@@ -641,7 +641,7 @@ public class OrderAdapter extends IBaseAdapter {
         viewHolder.tvInventoryPerson.setText(inventoryBean.getCreateUser());
         viewHolder.cvRoot.setOnClickListener(viewHolder);
         //当前用户创建的，可以取消
-        if (GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())) {
+        if (SampleApplicationLike.getInstance().getUserName().equals(inventoryBean.getCreateUser())) {
             viewHolder.tvInventoryCancel.setOnClickListener(viewHolder);
             viewHolder.tvInventoryCancel.setVisibility(View.VISIBLE);
         } else {

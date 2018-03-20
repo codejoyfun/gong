@@ -16,7 +16,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -82,7 +82,7 @@ public class TempOrderActivity extends NetWorkActivity {
             vh.name.setText(bean.getName());
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());
             sb.append(" | ").append(bean.getUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
             if (canSeePrice){
                 sb.append("\n").append(UserUtils.formatPrice(String.valueOf(bean.getPrice()))).append("元/").append(bean.getSaleUom());
             }

@@ -29,7 +29,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -90,7 +90,7 @@ public class ProductListFragment extends NetWorkFragment {
 //        countMap.clear();
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
         pullListView.setAdapter(adapter);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         setUpListData();
     }
 

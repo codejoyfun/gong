@@ -35,7 +35,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.entity.InventoryResponse;
@@ -111,7 +111,7 @@ public class EditBatchDialog extends BaseActivity {
         mLvBatch.addFooterView(addBatchView);
         mLvBatch.setAdapter(batchListAdapter);
         mBatchEntities = initBatchData();
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         mViewBg.postDelayed(()->mViewBg.setBackgroundColor(getResources().getColor(R.color.translucent)),600);
     }
 

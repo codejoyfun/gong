@@ -23,7 +23,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OrderChangedEvent;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -113,7 +113,7 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
         //订单得到数据
         bean = getIntent().getExtras().getParcelable("order");
         setUpDate(2);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         setTitleRightText(true, "编辑");
         setTitleLeftIcon(true, R.drawable.nav_back);
         adapter = new OneKeyAdapter(mContext);
@@ -215,8 +215,8 @@ public class OrderModifyActivity extends NetWorkActivity implements OneKeyAdapte
                 break;
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
-                mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);
+                mReserveGoodsAdvanceDate = SampleApplicationLike.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = 1;
                 setUpDate(mReserveGoodsAdvanceDate);

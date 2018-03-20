@@ -7,7 +7,7 @@ import android.text.TextUtils;
 
 import com.kids.commonframe.base.util.SPUtils;
 import com.lidroid.xutils.DbUtils;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.message.entity.DetailResult;
 import com.runwise.supply.message.entity.MessageResult;
 
@@ -47,7 +47,7 @@ public class PlatformNotificationManager {
     }
 
     public PlatformNotificationManager(Context context){
-        String uid = GlobalApplication.getInstance().getUid();
+        String uid = SampleApplicationLike.getInstance().getUid();
         mPrefs = context.getSharedPreferences(PREF_NAME+uid,0);//针对不同用户保存
         mDefaultPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     }

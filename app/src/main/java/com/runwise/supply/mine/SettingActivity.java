@@ -27,7 +27,7 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.IWebViewActivity;
 import com.runwise.supply.InfoActivity;
 import com.runwise.supply.LoginActivity;
@@ -94,7 +94,7 @@ public class SettingActivity extends NetWorkActivity {
                 mRlFingerprint.setVisibility(View.GONE);
             }else{
                 mFingerprintHelper.init();
-                UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+                UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
                 mScFingerprint.setChecked(FingerprintHelper.isUserFingerprintEnabled(this,userInfo.getLogin()));
                 mScFingerprint.setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -36,7 +36,7 @@ import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.message.entity.MessageResult;
@@ -88,7 +88,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         orderBean = (MessageResult.OrderBean) this.getActivity().getIntent().getSerializableExtra("orderBean");
         if(orderBean.getName().startsWith("RO")) {
             normalOrder = false;
@@ -100,7 +100,7 @@ public class MessageListFragment extends NetWorkFragment implements AdapterView.
 
         chatName.setText(orderBean.getName());
         chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));
-        if(GlobalApplication.getInstance().getCanSeePrice()) {
+        if(SampleApplicationLike.getInstance().getCanSeePrice()) {
             chatContext.setText("共"+ NumberUtil.getIOrD(orderBean.getAmount())+"件商品,¥"+ orderBean.getAmount_total());
         }
         else {

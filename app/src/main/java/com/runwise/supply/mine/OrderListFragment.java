@@ -25,7 +25,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.entity.PageRequest;
@@ -402,7 +402,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
                         //在这里做判断，是正常收货，还是双人收货,同时判断点货人是谁，如果是自己，则不能再收货
                         OrderDoAction action;
                         if (bean.isIsDoubleReceive()) {
-                            String userName = GlobalApplication.getInstance().getUserName();
+                            String userName = SampleApplicationLike.getInstance().getUserName();
                             if (bean.getTallyingUserName().equals(userName)) {
                                 action = OrderDoAction.SELFTALLY;
                             } else {
@@ -524,7 +524,7 @@ public class OrderListFragment extends NetWorkFragment implements AdapterView.On
             } else {
                 holder.patSum.setText("共" + NumberUtil.getIOrD(bean.getAmount()) + "件商品");
             }
-            if (GlobalApplication.getInstance().getCanSeePrice()) {
+            if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                 holder.payMoney.setVisibility(View.VISIBLE);
                 holder.payMoney.setText("共" + NumberUtil.getIOrD(bean.getAmountTotal()));
             } else {

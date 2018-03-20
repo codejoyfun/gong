@@ -22,7 +22,7 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.entity.CategoryRespone;
@@ -254,7 +254,7 @@ public class RepertoryFragment extends NetWorkFragment {
     }
     private void requestCategory(){
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+        getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, OrderDetailActivity.CATEGORY, false, CategoryRespone.class);
     }
     private  void buildData() {

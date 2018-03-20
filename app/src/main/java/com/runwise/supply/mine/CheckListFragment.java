@@ -21,7 +21,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.PageRequest;
@@ -97,8 +97,8 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
         loadingLayout.setStatusLoading();
         requestData(false, REQUEST_MAIN, page, 10);
         loadingLayout.setOnRetryClickListener(this);
-        mName = GlobalApplication.getInstance().loadUserInfo().getUsername();
-        if(GlobalApplication.getInstance().getCanSeePrice()) {
+        mName = SampleApplicationLike.getInstance().loadUserInfo().getUsername();
+        if(SampleApplicationLike.getInstance().getCanSeePrice()) {
             lableText.setText("差异金额");
         }
         else{
@@ -251,7 +251,7 @@ public class CheckListFragment extends NetWorkFragment implements AdapterView.On
                 holder.money.setText("盘点中");
             }
             else {
-                if(GlobalApplication.getInstance().getCanSeePrice()) {
+                if(SampleApplicationLike.getInstance().getCanSeePrice()) {
                     holder.money.setText("¥"+UserUtils.formatPrice(bean.getValue()+"")+"");
                     if(bean.getValue() >= 0) {
                         holder.money.setTextColor(Color.parseColor("#9cb62e"));

@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
@@ -35,7 +35,7 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
 
     public OrderSubmitProductAdapter(List<ProductBasicList.ListBean> listBeanList){
         mListBeanList = listBeanList;
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

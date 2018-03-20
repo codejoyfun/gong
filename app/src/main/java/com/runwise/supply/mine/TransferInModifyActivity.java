@@ -32,7 +32,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferListActivity;
 import com.runwise.supply.entity.ModifyTransferRequest;
@@ -114,7 +114,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
         setTitleText(true, "修改调入单");
         showBackBtn();
         ButterKnife.bind(this);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         mProductAdapter = new ProductAdapter();
         mLvProduct.setAdapter(mProductAdapter);
         View footView = LayoutInflater.from(getActivityContext()).inflate(R.layout.allocation_add_product, null);
@@ -125,7 +125,7 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 startActivityForResult(new Intent(getActivityContext(), ProductActivity.class), REQUEST_CODE_GET_PRODUCT);
             }
         });
-        mUserInfo = GlobalApplication.getInstance().loadUserInfo();
+        mUserInfo = SampleApplicationLike.getInstance().loadUserInfo();
         if (mUserInfo != null) {
             mTvCallInStore.setText(mUserInfo.getMendian());
         }

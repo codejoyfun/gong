@@ -13,7 +13,7 @@ import com.kids.commonframe.base.util.ImageUtils;
 import com.kids.commonframe.base.util.LogUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.entity.QnTokenRepEntity;
 import com.runwise.supply.pictakelist.PicTake;
 
@@ -54,7 +54,7 @@ public class ActionRecordEditRequest implements  NetWorkHelper.NetWorkCallBack<B
 //        this.uploadOptions = new UploadOptions(null, null, false, this, this);
         this.netWorkHelper = new NetWorkHelper<>(context, this);
         this.arrayPicMap = new ArrayMap<>();
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
     }
 
     private void rest(){

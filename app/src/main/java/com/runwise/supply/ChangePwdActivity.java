@@ -152,7 +152,7 @@ public class ChangePwdActivity extends NetWorkActivity {
 				ToastUtil.show(mContext,"成功");
 
 				//更新指纹识别
-				UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+				UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
 				String password = mPassword.getText().toString();
 				String cipher = null;
 				try{

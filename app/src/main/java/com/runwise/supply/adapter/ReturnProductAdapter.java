@@ -15,7 +15,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
@@ -120,7 +120,7 @@ public class ReturnProductAdapter extends BaseAdapter {
             vh.name.setText(bean.getName());
             StringBuffer sb = new StringBuffer(bean.getDefaultCode());
             sb.append(" | ").append(bean.getUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
             if (canSeePrice&&basicBean != null){
                 if (isTwoUnit){
                     sb.append("\n").append(UserUtils.formatPrice(String.valueOf(basicBean.getSettlePrice()))).append("元/").append(basicBean.getSettleUomId());

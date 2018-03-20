@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.OrderDetailActivity;
 import com.runwise.supply.firstpage.UploadPayedPicActivity;
@@ -146,7 +146,7 @@ public class OrderCommitSuccessActivity extends BaseActivity {
                     holder.tvTitle.setText(etSb.toString());
                     holder.tvOrderState.setText(OrderState.getValueByName(order.getState()));
                     //描述
-                    boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+                    boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
                     StringBuilder sb = new StringBuilder();
                     if(canSeePrice)sb.append("￥").append(NumberUtil.getIOrD(order.getAmountTotal())).append("，");
                     sb.append(NumberUtil.getIOrD(order.getAmount())).append("件商品");

@@ -27,7 +27,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
@@ -186,7 +186,7 @@ public class ReceiveFragment extends BaseFragment {
 
         public ReceiveAdapter() {
             super();
-            canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         }
 
         @Override

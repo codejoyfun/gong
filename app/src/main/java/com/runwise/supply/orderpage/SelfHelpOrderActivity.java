@@ -32,7 +32,7 @@ import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.business.entity.PlaceOrderCache;
@@ -414,7 +414,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.onekey_order_layout);
-        mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+        mReserveGoodsAdvanceDate = SampleApplicationLike.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
         selectedDateIndex = 1;
@@ -473,7 +473,7 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 }
             }
         });
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (!canSeePrice) {
             totalMoneyTv.setVisibility(View.GONE);
         }
@@ -585,8 +585,8 @@ public class SelfHelpOrderActivity extends NetWorkActivity implements OneKeyAdap
                 break;
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
-                mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);
+                mReserveGoodsAdvanceDate = SampleApplicationLike.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
                 selectedDateIndex = 1;

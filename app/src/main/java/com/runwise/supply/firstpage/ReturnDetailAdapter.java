@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.ReturnOrderBean;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -36,7 +36,7 @@ public class ReturnDetailAdapter extends RecyclerView.Adapter {
     public ReturnDetailAdapter(Context context) {
         this.context = context;
         inflater = LayoutInflater.from(context);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
     }
 
     public void setReturnList(List<ReturnOrderBean.ListBean.LinesBean> list) {

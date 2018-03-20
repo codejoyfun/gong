@@ -34,7 +34,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.entity.CategoryRespone;
@@ -180,7 +180,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
         Bundle bundle = getIntent().getExtras();
 //        adapter = new OrderDtailAdapter(mContext);
         orderId = bundle.getInt("orderid", 0);
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (!canSeePrice) {
             priceLL.setVisibility(View.GONE);
         }
@@ -451,7 +451,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
                 bean = response.getOrder();
 //                adapter.setStatus(bean.getName(), bean.getState(), bean);
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 loadingLayout.onSuccess(1, "暂时没有数据哦");
                 break;

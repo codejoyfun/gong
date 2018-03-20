@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.config.Constant;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ReturnProductAdapter;
 import com.runwise.supply.event.IntEvent;
@@ -96,7 +96,7 @@ public class ReturnProductFragment extends BaseFragment {
         mReturnProductAdapter.setStatus(bean.getName(),bean.getState(),bean);
         mReturnProductAdapter.setTwoUnit(bean.isIsTwoUnit());
 
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (!canSeePrice) {
             priceLL.setVisibility(View.GONE);
         }
@@ -136,7 +136,7 @@ public class ReturnProductFragment extends BaseFragment {
         }else{
             findViewById(R.id.orderdetail_bottom_item).setVisibility(View.GONE);
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.orderdetail_bottom_item,null);
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
             if (!canSeePrice) {
                 view.findViewById(R.id.priceLL).setVisibility(View.GONE);
             }

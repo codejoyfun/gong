@@ -26,7 +26,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderStateAdapter;
 import com.runwise.supply.adapter.OrderTimeAdapter;
@@ -482,7 +482,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
             holder.payDate.setText(bean.getName());
             StringBuffer descStringBuffer = new StringBuffer();
             descStringBuffer.append(bean.getTypeQty() + "种 " + NumberUtil.getIOrD(bean.getAmount()) + "件商品");
-            if (GlobalApplication.getInstance().getCanSeePrice()) {
+            if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                 descStringBuffer.append(",¥" + bean.getAmountTotal());
             }
             holder.patSum.setText(descStringBuffer.toString());

@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderProductAdapter;
 import com.runwise.supply.event.IntEvent;
@@ -92,7 +92,7 @@ public class OrderProductFragment extends BaseFragment {
         mOrderDtailAdapter.setTwoUnit(getArguments().getBoolean(BUNDLE_KEY_TWO_UNIT));
 
 
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (!canSeePrice) {
             priceLL.setVisibility(View.GONE);
         }
@@ -115,7 +115,7 @@ public class OrderProductFragment extends BaseFragment {
         }else{
             findViewById(R.id.orderdetail_bottom_item).setVisibility(View.GONE);
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.orderdetail_bottom_item,null);
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
             if (!canSeePrice) {
                 view.findViewById(R.id.priceLL).setVisibility(View.GONE);
             }

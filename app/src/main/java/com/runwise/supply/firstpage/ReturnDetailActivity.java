@@ -31,7 +31,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.adapter.ProductTypeAdapter;
@@ -137,7 +137,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
     }
 
     private void initViews() {
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (!canSeePrice) {
             priceLL.setVisibility(View.GONE);
         }
@@ -501,7 +501,7 @@ public class ReturnDetailActivity extends NetWorkActivity {
                 ReturnDetailResponse rdr = (ReturnDetailResponse) rb.getData();
                 bean = rdr.getReturnOrder();
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 loadingLayout.onSuccess(1, "暂无数据");
 

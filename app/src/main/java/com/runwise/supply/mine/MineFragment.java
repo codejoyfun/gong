@@ -23,7 +23,7 @@ import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
@@ -84,7 +84,7 @@ public class MineFragment extends NetWorkFragment {
         super.onCreate(savedInstanceState);
         isLogin = SPUtils.isLogin(mContext);
         if (isLogin) {
-            userInfo = GlobalApplication.getInstance().loadUserInfo();
+            userInfo = SampleApplicationLike.getInstance().loadUserInfo();
             setLoginStatus(userInfo);
         } else {
             setLogoutStatus();
@@ -156,7 +156,7 @@ public class MineFragment extends NetWorkFragment {
         switch (where) {
             case REQUEST_USERINFO:
                 userInfo = (UserInfo) result.getResult().getData();
-                GlobalApplication.getInstance().saveUserInfo(userInfo);//更新全局数据
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);//更新全局数据
                 if (userInfo.isHasNewInvoice()) {
                     orderRed.setVisibility(View.VISIBLE);
                 } else {
@@ -172,7 +172,7 @@ public class MineFragment extends NetWorkFragment {
                 } else {
                     findViewById(R.id.rl_transfer).setVisibility(View.GONE);
                 }
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);
                 break;
             case REQUEST_USERINFO_PROCUMENT:
                 userInfo = (UserInfo) result.getResult().getData();
@@ -260,7 +260,7 @@ public class MineFragment extends NetWorkFragment {
             case R.id.rl_price_list:
                 intent = new Intent(mContext, PriceActivity.class);
                 if (UserUtils.checkLogin(intent, mContext)) {
-                    if (GlobalApplication.getInstance().getCanSeePrice()) {
+                    if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                         startActivity(intent);
                     } else {
                         dialog.setTitle("提示");
@@ -276,7 +276,7 @@ public class MineFragment extends NetWorkFragment {
             case R.id.rl_bill:
                 intent = new Intent(mContext, AccountsListActivity.class);
                 if (UserUtils.checkLogin(intent, mContext)) {
-                    if (GlobalApplication.getInstance().getCanSeePrice()) {
+                    if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                         startActivity(intent);
                     } else {
                         dialog.setTitle("提示");
@@ -307,7 +307,7 @@ public class MineFragment extends NetWorkFragment {
 
     @Override
     public void onUserLogin(UserLoginEvent userLoginEvent) {
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         setLoginStatus(userInfo);
         isLogin = true;
     }
@@ -320,7 +320,7 @@ public class MineFragment extends NetWorkFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateUserInfo(UpdateUserInfo userLoginEvent) {
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         setLoginStatus(userInfo);
     }
 

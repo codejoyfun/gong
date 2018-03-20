@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.ProductActivityV2;
@@ -91,7 +91,7 @@ public class ProductImageDialog extends Dialog {
         Window window = getWindow();
         window.getAttributes().gravity = Gravity.CENTER;
         window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mCanSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        mCanSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         setUp();
     }
     

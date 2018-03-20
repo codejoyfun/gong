@@ -44,7 +44,7 @@ public class AnimLoadingLayout extends LoadingLayout {
 		super(context, mode, scrollDirection, attrs);
 
 		mHeaderImage.setScaleType(ScaleType.FIT_CENTER);
-		mSetAnimation = (AnimationDrawable) context.getResources().getDrawable(R.anim.refresh_loading_setanim);
+		mSetAnimation = (AnimationDrawable) context.getResources().getDrawable(R.drawable.refresh_loading_setanim);
 
 		setTextViewGone();
 		setImageLayoutCenter();

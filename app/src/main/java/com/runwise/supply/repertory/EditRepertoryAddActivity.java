@@ -41,7 +41,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
@@ -540,7 +540,7 @@ public class EditRepertoryAddActivity extends NetWorkActivity {
                         .subscribe(listBean -> hotList.add(listBean));
                 //hotList = editHotResult.getList();
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 break;
             case PRODUCT_ADD_1://有批次

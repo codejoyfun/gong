@@ -37,7 +37,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.ReceiveDetailActivity;
@@ -300,15 +300,15 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         requestLB();
         getProcurement();
         //加载电话
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         if (SystemUpgradeHelper.getInstance(getActivity()).needShowNotice(LoginedFirstFragment.class.getName()))
             showSystemUpgradeNotice();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //指纹识别
             FingerprintHelper fingerprintHelper = new FingerprintHelper(getActivity(), FingerprintManagerCompat.from(getActivity()));
-            if (fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(), GlobalApplication.getInstance().getUid())) {
-                FingerprintHelper.setPrompted(getActivity(), GlobalApplication.getInstance().getUid());
+            if (fingerprintHelper.isSupported() && FingerprintHelper.needPrompt(getActivity(), SampleApplicationLike.getInstance().getUid())) {
+                FingerprintHelper.setPrompted(getActivity(), SampleApplicationLike.getInstance().getUid());
                 Dialog dialog = new FingerprintPromptDialog(getActivity());
                 dialog.show();
             }
@@ -609,7 +609,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     @Override
     public void gotoInventory(InventoryResponse.InventoryBean inventoryBean) {
 
-        if (!GlobalApplication.getInstance().getUserName().equals(inventoryBean.getCreateUser())) {
+        if (!SampleApplicationLike.getInstance().getUserName().equals(inventoryBean.getCreateUser())) {
             ToastUtil.show(getActivity(), "当前" + inventoryBean.getCreateUser() + "正在盘点中，无法创建新的盘点单");
             return;
         }
@@ -823,7 +823,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     @Override
     public void call(final String phone) {
         startActivity(new Intent(getActivity(), MessageActivity.class));
-//        final String number = GlobalApplication.getInstance().loadUserInfo().getCompanyHotLine();
+//        final String number = SampleApplicationLike.getInstance().loadUserInfo().getCompanyHotLine();
 //        if (TextUtils.isEmpty(phone)) {
 //            ToastUtil.show(mContext, "尚未指派");
 //            return;
@@ -983,7 +983,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     private void updateDashBoard(DashBoardResponse dbResponse) {
         //能看价格，看价格，不能则看件数
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (canSeePrice) {
             DecimalFormat df = new DecimalFormat("#.##");
             lastWeekBuy.setText(df.format(dbResponse.getPurchaseAmount() / 10000));//万元单位
@@ -1081,7 +1081,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      * 设置一个订单为已读状态
      */
     private void setOrderRead(OrderResponse.ListBean order) {
-        order.setUserRead(GlobalApplication.getInstance().getUid());
+        order.setUserRead(SampleApplicationLike.getInstance().getUid());
         adapter.notifyDataSetChanged();
     }
 

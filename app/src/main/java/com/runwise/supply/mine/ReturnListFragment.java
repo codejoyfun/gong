@@ -21,7 +21,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.PageRequest;
 import com.runwise.supply.firstpage.ReturnDetailActivity;
@@ -225,7 +225,7 @@ public class ReturnListFragment extends NetWorkFragment implements AdapterView.O
             holder.payTitle.setText(bean.getName());
             holder.payDate.setText(TimeUtils.getTimeStamps3(bean.getCreateDate()));
             holder.patSum.setText("共"+ NumberUtil.getIOrD(bean.getAmount())+"件商品");
-            if(GlobalApplication.getInstance().getCanSeePrice()) {
+            if(SampleApplicationLike.getInstance().getCanSeePrice()) {
                 holder.payMoney.setVisibility(View.VISIBLE);
                 holder.payMoney.setText("共"+bean.getAmountTotal());
             }

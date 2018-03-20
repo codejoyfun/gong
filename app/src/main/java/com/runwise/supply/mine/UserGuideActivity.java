@@ -19,7 +19,7 @@ import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.business.entity.UserGuideRequest;
 import com.runwise.supply.entity.GuideResponse;
@@ -58,7 +58,7 @@ public class UserGuideActivity extends NetWorkActivity {
      * 请求用户手册
      */
     private void requestGuide(){
-        UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+        UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         DbUtils mDb = MyDbUtil.create(this);
         try{
             RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));

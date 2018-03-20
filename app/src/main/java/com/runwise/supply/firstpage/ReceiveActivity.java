@@ -42,7 +42,7 @@ import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.entity.CategoryRespone;
@@ -218,7 +218,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
         }
         if (mode == 1) {
             //开始点货
-            String userName = GlobalApplication.getInstance().getUserName();
+            String userName = SampleApplicationLike.getInstance().getUserName();
             if (TextUtils.isEmpty(userName) || !userName.equals(lbean.getTallyingUserName())) {
                 startOrEndTally(true);
             }
@@ -243,7 +243,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
             setTitleText(true, "点货");
             String tallyingUserName = lbean.getTallyingUserName();
             if (!TextUtils.isEmpty(tallyingUserName)) {
-                if (!tallyingUserName.equals(GlobalApplication.getInstance().getUserName())) {
+                if (!tallyingUserName.equals(SampleApplicationLike.getInstance().getUserName())) {
                     ShuangRensShouHuoQueRen = true;
                     //双人收货模式下的确认人(不能编辑,只能确认)
                     for (OrderResponse.ListBean.LinesBean linesBean : lbean.getLines()) {
@@ -359,7 +359,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 
     private void getCategory() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+        getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
     }
 
@@ -1129,7 +1129,7 @@ public class ReceiveActivity extends NetWorkActivity implements DoActionCallback
 //                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, listBean.getImage().getImageSmall());
 //                StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
 //                sb.append("  ").append(listBean.getUnit());
-//                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+//                boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
 //                if (canSeePrice) {
 //                    if (listBean.isTwoUnit()) {
 //                        sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());

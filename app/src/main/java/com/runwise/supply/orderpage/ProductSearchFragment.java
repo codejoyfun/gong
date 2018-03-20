@@ -21,7 +21,7 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductAdapterV2;
 import com.runwise.supply.event.ProductCountUpdateEvent;
@@ -70,7 +70,7 @@ public class ProductSearchFragment extends NetWorkFragment {
         mListBeans =  new ArrayList<>();
         mProductAdapter = new ProductAdapterV2(mListBeans);
         pullListView.setAdapter(mProductAdapter);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
 
 
         mEtSearch.addTextChangedListener(new TextWatcher() {

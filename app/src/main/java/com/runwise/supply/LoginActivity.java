@@ -344,7 +344,7 @@ public class LoginActivity extends NetWorkActivity {
                     e.printStackTrace();
                 }
                 SPUtils.put(getActivityContext(),FILE_KEY_PASSWORD,loginRequest.getPassword());
-                GlobalApplication.getInstance().saveUserInfo(userInfoData);
+                SampleApplicationLike.getInstance().saveUserInfo(userInfoData);
 //				ToastUtil.show(mContext,"登录成功");
                 //@libin added
                 if (!"true".equals(userInfoData.getIsAgreeItem())) {

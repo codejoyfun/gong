@@ -29,7 +29,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
@@ -398,7 +398,7 @@ public class MessageFragment extends NetWorkFragment implements AdapterView.OnIt
 
                     viewHolder.chatName.setText(orderBean.getName());
                     viewHolder.chatTime.setText(TimeUtils.getTimeStamps3(orderBean.getCreate_date()));
-                    if(GlobalApplication.getInstance().getCanSeePrice()) {
+                    if(SampleApplicationLike.getInstance().getCanSeePrice()) {
                         viewHolder.chatContext.setText("共"+ NumberUtil.getIOrD(orderBean.getAmount())+"件商品,¥"+ NumberUtil.getIOrD(orderBean.getAmount_total()));
                     }
                     else {

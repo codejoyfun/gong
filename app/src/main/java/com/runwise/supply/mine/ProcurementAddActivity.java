@@ -35,7 +35,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
@@ -240,7 +240,7 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
                 ProductData ProductData = (ProductData) result.getResult().getData();
                 hotList = ProductData.getList();
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
                 loadingLayout.onSuccess(hotList.size(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 break;

@@ -24,7 +24,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.adapter.ProductTypeAdapter;
@@ -98,7 +98,7 @@ public class CheckDetailActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.acticity_checkdetail_layout);
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             text4.setText("盘点结果(元)");
         } else {
             text4.setText("盘点结果(件)");
@@ -111,7 +111,7 @@ public class CheckDetailActivity extends NetWorkActivity {
         Object request = null;
         sendConnection("/api/inventory/line/"+mId,request,REQUEST_CHECK_DETAIL,true,CheckResult.class);
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+        getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
         dragLayout.setOverDrag(false);
     }
@@ -312,7 +312,7 @@ public class CheckDetailActivity extends NetWorkActivity {
         text1.setText("盘点人员：" + bean.getCreateUser());
         text2.setText("盘点单号：" + bean.getName());
         text3.setText("盘点日期：" + TimeUtils.getTimeStamps3(bean.getCreateDate()));
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             text5.setText("¥" + NumberUtil.getIOrD(bean.getValue()) + "");
             if (bean.getValue() >= 0) {
                 text5.setTextColor(Color.parseColor("#9cb62e"));

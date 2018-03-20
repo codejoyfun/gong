@@ -40,7 +40,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CartCache;
 import com.runwise.supply.entity.CategoryRespone;
@@ -734,7 +734,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mTvProductTotalCount.setVisibility(View.GONE);
             }
 
-            if (GlobalApplication.getInstance().getCanSeePrice()) {
+            if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                 mTvTotalPrice.setVisibility(View.VISIBLE);
                 mTvTotalPrice.setText("¥" + df.format(totalMoney));//TODO:format
             } else {
@@ -1112,7 +1112,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             double count = mMapCount.containsKey(holder.listBean) ? mMapCount.get(holder.listBean) : 0;
             holder.mmTvCount.setText(NumberUtil.getIOrD(count) + holder.listBean.getSaleUom());
             StringBuilder sb = new StringBuilder();
-            if (GlobalApplication.getInstance().getCanSeePrice()) {
+            if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                 sb.append("￥" + df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getSaleUom()).append(" ");
             }
             sb.append(holder.listBean.getUnit());

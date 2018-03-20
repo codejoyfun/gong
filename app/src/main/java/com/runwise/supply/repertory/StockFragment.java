@@ -23,7 +23,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.entity.CategoryRespone;
@@ -218,7 +218,7 @@ public class StockFragment extends NetWorkFragment implements LoadingLayoutInter
 
     private void requestCategory() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+        getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, OrderDetailActivity.CATEGORY, true, CategoryRespone.class);
     }
 

@@ -15,7 +15,7 @@ import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.mine.entity.SumMoneyData;
 import com.runwise.supply.tools.UserUtils;
@@ -44,7 +44,7 @@ public class ProcurementLimitActivity extends NetWorkActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_procurement_limit);
         showBackBtn();
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             setTitleText(true, "上周采购额");
             amountTitle.setText("采购额");
             unitText.setText("总额");
@@ -56,7 +56,7 @@ public class ProcurementLimitActivity extends NetWorkActivity {
         mSumMoneyData = (SumMoneyData) getIntent().getSerializableExtra(KEY_SUM_MONEY_DATA);
         pullListView.setMode(PullToRefreshBase.Mode.DISABLED);
 
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             if (mSumMoneyData.getTotal_amount() > 10000) {
                 double price = mSumMoneyData.getTotal_amount() / 10000;
                 tv_total_money.setText(UserUtils.formatPrice(price + "") + "万元");
@@ -87,7 +87,7 @@ public class ProcurementLimitActivity extends NetWorkActivity {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             viewHolder.tv_product_name.setText(mSumMoneyData.getProduct_list().get(position));
-            if (GlobalApplication.getInstance().getCanSeePrice()) {
+            if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                 viewHolder.tv_price.setText(UserUtils.formatPrice(mSumMoneyData.getPurchase_volume_list().get(position) + "") + "元");
                 double progress = (mSumMoneyData.getPurchase_volume_list().get(position) / mSumMoneyData.getTotal_amount() * 100);
                 if (progress > 0 && progress < 1) {

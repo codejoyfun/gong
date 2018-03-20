@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.mine.SettingActivity;
 
 import java.io.IOException;

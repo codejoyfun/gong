@@ -91,7 +91,7 @@ public class TransferInActivity extends NetWorkActivity {
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.activity_transfer_in);
         setTitleText(true,"入库");
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         showBackBtn();
         initPopWindow();
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER_ENTITY);
@@ -312,7 +312,7 @@ public class TransferInActivity extends NetWorkActivity {
         StringBuffer sb = new StringBuffer(linesBean.getProductCode());
         sb.append("  ").append(linesBean.getProductUnit());
 
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(linesBean.getProductID()+"");
         if (listBean != null && canSeePrice) {
             if (listBean.isTwoUnit()) {

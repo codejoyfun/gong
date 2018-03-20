@@ -31,7 +31,7 @@ import com.kids.commonframe.config.GlobalConstant;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.pictakelist.PicTake;
 import com.runwise.supply.pictakelist.ReChooseImageActivity;
@@ -84,7 +84,7 @@ public class ActionSendActivity extends NetWorkActivity {
         setStatusBarEnabled();
         StatusBarUtil.StatusBarLightMode(this);
         setContentView(R.layout.action_send_layout);
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         initData();
         initView();
     }

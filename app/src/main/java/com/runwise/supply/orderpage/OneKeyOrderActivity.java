@@ -31,7 +31,7 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.nineoldandroids.view.ViewPropertyAnimator;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OneKeyRequest;
@@ -195,7 +195,7 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 }
             }
         });
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (!canSeePrice) {
             totalMoneyTv.setVisibility(View.GONE);
         }
@@ -546,8 +546,8 @@ public class OneKeyOrderActivity extends NetWorkActivity implements OneKeyAdapte
                 break;
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
-                mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);
+                mReserveGoodsAdvanceDate = SampleApplicationLike.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 if(TextUtils.isEmpty(dateTv.getText().toString()))dateTv.setText(cachedDWStr);
                 selectedDate = mReserveGoodsAdvanceDate;

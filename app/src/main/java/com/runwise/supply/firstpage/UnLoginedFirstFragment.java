@@ -26,6 +26,7 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.bean.UserLoginEvent;
 import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.kids.commonframe.config.Constant;
@@ -34,6 +35,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.bugfix.BugClass;
 import com.runwise.supply.business.BannerHolderView;
 import com.runwise.supply.business.entity.ImagesBean;
 import com.runwise.supply.firstpage.entity.LunboRequest;
@@ -213,6 +215,8 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
                     }
                 });
                 dialog.show();
+                String text = new BugClass().bug();
+                ToastUtil.show(getActivity(),text);
                 break;
         }
     }

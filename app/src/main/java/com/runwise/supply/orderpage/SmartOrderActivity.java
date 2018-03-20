@@ -28,7 +28,7 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.orderpage.entity.LastBuyResponse;
@@ -84,7 +84,7 @@ public class SmartOrderActivity extends NetWorkActivity {
             safeArr.add(str);
         }
         //设置canSee,登录且能看显示，否则不可见
-        if (SPUtils.isLogin(mContext) && GlobalApplication.getInstance().getCanSeePrice()){
+        if (SPUtils.isLogin(mContext) && SampleApplicationLike.getInstance().getCanSeePrice()){
             lastBuyTv.setVisibility(View.VISIBLE);
             Object request = null;
             sendConnection("/gongfu/v2/order/last_order_amout/",request,LASTBUY,false, LastBuyResponse.class);

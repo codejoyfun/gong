@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.img.FrecoFactory;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.ProductActivityV2;
@@ -48,7 +48,7 @@ public class ProductAdapterV2 extends RecyclerView.Adapter<ProductAdapterV2.View
 
     public ProductAdapterV2(@Nullable List<ProductBasicList.ListBean> data) {
 //        super(R.layout.item_product_with_subcategory, data);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         mData = data;
     }
 

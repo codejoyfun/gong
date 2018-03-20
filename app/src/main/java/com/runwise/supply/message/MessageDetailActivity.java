@@ -21,7 +21,7 @@ import com.kids.commonframe.base.view.CustomBottomDialog;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.message.entity.MessageResult;
@@ -136,7 +136,7 @@ public class MessageDetailActivity extends NetWorkActivity implements Button.OnC
                     public void onItemClick(View view) {
                         switch (view.getId()) {
                             case 0:
-                                UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+                                UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
                                 boolean isLogin = SPUtils.isLogin(mContext);
                                 String name = "供鲜生";
                                 if(isLogin) {

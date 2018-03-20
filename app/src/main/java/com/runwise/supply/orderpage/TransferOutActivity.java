@@ -25,7 +25,7 @@ import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.TransferOutBatchAdapter;
 import com.runwise.supply.entity.TransferEntity;
@@ -320,7 +320,7 @@ public class TransferOutActivity extends NetWorkActivity implements LoadingLayou
             name.setText(listBean.getName());
             StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
             sb.append("  ").append(listBean.getUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
             if (canSeePrice) {
                 if (listBean.isTwoUnit()) {
                     sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
@@ -415,7 +415,7 @@ public class TransferOutActivity extends NetWorkActivity implements LoadingLayou
             name.setText(listBean.getName());
             StringBuffer sb = new StringBuffer(listBean.getDefaultCode());
             sb.append("  ").append(listBean.getUnit());
-            boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+            boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
             if (canSeePrice) {
                 if (listBean.isTwoUnit()) {
                     sb.append("\n").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());
@@ -499,7 +499,7 @@ public class TransferOutActivity extends NetWorkActivity implements LoadingLayou
             if (listBean != null) {
                 StringBuffer sb = new StringBuffer(transferBatchLine.getProductCode());
                 sb.append("  |  ").append(transferBatchLine.getProductUnit());
-                boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+                boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
                 if (canSeePrice) {
                     if (listBean.isTwoUnit()) {
                         sb.append("\n").append("¥").append(UserUtils.formatPrice(String.valueOf(listBean.getSettlePrice()))).append("元/").append(listBean.getSettleUomId());

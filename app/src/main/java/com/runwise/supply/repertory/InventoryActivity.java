@@ -30,7 +30,7 @@ import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FragmentAdapter;
 import com.runwise.supply.entity.CategoryRespone;
@@ -125,7 +125,7 @@ public class InventoryActivity extends NetWorkActivity {
         } else {
             getCategory();
         }
-        if (!GlobalApplication.getInstance().getCanSeePrice()) {
+        if (!SampleApplicationLike.getInstance().getCanSeePrice()) {
             mTvProductTotalPrice.setVisibility(View.GONE);
         }
     }
@@ -144,7 +144,7 @@ public class InventoryActivity extends NetWorkActivity {
      */
     private void getCategory() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-        getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+        getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
     }
 
@@ -528,7 +528,7 @@ public class InventoryActivity extends NetWorkActivity {
             mIvProductCart.setSelected(false);
         }
 
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             mTvProductTotalPrice.setVisibility(View.VISIBLE);
             if (totalMoney >= 0) {
                 mTvProductTotalPrice.setTextColor(Color.parseColor("#FF3B30"));

@@ -30,7 +30,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.config.Constant;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.BatchEntity;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -115,7 +115,7 @@ public class EditBatchActivity extends NetWorkActivity {
         }
         mName.setText(basicBean.getName());
         StringBuffer sb = new StringBuffer(basicBean.getDefaultCode());
-        boolean canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         if (canSeePrice) {
             sb.append("  ").append(basicBean.getUnit()).append("\n").append(mBean.getPriceUnit()).append("元/").append(mBean.getProductUom());
         }

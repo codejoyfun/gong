@@ -14,7 +14,7 @@ import com.kids.commonframe.base.IBaseAdapter;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -46,7 +46,7 @@ public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
 
     public ProductAdapter(@NonNull Context context, boolean hasOtherSub){
         mContext = context;
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         this.hasOtherSub = hasOtherSub;
     }
 

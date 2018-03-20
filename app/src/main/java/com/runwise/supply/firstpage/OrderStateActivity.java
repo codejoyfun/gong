@@ -17,7 +17,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.OrderDetailResponse;
 import com.runwise.supply.firstpage.entity.OrderResponse;
@@ -92,7 +92,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
         } else {
             getOrderDetail(mOrderId);
         }
-        userInfo = GlobalApplication.getInstance().loadUserInfo();
+        userInfo = SampleApplicationLike.getInstance().loadUserInfo();
     }
 
     private void getOrderDetail(int orderId) {
@@ -171,7 +171,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                             //订单已提交
                             content.append("退货单号：").append(bean.getName()).append("\n")
                                     .append("退货商品：").append(NumberUtil.getIOrD(bean.getAmount())).append("件");
-                            if (GlobalApplication.getInstance().getCanSeePrice()) {
+                            if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                                 content.append("，共").append(bean.getAmountTotal()).append("元").append("\n");
                             }
                         }
@@ -179,14 +179,14 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                     case "done":
                         //退货成功
                         content.append("退货商品：").append(NumberUtil.getIOrD(bean.getAmount())).append("件");
-                        if (GlobalApplication.getInstance().getCanSeePrice()) {
+                        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                             content.append("，").append(bean.getAmountTotal()).append("元");
                         }
                         break;
                     case "draft":
                         content.append("退货单号：").append(bean.getName()).append("\n")
                                 .append("退货商品：").append(NumberUtil.getIOrD(bean.getAmount())).append("件");
-                        if (GlobalApplication.getInstance().getCanSeePrice()) {
+                        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                             content.append("，共").append(bean.getAmountTotal()).append("元").append("\n");
                         }
                         break;
@@ -258,7 +258,7 @@ public class OrderStateActivity extends NetWorkActivity implements View.OnClickL
                     content.append("正在为您挑拣商品");
                 } else if (str.contains("已修改")) {
                     content.append("共").append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
-                    if (GlobalApplication.getInstance().getCanSeePrice()) {
+                    if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                         content.append("，¥").append(bean.getAmountTotal());
                     }
                 } else if (str.contains("已提交")) {

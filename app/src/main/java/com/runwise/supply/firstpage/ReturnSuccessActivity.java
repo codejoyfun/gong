@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseActivity;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.FinishReturnResponse;
@@ -45,7 +45,7 @@ public class ReturnSuccessActivity extends BaseActivity {
         showBackBtn();
         finishReturnResponse = (FinishReturnResponse) getIntent().getSerializableExtra(INTENT_KEY_RESULTBEAN);
         String text;
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             text = "退货数量: " +
                     NumberUtil.getIOrD(finishReturnResponse.getReturnOrder().getAmount()) +
                     "件\n" +

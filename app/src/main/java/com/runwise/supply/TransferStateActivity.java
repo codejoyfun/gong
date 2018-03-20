@@ -52,7 +52,7 @@ public class TransferStateActivity extends NetWorkActivity {
         mTransferEntity = getIntent().getParcelableExtra(INTENT_KEY_TRANSFER);
         mRvStates.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         mRvStates.setAdapter(mStateAdapter);
-        canSeePrice = GlobalApplication.getInstance().getCanSeePrice();
+        canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         //requestStates();
         initStates();
     }

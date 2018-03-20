@@ -27,7 +27,7 @@ import com.kids.commonframe.base.util.SmartOrderTimestatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.CustomProgressDialog;
-import com.runwise.supply.GlobalApplication;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderSubmitProductAdapter;
@@ -138,12 +138,12 @@ public class OrderSubmitActivity extends NetWorkActivity {
         }
         addScrollListener();
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
-        UserInfo userInfo = GlobalApplication.getInstance().loadUserInfo();
+        UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         if (userInfo == null){
             toast(R.string.session_expired);
             finish();
         }
-        mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+        mReserveGoodsAdvanceDate = SampleApplicationLike.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
         cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
         selectedDate = mReserveGoodsAdvanceDate;
         mTvDate.setText(cachedDWStr);
@@ -268,8 +268,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
         switch (where) {
             case REQUEST_USER_INFO:
                 UserInfo userInfo = (UserInfo) result.getResult().getData();
-                GlobalApplication.getInstance().saveUserInfo(userInfo);
-                mReserveGoodsAdvanceDate = GlobalApplication.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
+                SampleApplicationLike.getInstance().saveUserInfo(userInfo);
+                mReserveGoodsAdvanceDate = SampleApplicationLike.getInstance().loadUserInfo().getReserveGoodsAdvanceDate();
                 cachedDWStr = TimeUtils.getABFormatDate(mReserveGoodsAdvanceDate).substring(5) + " " + TimeUtils.getWeekStr(mReserveGoodsAdvanceDate);
                 selectedDate = mReserveGoodsAdvanceDate;
                 if (mOrder != null) {
@@ -555,7 +555,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
             totalMoney = totalMoney + bean.getPrice() * bean.getActualQty();
             totalNum = totalNum + bean.getActualQty();
         }
-        if (GlobalApplication.getInstance().getCanSeePrice()) {
+        if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             DecimalFormat df = new DecimalFormat("#.##");
             mTvTotalMoney.setVisibility(View.VISIBLE);
             mTvTotalMoney.setText("￥" + df.format(totalMoney));//TODO:format

@@ -88,7 +88,7 @@ public class ReceiveDetailActivity extends NetWorkActivity {
                 OrderDetailResponse response = (OrderDetailResponse) resultBean.getData();
                 bean = response.getOrder();
                 GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                getCategoryRequest.setUser_id(Integer.parseInt(GlobalApplication.getInstance().getUid()));
+                getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
                 sendConnection("/api/product/category", getCategoryRequest, REQUEST_CATEGORY, false, CategoryRespone.class);
                 loadingLayout.onSuccess(1, "暂时没有数据哦");
                 break;
