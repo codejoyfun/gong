@@ -725,6 +725,10 @@ public class NetWorkHelper<T extends BaseEntity> {
 //					ToastUtil.show(context,"登陆过期，请重新登陆");
                 }
             }
+//            接口有时候会返回null，防止闪退
+            if(errorMsg == null){
+                errorMsg = "";
+            }
             if (errorMsg.contains("Session Expired")) {
                 errorMsg = context.getString(R.string.session_expired);
             }

@@ -20,6 +20,7 @@ public class MyDbUtil {
                     //为数据库表ShoppingCar添加shopId字段
                     dbUtils.createTableIfNotExist(RemUser.class);
                     dbUtils.execNonQuery("alter table RemUser add company text");
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -172,6 +172,9 @@ public class ProductSearchFragment extends NetWorkFragment {
 
     protected void requestData(int where) {
         List<ProductBasicList.ListBean> listBeans = ((ProductActivityV2) getActivity()).getListBeans();
+        if (listBeans == null){
+            return;
+        }
         List<ProductBasicList.ListBean> searchListBeans = new ArrayList<>();
         for (ProductBasicList.ListBean listBean : listBeans) {
             if (listBean.getName().contains(mKeyword)) {
