@@ -10,7 +10,7 @@ import java.util.List;
  */
 
 public class ProductListResponse implements Serializable{
-
+//    {"jsonrpc": "2.0", "id": null, "result": {"state": "A0006", "data": []}}
     int version;
     List<ProductBasicList.ListBean> products;
     List<CategoryBean> category;

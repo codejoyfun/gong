@@ -59,7 +59,8 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     public void requestProductList() {
         int version = (int) SPUtils.get(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, 0);
         ProductVersionRequest productVersionRequest = new ProductVersionRequest();
-        productVersionRequest.setVersion(version);
+//        productVersionRequest.setVersion(version);
+        productVersionRequest.setVersion(256);
         netWorkHelper.sendConnection("/gongfu/v4/product/list/", productVersionRequest, REQUEST_CODE_PRODUCT_LIST, false, ProductListResponse.class);
     }
 
@@ -87,16 +88,19 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         switch (where) {
             case REQUEST_CODE_PRODUCT_LIST:
                 BaseEntity.ResultBean resultBean = result.getResult();
-                ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
-                if (productListResponse.getProducts() != null && productListResponse.getProducts().size() > 0) {
-                    deleteProductFromDB();
+                try{
+                    ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
+                    if (productListResponse.getProducts() != null && productListResponse.getProducts().size() > 0) {
+                        deleteProductFromDB();
+                    }
+                    if (productListResponse != null) {
+                        SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
+                        SPUtils.saveObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST, productListResponse.getCategory());
+                        putProductsToDB(productListResponse.getProducts());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                if (productListResponse != null) {
-                    SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
-                    SPUtils.saveObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST, productListResponse.getCategory());
-                    putProductsToDB(productListResponse.getProducts());
-                }
-
                 sendServiceStatus(getString(R.string.service_finish));
                 break;
         }

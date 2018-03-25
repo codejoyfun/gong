@@ -84,8 +84,8 @@ android {
         applicationId "com.runwise.supply"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 20180319
-        versionName "V1.3.2"
+        versionCode 20180325
+        versionName "V1.3.3"
         multiDexEnabled true
         ndk {
             abiFilters "armeabi"
@@ -137,11 +137,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     productFlavors {
-//        hua_wei {}
-//        _360 {}
-//        version_upgrade {}
-//        pu_gong_ying {}
-//        qq {}
+        hua_wei {}
+        _360 {}
+        version_upgrade {}
+        pu_gong_ying {}
+        qq {}
     }
 //批量处理
     productFlavors.all {
