@@ -1,6 +1,10 @@
 package com.runwise.supply.mine;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +13,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -17,6 +22,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -31,8 +37,11 @@ import com.bigkoo.pickerview.lib.WheelView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.SampleApplicationLike;
@@ -40,14 +49,20 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductTypeAdapter;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.GetCategoryRequest;
+import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.fragment.SearchListFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.ProcurementAddResult;
 import com.runwise.supply.mine.entity.ProcurenmentAddRequest;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.ProductActivityV2;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.RunwiseService;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
 
@@ -58,8 +73,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
 import static com.runwise.supply.firstpage.OrderDetailActivity.CATEGORY;
 import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
+import static com.runwise.supply.tools.RunwiseService.INTENT_KEY_STATUS;
 
 public class ProcurementAddActivity extends NetWorkActivity implements LoadingLayoutInterface {
     @ViewInject(R.id.searchET)
@@ -92,11 +109,12 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
     private LoadingLayout loadingLayout;
     private TimePickerView pvCustomTime;
     private WheelView wheelView;
-    private ProductData.ListBean productBean;
-    private ProductData.ListBean returnBean;
+    private ProductBasicList.ListBean productBean;
+    private ProductBasicList.ListBean returnBean;
     //数量
     private String amount;
     private TabPageIndicatorAdapter adapter;
+    MyBroadcastReceiver mMyBroadcastReceiver;
 
     @Override
     public void retryOnClick(View view) {
@@ -108,19 +126,19 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
      * 供子fragment统一设置商品数量,隐藏细节
      */
     public interface ProductCountSetter {
-        void setCount(ProductData.ListBean bean, double count);
+        void setCount(ProductBasicList.ListBean bean, double count);
 
-        double getCount(ProductData.ListBean bean);
+        double getCount(ProductBasicList.ListBean bean);
     }
 
-    protected Map<ProductData.ListBean, Double> mMapCount = new HashMap<>();
+    protected Map<ProductBasicList.ListBean, Double> mMapCount = new HashMap<>();
 
     /**
      * 供子fragment统一设置商品数量的接口，向子fragment隐藏实现
      */
     ProductCountSetter mCountSetter = new ProductCountSetter() {
         @Override
-        public void setCount(ProductData.ListBean bean, double count) {
+        public void setCount(ProductBasicList.ListBean bean, double count) {
             if (count == 0) {
                 mMapCount.remove(bean);
             } else {
@@ -130,7 +148,7 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         }
 
         @Override
-        public double getCount(ProductData.ListBean bean) {
+        public double getCount(ProductBasicList.ListBean bean) {
             return mMapCount.get(bean) == null ? 0 : mMapCount.get(bean);
         }
 
@@ -164,8 +182,44 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
             }
         });
         loadingLayout.setOnRetryClickListener(this);
-        Object param = null;
-        sendConnection("/gongfu/v3/product/list/", param, PRODUCT_GET, true, ProductData.class);
+        showIProgressDialog();
+        Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
+        startService(startIntent);
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_TYPE_SERVICE);
+        mMyBroadcastReceiver = new MyBroadcastReceiver();
+        localBroadcastManager.registerReceiver(mMyBroadcastReceiver, filter);
+
+//        Object param = null;
+//        sendConnection("/gongfu/v3/product/list/", param, PRODUCT_GET, true, ProductData.class);
+    }
+
+    public static final String ACTION_TYPE_SERVICE = "action_type_service";
+    ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            //todo 这里写你要在界面加载完成后执行的操作。
+            dismissIProgressDialog();
+            smartTabLayout.getViewTreeObserver().removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
+        }
+    };
+
+    public class MyBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case ACTION_TYPE_SERVICE:
+                    String status = intent.getStringExtra(INTENT_KEY_STATUS);
+                    if (status.equals(getString(R.string.service_finish))) {
+                        //刷新商品列表
+                        loadProductList();
+                        smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                    }
+                    break;
+            }
+        }
     }
 
     @OnClick({R.id.cancelBtn, R.id.tv_add})
@@ -184,14 +238,14 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
     }
 
     public void postData() {
-        if (mMapCount.size() == 0){
+        if (mMapCount.size() == 0) {
             toast("你尚未添加任何自采商品!");
             return;
         }
         ProcurenmentAddRequest procurenmentAddRequest = new ProcurenmentAddRequest();
         List<ProcurenmentAddRequest.ProductsBean> products = new ArrayList<ProcurenmentAddRequest.ProductsBean>();
-        for (Map.Entry<ProductData.ListBean, Double> entry : mMapCount.entrySet()) {
-            ProductData.ListBean listBean = entry.getKey();
+        for (Map.Entry<ProductBasicList.ListBean, Double> entry : mMapCount.entrySet()) {
+            ProductBasicList.ListBean listBean = entry.getKey();
             ProcurenmentAddRequest.ProductsBean productsBean = new ProcurenmentAddRequest.ProductsBean();
             productsBean.setProduct_id(listBean.getProductID());
             productsBean.setTracking("");
@@ -203,7 +257,6 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         }
         procurenmentAddRequest.setProducts(products);
         sendConnection("/gongfu/shop/zicai", procurenmentAddRequest, PRODUCT_ADD_1, true, ProcurementAddResult.class);
-
     }
 
     @OnClick({R.id.colseIcon, R.id.colseIcon1, R.id.iv_open})
@@ -231,19 +284,11 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
 
     CategoryRespone categoryRespone;
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
-    List<ProductData.ListBean> hotList;
+    List<ProductBasicList.ListBean> hotList;
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
-            case PRODUCT_GET:
-                ProductData ProductData = (ProductData) result.getResult().getData();
-                hotList = ProductData.getList();
-                GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
-                sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-                loadingLayout.onSuccess(hotList.size(),"哎呀！这里是空哒~~",R.drawable.default_ico_none);
-                break;
             case PRODUCT_ADD_1:
                 ProcurementAddResult procurementAddResult = (ProcurementAddResult) result.getResult();
                 EventBus.getDefault().post(procurementAddResult);
@@ -257,47 +302,66 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         }
     }
 
+
+    protected void loadProductList() {
+        ///gongfu/v3/shop/product/list
+        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+        try {
+            hotList = ProductBasicUtils.getBasicArr();
+            if (hotList == null || hotList.isEmpty()) {
+                hotList = dbUtils.findAll(ProductBasicList.ListBean.class);
+                ProductBasicUtils.setBasicArr(hotList);
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+        getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
+        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+        loadingLayout.onSuccess(hotList.size(), "哎呀！这里是空哒~~", R.drawable.default_ico_none);
+    }
+
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        if (where == PRODUCT_GET){
-            if (errMsg.equals(getResources().getString(R.string.network_error))){
+        if (where == PRODUCT_GET) {
+            if (errMsg.equals(getResources().getString(R.string.network_error))) {
                 toast(getResources().getString(R.string.network_error));
                 loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
-            }else{
-                loadingLayout.onSuccess(0,"哎呀！这里是空哒~~",R.drawable.default_ico_none);
+            } else {
+                loadingLayout.onSuccess(0, "哎呀！这里是空哒~~", R.drawable.default_ico_none);
             }
-        }else{
+        } else {
             ToastUtil.show(mContext, errMsg);
         }
     }
 
-    private void setUpDataForViewPage(List<ProductData.ListBean> listBeen) {
+    private void setUpDataForViewPage(List<ProductBasicList.ListBean> listBeen) {
         List<Fragment> productDataFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
+        HashMap<String, ArrayList<ProductBasicList.ListBean>> map = new HashMap<>();
         titles.add("全部");
         for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
-            map.put(category, new ArrayList<ProductData.ListBean>());
+            map.put(category, new ArrayList<ProductBasicList.ListBean>());
         }
-        for (ProductData.ListBean listBean : listBeen) {
-            if (!TextUtils.isEmpty(listBean.getCategory())) {
-                ArrayList<ProductData.ListBean> tempListBeen = map.get(listBean.getCategory());
+        for (ProductBasicList.ListBean listBean : listBeen) {
+            if (!TextUtils.isEmpty(listBean.getCategoryParent())) {
+                ArrayList<ProductBasicList.ListBean> tempListBeen = map.get(listBean.getCategoryParent());
                 if (tempListBeen == null) {
                     tempListBeen = new ArrayList<>();
-                    map.put(listBean.getCategory(), tempListBeen);
+                    map.put(listBean.getCategoryParent(), tempListBeen);
                 }
                 tempListBeen.add(listBean);
             }
         }
 
         for (String category : categoryRespone.getCategoryList()) {
-            ArrayList<ProductData.ListBean> value = map.get(category);
+            ArrayList<ProductBasicList.ListBean> value = map.get(category);
             productDataFragmentList.add(newSearchListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
         }
-        productDataFragmentList.add(0, newSearchListFragment((ArrayList<ProductData.ListBean>) listBeen));
+        productDataFragmentList.add(0, newSearchListFragment((ArrayList<ProductBasicList.ListBean>) listBeen));
         initUI(titles, productDataFragmentList);
         initPopWindow((ArrayList<String>) titles);
     }
@@ -336,7 +400,7 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         viewPager.setCurrentItem(position, false);
     }
 
-    public SearchListFragment newSearchListFragment(ArrayList<ProductData.ListBean> value) {
+    public SearchListFragment newSearchListFragment(ArrayList<ProductBasicList.ListBean> value) {
         SearchListFragment searchListFragment = new SearchListFragment();
         searchListFragment.type = DataType.ALL;
         searchListFragment.setData(value);
@@ -398,7 +462,6 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         mProductTypeAdapter.setSelectIndex(viewPager.getCurrentItem());
         ivOpen.setImageResource(R.drawable.arrow_up);
     }
-
 
 
     private class TabPageIndicatorAdapter extends FragmentStatePagerAdapter {
@@ -503,5 +566,11 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         super.onPause();
         MobclickAgent.onPageEnd("自采商品添加页");
         MobclickAgent.onPause(this);          //统计时长
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMyBroadcastReceiver);
     }
 }

@@ -526,7 +526,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity android:name=".ProcurementActivity" />
-        <activity android:name=".mine.ProcurementAddActivity" />
+        <activity android:name=".mine.ProcurementAddActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".mine.ProcurementLimitActivity" />
         <activity android:name=".firstpage.ReturnSuccessActivity" />
         <activity android:name=".firstpage.UploadReturnPicActivity" />

@@ -27,6 +27,7 @@ import com.runwise.supply.event.RefreshEvent;
 import com.runwise.supply.mine.ProcurementAddActivity;
 import com.runwise.supply.mine.entity.SearchKeyWork;
 import com.runwise.supply.orderpage.DataType;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.RunwiseKeyBoard;
 
@@ -52,7 +53,7 @@ public class SearchListFragment extends NetWorkFragment {
     public DataType type;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout loadingLayout;
-    private List<ProductData.ListBean> dataList;
+    private List<ProductBasicList.ListBean> dataList;
     private String keyWork;
 
     private ProcurementAddActivity.ProductCountSetter mProductCountSetter;
@@ -68,12 +69,12 @@ public class SearchListFragment extends NetWorkFragment {
         loadingLayout.onSuccess(adapter.getCount(), "暂时没有数据");
     }
 
-    public void setData(List<ProductData.ListBean> dataList) {
+    public void setData(List<ProductBasicList.ListBean> dataList) {
         if (type == DataType.ALL) {
             this.dataList = dataList;
         } else {
-            List<ProductData.ListBean> typeList = new ArrayList<>();
-            for (ProductData.ListBean bean : dataList) {
+            List<ProductBasicList.ListBean> typeList = new ArrayList<>();
+            for (ProductBasicList.ListBean bean : dataList) {
                 if (bean.getStockType().equals(type.getType())) {
                     typeList.add(bean);
                 }
@@ -101,13 +102,13 @@ public class SearchListFragment extends NetWorkFragment {
     }
 
     //返回当前标签下名称包含的
-    private List<ProductData.ListBean> findArrayByWord(String word) {
+    private List<ProductBasicList.ListBean> findArrayByWord(String word) {
         keyWork = word;
-        List<ProductData.ListBean> findList = new ArrayList<>();
+        List<ProductBasicList.ListBean> findList = new ArrayList<>();
         if (TextUtils.isEmpty(word)) {
             return dataList;
         }
-        for (ProductData.ListBean bean : dataList) {
+        for (ProductBasicList.ListBean bean : dataList) {
             if (bean.getName().contains(word)) {
                 findList.add(bean);
             }
@@ -126,7 +127,7 @@ public class SearchListFragment extends NetWorkFragment {
 
     }
 
-    public class ProductAdapter extends IBaseAdapter<ProductData.ListBean> {
+    public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             final ViewHolder viewHolder;
@@ -138,7 +139,7 @@ public class SearchListFragment extends NetWorkFragment {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            final ProductData.ListBean bean = mList.get(position);
+            final ProductBasicList.ListBean bean = mList.get(position);
             if (!TextUtils.isEmpty(keyWork)) {
                 int index = bean.getName().indexOf(keyWork);
                 if (index != -1) {

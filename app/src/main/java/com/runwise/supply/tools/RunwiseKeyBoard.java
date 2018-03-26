@@ -24,6 +24,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.repertory.entity.EditHotResult;
 
@@ -83,7 +84,7 @@ public class RunwiseKeyBoard extends Dialog {
     private InventoryResponse.InventoryProduct mInventoryProduct;
 
     private ReceiveBean mReceiveBean;
-    ProductData.ListBean mProductBean;
+    ProductBasicList.ListBean mProductBean;
     EditHotResult.ListBean mEditHotBean;
     private SetCountListener mListener;
 
@@ -163,7 +164,7 @@ public class RunwiseKeyBoard extends Dialog {
         mListener = listener;
     }
 
-    public void setUp(ProductData.ListBean productBean, SetCountListener listener) {
+    public void setUp(ProductBasicList.ListBean productBean, SetCountListener listener) {
         mProductBean = productBean;
         mListener = listener;
     }

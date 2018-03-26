@@ -215,8 +215,8 @@ public class UnLoginedFirstFragment extends NetWorkFragment implements Statistic
                     }
                 });
                 dialog.show();
-                String text = new BugClass().bug();
-                ToastUtil.show(getActivity(),text);
+//                String text = new BugClass().bug();
+//                ToastUtil.show(getActivity(),text);
                 break;
         }
     }

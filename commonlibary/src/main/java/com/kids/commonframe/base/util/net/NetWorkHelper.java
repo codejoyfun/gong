@@ -700,7 +700,12 @@ public class NetWorkHelper<T extends BaseEntity> {
                 String repCode = response.getResult().getState();
                 if ("A0006".equals(repCode)) {
                     if (newWorkCallBack != null) {
-                        newWorkCallBack.onSuccess(response, what);
+                        try{
+                            newWorkCallBack.onSuccess(response, what);
+                        }catch (Exception e){
+                            UmengUtil.reportError(context, url + "\n" + e.toString());
+                            e.printStackTrace();
+                        }
                     }
                 } else {
                     cellBackError(response, what, url, bodyParamStr);
@@ -741,6 +746,7 @@ public class NetWorkHelper<T extends BaseEntity> {
                     UmengUtil.reportError(context, url + "\n" + "参数: " + paramsMap.toString() + "\n" + errorMsg);
                 }
             }catch (Exception e){
+                UmengUtil.reportError(context, url + "\n" +  e.toString());
                 e.printStackTrace();
             }
         }

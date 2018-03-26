@@ -137,11 +137,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     productFlavors {
-        hua_wei {}
-        _360 {}
-        version_upgrade {}
-        pu_gong_ying {}
-        qq {}
+//        hua_wei {}
+//        _360 {}
+//        version_upgrade {}
+//        pu_gong_ying {}
+//        qq {}
     }
 //批量处理
     productFlavors.all {

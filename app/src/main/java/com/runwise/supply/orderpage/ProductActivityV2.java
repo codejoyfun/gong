@@ -1480,7 +1480,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         public void onGlobalLayout() {
             //todo 这里写你要在界面加载完成后执行的操作。
             dismissIProgressDialog();
-
             smartTabLayout.getViewTreeObserver().removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
         }
     };
