@@ -467,6 +467,10 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     if (isInProgresss) {
                         if (getActivity() != null)
                             InventoryCacheManager.getInstance(getActivity()).setIsInventory(true);//记录，不可其它入库出库操作了
+                        InventoryResponse.InventoryBean cacheBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(inventoryBean.getInventoryID());
+                        if(cacheBean!=null){
+                            inventoryBean.setLines(cacheBean.getLines());
+                        }
                         InventoryCacheManager.getInstance(getActivity()).saveInventory(inventoryBean);
                         if (inventoryBean.getCreateUser().equals(userInfo.getUsername())) {
                             inventoryList.add(inventoryBean);
@@ -508,7 +512,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     mTvHint.setVisibility(View.GONE);
                 }
                 break;
-            case  REQUEST_CANCEL_RETURN_ORDER:
+            case REQUEST_CANCEL_RETURN_ORDER:
                 ToastUtil.show(mContext, "取消成功");
                 requestReturnList(false);
                 break;
@@ -751,7 +755,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 dialog.show();
                 break;
             case FINISH_RETURN:
-                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
+                if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                    return;
                 mSelectBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
                 dialog.setTitle("提示");
                 dialog.setMessageGravity();
@@ -768,7 +773,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 dialog.show();
                 break;
             case CANCEL_RETURN_ORDER:
-                if(InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))return;
+                if (InventoryCacheManager.getInstance(getActivity()).checkIsInventory(getActivity()))
+                    return;
                 mSelectBean = (ReturnOrderBean.ListBean) adapter.getList().get(position);
                 dialog.setTitle("提示");
                 dialog.setMessageGravity();
@@ -785,6 +791,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
         }
     }
+
     private void cancelReturnOrder(int returnOrderId) {
         String url = "/api/return_order/" + returnOrderId + "/cancel";
         Object obj = null;
@@ -1108,7 +1115,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             TextView mTvNotice = (TextView) mViewNotice.findViewById(R.id.tv_notice);
             int currentInventoryId = InventoryCacheManager.getInstance(getActivity()).getCurrentInventoryId();
             InventoryResponse.InventoryBean inventoryBean = InventoryCacheManager.getInstance(getActivity()).loadInventory(currentInventoryId);
-                mTvNotice.setText(inventoryBean.getCreateUser() + "正在盘点中，请尽快完成！");
+            mTvNotice.setText(inventoryBean.getCreateUser() + "正在盘点中，请尽快完成！");
             //关闭按钮
             mViewNotice.findViewById(R.id.iv_notice_close).setOnClickListener(v -> {
                 isNoticeClose = true;
