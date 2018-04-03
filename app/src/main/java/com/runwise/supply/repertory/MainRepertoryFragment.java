@@ -91,7 +91,7 @@ public class MainRepertoryFragment extends NetWorkFragment {
             mCreateInventoryIng = true;
             Object parma = null;
 //            sendConnection("/api/inventory/create", parma, REQUEST_EXIT, true, PandianResult.class);
-            sendConnection("/api/v2/inventory/create",parma,REQUEST_INVENTORY,true,InventoryResponse.class);
+            sendConnection("/api/inventory/create",parma,REQUEST_INVENTORY,true,InventoryResponse.class);
         }
         else{
             Intent intent = new Intent(mContext, LoginActivity.class);

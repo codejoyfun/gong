@@ -43,6 +43,7 @@ import com.runwise.supply.firstpage.EditBatchActivity;
 import com.runwise.supply.firstpage.entity.ReceiveRequest;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.tools.ProductBasicHelper;
 import com.runwise.supply.tools.TimeUtils;
 import com.runwise.supply.view.NoWatchEditText;
 
@@ -124,7 +125,7 @@ public class EditBatchDialog extends BaseActivity {
         mBean = (InventoryResponse.InventoryProduct)getIntent().getSerializableExtra(INTENT_KEY_INIT_BATCH);
         ArrayList<BatchEntity> batchEntities = new ArrayList<>();
         String pId = String.valueOf(mBean.getProductID());
-        final ProductBasicList.ListBean basicBean = mBean.getProduct();
+        final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(pId);
 
         mName.setText(basicBean.getName());
 

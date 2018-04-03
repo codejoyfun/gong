@@ -8,6 +8,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProductListResponse;
@@ -125,7 +126,9 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
             for (ProductBasicList.ListBean bean : basicList) {
                 map.put(String.valueOf(bean.getProductID()), bean);
             }
-            List<ProductBasicList.ListBean> list = dbUtils.findAll(ProductBasicList.ListBean.class);
+            Selector selector = Selector.from(ProductBasicList.ListBean.class);
+            selector.orderBy("orderBy",false);
+            List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
             for (ProductBasicList.ListBean bean : list) {
                 String keyId = bean.getProductID() + "";
                 if (!map.containsKey(keyId)) {
@@ -149,7 +152,9 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
                 dbUtils.configAllowTransaction(true);
                 try {
-                    List<ProductBasicList.ListBean> list = dbUtils.findAll(ProductBasicList.ListBean.class);
+                    Selector selector = Selector.from(ProductBasicList.ListBean.class);
+                    selector.orderBy("orderBy",false);
+                    List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
                     if (list == null) {
                         return;
                     }

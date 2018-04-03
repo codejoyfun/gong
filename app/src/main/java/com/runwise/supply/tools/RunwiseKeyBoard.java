@@ -24,6 +24,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.firstpage.entity.ReceiveBean;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.repertory.entity.EditHotResult;
@@ -101,8 +102,10 @@ public class RunwiseKeyBoard extends Dialog {
         window.getAttributes().gravity = Gravity.BOTTOM;
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         ButterKnife.bind(this);
+        String pId = String.valueOf(mInventoryProduct.getProductID());
+        final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getContext()).get(pId);
         if (mInventoryProduct != null) {
-            setUpData(NumberUtil.getIOrD(mInventoryProduct.getEditNum()), mInventoryProduct.getProduct().getName());
+            setUpData(NumberUtil.getIOrD(mInventoryProduct.getEditNum()), basicBean.getName());
         }
         if (mReceiveBean != null) {
             setUpData(NumberUtil.getIOrD(mReceiveBean.getCount()), mReceiveBean.getName(), String.valueOf(NumberUtil.getIOrD(mReceiveBean.getProductUomQty())));

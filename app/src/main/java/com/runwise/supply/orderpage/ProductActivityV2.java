@@ -38,6 +38,7 @@ import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.SampleApplicationLike;
@@ -313,7 +314,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     protected List<ProductBasicList.ListBean> mListBeans;
 
-
     /**
      * 查询类别
      */
@@ -324,7 +324,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         try {
             mListBeans = ProductBasicUtils.getBasicArr();
             if (mListBeans == null || mListBeans.isEmpty()) {
-                mListBeans = dbUtils.findAll(ProductBasicList.ListBean.class);
+                Selector selector = Selector.from(ProductBasicList.ListBean.class);
+                selector.orderBy("orderBy",false);
+                mListBeans = dbUtils.findAll(selector);
                 ProductBasicUtils.setBasicArr(mListBeans);
             }
             getCache();//获取缓存

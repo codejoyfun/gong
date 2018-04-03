@@ -22,6 +22,8 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.event.InventoryEditEvent;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -73,7 +75,8 @@ public class EditCountDialog extends Dialog {
         //mTvTitle.setText(mInventoryProduct.getProduct().getName());
         mEtCount.setText(NumberUtil.getIOrD(mInventoryProduct.getEditNum()));
         mEtCount.selectAll();
-        mTvTitle.setText(mInventoryProduct.getProduct().getName());
+        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getContext()).get(String.valueOf(mInventoryProduct.getProductID()));
+        mTvTitle.setText(listBean.getName());
         mTvButton.setOnClickListener(v->{
             String etValue = mEtCount.getText().toString();
             if(!TextUtils.isEmpty(etValue)){

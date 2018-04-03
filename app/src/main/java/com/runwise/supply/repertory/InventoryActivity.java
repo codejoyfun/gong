@@ -39,6 +39,7 @@ import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.event.InventoryEditEvent;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.mine.entity.CheckResult;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.EditRepertoryResult;
 import com.runwise.supply.repertory.entity.EditRequest;
@@ -124,7 +125,7 @@ public class InventoryActivity extends NetWorkActivity {
 //            toast("该盘点单没有任何商品");
 //            finish();
         } else {
-            getCategory();
+            getCategoryParent();
         }
         if (!SampleApplicationLike.getInstance().getCanSeePrice()) {
             mTvProductTotalPrice.setVisibility(View.GONE);
@@ -143,7 +144,7 @@ public class InventoryActivity extends NetWorkActivity {
     /**
      * 查询类别
      */
-    private void getCategory() {
+    private void getCategoryParent() {
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
         getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
         sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
@@ -184,7 +185,7 @@ public class InventoryActivity extends NetWorkActivity {
                 CheckResult checkResult = (CheckResult) resultBean3.getData();
                 if (checkResult.getList() != null && checkResult.getList().size() > 0) {
                     mInventoryBean.setLines(transfrom(checkResult.getList().get(0).getLines()));
-                    getCategory();
+                    getCategoryParent();
                 }
 
                 break;
@@ -229,7 +230,11 @@ public class InventoryActivity extends NetWorkActivity {
     List<InventoryResponse.InventoryProduct> filterDuplicateProduuct(List<InventoryResponse.InventoryProduct> inventoryProducts) {
         HashMap<Integer, InventoryResponse.InventoryProduct> map = new HashMap<>();
         for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
-            map.put(inventoryProduct.getProduct().getProductID(), inventoryProduct);
+            String pId = String.valueOf(inventoryProduct.getProductID());
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(pId);
+            if (basicBean != null){
+                map.put(inventoryProduct.getProductID(), inventoryProduct);
+            }
         }
         inventoryProducts = new ArrayList<>();
         for (Map.Entry<Integer, InventoryResponse.InventoryProduct> entry : map.entrySet()) {
@@ -259,12 +264,18 @@ public class InventoryActivity extends NetWorkActivity {
 
         List<InventoryResponse.InventoryProduct> inventoryProducts = filterDuplicateProduuct(mInventoryBean.getLines());
         for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
-            ProductBasicList.ListBean listBean = inventoryProduct.getProduct();
-            if (!TextUtils.isEmpty(listBean.getCategory())) {
-                ArrayList<InventoryResponse.InventoryProduct> productByCategory = map.get(listBean.getCategory());
+            String pId = String.valueOf(inventoryProduct.getProductID());
+            HashMap<String, ProductBasicList.ListBean>listBeanHashMap =  ProductBasicUtils.getBasicMap(getActivityContext());
+            final ProductBasicList.ListBean basicBean = listBeanHashMap.get(pId);
+            ProductBasicList.ListBean listBean = basicBean;
+            if (listBean == null){
+                continue;
+            }
+            if (!TextUtils.isEmpty(listBean.getCategoryParent())) {
+                ArrayList<InventoryResponse.InventoryProduct> productByCategory = map.get(listBean.getCategoryParent());
                 if (productByCategory == null) {
                     productByCategory = new ArrayList<>();
-                    map.put(listBean.getCategory(), productByCategory);
+                    map.put(listBean.getCategoryParent(), productByCategory);
                 }
                 productByCategory.add(inventoryProduct);
             }
@@ -276,7 +287,7 @@ public class InventoryActivity extends NetWorkActivity {
             tabFragmentList.add(TabFragment.newInstance(category));
         }
         //加入全部
-        orderProductFragmentList.add(0, newProductFragment("", mInventoryBean.getLines()));
+        orderProductFragmentList.add(0, newProductFragment("", inventoryProducts));
 
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), orderProductFragmentList, mTitles);
         viewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
@@ -371,7 +382,9 @@ public class InventoryActivity extends NetWorkActivity {
 
         //找出商品的分类，并把它插入指定fragment
         for (int i = 0; i < mTitles.size(); i++) {
-            if (newBean.getInventoryProduct().getProduct().getCategory().equals(mTitles.get(i))) {
+            String pId = String.valueOf(newBean.getInventoryProduct().getProductID());
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(pId);
+            if (basicBean.getCategoryParent().equals(mTitles.get(i))) {
                 InventoryFragment inventoryFragment = (InventoryFragment) orderProductFragmentList.get(i);
                 inventoryFragment.addData(newBean.getInventoryProduct());
             }
@@ -511,8 +524,10 @@ public class InventoryActivity extends NetWorkActivity {
         int count = 0;
         List<InventoryResponse.InventoryProduct> inventoryProductList = getDiffInventoryProductList();
         for (InventoryResponse.InventoryProduct listBean : inventoryProductList) {
-            if (listBean.getProduct().getCategoryParent().equals(categoryParent)
-                    && listBean.getProduct().getCategoryChild().equals(categoryChild)) {
+            String pId = String.valueOf(listBean.getProductID());
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(pId);
+            if (basicBean.getCategoryParent().equals(categoryParent)
+                    && basicBean.getCategoryChild().equals(categoryChild)) {
                 count++;
             }
         }
@@ -639,7 +654,9 @@ public class InventoryActivity extends NetWorkActivity {
         }
         LinkedHashMap<String, List<InventoryResponse.InventoryProduct>> linkedHashMap = new LinkedHashMap<>();
         for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
-            String key = inventoryProduct.getProduct().getCategoryParent() + "&" + inventoryProduct.getProduct().getCategoryChild();
+            String pId = String.valueOf(inventoryProduct.getProductID());
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(pId);
+            String key = basicBean.getCategoryParent() + "&" + basicBean.getCategoryChild();
             List<InventoryResponse.InventoryProduct> listBeans = linkedHashMap.get(key);
             if (listBeans == null) {
                 listBeans = new ArrayList<>();
@@ -687,7 +704,9 @@ public class InventoryActivity extends NetWorkActivity {
                 convertView.setTag(viewHolder);
             }
             viewHolder = (ViewHolder) convertView.getTag();
-            boolean isLot = !"none".equals(inventoryProduct.getProduct().getTracking());
+            String pId = String.valueOf(inventoryProduct.getProductID());
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(pId);
+            boolean isLot = !"none".equals(basicBean.getTracking());
             //无批次
             if (!isLot) {
                 viewHolder.mmEtCount.setVisibility(View.VISIBLE);
@@ -702,7 +721,7 @@ public class InventoryActivity extends NetWorkActivity {
                 }
 
                 viewHolder.mmTvTheoretical.setText("/" + NumberUtil.getIOrD(inventoryProduct.getTheoreticalQty()));
-                viewHolder.mmTvUom.setText(inventoryProduct.getProduct().getProductUom());
+                viewHolder.mmTvUom.setText(basicBean.getProductUom());
             } else {//有批次
                 viewHolder.mmEtCount.setVisibility(View.GONE);
                 viewHolder.mmTvUom.setVisibility(View.GONE);
@@ -790,20 +809,22 @@ public class InventoryActivity extends NetWorkActivity {
                 viewHolder.mmLayoutContainer.setVisibility(View.GONE);
             }
 
-            viewHolder.mmTvTitle.setText(inventoryProduct.getProduct().getName());
+            viewHolder.mmTvTitle.setText(basicBean.getName());
             viewHolder.mmTvCode.setText(inventoryProduct.getCode());
-            viewHolder.mmTvUnit.setText(inventoryProduct.getProduct().getUnit());
-            if (inventoryProduct.getProduct().getImage() != null) {
-                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(viewHolder.mmSdvImage, inventoryProduct.getProduct().getImage().getImage());
+            viewHolder.mmTvUnit.setText(basicBean.getUnit());
+            if (basicBean.getImage() != null) {
+                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(viewHolder.mmSdvImage, basicBean.getImage().getImage());
             }
             if (position == 0) {
                 viewHolder.mStickHeader.setVisibility(View.VISIBLE);
-                viewHolder.mTvHeader.setText(getCategoryCountInfo(inventoryProduct.getProduct().getCategoryParent(), inventoryProduct.getProduct().getCategoryChild()));
+                viewHolder.mTvHeader.setText(getCategoryCountInfo(basicBean.getCategoryParent(), basicBean.getCategoryChild()));
             } else {
-                if (!TextUtils.equals(inventoryProduct.getProduct().getCategoryParent(), mInventoryProductList.get(position - 1).getProduct().getCategoryParent()) ||
-                        !TextUtils.equals(inventoryProduct.getProduct().getCategoryChild(), mInventoryProductList.get(position - 1).getProduct().getCategoryChild())) {
+                InventoryResponse.InventoryProduct lastInventoryProduct = mInventoryProductList.get(position - 1);
+                final ProductBasicList.ListBean lastBasicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(lastInventoryProduct.getProductID()));
+                if (!TextUtils.equals(basicBean.getCategoryParent(), lastBasicBean.getCategoryParent()) ||
+                        !TextUtils.equals(basicBean.getCategoryChild(), lastBasicBean.getCategoryChild())) {
                     viewHolder.mStickHeader.setVisibility(View.VISIBLE);
-                    viewHolder.mTvHeader.setText(getCategoryCountInfo(inventoryProduct.getProduct().getCategoryParent(), inventoryProduct.getProduct().getCategoryChild()));
+                    viewHolder.mTvHeader.setText(getCategoryCountInfo(basicBean.getCategoryParent(), basicBean.getCategoryChild()));
                 } else {
                     viewHolder.mStickHeader.setVisibility(View.GONE);
                 }

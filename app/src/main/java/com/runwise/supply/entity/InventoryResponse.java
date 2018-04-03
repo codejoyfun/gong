@@ -157,9 +157,9 @@ public class InventoryResponse implements Serializable {
             return uom;
         }
 
-        public ProductBasicList.ListBean getProduct() {
-            return product;
-        }
+//        public ProductBasicList.ListBean getProduct() {
+//            return product;
+//        }
 
         public void setUom(String uom) {
             this.uom = uom;

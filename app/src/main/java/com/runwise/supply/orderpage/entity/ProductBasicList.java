@@ -102,6 +102,8 @@ public class ProductBasicList implements Serializable,Parcelable {
         private String saleUom;//销售单位
         @Column
         private String productTag;
+        @Column
+        private int orderBy;
         //本地数据
         private boolean isInvalid;
         private boolean cacheSelected;
@@ -159,6 +161,7 @@ public class ProductBasicList implements Serializable,Parcelable {
             stockUom = in.readString();
             saleUom = in.readString();
             productTag = in.readString();
+            orderBy = in.readInt();
             isInvalid = in.readByte() != 0;
             cacheSelected = in.readByte() != 0;
             cartAddedTime = in.readLong();
@@ -189,6 +192,7 @@ public class ProductBasicList implements Serializable,Parcelable {
             dest.writeString(stockUom);
             dest.writeString(saleUom);
             dest.writeString(productTag);
+            dest.writeInt(orderBy);
             dest.writeByte((byte) (isInvalid ? 1 : 0));
             dest.writeByte((byte) (cacheSelected ? 1 : 0));
             dest.writeLong(cartAddedTime);
@@ -216,7 +220,7 @@ public class ProductBasicList implements Serializable,Parcelable {
         };
 
         public String getTracking() {
-            return tracking;
+            return "none";
         }
 
         public void setTracking(String tracking) {
@@ -436,6 +440,14 @@ public class ProductBasicList implements Serializable,Parcelable {
 
         public void setId(int id) {
             this.id = id;
+        }
+
+        public int getOrderBy() {
+            return orderBy;
+        }
+
+        public void setOrderBy(int orderBy) {
+            this.orderBy = orderBy;
         }
     }
 }
