@@ -436,6 +436,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     }
 
     protected void initUI(List<String> titles, List<ProductCategoryFragment> repertoryEntityFragmentList) {
+        if(mViewPagerCategoryFrags == null){
+            return;
+        }
         mAdapterVp = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, repertoryEntityFragmentList);
         mViewPagerCategoryFrags.setAdapter(mAdapterVp);
         smartTabLayout.setupWithViewPager(mViewPagerCategoryFrags);

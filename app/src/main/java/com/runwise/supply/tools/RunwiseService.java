@@ -59,8 +59,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     public void requestProductList() {
         int version = (int) SPUtils.get(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, 0);
         ProductVersionRequest productVersionRequest = new ProductVersionRequest();
-//        productVersionRequest.setVersion(version);
-        productVersionRequest.setVersion(256);
+        productVersionRequest.setVersion(version);
         netWorkHelper.sendConnection("/gongfu/v4/product/list/", productVersionRequest, REQUEST_CODE_PRODUCT_LIST, false, ProductListResponse.class);
     }
 

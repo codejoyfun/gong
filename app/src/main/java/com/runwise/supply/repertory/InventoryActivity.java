@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
@@ -225,10 +226,25 @@ public class InventoryActivity extends NetWorkActivity {
         ToastUtil.show(this, errMsg);
     }
 
+    List<InventoryResponse.InventoryProduct> filterDuplicateProduuct(List<InventoryResponse.InventoryProduct> inventoryProducts) {
+        HashMap<Integer, InventoryResponse.InventoryProduct> map = new HashMap<>();
+        for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
+            map.put(inventoryProduct.getProduct().getProductID(), inventoryProduct);
+        }
+        inventoryProducts = new ArrayList<>();
+        for (Map.Entry<Integer, InventoryResponse.InventoryProduct> entry : map.entrySet()) {
+            inventoryProducts.add(entry.getValue());
+        }
+        return inventoryProducts;
+    }
+
     List<String> mTitles;
 
     private void setUpDataForViewPage() {
         if (categoryRespone == null) {
+            return;
+        }
+        if (mInventoryBean == null || mInventoryBean.getLines().size() == 0) {
             return;
         }
         orderProductFragmentList = new ArrayList<>();
@@ -241,7 +257,8 @@ public class InventoryActivity extends NetWorkActivity {
             map.put(category, new ArrayList<>());
         }
 
-        for (InventoryResponse.InventoryProduct inventoryProduct : mInventoryBean.getLines()) {
+        List<InventoryResponse.InventoryProduct> inventoryProducts = filterDuplicateProduuct(mInventoryBean.getLines());
+        for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
             ProductBasicList.ListBean listBean = inventoryProduct.getProduct();
             if (!TextUtils.isEmpty(listBean.getCategory())) {
                 ArrayList<InventoryResponse.InventoryProduct> productByCategory = map.get(listBean.getCategory());
