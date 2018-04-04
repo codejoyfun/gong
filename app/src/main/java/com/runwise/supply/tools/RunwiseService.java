@@ -19,6 +19,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -141,14 +142,25 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
             }
             ProductBasicUtils.setBasicMap(map);
             //            查询未归档的商品
-            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-            selector1.orderBy("orderBy", false);
-            selector.where("subValid", "=", "true");
-            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+//            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+//            selector1.orderBy("orderBy", false);
+//            selector1.where("subValid", "=", "true");
+//            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+            List<ProductBasicList.ListBean> orderProductList = filterSubValid(list);
             ProductBasicUtils.setBasicArr(orderProductList);
         } catch (DbException e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<ProductBasicList.ListBean> filterSubValid(List<ProductBasicList.ListBean> listBeans) {
+        List<ProductBasicList.ListBean> tempListBeans = new ArrayList<>();
+        for (ProductBasicList.ListBean listBean : listBeans) {
+            if (listBean.isSubValid()) {
+                tempListBeans.add(listBean);
+            }
+        }
+        return tempListBeans;
     }
 
     @Override
@@ -174,10 +186,11 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                         }
                     }
                     ProductBasicUtils.setBasicMap(map);
-                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-                    selector1.orderBy("orderBy", false);
-                    selector.where("subValid", "=", "true");
-                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+//                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+//                    selector1.orderBy("orderBy", false);
+//                    selector1.where("subValid", "=", "true");
+//                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+                    List<ProductBasicList.ListBean> orderProductList = filterSubValid(list);
                     ProductBasicUtils.setBasicArr(orderProductList);
 
                 } catch (DbException e) {
@@ -188,7 +201,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         }
     }
 
-    private void loadProducts(){
+    private void loadProducts() {
         DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
         HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
         dbUtils.configAllowTransaction(true);
@@ -208,10 +221,11 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 }
             }
             ProductBasicUtils.setBasicMap(map);
-            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-            selector1.orderBy("orderBy", false);
-            selector.where("subValid", "=", "true");
-            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+//            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+//            selector1.orderBy("orderBy", false);
+//            selector1.where("subValid", "=", "true");
+//            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+            List<ProductBasicList.ListBean> orderProductList = filterSubValid(list);
             ProductBasicUtils.setBasicArr(orderProductList);
 
         } catch (DbException e) {

@@ -326,9 +326,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mListBeans = ProductBasicUtils.getBasicArr();
             if (mListBeans == null || mListBeans.isEmpty()) {
                 Selector selector = Selector.from(ProductBasicList.ListBean.class);
-                selector.orderBy("orderBy",false);
-                selector.where("subValid","=","true");
                 mListBeans = dbUtils.findAll(selector);
+                mListBeans =  RunwiseService.filterSubValid(mListBeans);
                 ProductBasicUtils.setBasicArr(mListBeans);
             }
             getCache();//获取缓存
@@ -377,6 +376,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         loadingLayout.onSuccess(categoryResponse.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
         setupViewPager();
     }
+
+
 
 
     ArrayList<String> mTitles;
