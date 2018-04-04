@@ -289,6 +289,7 @@ private String[] values = {"DemoforHD20170516", "LBZ20170607", "GoldenClient2017
     @Override
     public void onSuccess(BaseEntity result, int where) {
         SPUtils.loginOut(mContext);
+        ProductBasicUtils.clearBasicMap();
         DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
         try {
             dbUtils.deleteAll(ProductBasicList.ListBean.class);

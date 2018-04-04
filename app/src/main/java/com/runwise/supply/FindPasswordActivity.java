@@ -33,6 +33,8 @@ import com.runwise.supply.entity.GetCodeRequest;
 import com.runwise.supply.entity.GetHostRequest;
 import com.runwise.supply.entity.HostResponse;
 import com.runwise.supply.message.MessageFragment;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.AESCrypt;
 import com.runwise.supply.tools.FingerprintHelper;
 import com.runwise.supply.tools.SP_CONSTANTS;
@@ -200,6 +202,7 @@ public class FindPasswordActivity extends NetWorkActivity {
 				break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
+				ProductBasicUtils.clearBasicMap();
 				SelfOrderTimeStatisticsUtil.clear();
                 MessageFragment.isLogin = false;
                 SampleApplicationLike.getInstance().cleanUesrInfo();

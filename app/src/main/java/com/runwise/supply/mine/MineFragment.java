@@ -29,6 +29,7 @@ import com.runwise.supply.ProcurementActivity;
 import com.runwise.supply.R;
 import com.runwise.supply.TransferListActivity;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.ObservableScrollView;
 import com.runwise.supply.view.SystemUpgradeLayout;
@@ -162,12 +163,12 @@ public class MineFragment extends NetWorkFragment {
                 } else {
                     orderRed.setVisibility(View.GONE);
                 }
-                if (!TextUtils.isEmpty(userInfo.getIsZicai())&&userInfo.getIsZicai().equals("true")) {
+                if (!TextUtils.isEmpty(userInfo.getIsZicai()) && userInfo.getIsZicai().equals("true")) {
                     findViewById(R.id.rl_procurement).setVisibility(View.VISIBLE);
                 } else {
                     findViewById(R.id.rl_procurement).setVisibility(View.GONE);
                 }
-                if (!TextUtils.isEmpty(userInfo.getIsShopTransfer())&&userInfo.getIsShopTransfer().equals("true")) {
+                if (!TextUtils.isEmpty(userInfo.getIsShopTransfer()) && userInfo.getIsShopTransfer().equals("true")) {
                     findViewById(R.id.rl_transfer).setVisibility(View.VISIBLE);
                 } else {
                     findViewById(R.id.rl_transfer).setVisibility(View.GONE);
@@ -198,7 +199,7 @@ public class MineFragment extends NetWorkFragment {
 
     }
 
-    @OnClick({R.id.rl_user_guide,R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_3, R.id.itemLayout_4, R.id.rl_price_list, R.id.rl_bill, rl_procurement, R.id.rl_transfer})
+    @OnClick({R.id.rl_user_guide, R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_3, R.id.itemLayout_4, R.id.rl_price_list, R.id.rl_bill, rl_procurement, R.id.rl_transfer})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -237,14 +238,14 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.itemLayout_1:
-                intent = OrderListActivityV2.getStartIntent(0,getActivity());
+                intent = OrderListActivityV2.getStartIntent(0, getActivity());
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
                 break;
             //退货记录
             case R.id.itemLayout_3:
-                intent = OrderListActivityV2.getStartIntent(1,getActivity());
+                intent = OrderListActivityV2.getStartIntent(1, getActivity());
                 if (UserUtils.checkLogin(intent, mContext)) {
                     startActivity(intent);
                 }
@@ -253,6 +254,10 @@ public class MineFragment extends NetWorkFragment {
             case R.id.itemLayout_4:
                 intent = new Intent(mContext, CheckActivity.class);
                 if (UserUtils.checkLogin(intent, mContext)) {
+                    if (!ProductBasicUtils.isInit(getActivity())) {
+                        ToastUtil.show(getActivity(), "商品数据尚未初始化,请稍后再试");
+                        return;
+                    }
                     startActivity(intent);
                 }
                 break;
@@ -288,17 +293,29 @@ public class MineFragment extends NetWorkFragment {
                     }
                 }
                 break;
+//                自采
             case rl_procurement:
-                refreshProcument();
+                if (SPUtils.isLogin(getActivity())) {
+                    if (!ProductBasicUtils.isInit(getActivity())) {
+                        ToastUtil.show(getActivity(), "商品数据尚未初始化,请稍后再试");
+                        return;
+                    }
+                    refreshProcument();
+                }
+
                 break;
             case R.id.rl_transfer://门店调拨
                 if (SPUtils.isLogin(getActivity())) {
+                    if (!ProductBasicUtils.isInit(getActivity())) {
+                        ToastUtil.show(getActivity(), "商品数据尚未初始化,请稍后再试");
+                        return;
+                    }
                     refreshTransfer();
                 }
                 break;
             case R.id.rl_user_guide:
                 MobclickAgent.onEvent(getActivity(), EVENT_ID_USER_GUIDE);
-                intent = new Intent(mContext,UserGuideActivity.class);
+                intent = new Intent(mContext, UserGuideActivity.class);
                 startActivity(intent);
                 break;
         }

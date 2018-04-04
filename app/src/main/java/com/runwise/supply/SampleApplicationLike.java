@@ -19,6 +19,7 @@ import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.runwise.supply.message.MessageFragment;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.MyDbUtil;
 import com.tencent.bugly.Bugly;
@@ -85,6 +86,7 @@ public class SampleApplicationLike extends DefaultApplicationLike {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogout(LogoutFromJpushEvent logoutFromJpushEvent){
         SPUtils.loginOut(getApplication());
+        ProductBasicUtils.clearBasicMap();
         DbUtils dbUtils = MyDbUtil.create(getApplication());
         try {
             dbUtils.deleteAll(ProductBasicList.ListBean.class);

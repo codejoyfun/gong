@@ -45,6 +45,7 @@ import com.runwise.supply.message.MessageFragment;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.mine.entity.UploadImg;
 import com.runwise.supply.orderpage.CartManager;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.MyDbUtil;
 import com.runwise.supply.tools.StatusBarUtil;
@@ -134,6 +135,7 @@ public class EditUserinfoActivity extends NetWorkActivity {
                 break;
             case REQUEST_LOGINOUT:
                 SPUtils.loginOut(mContext);
+                ProductBasicUtils.clearBasicMap();
                 DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
                 try {
                     dbUtils.deleteAll(ProductBasicList.ListBean.class);

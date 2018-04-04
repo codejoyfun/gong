@@ -65,7 +65,7 @@ public class ProductBasicUtils {
             return basicMap;
     }
 
-    public static List<ReceiveInfo> getReceiveInfo(Context context,int orderId,int productId) {
+    public static List<ReceiveInfo> getReceiveInfo(Context context, int orderId, int productId) {
         DbUtils dbUitls = MyDbUtil.create(context);
         try {
             return dbUitls.findAll(Selector.from(ReceiveInfo.class)
@@ -78,9 +78,18 @@ public class ProductBasicUtils {
     }
 
 
-
     public static void setBasicMap(HashMap<String, ProductBasicList.ListBean> basicMap) {
         ProductBasicUtils.basicMap = basicMap;
+    }
+
+    public static boolean isInit(Context context) {
+        return getBasicMap(context).size() != 0;
+    }
+
+    public static void clearBasicMap() {
+        if (basicMap != null) {
+            basicMap.clear();
+        }
     }
 
     public static void clearCache(Context context) {
@@ -95,14 +104,14 @@ public class ProductBasicUtils {
     }
 
     public static void saveProductInfoAsync(final Context context, final List<ProductBasicList.ListBean> listBeanList) {
-        AsyncTask<String,String,String> task = new AsyncTask<String, String, String>() {
+        AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
             @Override
             protected String doInBackground(String... strings) {
-                try{
+                try {
                     DbUtils dbUtils = MyDbUtil.create(context);
                     dbUtils.saveOrUpdateAll(listBeanList);
-                    Log.d("haha","save finished!");
-                }catch (DbException e){
+                    Log.d("haha", "save finished!");
+                } catch (DbException e) {
                     e.printStackTrace();
                     return null;
                 }
@@ -136,19 +145,19 @@ public class ProductBasicUtils {
         ProductBasicUtils.mReceiveInfoList = mReceiveInfoList;
     }
 
-    public static Set<Integer> check(Context context,List<? extends OrderResponse.ListBean.LinesBean> list){
+    public static Set<Integer> check(Context context, List<? extends OrderResponse.ListBean.LinesBean> list) {
         Set<Integer> missingInfo = new HashSet<>();
-        for(OrderResponse.ListBean.LinesBean linesBean:list){
-            if(getBasicMap(context).get(linesBean.getProductID()+"")==null){
+        for (OrderResponse.ListBean.LinesBean linesBean : list) {
+            if (getBasicMap(context).get(linesBean.getProductID() + "") == null) {
                 missingInfo.add(linesBean.getProductID());
             }
         }
         return missingInfo;
     }
 
-    public static void request(NetWorkHelper netWorkHelper,int where, Set<Integer> missingInfo){
+    public static void request(NetWorkHelper netWorkHelper, int where, Set<Integer> missingInfo) {
 
-        for(Integer id:missingInfo){
+        for (Integer id : missingInfo) {
             Object request = null;
             StringBuffer sb = new StringBuffer("/gongfu/v2/product/");
             sb.append(id).append("/");
