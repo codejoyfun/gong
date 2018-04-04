@@ -3,6 +3,7 @@ package com.runwise.supply.tools;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.util.SPUtils;
@@ -61,7 +62,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         int version = (int) SPUtils.get(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, 0);
         ProductVersionRequest productVersionRequest = new ProductVersionRequest();
         productVersionRequest.setVersion(version);
-        netWorkHelper.sendConnection("/gongfu/v4/product/list/", productVersionRequest, REQUEST_CODE_PRODUCT_LIST, false, ProductListResponse.class);
+        netWorkHelper.sendConnection("/api/product/list/", productVersionRequest, REQUEST_CODE_PRODUCT_LIST, false, ProductListResponse.class);
     }
 
 
@@ -88,7 +89,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         switch (where) {
             case REQUEST_CODE_PRODUCT_LIST:
                 BaseEntity.ResultBean resultBean = result.getResult();
-                try{
+                try {
                     ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
                     if (productListResponse.getProducts() != null && productListResponse.getProducts().size() > 0) {
                         deleteProductFromDB();
@@ -98,8 +99,9 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                         SPUtils.saveObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST, productListResponse.getCategory());
                         putProductsToDB(productListResponse.getProducts());
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
+                    loadProducts();
                 }
                 sendServiceStatus(getString(R.string.service_finish));
                 break;
@@ -118,7 +120,6 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
 
     private void putProductsToDB(List<ProductBasicList.ListBean> basicList) {
         DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
-        ProductBasicUtils.setBasicArr(basicList);
         HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
         dbUtils.configAllowTransaction(true);
         try {
@@ -126,8 +127,8 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
             for (ProductBasicList.ListBean bean : basicList) {
                 map.put(String.valueOf(bean.getProductID()), bean);
             }
+//            全部商品(包括归档和未归档)
             Selector selector = Selector.from(ProductBasicList.ListBean.class);
-            selector.orderBy("orderBy",false);
             List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
             for (ProductBasicList.ListBean bean : list) {
                 String keyId = bean.getProductID() + "";
@@ -139,6 +140,12 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 }
             }
             ProductBasicUtils.setBasicMap(map);
+            //            查询未归档的商品
+            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+            selector1.orderBy("orderBy", false);
+            selector.where("subValid", "=", "true");
+            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+            ProductBasicUtils.setBasicArr(orderProductList);
         } catch (DbException e) {
             e.printStackTrace();
         }
@@ -153,7 +160,6 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 dbUtils.configAllowTransaction(true);
                 try {
                     Selector selector = Selector.from(ProductBasicList.ListBean.class);
-                    selector.orderBy("orderBy",false);
                     List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
                     if (list == null) {
                         return;
@@ -167,12 +173,49 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                             map.put(keyId, bean);
                         }
                     }
-                    ProductBasicUtils.setBasicArr(list);
+                    ProductBasicUtils.setBasicMap(map);
+                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+                    selector1.orderBy("orderBy", false);
+                    selector.where("subValid", "=", "true");
+                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+                    ProductBasicUtils.setBasicArr(orderProductList);
+
                 } catch (DbException e) {
                     e.printStackTrace();
                 }
                 sendServiceStatus(getString(R.string.service_finish));
                 break;
+        }
+    }
+
+    private void loadProducts(){
+        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+        HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
+        dbUtils.configAllowTransaction(true);
+        try {
+            Selector selector = Selector.from(ProductBasicList.ListBean.class);
+            List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
+            if (list == null) {
+                return;
+            }
+            for (ProductBasicList.ListBean bean : list) {
+                String keyId = bean.getProductID() + "";
+                if (!map.containsKey(keyId)) {
+                    if (bean.getImage() == null) {//TODO:xutils的坑，没有load imagebean？
+                        bean.setImage(new ImageBean());
+                    }
+                    map.put(keyId, bean);
+                }
+            }
+            ProductBasicUtils.setBasicMap(map);
+            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+            selector1.orderBy("orderBy", false);
+            selector.where("subValid", "=", "true");
+            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+            ProductBasicUtils.setBasicArr(orderProductList);
+
+        } catch (DbException e) {
+            e.printStackTrace();
         }
     }
 

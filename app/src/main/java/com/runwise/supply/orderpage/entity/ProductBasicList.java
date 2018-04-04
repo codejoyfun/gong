@@ -14,7 +14,7 @@ import java.util.List;
  * Created by libin on 2017/7/6.
  */
 
-public class ProductBasicList implements Serializable,Parcelable {
+public class ProductBasicList implements Serializable, Parcelable {
 
     private List<ListBean> list;
 
@@ -50,7 +50,7 @@ public class ProductBasicList implements Serializable,Parcelable {
         this.list = list;
     }
 
-    public static class ListBean implements Serializable,Parcelable,Cloneable {
+    public static class ListBean implements Serializable, Parcelable, Cloneable {
         /**
          * name : 黑鱼（大型）
          * image : {"imageMedium":"/gongfu/image/product/8/image_medium/","image":"/gongfu/image/product/8/image/","imageSmall":"/gongfu/image/product/8/image_small/","imageID":8}
@@ -104,6 +104,8 @@ public class ProductBasicList implements Serializable,Parcelable {
         private String productTag;
         @Column
         private int orderBy;
+        @Column
+        private boolean subValid;//True就是用来下单的 False就不用来下单的
         //本地数据
         private boolean isInvalid;
         private boolean cacheSelected;
@@ -123,8 +125,8 @@ public class ProductBasicList implements Serializable,Parcelable {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof ListBean){
-                return ((ListBean)obj).getProductID() == productID;
+            if (obj instanceof ListBean) {
+                return ((ListBean) obj).getProductID() == productID;
             }
             return false;
         }
@@ -132,9 +134,9 @@ public class ProductBasicList implements Serializable,Parcelable {
         @Override
         public Object clone() {
             ListBean listBean = null;
-            try{
-                listBean = (ListBean)super.clone();
-            }catch(CloneNotSupportedException e) {
+            try {
+                listBean = (ListBean) super.clone();
+            } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
             return listBean;
@@ -426,6 +428,7 @@ public class ProductBasicList implements Serializable,Parcelable {
         public void setActualQty(double actualQty) {
             this.actualQty = actualQty;
         }
+
         public double getPresetQty() {
             return presetQty;
         }
@@ -448,6 +451,14 @@ public class ProductBasicList implements Serializable,Parcelable {
 
         public void setOrderBy(int orderBy) {
             this.orderBy = orderBy;
+        }
+
+        public boolean isSubValid() {
+            return subValid;
+        }
+
+        public void setSubValid(boolean subValid) {
+            this.subValid = subValid;
         }
     }
 }

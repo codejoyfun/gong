@@ -26,8 +26,8 @@ tinkerSupport {
     // 如果为空，则表示不是进行补丁包的编译
     // @{link tinkerPatch.oldApk }
 //    baseApk = "${bakPath}/${baseApkDir}/version_upgrade/app-version_upgrade-release.apk"
-    baseApk = "${bakPath}/${baseApkDir}/pu_gong_ying/app-pu_gong_ying-release.apk"
-//    baseApk = "${bakPath}/${baseApkDir}/hua_wei/app-hua_wei-release.apk"
+//    baseApk = "${bakPath}/${baseApkDir}/pu_gong_ying/app-pu_gong_ying-release.apk"
+    baseApk = "${bakPath}/${baseApkDir}/hua_wei/app-hua_wei-release.apk"
 
     // 对应tinker插件applyMapping
     baseApkProguardMapping = "${bakPath}/${baseApkDir}/app-release-mapping.txt"

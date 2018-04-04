@@ -147,7 +147,7 @@ public class ProductCategoryFragment extends NetWorkFragment {
         for (int i = 0; i < listBeans.size(); i++) {
             ProductBasicList.ListBean bean = listBeans.get(i);
 //            二级分类是促销商品
-            if (!TextUtils.isEmpty(bean.getCategoryChild()) && bean.getProductTag().equals(getString(R.string.sales_promotion))) {
+            if (!TextUtils.isEmpty(bean.getCategoryChild()) && bean.getProductTag()!=null && bean.getProductTag().equals(getString(R.string.sales_promotion))) {
                 ProductBasicList.ListBean cloneListBean = (ProductBasicList.ListBean) bean.clone();
                 cloneListBean.setCategoryChild(getString(R.string.sales_promotion));
                 salesPromotionList.add(cloneListBean);
@@ -241,7 +241,10 @@ public class ProductCategoryFragment extends NetWorkFragment {
                 for (int i = 0;i< listBeans.size();i++) {
                     ProductBasicList.ListBean listBean = listBeans.get(i);
                     if (listBean.getProductID() == event.bean.getProductID()) {
-                        refreshItemView(i,listBean);
+                        if (mListContainer.getProductAdapterV2() != null){
+                            mListContainer.getProductAdapterV2().notifyDataSetChanged();
+                        }
+//                        refreshItemView(i,listBean);
                         break;
                     }
                 }

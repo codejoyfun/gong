@@ -41,6 +41,7 @@ import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -309,7 +310,10 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         try {
             hotList = ProductBasicUtils.getBasicArr();
             if (hotList == null || hotList.isEmpty()) {
-                hotList = dbUtils.findAll(ProductBasicList.ListBean.class);
+                Selector selector = Selector.from(ProductBasicList.ListBean.class);
+                selector.where("subValid","=","true");
+                selector.orderBy("orderBy",false);
+                hotList = dbUtils.findAll(selector);
                 ProductBasicUtils.setBasicArr(hotList);
             }
         } catch (DbException e) {

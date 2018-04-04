@@ -83,7 +83,7 @@ public class ProductBasicUtils {
     }
 
     public static boolean isInit(Context context) {
-        return getBasicMap(context).size() != 0;
+        return getBasicArr().size() != 0;
     }
 
     public static void clearBasicMap() {

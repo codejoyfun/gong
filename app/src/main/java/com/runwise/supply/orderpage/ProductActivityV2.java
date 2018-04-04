@@ -15,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -326,6 +327,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if (mListBeans == null || mListBeans.isEmpty()) {
                 Selector selector = Selector.from(ProductBasicList.ListBean.class);
                 selector.orderBy("orderBy",false);
+                selector.where("subValid","=","true");
                 mListBeans = dbUtils.findAll(selector);
                 ProductBasicUtils.setBasicArr(mListBeans);
             }
@@ -873,6 +875,14 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             super(fm);
             fragmentList.addAll(repertoryEntityFragmentList);
             titleList = titles;
+        }
+        @Override
+        public void finishUpdate(ViewGroup container) {
+            try{
+                super.finishUpdate(container);
+            } catch (NullPointerException nullPointerException){
+                Log.e("finishUpdate","Catch the NullPointerException in FragmentPagerAdapter.finishUpdate");
+            }
         }
 
         @Override

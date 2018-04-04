@@ -104,7 +104,6 @@ public class MainActivity extends NetWorkActivity {
         @Override
         public void run() {
             mDbUtils = MyDbUtil.create(MainActivity.this);
-            ProductBasicUtils.setBasicArr(basicList);
             HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
             mDbUtils.configAllowTransaction(true);
             try {
@@ -155,7 +154,6 @@ public class MainActivity extends NetWorkActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setStatusBarEnabled();
         setContentView(R.layout.activity_main);
         StatusBarUtil.StatusBarLightMode(this);
