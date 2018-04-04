@@ -86,7 +86,8 @@ public class RepertoryListFragment extends NetWorkFragment {
     public void onDataSynEvent(RepertoryEntity event) {
         List<RepertoryEntity.ListBean> typeList = new ArrayList<>();
         for (RepertoryEntity.ListBean bean : event.getList()){
-            if (bean.getProduct().getStockType().equals(type.getType())){
+            ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(bean.getProductID()));
+            if (product.getStockType().equals(type.getType())){
                 typeList.add(bean);
             }
         }

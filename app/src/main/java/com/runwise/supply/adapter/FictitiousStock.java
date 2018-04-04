@@ -6,6 +6,7 @@ import com.kids.commonframe.base.BaseEntity;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;

@@ -27,6 +27,8 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.entity.StockListRequest;
 import com.runwise.supply.mine.entity.RepertoryEntity;
+import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -139,7 +141,7 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
             },500);
             return;
         }
-        sendConnection("/api/v3/stock/list",new StockListRequest(limit,mPz,mKeyword,mCategory),where,false,RepertoryEntity.class);
+        sendConnection("/api/v4/stock/list",new StockListRequest(limit,mPz,mKeyword,mCategory),where,false,RepertoryEntity.class);
     }
 
     @Override
@@ -267,7 +269,7 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
                 convertView.setTag(viewHolder);
             }
             viewHolder = (ViewHolder)convertView.getTag();
-
+          ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(inventoryProduct.getProductID()));
             //添加批次信息
             //***********************有批次***************************
             if(inventoryProduct.getLotList()!=null && inventoryProduct.getLotList().size()>0){
@@ -334,16 +336,16 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
                 viewHolder.mmEtCount.setVisibility(View.VISIBLE);
                 viewHolder.mmTvUom.setVisibility(View.VISIBLE);
                 viewHolder.mmEtCount.setText(NumberUtil.getIOrD(inventoryProduct.getQty()));
-                viewHolder.mmTvUom.setText(inventoryProduct.getProduct().getProductUom());
+                viewHolder.mmTvUom.setText(product.getProductUom());
                 viewHolder.mmLayoutContainer.setVisibility(View.GONE);
 
             }
 
-            viewHolder.mmTvTitle.setText(inventoryProduct.getProduct().getName());
-            viewHolder.mmTvCode.setText(inventoryProduct.getProduct().getDefaultCode());
-            viewHolder.mmTvUnit.setText(inventoryProduct.getProduct().getUnit());
-            if(inventoryProduct.getProduct().getImage()!=null){
-                FrecoFactory.getInstance(getActivity()).displayWithoutHost(viewHolder.mmSdvImage,inventoryProduct.getProduct().getImage().getImage());
+            viewHolder.mmTvTitle.setText(product.getName());
+            viewHolder.mmTvCode.setText(product.getDefaultCode());
+            viewHolder.mmTvUnit.setText(product.getUnit());
+            if(product.getImage()!=null){
+                FrecoFactory.getInstance(getActivity()).displayWithoutHost(viewHolder.mmSdvImage,product.getImage().getImage());
             }
             return convertView;
         }

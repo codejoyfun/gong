@@ -188,7 +188,7 @@ public class RepoListFragment extends NetWorkFragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             final RepertoryEntity.ListBean bean = mList.get(position);
-            ProductBasicList.ListBean productBean = bean.getProduct();
+            ProductBasicList.ListBean productBean = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(bean.getProductID()));
             if (productBean != null) {
                 if (!TextUtils.isEmpty(mKeyword)) {
                     int index = productBean.getName().indexOf(mKeyword);

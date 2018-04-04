@@ -33,6 +33,7 @@ import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.mine.entity.RefreshPepertoy;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.repertory.entity.UpdateRepertory;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.ProductBasicHelper;
@@ -576,14 +577,15 @@ public class RepertoryFragment extends NetWorkFragment {
             map.put(category,new ArrayList<RepertoryEntity.ListBean>());
         }
         for (RepertoryEntity.ListBean listBean : repertoryEntity.getList()) {
-            if (listBean.getProduct() == null){
+            ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(listBean.getProductID()));
+            if (product == null){
                 listBean.setProduct(ProductBasicUtils.getBasicMap(getActivity()).get(listBean.getProductID()+""));
             }
-            if(listBean.getProduct() != null && !TextUtils.isEmpty(listBean.getProduct().getCategory())){
-                ArrayList<RepertoryEntity.ListBean> listBeen = map.get(listBean.getProduct().getCategory());
+            if(product != null && !TextUtils.isEmpty(product.getCategory())){
+                ArrayList<RepertoryEntity.ListBean> listBeen = map.get(product.getCategory());
                 if (listBeen == null) {
                     listBeen = new ArrayList<>();
-                    map.put(listBean.getProduct().getCategory(), listBeen);
+                    map.put(product.getCategory(), listBeen);
                 }
                 listBeen.add(listBean);
             }
