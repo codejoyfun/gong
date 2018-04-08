@@ -270,6 +270,9 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
             }
             viewHolder = (ViewHolder)convertView.getTag();
           ProductBasicList.ListBean product = ProductBasicUtils.getBasicMap(getActivity()).get(String.valueOf(inventoryProduct.getProductID()));
+          if (product==null){
+              product = inventoryProduct.getProduct();
+          }
             //添加批次信息
             //***********************有批次***************************
             if(inventoryProduct.getLotList()!=null && inventoryProduct.getLotList().size()>0){

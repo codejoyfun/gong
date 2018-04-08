@@ -264,8 +264,10 @@ public class MainActivity extends NetWorkActivity {
 
                     @Override
                     public void onClick(View v) {
-                        if (!ProductBasicUtils.isInit(getActivityContext())) {
-                            return;
+                        if(SPUtils.isLogin(getActivityContext())){
+                            if (!ProductBasicUtils.isInit(getActivityContext())) {
+                                return;
+                            }
                         }
                         mTabHost.setCurrentTab(2);
                     }

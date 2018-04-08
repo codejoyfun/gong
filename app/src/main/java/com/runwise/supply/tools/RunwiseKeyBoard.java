@@ -102,9 +102,10 @@ public class RunwiseKeyBoard extends Dialog {
         window.getAttributes().gravity = Gravity.BOTTOM;
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         ButterKnife.bind(this);
-        String pId = String.valueOf(mInventoryProduct.getProductID());
-        final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getContext()).get(pId);
+
         if (mInventoryProduct != null) {
+            String pId = String.valueOf(mInventoryProduct.getProductID());
+            final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getContext()).get(pId);
             setUpData(NumberUtil.getIOrD(mInventoryProduct.getEditNum()), basicBean.getName());
         }
         if (mReceiveBean != null) {

@@ -185,9 +185,8 @@ public class InventoryActivity extends NetWorkActivity {
                 CheckResult checkResult = (CheckResult) resultBean3.getData();
                 if (checkResult.getList() != null && checkResult.getList().size() > 0) {
                     mInventoryBean.setLines(transfrom(checkResult.getList().get(0).getLines()));
-                    getCategoryParent();
                 }
-
+                getCategoryParent();
                 break;
         }
     }
@@ -249,7 +248,7 @@ public class InventoryActivity extends NetWorkActivity {
         if (categoryRespone == null) {
             return;
         }
-        if (mInventoryBean == null || mInventoryBean.getLines().size() == 0) {
+        if (mInventoryBean == null) {
             return;
         }
         orderProductFragmentList = new ArrayList<>();
@@ -389,6 +388,8 @@ public class InventoryActivity extends NetWorkActivity {
                 inventoryFragment.addData(newBean.getInventoryProduct());
             }
         }
+        InventoryFragment inventoryFragment = (InventoryFragment) orderProductFragmentList.get(0);
+        inventoryFragment.addData(newBean.getInventoryProduct());
         //添加完盘点商品后,显示全部分类
         viewpager.setCurrentItem(0);
         //adapter.notifyDataSetChanged();
