@@ -30,6 +30,7 @@ import com.runwise.supply.R;
 import com.runwise.supply.TransferListActivity;
 import com.runwise.supply.mine.entity.UpdateUserInfo;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.tools.RunwiseService;
 import com.runwise.supply.tools.UserUtils;
 import com.runwise.supply.view.ObservableScrollView;
 import com.runwise.supply.view.SystemUpgradeLayout;
@@ -255,7 +256,6 @@ public class MineFragment extends NetWorkFragment {
                 intent = new Intent(mContext, CheckActivity.class);
                 if (UserUtils.checkLogin(intent, mContext)) {
                     if (!ProductBasicUtils.isInit(getActivity())) {
-                        ToastUtil.show(getActivity(), "商品数据尚未初始化,请稍后再试");
                         return;
                     }
                     startActivity(intent);
@@ -297,7 +297,6 @@ public class MineFragment extends NetWorkFragment {
             case rl_procurement:
                 if (SPUtils.isLogin(getActivity())) {
                     if (!ProductBasicUtils.isInit(getActivity())) {
-                        ToastUtil.show(getActivity(), "商品数据尚未初始化,请稍后再试");
                         return;
                     }
                     refreshProcument();
@@ -307,7 +306,6 @@ public class MineFragment extends NetWorkFragment {
             case R.id.rl_transfer://门店调拨
                 if (SPUtils.isLogin(getActivity())) {
                     if (!ProductBasicUtils.isInit(getActivity())) {
-                        ToastUtil.show(getActivity(), "商品数据尚未初始化,请稍后再试");
                         return;
                     }
                     refreshTransfer();

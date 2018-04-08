@@ -13,6 +13,7 @@ import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.LoginActivity;
 import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
+import com.runwise.supply.tools.RunwiseService;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
 
@@ -36,6 +37,7 @@ public class OrderFragmentV2 extends NetWorkFragment {
         return R.layout.fragment_tab_order;
     }
 
+
     @OnClick({R.id.rl_tab_order_always,R.id.rl_tab_order_intelligent,R.id.rl_tab_order_self_help})
     public void btnClick(View view){
         switch (view.getId()){
@@ -43,7 +45,6 @@ public class OrderFragmentV2 extends NetWorkFragment {
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
                     if (!ProductBasicUtils.isInit(getActivity())){
-                        ToastUtil.show(getActivity(),"商品数据尚未初始化,请稍后再试");
                         return;
                     }
                     Intent intent2 = new Intent(mContext,AlwaysOrderActivity.class);
@@ -56,7 +57,6 @@ public class OrderFragmentV2 extends NetWorkFragment {
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
                     if (!ProductBasicUtils.isInit(getActivity())){
-                        ToastUtil.show(getActivity(),"商品数据尚未初始化,请稍后再试");
                         return;
                     }
                     Intent intent2 = new Intent(mContext,SmartOrderActivity.class);
@@ -69,7 +69,6 @@ public class OrderFragmentV2 extends NetWorkFragment {
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
                     if (!ProductBasicUtils.isInit(getActivity())){
-                        ToastUtil.show(getActivity(),"商品数据尚未初始化,请稍后再试");
                         return;
                     }
                     Intent intent2 = new Intent(mContext,ProductActivityV2.class);

@@ -265,7 +265,6 @@ public class MainActivity extends NetWorkActivity {
                     @Override
                     public void onClick(View v) {
                         if (!ProductBasicUtils.isInit(getActivityContext())) {
-                            ToastUtil.show(getActivityContext(), "商品数据尚未初始化,请稍后再试");
                             return;
                         }
                         mTabHost.setCurrentTab(2);

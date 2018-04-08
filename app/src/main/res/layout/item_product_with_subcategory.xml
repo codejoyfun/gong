@@ -8,6 +8,7 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:id="@+id/food_main"
+    android:paddingBottom="5dp"
     android:orientation="vertical">
     <include layout="@layout/view_stick_header"/>
 

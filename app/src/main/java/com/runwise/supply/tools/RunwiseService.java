@@ -196,7 +196,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 } catch (DbException e) {
                     e.printStackTrace();
                 }
-                sendServiceStatus(getString(R.string.service_finish));
+                sendServiceStatus(getString(R.string.service_fail_finish));
                 break;
         }
     }

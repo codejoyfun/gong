@@ -1,18 +1,22 @@
 package com.runwise.supply.orderpage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
+import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.mine.entity.ProductOne;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ReceiveInfo;
 import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.RunwiseService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,7 +87,14 @@ public class ProductBasicUtils {
     }
 
     public static boolean isInit(Context context) {
-        return getBasicArr().size() != 0;
+        if (getBasicArr().size() == 0){
+            ToastUtil.show(context,"商品数据尚未初始化,请稍后再试");
+            if (RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish))){
+                context.startService(new Intent(context,RunwiseService.class));
+            }
+            return false;
+        }
+        return true;
     }
 
     public static void clearBasicMap() {

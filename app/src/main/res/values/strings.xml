@@ -14,6 +14,7 @@
     <string name="fingerprint_notice0">"供鲜生" 的指纹识别</string>
     <string name="service_start">服务启动</string>
     <string name="service_finish">服务结束</string>
+    <string name="service_fail_finish">服务失败结束</string>
     <string name="service_running">服务运行中</string>
 
     <string name="scroll_behavior">@string/appbar_scrolling_view_behavior</string>

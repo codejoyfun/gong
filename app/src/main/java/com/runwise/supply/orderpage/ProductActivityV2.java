@@ -1506,8 +1506,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             switch (intent.getAction()) {
                 case ACTION_TYPE_SERVICE:
                     String status = intent.getStringExtra(INTENT_KEY_STATUS);
-                    if (status.equals(getString(R.string.service_finish))) {
-
+                    if (status.equals(getString(R.string.service_finish))||status.equals(getString(R.string.service_fail_finish))) {
                         //刷新商品列表
                         startRequest();
                         smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
