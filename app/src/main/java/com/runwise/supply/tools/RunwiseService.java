@@ -8,6 +8,7 @@ import android.util.Log;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
+import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
@@ -37,6 +38,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     private static final int REQUEST_CODE_PRODUCT_LIST = 1 << 0;
     public static final String INTENT_KEY_STATUS = "status";
     private static String mStatus;
+    private CustomProgressDialog progressDialog;
 
 
     public RunwiseService() {

@@ -20,12 +20,14 @@ import com.runwise.supply.R;
 import com.runwise.supply.RegisterActivity;
 import com.runwise.supply.entity.InventoryResponse;
 import com.runwise.supply.entity.ShowInventoryNoticeEvent;
+import com.runwise.supply.event.RefreshEvent;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.repertory.entity.PandianResult;
 import com.runwise.supply.tools.InventoryCacheManager;
 import com.runwise.supply.tools.SystemUpgradeHelper;
 import com.umeng.analytics.MobclickAgent;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
@@ -70,6 +72,13 @@ public class MainRepertoryFragment extends NetWorkFragment {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (isVisibleToUser){
+            EventBus.getDefault().post(new RefreshEvent());
+        }
     }
 
 

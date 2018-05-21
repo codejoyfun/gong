@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.runwise.supply">
 
     <supports-screens
@@ -12,7 +13,6 @@
     <permission
         android:name="com.runwise.supply.permission.JPUSH_MESSAGE"
         android:protectionLevel="normal" />
-
     <!-- Required  一些系统要求的权限，如访问网络等 -->
     <uses-permission android:name="com.runwise.supply.permission.JPUSH_MESSAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -206,7 +206,9 @@
             android:name=".LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/LoginActivityAnimTheme" />
+            android:theme="@style/LoginActivityAnimTheme">
+
+        </activity>
         <activity
             android:name=".FindPasswordActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -284,8 +286,15 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="com.runwise.supply"
+                    android:scheme="runwise" />
             </intent-filter>
         </activity>
         <activity
@@ -526,9 +535,10 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity android:name=".ProcurementActivity" />
-        <activity android:name=".mine.ProcurementAddActivity"
+        <activity
+            android:name=".mine.ProcurementAddActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".mine.ProcurementLimitActivity" />
         <activity android:name=".firstpage.ReturnSuccessActivity" />
         <activity android:name=".firstpage.UploadReturnPicActivity" />

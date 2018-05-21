@@ -1,5 +1,8 @@
 package com.runwise.supply.orderpage.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Id;
 
@@ -9,7 +12,7 @@ import java.io.Serializable;
  * Created by libin on 2017/7/19.
  */
 
-public class ImageBean implements Serializable{
+public class ImageBean implements Serializable,Parcelable{
     /**
      * imageMedium : /gongfu/image/product/8/image_medium/
      * image : /gongfu/image/product/8/image/
@@ -28,6 +31,26 @@ public class ImageBean implements Serializable{
     private int imageID;
 //    @Finder(valueColumn = "id",targetColumn = "imageID")
 //    public FinderLazyLoader<ProductBasicList.ListBean> product;
+
+    protected ImageBean(Parcel in) {
+        id = in.readInt();
+        imageMedium = in.readString();
+        image = in.readString();
+        imageSmall = in.readString();
+        imageID = in.readInt();
+    }
+
+    public static final Creator<ImageBean> CREATOR = new Creator<ImageBean>() {
+        @Override
+        public ImageBean createFromParcel(Parcel in) {
+            return new ImageBean(in);
+        }
+
+        @Override
+        public ImageBean[] newArray(int size) {
+            return new ImageBean[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -81,4 +104,17 @@ public class ImageBean implements Serializable{
         imageSmall = url;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(imageMedium);
+        dest.writeString(image);
+        dest.writeString(imageSmall);
+        dest.writeInt(imageID);
+    }
 }

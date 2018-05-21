@@ -26,9 +26,13 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.FictitiousStock;
 import com.runwise.supply.entity.StockListRequest;
+import com.runwise.supply.event.RefreshEvent;
 import com.runwise.supply.mine.entity.RepertoryEntity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -166,6 +170,12 @@ public abstract class AbstractStockListFragment extends NetWorkFragment {
                 }
                 adapter.notifyDataSetChanged();
                 break;
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshEvent(RefreshEvent event) {
+        if (adapter != null){
+            pullListView.performClick();
         }
     }
 

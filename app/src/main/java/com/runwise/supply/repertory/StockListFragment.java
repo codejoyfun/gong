@@ -21,6 +21,7 @@ public class StockListFragment extends AbstractStockListFragment {
         }
     }
 
+
     /**
      * 首次点击时刷新
      * @param keyword 搜索词

@@ -184,9 +184,8 @@ public class MainActivity extends NetWorkActivity {
         String tab1 = getString(R.string.tab_1);
         String tab2 = getString(R.string.tab_2);
         String tab3 = getString(R.string.tab_3);
-        String tab4 = getString(R.string.tab_4);
         String tab5 = getString(R.string.tab_5);
-        mTags = new String[]{tab1, tab2, tab3, tab4, tab5};
+        mTags = new String[]{tab1, tab2, tab3, tab5};
         if (getIntent().getBooleanExtra(INTENT_KEY_SKIP_TO_LOGIN, false)) {
             startActivity(new Intent(getActivityContext(), LoginActivity.class));
         } else {
@@ -270,6 +269,7 @@ public class MainActivity extends NetWorkActivity {
                             }
                         }
                         mTabHost.setCurrentTab(2);
+
                     }
                 });
     }

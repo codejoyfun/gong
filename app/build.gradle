@@ -28,7 +28,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:23.2.0'
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.anthonycr.grant:permissions:1.0'
-    compile 'com.socketmobile:capture-android:0.9-SNAPSHOT'
+    compile 'com.socketmobile:capture-android:0.9-SNAPSHOT@aar'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'me.shaohui:bottomdialog:1.1.9'
     compile 'com.contrarywind:Android-PickerView:3.2.6'
@@ -91,6 +91,7 @@ android {
             abiFilters "armeabi"
         }
     }
+
     signingConfigs {
 //        debug {
 //            //debug也用正式证书编译，方便调试分享等

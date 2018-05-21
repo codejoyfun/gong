@@ -23,6 +23,7 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.entity.TransferDetailResponse;
 import com.runwise.supply.entity.TransferEntity;
+import com.runwise.supply.entity.TransferParam;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.mine.TransferInModifyActivity;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -267,8 +268,9 @@ public class TransferDetailActivity extends NetWorkActivity implements LoadingLa
         if (mTransferEntity != null) pickingID = mTransferEntity.getPickingID();
         else pickingID = getIntent().getStringExtra(EXTRA_TRANSFER_ID);
 
-        Object request = null;
-        sendConnection("/gongfu/shop/transfer/" + pickingID, request, REQUEST_DETAIL, true, TransferDetailResponse.class);
+        TransferParam  transferParam = new TransferParam();
+        transferParam.setPickingID(pickingID);
+        sendConnection("/gongfu/shop/transfer/", transferParam, REQUEST_DETAIL, true, TransferDetailResponse.class);
     }
 
     /**
