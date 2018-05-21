@@ -40,7 +40,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'me.relex:photodraweeview:1.1.3'
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.25'
-    compile 'com.android.support:multidex:1.0.2'
+    compile 'com.android.support:multidex:1.0.1'
     // 多dex配置
     //注释掉原有bugly的仓库
     //compile 'com.tencent.bugly:crashreport:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.3.4
@@ -74,18 +74,18 @@ android {
             minSdkVersion 19
         }
         app {
-            minSdkVersion 14
+            minSdkVersion 15
         }
         huawei {
-            minSdkVersion 14
+            minSdkVersion 15
         }
     }
     defaultConfig {
         applicationId "com.runwise.supply"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 21
-        versionCode 20180325
-        versionName "V1.3.3"
+        versionCode 20180521
+        versionName "V1.3.4"
         multiDexEnabled true
         ndk {
             abiFilters "armeabi"

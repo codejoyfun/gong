@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.runwise.supply">
-
+    <uses-sdk tools:overrideLibrary="com.weigan.loopview"/>
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
@@ -73,7 +73,8 @@
         android:largeHeap="true"
         android:persistent="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AnimStyle">
+        android:theme="@style/Theme.AnimStyle"
+        tools:replace="icon,label,theme,allowBackup">
 
         <!-- Required SDK 核心功能 -->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->
@@ -289,12 +290,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
 
-                <data
-                    android:host="com.runwise.supply"
-                    android:scheme="runwise" />
+                <!--<data-->
+                    <!--android:host="com.runwise.supply"-->
+                    <!--android:scheme="runwise" />-->
             </intent-filter>
         </activity>
         <activity

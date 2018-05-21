@@ -171,7 +171,6 @@ public class FindPasswordActivity extends NetWorkActivity {
 				holdCode = true;
 				break;
 			case FIND_PASSWORD:
-				ToastUtil.show(mContext, "密码修改成功");
 				//更新指纹识别
 				if(isLogin(this)){
 					UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
@@ -188,8 +187,13 @@ public class FindPasswordActivity extends NetWorkActivity {
 					}
 				}
 				//修改完成，退出登录 http://jira-lab.runwise.co/browse/MRGONG-401
-                Object param = null;
-                sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+				if (SPUtils.isLogin(getActivityContext())){
+					Object param = null;
+					sendConnection("/gongfu/logout",param,REQUEST_LOGINOUT,true,null);
+				}else{
+					logoutCallback();
+				}
+
 				break;
 			case GET_HOST:
 				mHostResponse = (HostResponse) result.getResult().getData();
@@ -201,32 +205,35 @@ public class FindPasswordActivity extends NetWorkActivity {
 				SPUtils.put(getActivityContext(),FILE_KEY_DB_NAME,mHostResponse.getDbName());
 				break;
             case REQUEST_LOGINOUT:
-                SPUtils.loginOut(mContext);
-				ProductBasicUtils.clearBasicMap();
-				SelfOrderTimeStatisticsUtil.clear();
-                MessageFragment.isLogin = false;
-                SampleApplicationLike.getInstance().cleanUesrInfo();
-                JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
-
-                CustomDialog customDialog = new CustomDialog(this);
-                customDialog.setMessage("您的密码已修改，请重新登录！");
-                customDialog.setModel(CustomDialog.RIGHT);
-                customDialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        //退出登录
-                        ActivityManager.getInstance().finishAll();
-                        EventBus.getDefault().post(new UserLogoutEvent());
-                        Intent intent = new Intent(FindPasswordActivity.this, MainActivity.class);
-                        intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
-                        startActivity(intent);
-                        customDialog.dismiss();
-                    }
-                });
-                customDialog.setCancelable(false);
-                customDialog.show();
+				logoutCallback();
                 break;
 		}
+	}
+	private void logoutCallback(){
+		SPUtils.loginOut(mContext);
+		ProductBasicUtils.clearBasicMap();
+		SelfOrderTimeStatisticsUtil.clear();
+		MessageFragment.isLogin = false;
+		SampleApplicationLike.getInstance().cleanUesrInfo();
+		JPushInterface.setAliasAndTags(getApplicationContext(), "", null, null);
+
+		CustomDialog customDialog = new CustomDialog(this);
+		customDialog.setMessage("您的密码已修改，请重新登录！");
+		customDialog.setModel(CustomDialog.RIGHT);
+		customDialog.setRightBtnListener("我知道了", new CustomDialog.DialogListener() {
+			@Override
+			public void doClickButton(Button btn, CustomDialog dialog) {
+				//退出登录
+				ActivityManager.getInstance().finishAll();
+				EventBus.getDefault().post(new UserLogoutEvent());
+				Intent intent = new Intent(FindPasswordActivity.this, MainActivity.class);
+				intent.putExtra(INTENT_KEY_SKIP_TO_LOGIN,true);
+				startActivity(intent);
+				customDialog.dismiss();
+			}
+		});
+		customDialog.setCancelable(false);
+		customDialog.show();
 	}
 
 	@Override

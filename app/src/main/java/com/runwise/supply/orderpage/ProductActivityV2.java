@@ -812,10 +812,12 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         int count = 0;
         int productCount = 0;
         for (ProductBasicList.ListBean listBean : mmProductList) {
-            if (listBean.getCategoryParent().equals(categoryParent)
-                    && listBean.getCategoryChild().equals(categoryChild)) {
+            if (categoryParent.equals(listBean.getCategoryParent())
+                    && categoryChild.equals(listBean.getCategoryChild())) {
                 count++;
-                productCount += mMapCount.get(listBean);
+                if(mMapCount.get(listBean)!= null){
+                    productCount += mMapCount.get(listBean);
+                }
             }
         }
         if (TextUtils.isEmpty(categoryChild)) {

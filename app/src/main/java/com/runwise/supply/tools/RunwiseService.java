@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.util.SPUtils;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.lidroid.xutils.DbUtils;
@@ -169,6 +170,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
             case REQUEST_CODE_PRODUCT_LIST:
+                ToastUtil.show(getBaseContext(),errMsg);
                 DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
                 HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
                 dbUtils.configAllowTransaction(true);

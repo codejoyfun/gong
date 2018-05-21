@@ -130,6 +130,14 @@ public class ProductBasicList implements Serializable, Parcelable {
             }
             return false;
         }
+        /**
+         * 重写hashcode 方法，返回的hashCode 不一样才认定为不同的对象
+         */
+        @Override
+        public int hashCode() {
+            return Integer.valueOf(productID).hashCode();
+        }
+
 
         @Override
         public Object clone() {
