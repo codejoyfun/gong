@@ -723,15 +723,20 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             //计算总价,总量
             double totalMoney = 0;
             double totalPieces = 0;
+            int cartCount = 0;
             for (ProductBasicList.ListBean bean : mMapCount.keySet()) {
+                if (!bean.isInvalid()){
+                    cartCount++;
+                }
                 if (!mmSelected.contains(bean.getProductID()) || bean.isInvalid())
                     continue;//只计算勾选的和有效的
                 totalMoney = totalMoney + mMapCount.get(bean) * bean.getPrice();
                 totalPieces = totalPieces + mMapCount.get(bean);
+
             }
 
             if (totalPieces != 0) {
-                mTvCartCount.setText(NumberUtil.getIOrD(mMapCount.keySet().size()));
+                mTvCartCount.setText(NumberUtil.getIOrD(cartCount));
                 mTvCartCount.setVisibility(View.VISIBLE);
                 mTvOrderCommit.setEnabled(true);
                 mTvProductTotalCount.setVisibility(View.VISIBLE);
@@ -778,8 +783,16 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                                 break;
                             }
                         }
+                        for (ProductBasicList.ListBean listBean1 : mMapCount.keySet()) {
+                            if (listBean1.getProductID() == resultItem.getProductID()) {
+                                listBean1.setProductTag(resultItem.getProductTag());
+                                listBean1.setInvalid(true);
+                                break;
+                            }
+                        }
                     }
                 }
+
                 if (products != null) {
                     for (int i = 0; i < products.size(); i++) {
                         ProductValidateResponse.ListBean listBean = products.get(i);
@@ -807,13 +820,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
     }
 
 
-    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
+    private String getCategoryCountInfo(String categoryParent, String categoryChild,boolean isInvalid) {
         String desc = "";
         int count = 0;
         int productCount = 0;
         for (ProductBasicList.ListBean listBean : mmProductList) {
             if (categoryParent.equals(listBean.getCategoryParent())
-                    && categoryChild.equals(listBean.getCategoryChild())) {
+                    && categoryChild.equals(listBean.getCategoryChild())&& isInvalid == listBean.isInvalid()) {
                 count++;
                 if(mMapCount.get(listBean)!= null){
                     productCount += mMapCount.get(listBean);
@@ -1177,13 +1190,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             if (position == 0) {
                 holder.mVStickHeader.setVisibility(View.VISIBLE);
                 holder.mVProductMain.setTag(FIRST_STICKY_VIEW);
-                holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild()));
+                holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild(),holder.listBean.isInvalid()));
             } else {
                 if (!TextUtils.equals(holder.listBean.getCategoryParent(), mmProductList.get(position - 1).getCategoryParent()) ||
                         !TextUtils.equals(holder.listBean.getCategoryChild(), mmProductList.get(position - 1).getCategoryChild())) {
                     holder.mVStickHeader.setVisibility(View.VISIBLE);
                     holder.mVProductMain.setTag(HAS_STICKY_VIEW);
-                    holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild()));
+                    holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild(),holder.listBean.isInvalid()));
                 } else {
                     holder.mVProductMain.setTag(NONE_STICKY_VIEW);
                     holder.mVStickHeader.setVisibility(View.GONE);

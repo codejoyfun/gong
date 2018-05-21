@@ -97,11 +97,13 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                     ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
                     if (productListResponse.getProducts() != null && productListResponse.getProducts().size() > 0) {
                         deleteProductFromDB();
+                        SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
+                        putProductsToDB(productListResponse.getProducts());
                     }
                     if (productListResponse != null) {
-                        SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
-                        SPUtils.saveObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST, productListResponse.getCategory());
-                        putProductsToDB(productListResponse.getProducts());
+                        if (productListResponse.getCategory() != null && productListResponse.getCategory().size()>0){
+                            SPUtils.saveObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST, productListResponse.getCategory());
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
