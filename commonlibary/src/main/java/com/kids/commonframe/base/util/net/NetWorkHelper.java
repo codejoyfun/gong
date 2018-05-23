@@ -55,7 +55,7 @@ public class NetWorkHelper<T extends BaseEntity> {
     /**
      * The default socket timeout in milliseconds
      */
-    public static final int DEFAULT_TIMEOUT_MS = 120*1000;
+    public static final int DEFAULT_TIMEOUT_MS = 30*1000;
 
     /**
      * The default number of retries

@@ -78,14 +78,14 @@ android {
         }
         huawei {
             minSdkVersion 15
-        }
+        }o
     }
     defaultConfig {
         applicationId "com.runwise.supply"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 20180521
-        versionName "V1.3.4"
+        versionCode 20180523
+        versionName "V1.3.5"
         multiDexEnabled true
         ndk {
             abiFilters "armeabi"

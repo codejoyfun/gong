@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.lidroid.xutils.DbUtils;
@@ -23,6 +24,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_VERSION_PRODUCT_LIST;
 
 /**
  * Created by libin on 2017/7/6.
@@ -88,8 +91,9 @@ public class ProductBasicUtils {
 
     public static boolean isInit(Context context) {
         if (getBasicArr().size() == 0){
-            ToastUtil.show(context,"商品数据尚未初始化,请稍后再试");
-            if (RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish))){
+            ToastUtil.show(context,"商品数据正在下载中,请稍后再试");
+            if (RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish))||RunwiseService.getStatus().equals(context.getString(R.string.service_finish))){
+                SPUtils.put(context, FILE_KEY_VERSION_PRODUCT_LIST, 0);
                 context.startService(new Intent(context,RunwiseService.class));
             }
             return false;

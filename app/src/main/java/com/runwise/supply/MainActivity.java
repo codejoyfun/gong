@@ -1,6 +1,8 @@
 package com.runwise.supply;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -66,6 +68,8 @@ import cn.jpush.android.api.JPushInterface;
 import io.vov.vitamio.utils.Log;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PASSWORD;
+import static com.runwise.supply.orderpage.ProductActivityV2.ACTION_TYPE_SERVICE;
+import static com.runwise.supply.tools.RunwiseService.INTENT_KEY_STATUS;
 
 
 public class MainActivity extends NetWorkActivity {
@@ -508,6 +512,5 @@ public class MainActivity extends NetWorkActivity {
             loginRequest.setRegistrationID(registrationId);
             sendConnection("/gongfu/v2/authenticate", loginRequest, REQUEST_LOGIN, false, LoginData.class);
         }
-
     }
 }

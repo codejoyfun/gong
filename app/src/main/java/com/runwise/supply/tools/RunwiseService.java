@@ -22,6 +22,7 @@ import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,8 +39,12 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     protected NetWorkHelper<BaseEntity> netWorkHelper;
     private static final int REQUEST_CODE_PRODUCT_LIST = 1 << 0;
     public static final String INTENT_KEY_STATUS = "status";
+    public static final String INTENT_KEY_PRODUCTS = "products";
     private static String mStatus;
-    private CustomProgressDialog progressDialog;
+
+    //    测试
+    private long startRequestTime = 0L;
+    private long startDatabaseTime = 0L;
 
 
     public RunwiseService() {
@@ -63,6 +68,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     }
 
     public void requestProductList() {
+        startRequestTime = System.currentTimeMillis();
         int version = (int) SPUtils.get(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, 0);
         ProductVersionRequest productVersionRequest = new ProductVersionRequest();
         productVersionRequest.setVersion(version);
@@ -83,6 +89,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         mLocalBroadcastManager.sendBroadcast(intent);
     }
 
+
     @Override
     public BaseEntity onParse(int where, Class<?> targerClass, String result) {
         return null;
@@ -90,18 +97,19 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
+        ProductListResponse productListResponse = null;
         switch (where) {
             case REQUEST_CODE_PRODUCT_LIST:
                 BaseEntity.ResultBean resultBean = result.getResult();
                 try {
-                    ProductListResponse productListResponse = (ProductListResponse) resultBean.getData();
+                    productListResponse = (ProductListResponse) resultBean.getData();
                     if (productListResponse.getProducts() != null && productListResponse.getProducts().size() > 0) {
                         deleteProductFromDB();
                         SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
                         putProductsToDB(productListResponse.getProducts());
                     }
                     if (productListResponse != null) {
-                        if (productListResponse.getCategory() != null && productListResponse.getCategory().size()>0){
+                        if (productListResponse.getCategory() != null && productListResponse.getCategory().size() > 0) {
                             SPUtils.saveObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST, productListResponse.getCategory());
                         }
                     }
@@ -147,10 +155,6 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
             }
             ProductBasicUtils.setBasicMap(map);
             //            查询未归档的商品
-//            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-//            selector1.orderBy("orderBy", false);
-//            selector1.where("subValid", "=", "true");
-//            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
             List<ProductBasicList.ListBean> orderProductList = filterSubValid(list);
             ProductBasicUtils.setBasicArr(orderProductList);
         } catch (DbException e) {
@@ -172,7 +176,7 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
             case REQUEST_CODE_PRODUCT_LIST:
-                ToastUtil.show(getBaseContext(),errMsg);
+                ToastUtil.show(getBaseContext(), errMsg);
                 DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
                 HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
                 dbUtils.configAllowTransaction(true);
