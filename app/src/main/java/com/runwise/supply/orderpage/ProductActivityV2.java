@@ -327,6 +327,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mListBeans = ProductBasicUtils.getBasicArr();
             if (mListBeans == null || mListBeans.isEmpty()) {
                 Selector selector = Selector.from(ProductBasicList.ListBean.class);
+                selector.orderBy("orderBy", false);
                 mListBeans = dbUtils.findAll(selector);
                 mListBeans =  RunwiseService.filterSubValid(mListBeans);
                 ProductBasicUtils.setBasicArr(mListBeans);

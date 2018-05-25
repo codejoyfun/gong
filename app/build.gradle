@@ -78,7 +78,7 @@ android {
         }
         huawei {
             minSdkVersion 15
-        }o
+        }
     }
     defaultConfig {
         applicationId "com.runwise.supply"

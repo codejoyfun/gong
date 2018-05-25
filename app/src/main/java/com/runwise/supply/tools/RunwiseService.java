@@ -141,8 +141,10 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
             for (ProductBasicList.ListBean bean : basicList) {
                 map.put(String.valueOf(bean.getProductID()), bean);
             }
+
 //            全部商品(包括归档和未归档)
             Selector selector = Selector.from(ProductBasicList.ListBean.class);
+            selector.orderBy("orderBy", false);
             List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
             for (ProductBasicList.ListBean bean : list) {
                 String keyId = bean.getProductID() + "";
@@ -196,11 +198,11 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                         }
                     }
                     ProductBasicUtils.setBasicMap(map);
-//                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-//                    selector1.orderBy("orderBy", false);
+                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+                    selector1.orderBy("orderBy", false);
 //                    selector1.where("subValid", "=", "true");
-//                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
-                    List<ProductBasicList.ListBean> orderProductList = filterSubValid(list);
+                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+                    orderProductList = filterSubValid(orderProductList);
                     ProductBasicUtils.setBasicArr(orderProductList);
 
                 } catch (DbException e) {
@@ -231,11 +233,10 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 }
             }
             ProductBasicUtils.setBasicMap(map);
-//            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-//            selector1.orderBy("orderBy", false);
-//            selector1.where("subValid", "=", "true");
-//            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
-            List<ProductBasicList.ListBean> orderProductList = filterSubValid(list);
+            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+            selector1.orderBy("orderBy", false);
+            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+            orderProductList = filterSubValid(orderProductList);
             ProductBasicUtils.setBasicArr(orderProductList);
 
         } catch (DbException e) {

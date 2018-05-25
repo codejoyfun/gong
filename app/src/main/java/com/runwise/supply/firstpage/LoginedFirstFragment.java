@@ -953,12 +953,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         banner.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                ImagesBean bean = post_list.get(position);
-                if (bean != null && bean.getCover_url() != null) {
-                    Intent intent = new Intent(mContext, PageDeatailActivity.class);
-                    intent.putExtra("url", bean.getPost_url());
-                    startActivity(intent);
-                    MobclickAgent.onEvent(getContext(), EVENT_ID_CAROUSEL_BAR);
+                if (getUserVisibleHint()){
+                    ImagesBean bean = post_list.get(position);
+                    if (bean != null && bean.getCover_url() != null) {
+                        Intent intent = new Intent(mContext, PageDeatailActivity.class);
+                        intent.putExtra("url", bean.getPost_url());
+                        startActivity(intent);
+                        MobclickAgent.onEvent(getContext(), EVENT_ID_CAROUSEL_BAR);
+                    }
                 }
             }
         });

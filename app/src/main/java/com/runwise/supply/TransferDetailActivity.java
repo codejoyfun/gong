@@ -268,9 +268,11 @@ public class TransferDetailActivity extends NetWorkActivity implements LoadingLa
         if (mTransferEntity != null) pickingID = mTransferEntity.getPickingID();
         else pickingID = getIntent().getStringExtra(EXTRA_TRANSFER_ID);
 
-        TransferParam  transferParam = new TransferParam();
-        transferParam.setPickingID(pickingID);
-        sendConnection("/gongfu/shop/transfer/", transferParam, REQUEST_DETAIL, true, TransferDetailResponse.class);
+//        TransferParam  transferParam = new TransferParam();
+//        transferParam.setPickingID(pickingID);
+//        sendConnection("/gongfu/shop/transfer/", transferParam, REQUEST_DETAIL, true, TransferDetailResponse.class);
+        Object request = null;
+        sendConnection("/gongfu/shop/transfer/" + pickingID, request, REQUEST_DETAIL, true, TransferDetailResponse.class);
     }
 
     /**
