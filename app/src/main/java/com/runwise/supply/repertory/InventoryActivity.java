@@ -227,7 +227,7 @@ public class InventoryActivity extends NetWorkActivity {
     }
 
     List<InventoryResponse.InventoryProduct> filterDuplicateProduuct(List<InventoryResponse.InventoryProduct> inventoryProducts) {
-        HashMap<Integer, InventoryResponse.InventoryProduct> map = new HashMap<>();
+        LinkedHashMap<Integer, InventoryResponse.InventoryProduct> map = new LinkedHashMap<>();
         for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
             String pId = String.valueOf(inventoryProduct.getProductID());
             final ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(pId);
@@ -261,8 +261,7 @@ public class InventoryActivity extends NetWorkActivity {
             map.put(category, new ArrayList<>());
         }
 
-//        List<InventoryResponse.InventoryProduct> inventoryProducts = filterDuplicateProduuct(mInventoryBean.getLines());
-        List<InventoryResponse.InventoryProduct> inventoryProducts = mInventoryBean.getLines();
+        List<InventoryResponse.InventoryProduct> inventoryProducts = filterDuplicateProduuct(mInventoryBean.getLines());
         for (InventoryResponse.InventoryProduct inventoryProduct : inventoryProducts) {
             String pId = String.valueOf(inventoryProduct.getProductID());
             HashMap<String, ProductBasicList.ListBean>listBeanHashMap =  ProductBasicUtils.getBasicMap(getActivityContext());
