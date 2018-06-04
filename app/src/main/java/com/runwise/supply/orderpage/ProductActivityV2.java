@@ -175,8 +175,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         loadingLayout = (LoadingLayout) findViewById(R.id.loadingLayout);
         loadingLayout.setOnRetryClickListener(this);
         showIProgressDialog();
-        Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
-        startService(startIntent);
+        if (RunwiseService.getStatus().equals(getString(R.string.service_finish)) || RunwiseService.getStatus().equals(getString(R.string.service_fail_finish))){
+            Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
+            startService(startIntent);
+        }
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_TYPE_SERVICE);

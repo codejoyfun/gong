@@ -96,6 +96,7 @@ public class MainActivity extends NetWorkActivity {
     long mTimeStartREQUEST_UNREAD;
 
     DbUtils mDbUtils;
+    boolean mFirstResume = true;
 
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements Runnable {
@@ -347,8 +348,10 @@ public class MainActivity extends NetWorkActivity {
         login();
         if (isLogin) {
 //            首页再去拿商品列表
-            Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
-            startService(startIntent);
+            if (mFirstResume){
+                mFirstResume = false;
+                startService(new Intent(getActivityContext(),RunwiseService.class));
+            }
             Object request = null;
             sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
             mTimeStartREQUEST_UNREAD = System.currentTimeMillis();

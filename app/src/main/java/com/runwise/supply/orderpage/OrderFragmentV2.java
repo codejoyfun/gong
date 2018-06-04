@@ -44,9 +44,6 @@ public class OrderFragmentV2 extends NetWorkFragment {
             case R.id.rl_tab_order_always:
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
-                    if (!ProductBasicUtils.isInit(getActivity())){
-                        return;
-                    }
                     Intent intent2 = new Intent(mContext,AlwaysOrderActivity.class);
                     startActivity(intent2);
                 }else{
@@ -56,9 +53,6 @@ public class OrderFragmentV2 extends NetWorkFragment {
             case R.id.rl_tab_order_intelligent:
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
-                    if (!ProductBasicUtils.isInit(getActivity())){
-                        return;
-                    }
                     Intent intent2 = new Intent(mContext,SmartOrderActivity.class);
                     startActivity(intent2);
                 }else{
@@ -68,9 +62,6 @@ public class OrderFragmentV2 extends NetWorkFragment {
             case R.id.rl_tab_order_self_help:
                 if(!SystemUpgradeHelper.getInstance(getActivity()).check(getActivity()))return;
                 if (SPUtils.isLogin(mContext)){
-                    if (!ProductBasicUtils.isInit(getActivity())){
-                        return;
-                    }
                     Intent intent2 = new Intent(mContext,ProductActivityV2.class);
                     intent2.putExtra(INTENT_KEY_SELF_HELP,true);//自助下单
                     startActivity(intent2);

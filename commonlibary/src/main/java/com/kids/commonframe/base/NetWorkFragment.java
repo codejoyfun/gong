@@ -4,12 +4,14 @@ import android.os.Bundle;
 
 import com.kids.commonframe.base.util.net.NetWorkHelper;
 import com.kids.commonframe.base.util.net.NetWorkHelper.NetWorkCallBack;
+import com.kids.commonframe.base.view.CustomProgressDialog;
 
 /**
  * 基类Fragment 要联网操作的Fragment继承该类
  */
 public abstract class NetWorkFragment extends BaseFragment implements NetWorkCallBack<BaseEntity>{
 	protected NetWorkHelper<BaseEntity> netWorkHelper;
+	protected CustomProgressDialog progressDialog;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,5 +68,25 @@ public abstract class NetWorkFragment extends BaseFragment implements NetWorkCal
 	public void onDestroy() {
 		super.onDestroy();
 		netWorkHelper.onStopAllRequest();
+	}
+	/**
+	 * 显示网络请求对话框
+	 */
+	public void showIProgressDialog() {
+		if (progressDialog == null) {
+			progressDialog = new CustomProgressDialog(getActivity());
+		}
+		if (!progressDialog.isShowing() && !getActivity().isFinishing()) {
+			progressDialog.show();
+		}
+	}
+
+	/**
+	 * 隐藏网络请求对话框
+	 */
+	public void dismissIProgressDialog() {
+		if (progressDialog != null && !getActivity().isFinishing() && progressDialog.isShowing()) {
+			progressDialog.dismiss();
+		}
 	}
 }

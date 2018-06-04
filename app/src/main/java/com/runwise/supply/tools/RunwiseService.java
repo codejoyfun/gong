@@ -24,6 +24,7 @@ import com.runwise.supply.orderpage.entity.ProductBasicList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
@@ -183,12 +184,13 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
                 dbUtils.configAllowTransaction(true);
                 try {
-                    Selector selector = Selector.from(ProductBasicList.ListBean.class);
-                    List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
-                    if (list == null) {
+                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+                    selector1.orderBy("orderBy", false);
+                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+                    if (orderProductList == null) {
                         return;
                     }
-                    for (ProductBasicList.ListBean bean : list) {
+                    for (ProductBasicList.ListBean bean : orderProductList) {
                         String keyId = bean.getProductID() + "";
                         if (!map.containsKey(keyId)) {
                             if (bean.getImage() == null) {//TODO:xutils的坑，没有load imagebean？
@@ -198,10 +200,6 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                         }
                     }
                     ProductBasicUtils.setBasicMap(map);
-                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-                    selector1.orderBy("orderBy", false);
-//                    selector1.where("subValid", "=", "true");
-                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
                     orderProductList = filterSubValid(orderProductList);
                     ProductBasicUtils.setBasicArr(orderProductList);
 
@@ -218,12 +216,10 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
         dbUtils.configAllowTransaction(true);
         try {
-            Selector selector = Selector.from(ProductBasicList.ListBean.class);
-            List<ProductBasicList.ListBean> list = dbUtils.findAll(selector);
-            if (list == null) {
-                return;
-            }
-            for (ProductBasicList.ListBean bean : list) {
+            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
+            selector1.orderBy("orderBy", false);
+            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
+            for (ProductBasicList.ListBean bean : orderProductList) {
                 String keyId = bean.getProductID() + "";
                 if (!map.containsKey(keyId)) {
                     if (bean.getImage() == null) {//TODO:xutils的坑，没有load imagebean？
@@ -233,9 +229,6 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 }
             }
             ProductBasicUtils.setBasicMap(map);
-            Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-            selector1.orderBy("orderBy", false);
-            List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
             orderProductList = filterSubValid(orderProductList);
             ProductBasicUtils.setBasicArr(orderProductList);
 

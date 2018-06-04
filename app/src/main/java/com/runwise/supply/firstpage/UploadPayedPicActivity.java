@@ -241,7 +241,6 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
                 }
             }
         }
-
     }
 
     @Override

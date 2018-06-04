@@ -34,6 +34,7 @@ import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.kids.commonframe.base.view.CustomProgressDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -165,6 +166,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     private boolean isNoticeClose = false;//是否点击关闭了盘点中提示，防止每次刷到数据都重新显示
     private OrderResponse.ListBean mReceiveAgainOrder;//记录重新收货的订单
 
+    boolean mFirstResume = true;
+
 
     public LoginedFirstFragment() {
     }
@@ -287,7 +290,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //下拉刷新:只刷新列表内容
-                requestReturnList(false);
+                requestReturnList();
                 requestDashBoard();
             }
 
@@ -325,9 +328,14 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void onResume() {
         super.onResume();
         if (getUserVisibleHint()) {
-            requestReturnList(false);
-            requestDashBoard();
+
             if (SPUtils.isLogin(getActivity())) {
+                requestDashBoard();
+                requestReturnList();
+                if (mFirstResume){
+                    mFirstResume = false;
+                    showIProgressDialog();
+                }
                 Object request = null;
                 sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
             }
@@ -344,7 +352,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            requestReturnList(false);
+            requestReturnList();
             mTimeStartFROMRETURN = System.currentTimeMillis();
 
         } else {
@@ -393,7 +401,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case CANCEL:
                 ToastUtil.show(mContext, "取消成功");
-                requestReturnList(false);
+                requestReturnList();
                 break;
             case FROMRETURN:
                 mRequestReturnListSuccess = true;
@@ -425,7 +433,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_CANCEL_TRANSFER:
                 ToastUtil.show(mContext, "取消成功");
-                requestReturnList(false);
+                requestReturnList();
                 break;
             case REQUEST_OUTPUT_CONFIRM:
                 startActivity(TransferOutActivity.getStartIntent(getActivity(), mSelectTransferEntity));
@@ -514,7 +522,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 break;
             case REQUEST_CANCEL_RETURN_ORDER:
                 ToastUtil.show(mContext, "取消成功");
-                requestReturnList(false);
+                requestReturnList();
                 break;
         }
     }
@@ -524,6 +532,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      */
     private void checkSuccess() {
         if (!orderRequesting && !returnRequesting && !submitRequesting && !inventoryRequesting) {
+            dismissIProgressDialog();
             orderList.addAll(0, inventoryList);
             if (mTempOrders != null) orderList.addAll(0, mTempOrders);//提交中订单加在最前边
             adapter.setData(orderList);
@@ -897,7 +906,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      * 一次性加载全部，无分页,【先加载退货单，然后跟着正常订单】改为:
      * 并行查询退货单、正常订单、和提交中的订单的状态
      */
-    private void requestReturnList(boolean showDialog) {
+    private void requestReturnList() {
         if (returnRequesting || orderRequesting || submitRequesting || inventoryRequesting) return;
         inventoryRequesting = true;
         returnRequesting = true;
@@ -913,7 +922,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         checkInventory();
 
         Object request = null;
-        sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, showDialog, ReturnOrderBean.class);
+        sendConnection("/gongfu/v2/return_order/undone/", request, FROMRETURN, false, ReturnOrderBean.class);
 
         //同时查订单和退货单
         Object requestOrder = null;
@@ -1023,7 +1032,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
     //接收到订单状态更新推送，更新列表
     @Subscribe
     public void onOrderStatusChanged(OrderStatusChangeEvent orderStatusChangeEvent) {
-        requestReturnList(false);
+        requestReturnList();
     }
 
     @Override
@@ -1133,7 +1142,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
     @Override
     public void retryOnClick(View view) {
-        requestReturnList(true);
+        requestReturnList();
         requestDashBoard();
     }
 }
