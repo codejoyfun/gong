@@ -81,8 +81,6 @@ public class OrderSubmitActivity extends NetWorkActivity {
     TextView mTvTitle;
     @BindView(R.id.rl_title)
     RelativeLayout mRlTitle;
-    @BindView(R.id.iv_date)
-    ImageView mIvDate;
     @BindView(R.id.iv_more)
     ImageView mIvMore;
     @BindView(R.id.tv_date)
