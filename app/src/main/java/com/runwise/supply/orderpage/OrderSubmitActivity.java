@@ -493,6 +493,10 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mTempOrder = new TempOrderManager.TempOrder();
         //只取日期
         mTempOrder.setEstimateDate(request.getEstimated_time().split(" ")[0]);
+        mTempOrder.setLinesAmount(cList.size());
+        int productId = cList.get(0).getProduct_id();
+        ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(productId));
+        mTempOrder.setFirstLineName(listBean.getName());
         mTempOrder.setHashKey(request.getHash());
         mTempOrder.setProductList(mProductList);
     }

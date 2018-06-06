@@ -114,6 +114,28 @@ public class OrderResponse {
         private boolean isActualSendOrder;
         private int typeQty;
         private String time;
+        private String firstLineName;
+        private int linesAmount;
+
+        public int getLinesAmount() {
+            return linesAmount;
+        }
+
+        public void setLinesAmount(int linesAmount) {
+            this.linesAmount = linesAmount;
+        }
+
+
+
+        public String getFirstLineName() {
+            return firstLineName;
+        }
+
+        public void setFirstLineName(String firstLineName) {
+            this.firstLineName = firstLineName;
+        }
+
+
 
         public String getTime() {
             return time;

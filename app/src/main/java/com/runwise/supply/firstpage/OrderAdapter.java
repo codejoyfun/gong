@@ -115,7 +115,11 @@ public class OrderAdapter extends IBaseAdapter {
         if (viewType == TYPE_INVENTORY) return getInventoryView(position, convertView, parent);
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
+            if(getItemViewType(position) == TYPE_ORDER){
+                convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_order_item, null);
+            }else{
+                convertView = LayoutInflater.from(context).inflate(R.layout.firstpage_return_order_item, null);
+            }
             ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
             if (!SampleApplicationLike.getInstance().getCanSeePrice()) {
@@ -222,14 +226,17 @@ public class OrderAdapter extends IBaseAdapter {
 
                 }
             });
-            StringBuffer sb = new StringBuffer("共");
+            StringBuffer sb = new StringBuffer("");
+            sb.append(bean.getFirstLineName());
+            sb.append(" 等");
+            sb.append(bean.getLinesAmount()+"种 ");
             if ("done".equals(bean.getState()) && bean.getDeliveredQty() != bean.getAmount()) {
                 sb.append((int) bean.getDeliveredQty()).append("件商品");
             } else {
                 sb.append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
             }
             viewHolder.countTv.setText(sb.toString());
-            viewHolder.moneyTv.setText(NumberUtil.getIOrD(bean.getAmountTotal()));
+            viewHolder.moneyTv.setText("¥"+NumberUtil.getIOrD(bean.getAmountTotal()));
 
             //图标
             StringBuffer drawableSb = new StringBuffer("state_restaurant_");
@@ -536,12 +543,12 @@ public class OrderAdapter extends IBaseAdapter {
 
         if (SampleApplicationLike.getInstance().getCanSeePrice()) {
             viewHolder.mmTvPrice.setVisibility(View.VISIBLE);
-            viewHolder.mmTvPrice.setText(UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
+            viewHolder.mmTvPrice.setText("¥"+UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
         } else {
             viewHolder.mmTvPrice.setVisibility(View.GONE);
         }
 //        viewHolder.mmTvPrice.setText(UserUtils.formatPrice(String.valueOf(order.getTotalMoney())));
-        viewHolder.mmTvPieces.setText("共" + order.getTotalPieces() + "件商品");
+        viewHolder.mmTvPieces.setText(order.getFirstLineName()+" 等" + order.getLinesAmount()+"种 "+ order.getTotalPieces() + "件商品");
 
         //删除按钮
         if (order.isFailed()) {

@@ -135,6 +135,25 @@ public class TempOrderManager {
         private boolean isFailed;//是否提交失败，后台返回
         private double totalMoney;
         private double totalPieces;
+        private String firstLineName;
+
+        public String getFirstLineName() {
+            return firstLineName;
+        }
+
+        public void setFirstLineName(String firstLineName) {
+            this.firstLineName = firstLineName;
+        }
+
+        public int getLinesAmount() {
+            return linesAmount;
+        }
+
+        public void setLinesAmount(int linesAmount) {
+            this.linesAmount = linesAmount;
+        }
+
+        private int linesAmount;
         private ArrayList<ProductBasicList.ListBean> productList;
 
         public String getEstimateDate() {
