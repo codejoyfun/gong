@@ -133,9 +133,8 @@
                     android:text="下单商品数量"
                     android:textSize="14sp"
                     android:textColor="#333333"
-                    android:layout_marginLeft="7dp"
                     android:layout_below="@id/orderTimeTv"
-                    android:layout_marginTop="17dp"
+                    android:layout_marginTop="10dp"
                     android:layout_alignLeft="@id/orderNumLL"
                     android:id="@+id/countTv"/>
                     <TextView
@@ -145,7 +144,6 @@
                         android:textSize="14sp"
                         android:layout_marginTop="7dp"
                         android:textColor="#333333"
-                        android:layout_marginLeft="7dp"
                         android:layout_below="@id/countTv"
                         android:layout_alignLeft="@id/orderNumLL"
                         android:id="@+id/moneyTv"/>
@@ -167,7 +165,7 @@
                 android:layout_height="0.5dp"
                 android:background="#E5E5E5"
                 android:layout_below="@id/tv_error_info"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="20dp"
                 />
             <TextView
                 android:layout_width="80dp"
@@ -175,7 +173,8 @@
                 android:id="@+id/doBtn"
                 android:textColor="#333333"
                 android:textSize="14sp"
-                android:layout_above="@+id/line"
+                android:layout_below="@id/countTv"
+                android:layout_marginTop="5dp"
                 android:layout_marginRight="15dp"
                 android:gravity="center"
                 android:layout_alignParentRight="true"

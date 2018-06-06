@@ -635,14 +635,15 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
             holder.payDate.setText(bean.getName());
 
             StringBuffer descStringBuffer = new StringBuffer();
-
+            descStringBuffer.append(bean.getFirstLineName());
+            descStringBuffer.append(" 等");
             if (bean.getState().equals(Constant.ORDER_STATE_DONE) || bean.getState().equals(Constant.ORDER_STATE_RATED)) {
                 descStringBuffer.append(bean.getTypeQty()+"种 "+NumberUtil.getIOrD(bean.getDeliveredQty()) + "件商品");
             } else {
                 descStringBuffer.append(bean.getTypeQty()+"种 "+NumberUtil.getIOrD(bean.getAmount()) + "件商品");
             }
             if (SampleApplicationLike.getInstance().getCanSeePrice()) {
-                descStringBuffer.append(",¥" + NumberUtil.getIOrD(bean.getAmountTotal()));
+                holder.tvPrice.setText("¥" + NumberUtil.getIOrD(bean.getAmountTotal()));
             }
             holder.patSum.setText(descStringBuffer.toString());
             if (bean.getHasReturn() > 0) {
@@ -692,6 +693,8 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
             TextView realTv;
             @ViewInject(R.id.tv_one_more)
             TextView tvOneMore;
+            @ViewInject(R.id.tv_price)
+            TextView tvPrice;
         }
     }
 }
