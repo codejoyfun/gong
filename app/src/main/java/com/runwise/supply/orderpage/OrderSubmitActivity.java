@@ -532,6 +532,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         mRlDateOfService.setEnabled(false);
         //复用request，新的下单请求用新的hash
         request.setHash(String.valueOf(System.currentTimeMillis()));
+
         sendConnection("/api/duplicate/order/async/create", request, REQUEST_DUPLICATE, false, OrderCommitResponse.class);
         mCustomProgressDialog = new CustomProgressDialog(this);
         mCustomProgressDialog.setMsg("下单中...");
@@ -550,6 +551,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     private void modifyOrder() {
         //下单按钮
         CommitOrderRequest request = new CommitOrderRequest();
+        request.setRemark(mTvMark.getText().toString());
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
         for (ProductBasicList.ListBean bean : mProductList) {

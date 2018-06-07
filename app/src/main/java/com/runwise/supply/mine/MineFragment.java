@@ -312,9 +312,12 @@ public class MineFragment extends NetWorkFragment {
                 }
                 break;
             case R.id.rl_user_guide:
-                MobclickAgent.onEvent(getActivity(), EVENT_ID_USER_GUIDE);
                 intent = new Intent(mContext, UserGuideActivity.class);
-                startActivity(intent);
+                if (UserUtils.checkLogin(intent, mContext)) {
+                    MobclickAgent.onEvent(getActivity(), EVENT_ID_USER_GUIDE);
+                    startActivity(intent);
+                }
+
                 break;
         }
 

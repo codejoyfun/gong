@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.UserInfo;
+import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.DbUtils;
@@ -51,7 +52,10 @@ public class UserGuideActivity extends NetWorkActivity {
         setContentView(R.layout.activity_user_guide);
         showBackBtn();
         this.setTitleText(true, "用户指南");
-        requestGuide();
+        if (SPUtils.isLogin(getActivityContext())){
+            requestGuide();
+        }
+
     }
 
     /**

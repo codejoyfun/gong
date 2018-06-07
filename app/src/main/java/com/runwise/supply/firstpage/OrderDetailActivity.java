@@ -744,7 +744,12 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
             } else {
                 countStr = NumberUtil.getIOrD(bean.getAmount()) + "件";
             }
-            mTvProductInfoValue.setText(bean.getLines().size()+"种共"+countStr+" ¥" + df.format(bean.getAmountTotal()));
+            if (SampleApplicationLike.getInstance().getCanSeePrice()){
+                mTvProductInfoValue.setText(bean.getLines().size()+"种共"+countStr+" ¥" + df.format(bean.getAmountTotal()));
+            }else{
+                mTvProductInfoValue.setText(bean.getLines().size()+"种共"+countStr);
+            }
+
         }
     }
 

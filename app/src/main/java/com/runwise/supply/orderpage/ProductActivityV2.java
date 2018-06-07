@@ -31,12 +31,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.SelfOrderTimeStatisticsUtil;
 import com.kids.commonframe.base.util.ToastUtil;
+import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.DbUtils;
@@ -1152,7 +1154,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
             sb.append(holder.listBean.getUnit());
             holder.mmTvContent.setText(sb.toString());
-
+            if(holder.listBean.getImage()!=null){
+                FrecoFactory.getInstance(mContext).displayWithoutHost(holder.simpleDraweeView, holder.listBean.getImage().getImageSmall());
+            }
             if (holder.listBean.isInvalid()) {
                 holder.mmCbCheck.setEnabled(false);
                 holder.mmTvInvalide.setVisibility(View.VISIBLE);
@@ -1267,6 +1271,8 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         View mVStickHeader;
         TextView mTvHeader;
         View mVProductMain;
+        SimpleDraweeView simpleDraweeView;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -1284,6 +1290,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             mVStickHeader = itemView.findViewById(R.id.stick_header);
             mVProductMain = itemView.findViewById(R.id.product_main);
             mTvHeader = (TextView) itemView.findViewById(R.id.tv_header);
+            simpleDraweeView = (SimpleDraweeView) itemView.findViewById(R.id.sdv_cart_product_image);
             mmTvReduce.setOnClickListener(this);
             mmTvCount.setOnClickListener(this);
         }

@@ -47,9 +47,7 @@ public class OrderSubmitProductAdapter extends RecyclerView.Adapter<OrderSubmitP
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ProductBasicList.ListBean listBean = mListBeanList.get(position);
-        if (listBean.getImage() != null){
-            FrecoFactory.getInstance(holder.itemView.getContext()).disPlay(holder.mSdvProduct, Constant.BASE_URL+listBean.getImage().getImageSmall());
-        }
+            FrecoFactory.getInstance(holder.itemView.getContext()).displayWithoutHost(holder.mSdvProduct, listBean.getImageLocal());
         holder.mTvProductCount.setText(NumberUtil.getIOrD(listBean.getActualQty()));
         holder.mTvProductName.setText(listBean.getName());
         holder.mTvProductUnit.setText(listBean.getSaleUom());

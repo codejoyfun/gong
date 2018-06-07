@@ -114,11 +114,20 @@ public class ProductBasicList implements Serializable, Parcelable {
         private double count;
         private double actualQty;
         private double presetQty;
+        public String imageLocal;
 
 
         public static final String TRACKING_TYPE_LOT = "lot";
         public static final String TRACKING_TYPE_SERIAL = "serial";
         public static final String TRACKING_TYPE_NONE = "none";
+
+        public String getImageLocal() {
+            return imageLocal;
+        }
+
+        public void setImageLocal(String imageLocal) {
+            this.imageLocal = imageLocal;
+        }
 
         public ListBean() {
         }
@@ -179,6 +188,7 @@ public class ProductBasicList implements Serializable, Parcelable {
             count = in.readDouble();
             actualQty = in.readDouble();
             presetQty = in.readDouble();
+            imageLocal = in.readString();
         }
 
         @Override
@@ -210,6 +220,7 @@ public class ProductBasicList implements Serializable, Parcelable {
             dest.writeDouble(count);
             dest.writeDouble(actualQty);
             dest.writeDouble(presetQty);
+            dest.writeString(image.getImageSmall());
         }
 
         @Override

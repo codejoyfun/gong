@@ -238,7 +238,13 @@ public class OrderAdapter extends IBaseAdapter {
                 sb.append(NumberUtil.getIOrD(bean.getAmount())).append("件商品");
             }
             viewHolder.countTv.setText(sb.toString());
-            viewHolder.moneyTv.setText("¥"+NumberUtil.getIOrD(bean.getAmountTotal()));
+            if (SampleApplicationLike.getInstance().getCanSeePrice()){
+                viewHolder.moneyTv.setText("¥"+NumberUtil.getIOrD(bean.getAmountTotal()));
+                viewHolder.moneyTv.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.moneyTv.setVisibility(View.INVISIBLE);
+            }
+
 
             //图标
             StringBuffer drawableSb = new StringBuffer("state_restaurant_");
