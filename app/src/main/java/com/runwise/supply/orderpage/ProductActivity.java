@@ -30,6 +30,9 @@ import com.kids.commonframe.base.bean.ProductCountChangeEvent;
 import com.kids.commonframe.base.bean.ProductGetEvent;
 import com.kids.commonframe.base.bean.ProductQueryEvent;
 import com.kids.commonframe.base.view.CustomDialog;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.SampleApplicationLike;
@@ -40,8 +43,11 @@ import com.runwise.supply.entity.GetCategoryRequest;
 import com.runwise.supply.fragment.OrderProductFragment;
 import com.runwise.supply.fragment.TabFragment;
 import com.runwise.supply.orderpage.entity.AddedProduct;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.orderpage.entity.ProductData;
 import com.runwise.supply.tools.DensityUtil;
+import com.runwise.supply.tools.MyDbUtil;
+import com.runwise.supply.tools.RunwiseService;
 import com.runwise.supply.tools.StatusBarUtil;
 import com.runwise.supply.view.ProductTypePopup;
 
@@ -73,12 +79,12 @@ public class ProductActivity extends NetWorkActivity {
     private ViewPager viewPager;
     private TabPageIndicatorAdapter adapter;
     private ArrayList<AddedProduct> addedPros;       //从前面页面传来的数组。
-    private ArrayList<ProductData.ListBean> dataList = new ArrayList<>();//全部的商品信息
+    private List<ProductBasicList.ListBean> dataList = new ArrayList<>();//全部的商品信息
     private ProductTypePopup mTypeWindow;//商品类型弹出框
 
     public static final String INTENT_KEY_BACKAP = "backap";
 
-    public ArrayList<ProductData.ListBean> getDataList() {
+    public List<ProductBasicList.ListBean> getDataList() {
         return dataList;
     }
 
@@ -146,35 +152,35 @@ public class ProductActivity extends NetWorkActivity {
     private void setUpDataForViewPage() {
         List<Fragment> repertoryEntityFragmentList = new ArrayList<>();
         List<Fragment> tabFragmentList = new ArrayList<>();
-        HashMap<String, ArrayList<ProductData.ListBean>> map = new HashMap<>();
+        HashMap<String, ArrayList<ProductBasicList.ListBean>> map = new HashMap<>();
         List<String> titles = new ArrayList<>();
         titles.add("全部");
         for (String category : categoryRespone.getCategoryList()) {
             titles.add(category);
-            map.put(category, new ArrayList<ProductData.ListBean>());
+            map.put(category, new ArrayList<ProductBasicList.ListBean>());
         }
-        for (ProductData.ListBean listBean : dataList) {
-            if (!TextUtils.isEmpty(listBean.getCategory())) {
-                ArrayList<ProductData.ListBean> listBeen = map.get(listBean.getCategory());
+        for (ProductBasicList.ListBean listBean : dataList) {
+            if (!TextUtils.isEmpty(listBean.getCategoryParent())) {
+                ArrayList<ProductBasicList.ListBean> listBeen = map.get(listBean.getCategoryParent());
                 if (listBeen == null) {
                     listBeen = new ArrayList<>();
-                    map.put(listBean.getCategory(), listBeen);
+                    map.put(listBean.getCategoryParent(), listBeen);
                 }
                 listBeen.add(listBean);
             }
         }
         for (String category : categoryRespone.getCategoryList()) {
-            ArrayList<ProductData.ListBean> value = map.get(category);
+            ArrayList<ProductBasicList.ListBean> value = map.get(category);
             repertoryEntityFragmentList.add(newRepertoryListFragment(value));
             tabFragmentList.add(TabFragment.newInstance(category));
         }
 
-        repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<ProductData.ListBean>) dataList));
+        repertoryEntityFragmentList.add(0, newRepertoryListFragment((ArrayList<ProductBasicList.ListBean>) dataList));
         initUI(titles, repertoryEntityFragmentList);
         initPopWindow((ArrayList<String>) titles);
     }
 
-    public ProductListFragment newRepertoryListFragment(ArrayList<ProductData.ListBean> value) {
+    public ProductListFragment newRepertoryListFragment(ArrayList<ProductBasicList.ListBean> value) {
         ProductListFragment repertoryListFragment = new ProductListFragment();
         Bundle bundle = new Bundle();
         if (addedPros != null && addedPros.size() > 0) {
@@ -311,9 +317,23 @@ public class ProductActivity extends NetWorkActivity {
     }
 
     private void sendRequest() {
-        ///gongfu/v3/shop/product/list
-        Object request = null;
-        sendConnection("/gongfu/v3/product/list", request, PRODUCT_GET, true, ProductData.class);
+        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
+        try {
+            dataList = ProductBasicUtils.getBasicArr();
+            if (dataList == null || dataList.isEmpty()) {
+                Selector selector = Selector.from(ProductBasicList.ListBean.class);
+                selector.orderBy("orderBy", false);
+                dataList = dbUtils.findAll(selector);
+                dataList =  RunwiseService.filterSubValid(dataList);
+                ProductBasicUtils.setBasicArr(dataList);
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+        getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
+        sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
+
     }
 
     CategoryRespone categoryRespone;
@@ -321,17 +341,6 @@ public class ProductActivity extends NetWorkActivity {
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
-            case PRODUCT_GET:
-                BaseEntity.ResultBean resultBean = result.getResult();
-                ProductData products = (ProductData) resultBean.getData();
-                if (products != null && products.getList() != null) {
-                    dataList.clear();
-                    dataList.addAll(products.getList());
-                    GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-                    getCategoryRequest.setUser_id(Integer.parseInt(SampleApplicationLike.getInstance().getUid()));
-                    sendConnection("/api/product/category", getCategoryRequest, CATEGORY, false, CategoryRespone.class);
-                }
-                break;
             case CATEGORY:
                 BaseEntity.ResultBean resultBean1 = result.getResult();
                 categoryRespone = (CategoryRespone) resultBean1.getData();

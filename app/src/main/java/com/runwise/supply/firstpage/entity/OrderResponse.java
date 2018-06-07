@@ -253,6 +253,10 @@ public class OrderResponse {
             isActualSendOrder = in.readByte() != 0;
             typeQty = in.readInt();
             time = in.readString();
+
+            firstLineName = in.readString();
+            linesAmount = in.readInt();
+            remark = in.readString();
         }
 
         public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
@@ -668,6 +672,10 @@ public class OrderResponse {
             dest.writeByte((byte) (isActualSendOrder ? 1 : 0));
             dest.writeInt(typeQty);
             dest.writeString(time);
+
+            dest.writeString(firstLineName);
+            dest.writeInt(linesAmount);
+            dest.writeString(remark);
         }
 
 

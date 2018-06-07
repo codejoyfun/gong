@@ -137,6 +137,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         if (mOrder != null) {
             mTvTitle.setText("修改订单");
             mBtnSubmit.setText("修改订单");
+            mTvMark.setText(mOrder.getRemark());
         }
         addScrollListener();
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
@@ -485,6 +486,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
         request = new CommitOrderRequest();
         request.setEstimated_time(TimeUtils.getAB2FormatData(selectedDate));
         request.setOrder_type_id("121");
+        request.setRemark(mTvMark.getText().toString());
         List<CommitOrderRequest.ProductsBean> cList = new ArrayList<>();
         for (ProductBasicList.ListBean bean : mProductList) {
             CommitOrderRequest.ProductsBean pBean = new CommitOrderRequest.ProductsBean();

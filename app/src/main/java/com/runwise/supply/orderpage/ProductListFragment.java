@@ -66,7 +66,7 @@ public class ProductListFragment extends NetWorkFragment {
     //选中数量map
     private static HashMap<String, Double> countMap = new HashMap<>();
     //缓存全部商品列表
-    private ArrayList<ProductData.ListBean> arrayList;
+    private ArrayList<ProductBasicList.ListBean> arrayList;
 
     public ProductListFragment() {
     }
@@ -102,10 +102,10 @@ public class ProductListFragment extends NetWorkFragment {
     public void setUpListData() {
         //得到数据，更新UI
         if (arrayList == null) {
-            arrayList = (ArrayList<ProductData.ListBean>) getArguments().getSerializable(BUNDLE_KEY_LIST);
+            arrayList = (ArrayList<ProductBasicList.ListBean>) getArguments().getSerializable(BUNDLE_KEY_LIST);
         }
         //先统计一次id,个数
-        for (ProductData.ListBean bean : arrayList) {
+        for (ProductBasicList.ListBean bean : arrayList) {
             countMap.put(String.valueOf(bean.getProductID()), 0d);
             //同时根据上个页面传值更新一次
             double count = existInLastPager(bean);
@@ -125,14 +125,14 @@ public class ProductListFragment extends NetWorkFragment {
     public void onDataSynEvent(ProductQueryEvent event) {
         String word = event.getSearchWord();
         //只在当前类型下面找名称包括的元素
-        List<ProductData.ListBean> findArray = findArrayByWord(word);
+        List<ProductBasicList.ListBean> findArray = findArrayByWord(word);
         adapter.setData(findArray);
     }
 
     //返回当前标签下名称包含的
-    private List<ProductData.ListBean> findArrayByWord(String word) {
-        List<ProductData.ListBean> findList = new ArrayList<>();
-        for (ProductData.ListBean bean : arrayList) {
+    private List<ProductBasicList.ListBean> findArrayByWord(String word) {
+        List<ProductBasicList.ListBean> findList = new ArrayList<>();
+        for (ProductBasicList.ListBean bean : arrayList) {
             ProductBasicList.ListBean basicBean = ProductBasicUtils.getBasicMap(mContext).get(String.valueOf(bean.getProductID()));
             if (basicBean.getName().contains(word)) {
                 findList.add(bean);
@@ -156,7 +156,7 @@ public class ProductListFragment extends NetWorkFragment {
         @Override
         protected View getExView(int position, View convertView, ViewGroup parent) {
             final ViewHolder viewHolder;
-            final ProductData.ListBean bean = (ProductData.ListBean) mList.get(position);
+            final ProductBasicList.ListBean bean = (ProductBasicList.ListBean) mList.get(position);
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = View.inflate(mContext, R.layout.product_layout_item, null);
@@ -189,7 +189,7 @@ public class ProductListFragment extends NetWorkFragment {
 //                    }
 
                     int position = (int) viewHolder.editText.getTag();
-                    ProductData.ListBean listBean = (ProductData.ListBean) mList.get(position);
+                    ProductBasicList.ListBean listBean = (ProductBasicList.ListBean) mList.get(position);
                     double changedNum = 0;
                     if (!TextUtils.isEmpty(s)) {
 //                        changedNum = Double.valueOf(s.toString());
@@ -305,17 +305,10 @@ public class ProductListFragment extends NetWorkFragment {
             DecimalFormat df = new DecimalFormat("#.##");
             if (canSeePrice) {
                 StringBuffer sb1 = new StringBuffer();
-                if (bean.isIsTwoUnit()) {
-                    sb1.append("¥")
-                            .append(df.format(Double.valueOf(bean.getSettlePrice())))
-                            .append("元/")
-                            .append(bean.getSettleUomId());
-                } else {
                     sb1.append("¥")
                             .append(df.format(Double.valueOf(bean.getPrice())))
                             .append("元/")
                             .append(bean.getUom());
-                }
                 viewHolder.tv_price.setText(sb1.toString());
             } else {
                 viewHolder.tv_price.setText("");
@@ -351,7 +344,7 @@ public class ProductListFragment extends NetWorkFragment {
         }
     }
 
-    private double existInLastPager(ProductData.ListBean bean) {
+    private double existInLastPager(ProductBasicList.ListBean bean) {
         if (addedPros != null) {
             for (AddedProduct product : addedPros) {
                 if (product.getProductId().equals(String.valueOf(bean.getProductID()))) {

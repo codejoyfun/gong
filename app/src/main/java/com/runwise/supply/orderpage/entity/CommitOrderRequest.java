@@ -22,6 +22,16 @@ public class CommitOrderRequest {
         return estimated_time;
     }
 
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String remark;
+
     public void setEstimated_time(String estimated_time) {
         this.estimated_time = estimated_time;
     }
