@@ -32,6 +32,7 @@ import com.kids.commonframe.base.util.CommonUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.view.CustomDialog;
 import com.kids.commonframe.base.view.LoadingLayout;
+import com.kids.commonframe.config.Constant;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.runwise.supply.SampleApplicationLike;
@@ -69,6 +70,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import github.chenupt.dragtoplayout.DragTopLayout;
+import io.vov.vitamio.utils.NumberUtil;
 import me.shaohui.bottomdialog.BottomDialog;
 
 import static com.runwise.supply.firstpage.entity.OrderResponse.ListBean;
@@ -148,6 +150,12 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
     private ImageView ivOpen;
     @ViewInject(R.id.v_space)
     private View v_space;
+    @ViewInject(R.id.tv_order_remark)
+    private TextView mTvOrderRemark;
+    @ViewInject(R.id.tv_order_remark_value)
+    private TextView mTvOrderRemarkValue;
+    @ViewInject(R.id.tv_product_info_value)
+    private TextView mTvProductInfoValue;
     private boolean isModifyOrder;          //可修改订单
     private int orderId;                    //如果有orderId, 需要重新刷新
 
@@ -650,10 +658,6 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
 //                tip = "收货人："+ recdiveName;
                 tip = "配送已完成，如有问题请联系客服";
                 //TODO:退货单没有收货人姓名，暂时处理
-                if (TextUtils.isEmpty(recdiveName)) {
-                    tip = "已退货";
-                    state = "订单已退货";
-                }
                 if (!TextUtils.isEmpty(bean.getAppraisalUserName())) {
                     //已评价
 //                    bottom_bar.setVisibility(View.GONE);
@@ -728,7 +732,19 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
             //设置list
             listDatas = bean.getLines();
             setUpDataForViewPage();
-
+            if (!TextUtils.isEmpty(bean.getRemark())){
+                mTvOrderRemarkValue.setText(bean.getRemark());
+                mTvOrderRemarkValue.setVisibility(View.VISIBLE);
+                mTvOrderRemark.setVisibility(View.VISIBLE);
+            }
+            String countStr;
+            //实收判断
+            if ((Constant.ORDER_STATE_DONE.equals(bean.getState()) || Constant.ORDER_STATE_RATED.equals(bean.getState())) && bean.getDeliveredQty() != bean.getAmount()) {
+                countStr = NumberUtil.getIOrD(bean.getDeliveredQty()) + "件";
+            } else {
+                countStr = NumberUtil.getIOrD(bean.getAmount()) + "件";
+            }
+            mTvProductInfoValue.setText(bean.getLines().size()+"种共"+countStr+" ¥" + df.format(bean.getAmountTotal()));
         }
     }
 

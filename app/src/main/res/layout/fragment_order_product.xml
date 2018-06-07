@@ -9,8 +9,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null"
-        android:layout_above="@+id/orderdetail_bottom_item"/>
+        android:divider="@null"/>
 
     <RelativeLayout
         android:id="@+id/loadingLayout"
@@ -44,12 +43,6 @@
             />
     </RelativeLayout>
 
-    <include
-        android:id="@+id/orderdetail_bottom_item"
-        layout="@layout/orderdetail_bottom_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/loadingLayout"/>
 
 
 </RelativeLayout>

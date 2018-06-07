@@ -44,12 +44,6 @@ public class OrderProductFragment extends BaseFragment {
     @BindView(R.id.loadingLayout)
     RelativeLayout loadingLayout;
     Unbinder unbinder;
-    @ViewInject(R.id.priceLL)
-    private View priceLL;
-    @ViewInject(R.id.countTv)
-    private TextView countTv;
-    @ViewInject(R.id.ygMoneyTv)
-    private TextView ygMoneyTv;
 
     OrderProductAdapter mOrderDtailAdapter;
     private List<OrderResponse.ListBean.LinesBean> listDatas;
@@ -93,19 +87,7 @@ public class OrderProductFragment extends BaseFragment {
 
 
         boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
-        if (!canSeePrice) {
-            priceLL.setVisibility(View.GONE);
-        }
-        //实收判断
-        if ((Constant.ORDER_STATE_DONE.equals(listBean.getState()) || Constant.ORDER_STATE_RATED.equals(listBean.getState())) && listBean.getDeliveredQty() != listBean.getAmount()) {
-            countTv.setText(NumberUtil.getIOrD(listBean.getDeliveredQty()) + "件");
-        } else {
-            countTv.setText(NumberUtil.getIOrD(listBean.getAmount()) + "件");
-        }
-        //商品数量/预估金额
-        DecimalFormat df = new DecimalFormat("#.##");
-        ygMoneyTv.setText("¥" + df.format(listBean.getAmountTotal()));
-        setUpBottomView();
+//        setUpBottomView();
     }
 
     private void setUpBottomView(){

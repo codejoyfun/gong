@@ -116,6 +116,15 @@ public class OrderResponse {
         private String time;
         private String firstLineName;
         private int linesAmount;
+        private String remark;
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
 
         public int getLinesAmount() {
             return linesAmount;

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/windowBackground"
+    tools:context="com.runwise.supply.orderpage.OrderRemarkActivity">
+
+    <include
+        android:id="@+id/titleLayout"
+        layout="@layout/common_title_bar" />
+
+    <RelativeLayout
+        android:id="@+id/rl_remark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleLayout"
+        android:background="@drawable/white_croner_5_stroke"
+        android:layout_margin="20dp">
+
+        <EditText
+            android:id="@+id/et_remark"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@null"
+            android:gravity="left"
+            android:hint="请输入订单备注"
+            android:padding="10dp"
+            android:textSize="@dimen/third_title"
+            android:textColor="@color/textColorPrimary"
+            android:maxLength="100"
+            android:textColorHint="@color/textColorThird" />
+
+        <TextView
+            android:id="@+id/tv_remark_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:textColor="@color/textColorThird"
+            android:layout_below="@id/et_remark"
+            android:padding="10dp"
+            android:textSize="@dimen/third_title"
+            android:text="0/100字"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

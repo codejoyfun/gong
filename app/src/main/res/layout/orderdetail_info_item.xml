@@ -68,59 +68,17 @@
                    android:visibility="gone"
                    android:background="@drawable/receive_circle"/>
            </LinearLayout>
-            <TextView
-                android:id="@+id/buyerTv"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:text="下单人员："
-                android:gravity="center_vertical"
-                android:layout_below="@id/orderLL"
-                android:textSize="14sp"
-                android:textColor="#999999"
-                android:layout_marginTop="5dp"
-                />
-            <TextView
-                android:id="@+id/buyTimeTv"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:text="下单时间："
-                android:gravity="center_vertical"
-                android:layout_below="@id/buyerTv"
-                android:textSize="14sp"
-                android:textColor="#999999"
-                />
+
             <TextView
                 android:id="@+id/payStateTv"
                 android:layout_width="wrap_content"
                 android:layout_height="26dp"
                 android:text="支付状态："
                 android:gravity="center_vertical"
-                android:layout_below="@id/buyTimeTv"
+                android:layout_below="@id/orderLL"
                 android:textSize="14sp"
                 android:textColor="#999999"
                 android:visibility="gone"
-                />
-            <TextView
-                android:id="@+id/buyerValue"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:text=""
-                android:gravity="center_vertical"
-                android:layout_alignTop="@id/buyerTv"
-                android:layout_toRightOf="@id/buyerTv"
-                android:textSize="14sp"
-                android:textColor="#2E2E2E"
-                />
-            <TextView
-                android:id="@+id/orderTimeValue"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:text=""
-                android:gravity="center_vertical"
-                android:layout_alignTop="@id/buyTimeTv"
-                android:layout_toRightOf="@id/buyTimeTv"
-                android:textSize="14sp"
-                android:textColor="#2E2E2E"
                 />
             <TextView
                 android:id="@+id/payStateValue"
@@ -145,6 +103,103 @@
                 android:layout_alignBottom="@id/payStateTv"
                 android:background="@drawable/orderdetail_do_circle"
                 />
+
+            <TextView
+                android:id="@+id/buyerTv"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text="下单人员："
+                android:gravity="center_vertical"
+                android:layout_below="@id/payStateTv"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:layout_marginTop="5dp"
+                />
+            <TextView
+                android:id="@+id/buyTimeTv"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text="下单时间："
+                android:gravity="center_vertical"
+                android:layout_below="@id/buyerTv"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                />
+
+            <TextView
+                android:id="@+id/buyerValue"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text=""
+                android:gravity="center_vertical"
+                android:layout_alignTop="@id/buyerTv"
+                android:layout_toRightOf="@id/buyerTv"
+                android:textSize="14sp"
+                android:textColor="#2E2E2E"
+                />
+            <TextView
+                android:id="@+id/orderTimeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text=""
+                android:gravity="center_vertical"
+                android:layout_alignTop="@id/buyTimeTv"
+                android:layout_toRightOf="@id/buyTimeTv"
+                android:textSize="14sp"
+                android:textColor="#2E2E2E"
+                />
+
+            <TextView
+                android:id="@+id/tv_product_info"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text="商品信息："
+                android:gravity="center_vertical"
+                android:layout_below="@id/buyTimeTv"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                />
+
+            <TextView
+                android:id="@+id/tv_product_info_value"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text=""
+                android:gravity="center_vertical"
+                android:layout_alignTop="@id/tv_product_info"
+                android:layout_toRightOf="@id/tv_product_info"
+                android:textSize="14sp"
+                android:textColor="#2E2E2E"
+                />
+
+            <TextView
+                android:id="@+id/tv_order_remark"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:text="订单备注："
+                android:gravity="center_vertical"
+                android:layout_below="@id/tv_product_info"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/tv_order_remark_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="26dp"
+                android:text=""
+                android:gravity="center_vertical"
+                android:layout_alignTop="@id/tv_order_remark"
+                android:layout_toRightOf="@id/tv_order_remark"
+                android:textSize="14sp"
+                android:textColor="#2E2E2E"
+                android:visibility="gone"
+                />
+
+
+
         </RelativeLayout>
         <View
             android:layout_width="match_parent"

@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.runwise.supply">
-    <uses-sdk tools:overrideLibrary="com.weigan.loopview"/>
+
+    <uses-sdk tools:overrideLibrary="com.weigan.loopview" />
+
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
@@ -207,9 +209,7 @@
             android:name=".LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/LoginActivityAnimTheme">
-
-        </activity>
+            android:theme="@style/LoginActivityAnimTheme"></activity>
         <activity
             android:name=".FindPasswordActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -287,15 +287,18 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <action android:name="android.intent.action.VIEW" />
 
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+                <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
 
-                <!--<data-->
-                    <!--android:host="com.runwise.supply"-->
-                    <!--android:scheme="runwise" />-->
+
+                <!-- <data -->
+                <!-- android:host="com.runwise.supply" -->
+                <!-- android:scheme="runwise" /> -->
             </intent-filter>
         </activity>
         <activity
@@ -634,12 +637,12 @@
 
         <activity
             android:name=".mine.OrderListActivityV2"
-            android:label="@string/title_activity_order_v2"></activity>
-
+            android:label="@string/title_activity_order_v2" />
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"
             android:theme="@android:style/Theme.Translucent" />
+        <activity android:name=".orderpage.OrderRemarkActivity"></activity>
     </application>
 
 </manifest>

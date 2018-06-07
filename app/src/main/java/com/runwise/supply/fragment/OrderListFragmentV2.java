@@ -644,6 +644,8 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
             }
             if (SampleApplicationLike.getInstance().getCanSeePrice()) {
                 holder.tvPrice.setText("¥" + NumberUtil.getIOrD(bean.getAmountTotal()));
+            }else{
+                holder.tvPrice.setVisibility(View.GONE);
             }
             holder.patSum.setText(descStringBuffer.toString());
             if (bean.getHasReturn() > 0) {

@@ -123,7 +123,9 @@ public class OrderAdapter extends IBaseAdapter {
             ViewUtils.inject(viewHolder, convertView);
             convertView.setTag(viewHolder);
             if (!SampleApplicationLike.getInstance().getCanSeePrice()) {
-                viewHolder.priceLL.setVisibility(View.GONE);
+                if (viewHolder.priceLL != null){
+                    viewHolder.priceLL.setVisibility(View.GONE);
+                }
             }
         } else {
             viewHolder = (ViewHolder) convertView.getTag();

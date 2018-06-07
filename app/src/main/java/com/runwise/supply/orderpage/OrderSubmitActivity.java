@@ -58,6 +58,7 @@ import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_MODIFY;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_ALWAY;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_SELF;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_ORDER_SUBMIT_SMART;
+import static com.runwise.supply.orderpage.OrderRemarkActivity.INTENT_KEY_REMARK;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_AGAIN;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_ALWAYS;
 import static com.runwise.supply.orderpage.ProductActivityV2.PLACE_ORDER_TYPE_MODIFY;
@@ -74,6 +75,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
     public static final int REQUEST_SUBMIT = 2000;
     public static final int REQUEST_DUPLICATE = 2500;
     public static final int REQUEST_MODIFY = 3000;
+    public static final int REQUEST_GET_REMARK= 1<<1;
 
     @BindView(R.id.title_iv_left)
     ImageView mTitleIvLeft;
@@ -101,6 +103,8 @@ public class OrderSubmitActivity extends NetWorkActivity {
     TextView tvStickyHeaderView;
     @BindView(R.id.stick_header)
     View stickView;
+    @BindView(R.id.tv_mark)
+    TextView mTvMark;
 
     CustomProgressDialog mCustomProgressDialog;
     //记录当前是选中的哪个送货时期，默认明天, 0今天，1明天，2后天
@@ -407,7 +411,7 @@ public class OrderSubmitActivity extends NetWorkActivity {
 
     }
 
-    @OnClick({R.id.title_iv_left, R.id.rl_date_of_service, R.id.btn_submit})
+    @OnClick({R.id.title_iv_left, R.id.rl_date_of_service, R.id.btn_submit,R.id.rl_mark})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.title_iv_left:
@@ -443,6 +447,24 @@ public class OrderSubmitActivity extends NetWorkActivity {
                     modifyOrder();//修改订单
                 }
                 break;
+            case R.id.rl_mark:
+                String reMark = mTvMark.getText().toString();
+                Intent intent = OrderRemarkActivity.getStartIntent(getActivityContext(),reMark);
+                startActivityForResult(intent,REQUEST_GET_REMARK);
+                break;
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            switch(requestCode){
+                case REQUEST_GET_REMARK:
+                    mTvMark.setText(data.getStringExtra(INTENT_KEY_REMARK));
+                    break;
+            }
         }
     }
 

@@ -98,6 +98,7 @@
         android:padding="10dp">
 
         <TextView
+            android:id="@+id/tv_remark_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -122,8 +123,12 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/iv_mark_more"
+            android:layout_toRightOf="@id/tv_remark_tag"
             android:text=""
+            android:gravity="right"
+            android:ellipsize="end"
             android:hint="请输入备注"
+            android:singleLine="true"
             android:textColor="#0076FF"
             android:textSize="@dimen/second_title" />
     </RelativeLayout>
