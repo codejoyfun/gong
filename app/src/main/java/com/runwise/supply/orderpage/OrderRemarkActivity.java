@@ -40,6 +40,7 @@ public class OrderRemarkActivity extends BaseActivity {
         showBackBtn();
         setTitleRightText(true, "完成");
         mEtRemark.setText(getIntent().getStringExtra(INTENT_KEY_REMARK));
+        mTvRemarkHint.setText(getIntent().getStringExtra(INTENT_KEY_REMARK).length() + "/100字");
 
         mEtRemark.addTextChangedListener(new TextWatcher() {
             @Override

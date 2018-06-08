@@ -383,9 +383,6 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         setupViewPager();
     }
 
-
-
-
     ArrayList<String> mTitles;
 
     protected void setupViewPager() {
@@ -729,11 +726,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             //计算总价,总量
             double totalMoney = 0;
             double totalPieces = 0;
-            int cartCount = 0;
             for (ProductBasicList.ListBean bean : mMapCount.keySet()) {
-                if (!bean.isInvalid()){
-                    cartCount++;
-                }
                 if (!mmSelected.contains(bean.getProductID()) || bean.isInvalid())
                     continue;//只计算勾选的和有效的
                 totalMoney = totalMoney + mMapCount.get(bean) * bean.getPrice();
@@ -742,7 +735,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
 
             if (totalPieces != 0) {
-                mTvCartCount.setText(NumberUtil.getIOrD(cartCount));
+                mTvCartCount.setText(NumberUtil.getIOrD(mmSelected.size()));
                 mTvCartCount.setVisibility(View.VISIBLE);
                 mTvOrderCommit.setEnabled(true);
                 mTvProductTotalCount.setVisibility(View.VISIBLE);
@@ -866,6 +859,9 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
             }
         }
         updateBottomBar();
+        if(mmProductList.size() == 1 && mmProductList.get(0).getProductID() == 0){
+            showCart(false);
+        }
     }
 
 

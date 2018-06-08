@@ -651,7 +651,7 @@ public class OrderDetailActivity extends NetWorkActivity implements LoadingLayou
 //                setBottom(v_space);
             } else if (bean.getState().equals("peisong")) {
                 state = "订单已发货";
-                tip = "预计发达时间：" + bean.getEstimatedTime();
+                tip = "预计送达时间：" + bean.getEstimatedTime();
             } else if (bean.getState().equals("done")) {
                 state = "订单已收货";
                 String recdiveName = bean.getReceiveUserName();

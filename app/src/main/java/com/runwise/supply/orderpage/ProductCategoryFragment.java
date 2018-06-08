@@ -257,7 +257,12 @@ public class ProductCategoryFragment extends NetWorkFragment {
             for (int i = 0;i< listBeans.size();i++) {
                 ProductBasicList.ListBean listBean = listBeans.get(i);
                 if (listBean.getProductID() == event.bean.getProductID()) {
-                    refreshItemView(i,listBean);
+                    for(int j = 0;j<mProductList.size();j++){
+                        if (mProductList.get(j).getProductID() == listBean.getProductID()){
+                            refreshItemView(j,listBean);
+                        }
+                    }
+
                     break;
                 }
             }
