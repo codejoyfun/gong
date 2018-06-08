@@ -195,7 +195,7 @@
             android:paddingBottom="5dp"
             android:textColor="@color/textColorRed"
             android:textSize="16sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
 
         <TextView

@@ -125,7 +125,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         sendConnection("/gongfu/assess/tag/list", obj, REQUEST_GET_RETURN_TAG, false, TagResponse.class);
     }
 
-
+   boolean isCommiting = false;
     @OnClick({R.id.title_iv_left, R.id.commitBtn, R.id.iv_open})
     public void btnClick(View v) {
         switch (v.getId()) {
@@ -148,6 +148,10 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
                 dialog.show();
                 break;
             case R.id.commitBtn:
+                if (isCommiting){
+                    return;
+                }
+                isCommiting = true;
                 dialog.setMessage("确认对所选商品进行退货?");
                 dialog.setMessageGravity();
                 dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
@@ -346,6 +350,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
             case RETURN:
 //                ToastUtil.show(mContext, "退货成功");
 //                finish();
+                isCommiting = false;
                 FinishReturnResponse finishReturnResponse = (FinishReturnResponse) result.getResult().getData();
                 FinishReturnResponse.ReturnOrder returnOrder = finishReturnResponse.getReturnOrder();
                 ReturnRequestSuccessActivity.start(this, returnOrder);
@@ -489,7 +494,10 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        if (where == RETURN){
+            isCommiting = false;
+            toast(errMsg);
+        }
     }
 
     @Override

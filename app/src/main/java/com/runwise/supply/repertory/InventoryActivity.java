@@ -562,7 +562,7 @@ public class InventoryActivity extends NetWorkActivity {
         }
 
         if (SampleApplicationLike.getInstance().getCanSeePrice()) {
-            mTvProductTotalPrice.setVisibility(View.VISIBLE);
+            mTvProductTotalPrice.setVisibility(View.GONE);
             if (totalMoney >= 0) {
                 mTvProductTotalPrice.setTextColor(Color.parseColor("#FF3B30"));
             } else {

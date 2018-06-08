@@ -165,14 +165,15 @@ public class UploadPayedPicActivity extends NetWorkActivity implements UploadInt
         switch (view.getId()) {
             case R.id.title_iv_left:
                 if (adapter.isHasUnCommit()) {
-                    dialog.setMessage("确认取消修改");
+                    dialog.setMessage("当前修改不会被保留，确认离开");
                     dialog.setMessageGravity();
-                    dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+                    dialog.setRightBtnListener("离开", new CustomDialog.DialogListener() {
                         @Override
                         public void doClickButton(Button btn, CustomDialog dialog) {
                             goLastPage();
                         }
                     });
+                    dialog.setLeftBtnListener("我再看看",null);
                     dialog.show();
                 } else {
                     goLastPage();

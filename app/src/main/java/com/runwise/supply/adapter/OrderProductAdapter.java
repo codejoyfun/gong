@@ -152,26 +152,26 @@ public class OrderProductAdapter extends BaseAdapter {
         vh.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String deliveryType = mListBean.getDeliveryType();
-                if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD) || deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
-                        || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH) || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)) {
-                    if (!status.equals("peisong") && !status.equals("done") && !status.equals("rated")) {
-                        return;
-                    }
-                }
-                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY) || deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)) {
-                    if ((status.equals("done") || status.equals("rated")) && (bean.getLotList() != null && bean.getLotList().size() == 0)) {
-                        ToastUtil.show(v.getContext(), "该产品无批次追踪");
-                        return;
-                    }
-                    if (status.equals(ORDER_STATE_PEISONG) || status.equals(ORDER_STATE_DRAFT) || status.equals(ORDER_STATE_SALE)) {
-                        return;
-                    }
-                }
-                Intent intent = new Intent(context, LotListActivity.class);
-                intent.putExtra("title", bean.getName());
-                intent.putExtra("bean", (Parcelable) bean);
-                context.startActivity(intent);
+//                String deliveryType = mListBean.getDeliveryType();
+//                if (deliveryType.equals(OrderResponse.ListBean.TYPE_STANDARD) || deliveryType.equals(OrderResponse.ListBean.TYPE_THIRD_PART_DELIVERY)
+//                        || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH) || deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_THIRD_PART_DELIVERY)) {
+//                    if (!status.equals("peisong") && !status.equals("done") && !status.equals("rated")) {
+//                        return;
+//                    }
+//                }
+//                if (deliveryType.equals(OrderResponse.ListBean.TYPE_FRESH_VENDOR_DELIVERY) || deliveryType.equals(OrderResponse.ListBean.TYPE_VENDOR_DELIVERY)) {
+//                    if ((status.equals("done") || status.equals("rated")) && (bean.getLotList() != null && bean.getLotList().size() == 0)) {
+//                        ToastUtil.show(v.getContext(), "该产品无批次追踪");
+//                        return;
+//                    }
+//                    if (status.equals(ORDER_STATE_PEISONG) || status.equals(ORDER_STATE_DRAFT) || status.equals(ORDER_STATE_SALE)) {
+//                        return;
+//                    }
+//                }
+//                Intent intent = new Intent(context, LotListActivity.class);
+//                intent.putExtra("title", bean.getName());
+//                intent.putExtra("bean", (Parcelable) bean);
+//                context.startActivity(intent);
             }
         });
 //        }
