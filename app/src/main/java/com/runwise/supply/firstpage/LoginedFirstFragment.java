@@ -331,10 +331,11 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
             if (SPUtils.isLogin(getActivity())) {
                 requestDashBoard();
-                requestReturnList();
+//                requestReturnList();
+
                 if (mFirstResume){
                     mFirstResume = false;
-                    showIProgressDialog();
+                    pullListView.setRefreshing();
                 }
                 Object request = null;
                 sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
@@ -532,7 +533,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
      */
     private void checkSuccess() {
         if (!orderRequesting && !returnRequesting && !submitRequesting && !inventoryRequesting) {
-            dismissIProgressDialog();
+//            dismissIProgressDialog();
             orderList.addAll(0, inventoryList);
             if (mTempOrders != null) orderList.addAll(0, mTempOrders);//提交中订单加在最前边
             adapter.setData(orderList);

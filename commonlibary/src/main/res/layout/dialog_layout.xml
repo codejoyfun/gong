@@ -22,6 +22,8 @@
             android:gravity="center"
             android:lineSpacingExtra="9dp"
             android:text="温馨提示"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:textColor="#434343"
             android:textSize="18sp" />
 
