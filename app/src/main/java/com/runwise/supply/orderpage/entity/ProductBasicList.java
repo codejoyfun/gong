@@ -2,6 +2,7 @@ package com.runwise.supply.orderpage.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Foreign;
@@ -122,6 +123,9 @@ public class ProductBasicList implements Serializable, Parcelable {
         public static final String TRACKING_TYPE_NONE = "none";
 
         public String getImageLocal() {
+            if (TextUtils.isEmpty(imageLocal)&&image != null){
+                return image.getImageSmall();
+            }
             return imageLocal;
         }
 
@@ -220,7 +224,12 @@ public class ProductBasicList implements Serializable, Parcelable {
             dest.writeDouble(count);
             dest.writeDouble(actualQty);
             dest.writeDouble(presetQty);
-            dest.writeString(image.getImageSmall());
+            if(image!=null){
+                dest.writeString(image.getImageSmall());
+            }else{
+                dest.writeString("");
+            }
+
         }
 
         @Override

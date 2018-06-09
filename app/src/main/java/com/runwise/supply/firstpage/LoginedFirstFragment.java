@@ -266,7 +266,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                     }
                     Intent intent = new Intent(mContext, OrderDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    setOrderRead(bean);
+//                    setOrderRead(bean);
                     bundle.putParcelable("order", bean);
                     intent.putExtras(bundle);
                     startActivity(intent);
@@ -336,6 +336,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 if (mFirstResume){
                     mFirstResume = false;
                     pullListView.setRefreshing();
+                }else{
+                    requestReturnList();
+                    requestDashBoard();
                 }
                 Object request = null;
                 sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
@@ -546,6 +549,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
             }
             if (!mRequestReturnListSuccess) {
                 loadingLayout.onFailure("", R.drawable.default_icon_checkconnection);
+                adapter.clear();
             }
         }
     }

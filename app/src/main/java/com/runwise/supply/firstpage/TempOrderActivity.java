@@ -18,6 +18,7 @@ import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
+import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TempOrderManager;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.UserUtils;
@@ -73,8 +74,12 @@ public class TempOrderActivity extends NetWorkActivity {
             vh  = (ViewHolder) holder;
             final ProductBasicList.ListBean bean = mTempOrder.getProductList().get(position);
             int pId = bean.getProductID();
-            if (bean.getImage() != null){
-                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(vh.productImage, bean.getImage().getImageSmall());
+            ProductBasicList.ListBean localBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(String.valueOf(pId));
+            if (localBean != null){
+                bean.setImageLocal(localBean.getImageLocal());
+            }
+            if (bean.getImageLocal() != null){
+                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(vh.productImage, bean.getImageLocal());
             }
 
             vh.nowPriceTv.setText("x"+ NumberUtil.getIOrD(bean.getActualQty()));
