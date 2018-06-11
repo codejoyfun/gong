@@ -93,7 +93,11 @@ public class UserGuideActivity extends NetWorkActivity {
 
     private void inflateGuideView(){
         LayoutInflater inflater = LayoutInflater.from(this);
-        if(mGuideResponse.getList()==null)return;
+        if(mGuideResponse.getList()==null||mGuideResponse.getList().size() == 0){
+            findViewById(R.id.rl_guide_video).setVisibility(View.GONE
+            );
+            return;
+        }
         for(final GuideResponse.GuideItem guideItem:mGuideResponse.getList()){
             View guideView = inflater.inflate(R.layout.item_video_guide,mLlContainer,false);
             ((TextView)guideView.findViewById(R.id.tv_guide_name)).setText(guideItem.getName());

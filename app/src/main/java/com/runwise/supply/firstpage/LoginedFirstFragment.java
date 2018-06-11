@@ -316,6 +316,7 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 dialog.show();
             }
         }
+        pullListView.firstRefreshing();
     }
 
     public void getProcurement() {
@@ -335,10 +336,8 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
 
                 if (mFirstResume){
                     mFirstResume = false;
-                    pullListView.setRefreshing();
                 }else{
                     requestReturnList();
-                    requestDashBoard();
                 }
                 Object request = null;
                 sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);
@@ -519,9 +518,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
                 UnReadData unReadData = (UnReadData) result.getResult().getData();
                 DetailResult.ListBean bean = PlatformNotificationManager.getInstance(getActivity()).getLastMessage();
                 if (unReadData.getUnread() || (bean != null && !bean.isSeen())) {
-                    mTvHint.setVisibility(View.VISIBLE);
+//                    mTvHint.setVisibility(View.VISIBLE);
                 } else {
-                    mTvHint.setVisibility(View.GONE);
+//                    mTvHint.setVisibility(View.GONE);
                 }
                 break;
             case REQUEST_CANCEL_RETURN_ORDER:

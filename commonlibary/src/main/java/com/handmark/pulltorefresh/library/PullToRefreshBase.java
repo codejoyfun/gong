@@ -18,10 +18,12 @@ package com.handmark.pulltorefresh.library;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -127,6 +129,26 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 		mMode = mode;
 		mLoadingAnimationStyle = animStyle;
 		init(context, null);
+	}
+
+	//在PullToRefreshBase中添加方法，也可以在PullToRefreshListView中添加，但在PullToRefreshListView中添加需要修改PullToRefreshBase.mHeaderLayout的访问权限为protected或者public(默认是private私有的,子类不能访问)
+	public void firstRefreshing(){
+		new AsyncTask<Integer,Void,Integer>(){
+
+			@Override
+			protected Integer doInBackground(Integer... integers) {
+				while(true){
+					if(mHeaderLayout.getHeight()>0) //已测量，则跳回到主线程执行postExecute()
+						return null;
+					SystemClock.sleep(200);//sleep一小段时间
+				}
+			}
+			@Override
+			protected void onPostExecute(Integer i){
+				super.onPostExecute(i);
+				setRefreshing(true);//刷新
+			}
+		}.execute();
 	}
 
 	@Override

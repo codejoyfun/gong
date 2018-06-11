@@ -73,7 +73,7 @@
                     />
                 <ImageView
                     android:id="@+id/iv_company"
-                    android:layout_width="18dp"
+                    android:layout_width="28dp"
                     android:layout_height="match_parent"
                     android:padding="5dp"
                     />

@@ -32,7 +32,7 @@
             android:padding="10dp"
             android:textSize="@dimen/third_title"
             android:textColor="@color/textColorPrimary"
-            android:maxLength="100"
+            android:maxLength="50"
             android:textColorHint="@color/textColorThird" />
 
         <TextView
@@ -44,7 +44,7 @@
             android:layout_below="@id/et_remark"
             android:padding="10dp"
             android:textSize="@dimen/third_title"
-            android:text="0/100字"/>
+            android:text="0/50字"/>
 
     </RelativeLayout>
 

@@ -32,6 +32,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:padding="12dp"
+            android:visibility="gone"
             android:src="@drawable/nav_btn_message_gray"
             />
 
@@ -72,6 +73,7 @@
         android:layout_height="48dp"
         android:layout_alignParentRight="true"
         android:padding="12dp"
+        android:visibility="gone"
         android:src="@drawable/nav_btn_message" />
 
 </RelativeLayout>

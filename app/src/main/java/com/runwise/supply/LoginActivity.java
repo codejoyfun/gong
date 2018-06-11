@@ -98,6 +98,8 @@ public class LoginActivity extends NetWorkActivity {
     private CheckBox remPassword;
     @ViewInject(R.id.login_pop_btn)
     private View loginPopBtn;
+    @ViewInject(R.id.iv_company)
+    private View ivCompany;
 
     private RemListAdapter remListAdapter;
     private LoginRequest loginRequest;
@@ -198,8 +200,11 @@ public class LoginActivity extends NetWorkActivity {
 
             if (userList == null || userList.size() <= 1) {
                 loginPopBtn.setVisibility(View.GONE);
+                ivCompany.setVisibility(View.GONE);
+
             } else {
                 loginPopBtn.setVisibility(View.VISIBLE);
+                ivCompany.setVisibility(View.VISIBLE);
             }
         } catch (Exception e) {
             e.printStackTrace();
