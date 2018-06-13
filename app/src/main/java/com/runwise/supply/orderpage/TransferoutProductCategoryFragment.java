@@ -15,8 +15,10 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.event.ProductCountUpdateEvent;
+import com.runwise.supply.mine.TransferoutProductListActivity;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.ListContainer;
+import com.runwise.supply.view.TransferoutListContainer;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -39,7 +41,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
 
     private String mCategory;
     @ViewInject(R.id.listcontainer)
-    private ListContainer mListContainer;
+    private TransferoutListContainer mListContainer;
     @ViewInject(R.id.loadingLayout)
     private LoadingLayout mLoadingLayout;
     private String mCurrentSubCategory = null;
@@ -52,7 +54,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
         isLive = true;
         mCategory = getArguments().getString(INTENT_KEY_CATEGORY);
         requestChildCategory();
-        HashMap<String, Long> childBadges = ((ProductActivityV2) getActivity()).getChildBadges();
+        HashMap<String, Long> childBadges = ((TransferoutProductListActivity) getActivity()).getChildBadges();
         if (mListContainer.getTypeAdapter() != null) {
             mListContainer.getTypeAdapter().updateBadge(childBadges);
         }
@@ -81,7 +83,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
 
     @Override
     protected int createViewByLayoutId() {
-        return R.layout.activity_transferout_product_list;
+        return R.layout.fragment_transferout_product_category;
     }
 
     @Override
@@ -109,21 +111,21 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
         long mStartTime;
         mStartTime = System.currentTimeMillis();
         //查询二级分类
-        List<ProductBasicList.ListBean> listBeans = ((ProductActivityV2) getActivity()).getProductMap().get(mCategory);
+        List<ProductBasicList.ListBean> listBeans = ((TransferoutProductListActivity) getActivity()).getProductMap().get(mCategory);
         //        促销商品
         ArrayList<ProductBasicList.ListBean> salesPromotionList = new ArrayList<>();
         if (listBeans == null) {
             switch (mCategory) {
                 case "全部":
                     mLoadingLayout.setVisibility(View.GONE);
-//                    ((ProductActivityV2) getActivity()).getListBeans()
-                    mProductList = ((ProductActivityV2) getActivity()).getListBeans();
-                    mListContainer.init(mCategory, ((ProductActivityV2) getActivity()).getListBeans(), null, ((ProductActivityV2) getActivity()).getProductCountSetter());
+//                    ((TransferoutProductListActivity) getActivity()).getListBeans()
+                    mProductList = ((TransferoutProductListActivity) getActivity()).getListBeans();
+                    mListContainer.init(mCategory, ((TransferoutProductListActivity) getActivity()).getListBeans(), null, ((TransferoutProductListActivity) getActivity()).getProductCountSetter());
                     android.util.Log.i("onGlobalLayout 全部", String.valueOf(mStartTime - System.currentTimeMillis()));
                     return;
 //                case "促销商品":
 //                    //            一级分类是促销商品
-//                    listBeans = ((ProductActivityV2) getActivity()).getListBeans();
+//                    listBeans = ((TransferoutProductListActivity) getActivity()).getListBeans();
 //                    for (int i = 0; i < listBeans.size(); i++) {
 //                        ProductBasicList.ListBean bean = listBeans.get(i);
 //                        if (mCategory.equals(getString(R.string.sales_promotion)) && bean.getProductTag().equals(getString(R.string.sales_promotion))) {
@@ -132,7 +134,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
 //                    }
 //                    mLoadingLayout.setVisibility(View.GONE);
 //                    mProductList = salesPromotionList;
-//                    mListContainer.init(mCategory, salesPromotionList, null, ((ProductActivityV2) getActivity()).getProductCountSetter());
+//                    mListContainer.init(mCategory, salesPromotionList, null, ((TransferoutProductListActivity) getActivity()).getProductCountSetter());
 //                    android.util.Log.i("onGlobalLayout 促销商品", String.valueOf(mStartTime - System.currentTimeMillis()));
 //                    return;
                 default:
@@ -187,7 +189,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
             }
         }
         mLoadingLayout.setVisibility(View.GONE);
-        mListContainer.init(mCategory, mProductList, categoryList, ((ProductActivityV2) getActivity()).getProductCountSetter());
+        mListContainer.init(mCategory, mProductList, categoryList, ((TransferoutProductListActivity) getActivity()).getProductCountSetter());
         android.util.Log.i("onGlobalLayout "+mCategory, String.valueOf(mStartTime - System.currentTimeMillis()));
     }
 
@@ -219,8 +221,8 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
             }
         } else {
             //购物车商品删除调用的逻辑
-            ((ProductActivityV2) getActivity()).initChildBadges();
-            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
+            ((TransferoutProductListActivity) getActivity()).initChildBadges();
+            mListContainer.getTypeAdapter().updateBadge(((TransferoutProductListActivity) getActivity()).getChildBadges());
             for (ProductBasicList.ListBean listBean : event.beanList) {
                 if (listBean.getCategoryParent().equals(mCategory)||mCategory.equals("全部")||mCategory.equals("促销商品")) {
                     for (int i = 0; i < mProductList.size(); i++) {
@@ -235,8 +237,8 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
 
         if (event.getException() != null && event.getException().getClass() == ProductAdapter.class) {
             if (listBeans != null) {
-                ((ProductActivityV2) getActivity()).initChildBadges();
-                mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
+                ((TransferoutProductListActivity) getActivity()).initChildBadges();
+                mListContainer.getTypeAdapter().updateBadge(((TransferoutProductListActivity) getActivity()).getChildBadges());
                 for (int i = 0;i< listBeans.size();i++) {
                     ProductBasicList.ListBean listBean = listBeans.get(i);
                     if (listBean.getProductID() == event.bean.getProductID()) {
@@ -251,8 +253,8 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
             return;
         }
         if (listBeans != null) {
-            ((ProductActivityV2) getActivity()).initChildBadges();
-            mListContainer.getTypeAdapter().updateBadge(((ProductActivityV2) getActivity()).getChildBadges());
+            ((TransferoutProductListActivity) getActivity()).initChildBadges();
+            mListContainer.getTypeAdapter().updateBadge(((TransferoutProductListActivity) getActivity()).getChildBadges());
             for (int i = 0;i< listBeans.size();i++) {
                 ProductBasicList.ListBean listBean = listBeans.get(i);
                 if (listBean.getProductID() == event.bean.getProductID()) {
@@ -278,7 +280,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
             TextView tvProductCount = (TextView) childView.findViewById(R.id.tv_product_count);
             ImageView mIvProductReduce = (ImageView) childView.findViewById(R.id.iv_product_reduce);
             ImageView mIvProductAdd = (ImageView) childView.findViewById(R.id.iv_product_add);
-            double count = ((ProductActivityV2) getActivity()).getProductCountSetter().getCount(listBean);
+            double count = ((TransferoutProductListActivity) getActivity()).getProductCountSetter().getCount(listBean);
             tvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
             //先根据集合里面对应个数初始化一次
             if (count > 0) {

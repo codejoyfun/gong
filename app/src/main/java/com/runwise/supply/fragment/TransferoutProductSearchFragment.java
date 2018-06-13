@@ -1,4 +1,4 @@
-package com.runwise.supply.orderpage;
+package com.runwise.supply.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,9 +21,11 @@ import com.kids.commonframe.base.NetWorkFragment;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.adapter.ProductAdapterV2;
+import com.runwise.supply.adapter.TransferoutProductAdapter;
+import com.runwise.supply.adapter.TransferoutProductAdapterV2;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.mine.TransferoutProductListActivity;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
@@ -35,10 +37,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Dong on 2017/11/23.
+ * Created by mike on 2018/6/13.
  */
 
-public class ProductSearchFragment extends NetWorkFragment {
+public class TransferoutProductSearchFragment extends NetWorkFragment {
     private static final int REQUEST_PRODUCT_REFRESH = 0;
     private static final int REQUEST_PRODUCT_MORE = 1;
 
@@ -49,7 +51,7 @@ public class ProductSearchFragment extends NetWorkFragment {
     @ViewInject(R.id.et_search)
     private EditText mEtSearch;//搜索框
 
-    private ProductAdapterV2 mProductAdapter;
+    private TransferoutProductAdapterV2 mProductAdapter;
 
     private String mCategory;
     private String mSubCategory;
@@ -69,7 +71,7 @@ public class ProductSearchFragment extends NetWorkFragment {
         pullListView.setLayoutManager(linearLayoutManager);
         ((DefaultItemAnimator) pullListView.getItemAnimator()).setSupportsChangeAnimations(false);
         mListBeans =  new ArrayList<>();
-        mProductAdapter = new ProductAdapterV2(mListBeans);
+        mProductAdapter = new TransferoutProductAdapterV2(mListBeans);
         pullListView.setAdapter(mProductAdapter);
         canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
 

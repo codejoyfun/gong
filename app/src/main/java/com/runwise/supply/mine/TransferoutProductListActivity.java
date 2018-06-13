@@ -221,8 +221,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                 if (bean.isCacheSelected()) mmSelected.add(bean.getProductID());
             }
 
-            //检查购物车商品有效性
-            checkValid(cartCache.getListBeans());
         } else {
             mFirstGetShopCartCache = false;
         }
@@ -259,26 +257,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
 
     List<ProductBasicList.ListBean> mListToCheck;//记录需要查询有效性的商品，用于设置结果
 
-    /**
-     * 检查商品有效性
-     */
-    protected void checkValid(List<ProductBasicList.ListBean> listToCheck) {
-        if (listToCheck == null || listToCheck.size() == 0) {
-            mFirstGetShopCartCache = false;
-            return;
-        }
-        mListToCheck = listToCheck;
-        List<Integer> requestList = new ArrayList<>();
-        for (ProductBasicList.ListBean bean : listToCheck) {
-            requestList.add(bean.getProductID());
-        }
-
-        ProductValidateRequest request = new ProductValidateRequest();
-        request.setProducts(requestList);
-
-        //TODO:接口待定
-        sendConnection("/api/shop_cart/disable", request, REQUEST_VALIDATE, true, ProductValidateResponse.class);
-    }
 
     /**
      * 保存缓存
@@ -875,8 +853,8 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         public void finishUpdate(ViewGroup container) {
             try{
                 super.finishUpdate(container);
-            } catch (NullPointerException nullPointerException){
-                Log.e("finishUpdate","Catch the NullPointerException in FragmentPagerAdapter.finishUpdate");
+            } catch (Exception nullPointerException){
+                Log.e("finishUpdate",nullPointerException.toString());
             }
         }
 

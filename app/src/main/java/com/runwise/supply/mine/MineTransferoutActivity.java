@@ -9,26 +9,31 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
+import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
 import com.kids.commonframe.base.view.LoadingLayout;
 import com.runwise.supply.R;
+import com.runwise.supply.entity.TransferOutResponse;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MineTransferoutActivity extends NetWorkActivity {
 
+    private static final int REQUEST_CODE_LIST = 1 << 0;
     @BindView(R.id.pullListView)
     PullToRefreshListView mPullListView;
     @BindView(R.id.loadingLayout)
     LoadingLayout mLoadingLayout;
     MineTransferoutAdapter mMineTransferoutAdapter;
 
-    int mPage = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,7 @@ public class MineTransferoutActivity extends NetWorkActivity {
             @Override
             public void onClick(View v) {
 //                跳去出库商品列表
-                Intent intent = new Intent(getActivityContext(),TransferoutProductListActivity.class);
+                Intent intent = new Intent(getActivityContext(), TransferoutProductListActivity.class);
                 startActivity(intent);
             }
         });
@@ -53,11 +58,10 @@ public class MineTransferoutActivity extends NetWorkActivity {
 
         View headerView = LayoutInflater.from(getActivityContext()).inflate(R.layout.list_header_mine_transfer_out, null);
         mPullListView.getRefreshableView().addHeaderView(headerView);
-        mPullListView.setAdapter(mMineTransferoutAdapter);
 
         mPullListView.setPullToRefreshOverScrollEnabled(false);
         mPullListView.setScrollingWhileRefreshingEnabled(true);
-        mPullListView.setMode(PullToRefreshBase.Mode.BOTH);
+        mPullListView.setMode(PullToRefreshBase.Mode.PULL_UP_TO_REFRESH);
 
         PullToRefreshBase.OnRefreshListener2<ListView> onRefreshListener = new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
@@ -65,8 +69,8 @@ public class MineTransferoutActivity extends NetWorkActivity {
                 String label = DateUtils.formatDateTime(mContext, System.currentTimeMillis(),
                         DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
                 refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
-                mPage = 1;
 //                    刷新列表
+                requestTransferoutList(false);
             }
 
             @Override
@@ -82,24 +86,59 @@ public class MineTransferoutActivity extends NetWorkActivity {
                 startActivity(intent);
             }
         });
+//        requestTransferoutList(true);
+    }
+
+    private void requestTransferoutList(boolean showDialog) {
+        Object o = null;
+        sendConnection("/api/self/transfer/list", o, REQUEST_CODE_LIST, showDialog, TransferOutResponse.class);
+
     }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
+        switch (where) {
+            case REQUEST_CODE_LIST:
+                BaseEntity.ResultBean resultBean = result.getResult();
+                TransferOutResponse transferOutResponse = (TransferOutResponse) resultBean.getData();
+                mMineTransferoutAdapter.setList(transferOutResponse.getList());
+                if (mMineTransferoutAdapter.getCount() == 0 && mPullListView.getRefreshableView().getHeaderViewsCount() == 1) {
+                    mLoadingLayout.onSuccess(0, "哎呀！这里是空哒~~",R.drawable.default_ico_none);
+                } else {
+                    mLoadingLayout.onSuccess(mMineTransferoutAdapter.getCount(), "哎呀！这里是空哒~~",R.drawable.default_ico_none);
+                }
+                mPullListView.onRefreshComplete(Integer.MAX_VALUE);
+                mPullListView.setAdapter(mMineTransferoutAdapter);
+                break;
+        }
 
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-
+        if (where == REQUEST_CODE_LIST && errMsg.equals(getResources().getString(R.string.network_error))){
+            mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+        }else{
+            mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        }
+        mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
+            @Override
+            public void retryOnClick(View view) {
+                requestTransferoutList(true);
+            }
+        });
     }
 
     public class MineTransferoutAdapter extends BaseAdapter {
+        List<TransferOutResponse.TransferOut> transferOutList;
 
+        public void setList(List<TransferOutResponse.TransferOut> transferOutList) {
+            this.transferOutList = transferOutList;
+        }
 
         @Override
         public int getCount() {
-            return 4;
+            return transferOutList.size();
         }
 
         @Override
@@ -114,10 +153,32 @@ public class MineTransferoutActivity extends NetWorkActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
             if (convertView == null) {
                 convertView = LayoutInflater.from(getActivityContext()).inflate(R.layout.list_item_mine_transferout, null);
+                viewHolder = new ViewHolder(convertView);
+                convertView.setTag(viewHolder);
             }
+
+            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder.mTvTranferoutName.setText(transferOutList.get(position).getCreatUID());
+            viewHolder.mTvTranferoutNum.setText(transferOutList.get(position).getPickingName());
+            viewHolder.mTvTranferoutTime.setText(transferOutList.get(position).getDateExpected());
+
             return convertView;
+        }
+
+        class ViewHolder {
+            @BindView(R.id.tv_tranferout_num)
+            TextView mTvTranferoutNum;
+            @BindView(R.id.tv_tranferout_time)
+            TextView mTvTranferoutTime;
+            @BindView(R.id.tv_tranferout_name)
+            TextView mTvTranferoutName;
+
+            ViewHolder(View view) {
+                ButterKnife.bind(this, view);
+            }
         }
     }
 }

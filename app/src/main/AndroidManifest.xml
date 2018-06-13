@@ -646,7 +646,8 @@
         <activity android:name=".mine.MineTransferoutActivity" />
         <activity android:name=".mine.MineTransferOutDetailActivity" />
         <activity android:name=".mine.MineTransferoutSuccessActivity" />
-        <activity android:name=".mine.TransferoutProductListActivity"></activity>
+        <activity android:name=".mine.TransferoutProductListActivity"
+            android:windowSoftInputMode="adjustPan"></activity>
     </application>
 
 </manifest>
