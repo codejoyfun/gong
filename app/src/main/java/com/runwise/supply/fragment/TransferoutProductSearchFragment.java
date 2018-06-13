@@ -26,9 +26,9 @@ import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.adapter.ProductAdapterV2;
 import com.runwise.supply.adapter.TransferoutProductAdapter;
 import com.runwise.supply.adapter.TransferoutProductAdapterV2;
+import com.runwise.supply.entity.StockProductListResponse;
 import com.runwise.supply.event.ProductCountUpdateEvent;
 import com.runwise.supply.mine.TransferoutProductListActivity;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -60,9 +60,9 @@ public class TransferoutProductSearchFragment extends NetWorkFragment {
     private String mKeyword;
 
     private boolean canSeePrice = true;//默认价格中可见
-    private Map<ProductBasicList.ListBean, Integer> mCountMap;//记录数量，从父activity获取
+    private Map<StockProductListResponse.ListBean, Integer> mCountMap;//记录数量，从父activity获取
     private Handler mHandler = new Handler();
-    List<ProductBasicList.ListBean> mListBeans;
+    List<StockProductListResponse.ListBean> mListBeans;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -174,12 +174,12 @@ public class TransferoutProductSearchFragment extends NetWorkFragment {
     }
 
     protected void requestData(int where) {
-        List<ProductBasicList.ListBean> listBeans = ((TransferoutProductListActivity) getActivity()).getListBeans();
+        List<StockProductListResponse.ListBean> listBeans = ((TransferoutProductListActivity) getActivity()).getListBeans();
         if (listBeans == null){
             return;
         }
-        List<ProductBasicList.ListBean> searchListBeans = new ArrayList<>();
-        for (ProductBasicList.ListBean listBean : listBeans) {
+        List<StockProductListResponse.ListBean> searchListBeans = new ArrayList<>();
+        for (StockProductListResponse.ListBean listBean : listBeans) {
             if (listBean.getName().contains(mKeyword)) {
                 searchListBeans.add(listBean);
             }
@@ -188,7 +188,7 @@ public class TransferoutProductSearchFragment extends NetWorkFragment {
         mListBeans.addAll(searchListBeans);
         mProductAdapter.notifyDataSetChanged();
         mLoadingLayout.onSuccess(mProductAdapter.getItemCount(), "搜索不到相关商品，换个关键词试试~", R.drawable.default_icon_goodsnone);
-//        sendConnection("/gongfu/v3/product/list",new ProductListRequest(mLimit,mPz,mKeyword,mCategory,mSubCategory),where,false,ProductBasicList.class);
+//        sendConnection("/gongfu/v3/product/list",new ProductListRequest(mLimit,mPz,mKeyword,mCategory,mSubCategory),where,false,StockProductListResponse.class);
     }
 
     /**

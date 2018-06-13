@@ -15,11 +15,14 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.runwise.supply.R;
 import com.runwise.supply.SampleApplicationLike;
+import com.runwise.supply.entity.StockProductListResponse;
 import com.runwise.supply.event.ProductCountUpdateEvent;
+import com.runwise.supply.event.TransferoutProductCountUpdateEvent;
+import com.runwise.supply.mine.TransferoutProductListActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductValueDialog;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.view.ProductImageDialog;
+import com.runwise.supply.view.TransferProductImageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,23 +39,23 @@ import io.vov.vitamio.utils.NumberUtil;
  */
 
 public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAdapterV2.ViewHolder> {
-    //    ProductBasicList.ListBean
+    //    StockProductListResponse.ListBean
     public static final int FIRST_STICKY_VIEW = 1;
     public static final int HAS_STICKY_VIEW = 2;
     public static final int NONE_STICKY_VIEW = 3;
 
-    ProductActivityV2.ProductCountSetter productCountSetter;
+    TransferoutProductListActivity.ProductCountSetter productCountSetter;
     boolean canSeePrice = false;
     DecimalFormat df = new DecimalFormat("#.##");
-    private List<ProductBasicList.ListBean> mData;
+    private List<StockProductListResponse.ListBean> mData;
 
-    public TransferoutProductAdapterV2(@Nullable List<ProductBasicList.ListBean> data) {
+    public TransferoutProductAdapterV2(@Nullable List<StockProductListResponse.ListBean> data) {
 //        super(R.layout.item_product_with_subcategory, data);
         canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         mData = data;
     }
 
-    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter) {
+    public void setProductCountSetter(TransferoutProductListActivity.ProductCountSetter productCountSetter) {
         this.productCountSetter = productCountSetter;
     }
 
@@ -70,7 +73,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
-            ProductBasicList.ListBean listBean = mData.get(position);
+            StockProductListResponse.ListBean listBean = mData.get(position);
             double count = productCountSetter.getCount(listBean);
             holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
             //先根据集合里面对应个数初始化一次
@@ -88,7 +91,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
 
     @Override
     public void onBindViewHolder(ProductAdapterV2.ViewHolder holder, int position) {
-        ProductBasicList.ListBean listBean = mData.get(position);
+        StockProductListResponse.ListBean listBean = mData.get(position);
         if (holder.getAdapterPosition() == 0) {
             String headText = listBean.getCategoryChild();
             holder.mStickHeader.setVisibility(!TextUtils.isEmpty(headText)?View.VISIBLE:View.GONE);
@@ -107,11 +110,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
         holder.itemView.setContentDescription(listBean.getCategoryChild());
 
         //标签
-        if (TextUtils.isEmpty(listBean.getProductTag())) {
             holder.mIvProductSale.setVisibility(View.GONE);
-        } else {
-            holder.mIvProductSale.setVisibility(View.VISIBLE);
-        }
         double count = productCountSetter.getCount(listBean);
         holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
         //先根据集合里面对应个数初始化一次
@@ -145,7 +144,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
                         holder.mTvProductCount.setVisibility(View.INVISIBLE);
                         holder.mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
                     }
-                    ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(listBean, currentNum);
+                    TransferoutProductCountUpdateEvent productCountUpdateEvent = new TransferoutProductCountUpdateEvent(listBean, currentNum);
                     productCountUpdateEvent.setException(TransferoutProductAdapterV2.this);
                     EventBus.getDefault().post(productCountUpdateEvent);
                 }
@@ -168,7 +167,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
                     holder.mTvProductCount.setVisibility(View.VISIBLE);
                     holder.mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
-                ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(listBean, currentNum);
+                TransferoutProductCountUpdateEvent productCountUpdateEvent = new TransferoutProductCountUpdateEvent(listBean, currentNum);
                 productCountUpdateEvent.setException(TransferoutProductAdapterV2.this);
                 EventBus.getDefault().post(productCountUpdateEvent);
             }
@@ -197,7 +196,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
                             holder.mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                         }
                         holder.mTvProductCount.setText(NumberUtil.getIOrD(value) + listBean.getSaleUom());
-                        ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(listBean, (int) value);
+                        TransferoutProductCountUpdateEvent productCountUpdateEvent = new TransferoutProductCountUpdateEvent(listBean, (int) value);
                         productCountUpdateEvent.setException(TransferoutProductAdapterV2.this);
                         EventBus.getDefault().post(productCountUpdateEvent);
                     }
@@ -211,7 +210,6 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
 
         if (canSeePrice) {
             StringBuffer sb1 = new StringBuffer();
-            sb1.append("¥").append(df.format(Double.valueOf(listBean.getPrice())));
 
             holder.mTvProductPrice.setText(sb1.toString());
             holder.mTvProductPriceUnit.setText("/" + listBean.getSaleUom());
@@ -227,7 +225,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
         holder.mSdvProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProductImageDialog productImageDialog = new ProductImageDialog(holder.itemView.getContext());
+                TransferProductImageDialog productImageDialog = new TransferProductImageDialog(holder.itemView.getContext());
                 productImageDialog.setListBean(listBean);
                 productImageDialog.setProductCountSetter(productCountSetter);
                 productImageDialog.show();
@@ -240,7 +238,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
         return mData.size();
     }
 
-    public List<ProductBasicList.ListBean> getData() {
+    public List<StockProductListResponse.ListBean> getData() {
         return mData;
     }
 

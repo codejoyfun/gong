@@ -52,7 +52,10 @@ import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.entity.ProductValidateRequest;
 import com.runwise.supply.entity.ProductValidateResponse;
-import com.runwise.supply.event.ProductCountUpdateEvent;
+import com.runwise.supply.entity.ProductVersionRequest;
+import com.runwise.supply.entity.StockProductListResponse;
+import com.runwise.supply.event.TransferoutProductCountUpdateEvent;
+import com.runwise.supply.fragment.TransferoutProductSearchFragment;
 import com.runwise.supply.orderpage.CartManager;
 import com.runwise.supply.orderpage.OrderSubmitActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
@@ -61,7 +64,6 @@ import com.runwise.supply.orderpage.TransferoutProductCategoryFragment;
 import com.runwise.supply.orderpage.ProductSearchFragment;
 import com.runwise.supply.orderpage.ProductValueDialog;
 import com.runwise.supply.orderpage.entity.AddedProduct;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.LongPressUtil;
 import com.runwise.supply.tools.MyDbUtil;
@@ -90,6 +92,7 @@ import io.vov.vitamio.utils.NumberUtil;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
+import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_VERSION_PRODUCT_LIST;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CLICK_PRODUCT_CATEGORY;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_CONTINUE_TO_CHOOSE;
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_SHOPPING_CART;
@@ -109,6 +112,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     protected static final int REQUEST_CATEGORY = 1;
     //检查购物车有效性
     protected static final int REQUEST_VALIDATE = 2;
+    private static final int REQUEST_CODE_STOCK_PRODUCT_LIST = 1<<3;
 
     @ViewInject(R.id.indicator)
     protected TabLayout smartTabLayout;
@@ -134,12 +138,10 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     protected ProductTypePopup mTypeWindow;//商品类型弹出框
 
 
-    CategoryRespone categoryResponse;
     public static final String INTENT_KEY_BACKAP = "backap";
 
-    protected Map<ProductBasicList.ListBean, Double> mMapCount = new HashMap<>();
-    protected Map<ProductBasicList.ListBean, String> mMapRemarks = new HashMap<>();
-    protected Set<ProductBasicList.ListBean> mSetInvalid = new HashSet<>();//记录无效商品
+    protected Map<StockProductListResponse.ListBean, Double> mMapCount = new HashMap<>();
+    protected Map<StockProductListResponse.ListBean, String> mMapRemarks = new HashMap<>();
 
     DecimalFormat df = new DecimalFormat("#.##");
 
@@ -151,7 +153,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     public static final int PLACE_ORDER_TYPE_SMART = 1 << 2;
     public static final int PLACE_ORDER_TYPE_AGAIN = 1 << 3;
     public static final int PLACE_ORDER_TYPE_MODIFY = 1 << 4;
-    MyBroadcastReceiver mMyBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,23 +168,17 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         addedPros = getIntent().getParcelableArrayListExtra(INTENT_KEY_ADDED_PRODUCTS);
         loadingLayout = (LoadingLayout) findViewById(R.id.loadingLayout);
         loadingLayout.setOnRetryClickListener(this);
-        showIProgressDialog();
-        if (RunwiseService.getStatus().equals(getString(R.string.service_finish)) || RunwiseService.getStatus().equals(getString(R.string.service_fail_finish))){
-            Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
-            startService(startIntent);
-        }
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_TYPE_SERVICE);
-        mMyBroadcastReceiver = new MyBroadcastReceiver();
-        localBroadcastManager.registerReceiver(mMyBroadcastReceiver, filter);
+        requestProductList();
+    }
 
+    public void requestProductList() {
+        Object o = null;
+        netWorkHelper.sendConnection("/api/stock/product/list", o, REQUEST_CODE_STOCK_PRODUCT_LIST, true, StockProductListResponse.class);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMyBroadcastReceiver);
     }
 
     /**
@@ -199,31 +194,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      * 子类需要重写，否则会使用购物车的缓存
      */
     protected void getCache() {
-        mMapCount.clear();
-        CartCache cartCache = CartManager.getInstance(this).loadCart();
-        if (cartCache != null && cartCache.getListBeans() != null) {
-            for (ProductBasicList.ListBean bean : cartCache.getListBeans()) {
-                for (ProductBasicList.ListBean listBean : mListBeans) {
-                    if (listBean.getProductID() == bean.getProductID()) {
-                        listBean.setActualQty(bean.getActualQty());
-                        listBean.setRemark(bean.getRemark());
-                        listBean.setInvalid(bean.isInvalid());
-                        listBean.setCacheSelected(bean.isCacheSelected());
-                        listBean.setCount(bean.getCount());
-                        listBean.setPresetQty(bean.getPresetQty());
-                        bean = listBean;
-                        break;
-                    }
-                }
-                bean.setCartAddedTime(0);//用于排序，设置为0表示是读缓存的，永远排在新加的后边
-                mMapCount.put(bean, bean.getActualQty());//可能下架的商品也加进去
-                mMapRemarks.put(bean, bean.getRemark());
-                if (bean.isCacheSelected()) mmSelected.add(bean.getProductID());
-            }
-
-        } else {
-            mFirstGetShopCartCache = false;
-        }
         initChildBadges();
     }
 
@@ -235,10 +205,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
 
     public void initChildBadges() {
         mChildBadges = new HashMap<>();
-        for (ProductBasicList.ListBean listBean : mMapCount.keySet()) {
-            if (listBean.isInvalid()) {
-                continue;
-            }
+        for (StockProductListResponse.ListBean listBean : mMapCount.keySet()) {
             double productCount = mMapCount.get(listBean);
             if (productCount == 0) {
                 continue;
@@ -255,79 +222,46 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     }
 
 
-    List<ProductBasicList.ListBean> mListToCheck;//记录需要查询有效性的商品，用于设置结果
+    List<StockProductListResponse.ListBean> mListToCheck;//记录需要查询有效性的商品，用于设置结果
 
 
-    /**
-     * 保存缓存
-     * 子类需要重写，否则会写入购物车的缓存
-     */
-    protected void saveCache() {
-        if (mMapCount.size() == 0) {
-            CartManager.getInstance(this).clearCart();
-            return;
-        }
-        CartManager.getInstance(this).saveCart(mMapRemarks, mMapCount, mmSelected);
-    }
 
     @Override
     public void onStop() {
         super.onStop();
-        saveCache();
     }
 
 
-    HashMap<String, List<ProductBasicList.ListBean>> mProductMap;
+    HashMap<String, List<StockProductListResponse.ListBean>> mProductMap;
 
-    public HashMap<String, List<ProductBasicList.ListBean>> getProductMap() {
+    public HashMap<String, List<StockProductListResponse.ListBean>> getProductMap() {
         return mProductMap;
     }
 
-    public List<ProductBasicList.ListBean> getListBeans() {
+    public List<StockProductListResponse.ListBean> getListBeans() {
         return mListBeans;
     }
 
-    protected List<ProductBasicList.ListBean> mListBeans;
+    protected List<StockProductListResponse.ListBean> mListBeans;
 
     /**
      * 查询类别
      */
     protected void requestCategory() {
         ///gongfu/v3/shop/product/list
-        DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
         mProductMap = new HashMap<>();
-        try {
-            mListBeans = ProductBasicUtils.getBasicArr();
-            if (mListBeans == null || mListBeans.isEmpty()) {
-                Selector selector = Selector.from(ProductBasicList.ListBean.class);
-                selector.orderBy("orderBy", false);
-                mListBeans = dbUtils.findAll(selector);
-                mListBeans =  RunwiseService.filterSubValid(mListBeans);
-                ProductBasicUtils.setBasicArr(mListBeans);
-            }
             getCache();//获取缓存
             updateBottomBar();//更新底部bar
             for (int i = 0; i < mListBeans.size(); i++) {
-                ProductBasicList.ListBean bean = mListBeans.get(i);
+                StockProductListResponse.ListBean bean = mListBeans.get(i);
                 String categoryParent = bean.getCategoryParent();
                 if (TextUtils.isEmpty(categoryParent)) {
                     categoryParent = "其他";
                     bean.setCategoryParent("其他");
                 }
 
-                if (!TextUtils.isEmpty(bean.getProductTag())) {
-                    List<ProductBasicList.ListBean> beanList;
-                    if (mProductMap.containsKey(bean.getProductTag())) {
-                        beanList = mProductMap.get(bean.getProductTag());
-                        beanList.add(bean);
-                    } else {
-                        beanList = new ArrayList<>();
-                        beanList.add(bean);
-                        mProductMap.put(bean.getProductTag(), beanList);
-                    }
-                }
 
-                List<ProductBasicList.ListBean> beanList;
+                List<StockProductListResponse.ListBean> beanList;
                 if (mProductMap.containsKey(categoryParent)) {
                     beanList = mProductMap.get(categoryParent);
                     beanList.add(bean);
@@ -337,18 +271,8 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                     mProductMap.put(categoryParent, beanList);
                 }
             }
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
 
-        List<String> categoryList = new ArrayList<>();
-        List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST);
-        for (ProductListResponse.CategoryBean categoryBean : categoryBeans) {
-            categoryList.add(categoryBean.getCategoryParent());
-        }
-        categoryResponse = new CategoryRespone();
-        categoryResponse.setCategoryList(categoryList);
-        loadingLayout.onSuccess(categoryResponse.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
+        loadingLayout.onSuccess(mStockProductListResponse.getTypes().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
         setupViewPager();
     }
 
@@ -357,8 +281,8 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     protected void setupViewPager() {
         List<TransferoutProductCategoryFragment> categoryFragmentList = new ArrayList<>();
         mTitles = new ArrayList<>();
-        for (String category : categoryResponse.getCategoryList()) {
-            mTitles.add(category);
+        for (StockProductListResponse.CategoryBean category : mStockProductListResponse.getTypes()) {
+            mTitles.add(category.getCategoryParent().getName());
             categoryFragmentList.add(newCategoryFragment(category));
         }
         categoryFragmentList.get(0).getArguments().putBoolean(INTENT_KEY_FIRST, true);
@@ -372,10 +296,10 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      * @param category
      * @return
      */
-    protected TransferoutProductCategoryFragment newCategoryFragment(String category) {
+    protected TransferoutProductCategoryFragment newCategoryFragment(StockProductListResponse.CategoryBean category) {
         TransferoutProductCategoryFragment TransferoutProductCategoryFragment = new TransferoutProductCategoryFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(INTENT_KEY_CATEGORY, category);
+        bundle.putSerializable(INTENT_KEY_CATEGORY, category);
         TransferoutProductCategoryFragment.setArguments(bundle);
         return TransferoutProductCategoryFragment;
     }
@@ -383,7 +307,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     /**
      * 供子fragment共享设置商品数量
      */
-//    public Map<ProductBasicList.ListBean,Integer> getCountMap(){
+//    public Map<StockProductListResponse.ListBean,Integer> getCountMap(){
 //        return mMapCount;
 //    }
     protected void initPopWindow(ArrayList<String> typeList) {
@@ -480,7 +404,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         }
 //        mBadges.put("全部", totalCount);
         Long totalProductTagCount = 0L;
-//        for (ProductBasicList.ListBean listBean : mMapCount.keySet()) {
+//        for (StockProductListResponse.ListBean listBean : mMapCount.keySet()) {
 //            if (listBean.isInvalid()) {
 //                continue;
 //            }
@@ -566,7 +490,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
 
     //    @OnClick({R.id.title_iv_left, R.id.addBtn, R.id.iv_open, R.id.iv_product_cart,
 //            R.id.tv_order_resume, R.id.rl_cart_container, R.id.title_iv_rigth2})
-    ProductSearchFragment mProductSearchFragment;
+    TransferoutProductSearchFragment mProductSearchFragment;
 
     public void btnClick(View view) {
         switch (view.getId()) {
@@ -594,7 +518,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                 break;
             case R.id.iv_product_cart://点购物车按钮
             case R.id.rl_bottom_bar:
-                saveCache();
                 getCache();
 //                if (mPlaceOrderType == PLACE_ORDER_TYPE_AGAIN){
 //                    showCart(true);
@@ -633,45 +556,19 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             Toast.makeText(this, "请在购物车中勾选商品", Toast.LENGTH_LONG).show();
             return;
         }
-//        有下架商品 弹出提示
-        if (mSetInvalid.size() > 0) {
-            dialog.setMessage("购物车存在下架商品\n请及时清空");
-            dialog.setMessageGravity();
-            dialog.setLeftBtnListener("去购物车看看", new CustomDialog.DialogListener() {
-                @Override
-                public void doClickButton(Button btn, CustomDialog dialog) {
-                    if (mTvResume.getVisibility() != View.VISIBLE) {
-                        showCart(true);
-                    }
-                }
-            });
-            dialog.setRightBtnListener("下一步", new CustomDialog.DialogListener() {
-                @Override
-                public void doClickButton(Button btn, CustomDialog dialog) {
-                    goToOrderSubmitActivity();
-                }
-            });
-            dialog.show();
-        } else {
             goToOrderSubmitActivity();
-        }
     }
 
     void goToOrderSubmitActivity() {
-        Intent intent = new Intent(this, OrderSubmitActivity.class);
         //判断是否是自助下单
-        intent.putExtra(INTENT_KEY_SELF_HELP, getIntent().getBooleanExtra(INTENT_KEY_SELF_HELP, false));
-        intent.putExtra(INTENT_KEY_PLACE_ORDER_TYPE, mPlaceOrderType);
-        ArrayList<ProductBasicList.ListBean> list = new ArrayList<>();
-        for (ProductBasicList.ListBean bean : mMapCount.keySet()) {
+        ArrayList<StockProductListResponse.ListBean> list = new ArrayList<>();
+        for (StockProductListResponse.ListBean bean : mMapCount.keySet()) {
             if (!mmSelected.contains(bean.getProductID())) continue;//木有在购物车中打勾，跳过
-            if (bean.isInvalid() || mMapCount.get(bean) == 0) continue;
-            bean.setActualQty(mMapCount.get(bean));
-            bean.setRemark(mMapRemarks.get(bean));
+//            if (bean.isInvalid() || mMapCount.get(bean) == 0) continue;
+//            bean.setActualQty(mMapCount.get(bean));
+//            bean.setRemark(mMapRemarks.get(bean));
             list.add(bean);
         }
-        intent.putParcelableArrayListExtra(INTENT_KEY_PRODUCTS, list);
-        startActivity(intent);
     }
 
     /*
@@ -688,14 +585,11 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             mIvCart.setEnabled(true);
             mTvOrderCommit.setEnabled(true);
             //计算总价,总量
-            double totalMoney = 0;
             double totalPieces = 0;
-            for (ProductBasicList.ListBean bean : mMapCount.keySet()) {
-                if (!mmSelected.contains(bean.getProductID()) || bean.isInvalid())
+            for (StockProductListResponse.ListBean bean : mMapCount.keySet()) {
+                if (!mmSelected.contains(bean.getProductID()))
                     continue;//只计算勾选的和有效的
-                totalMoney = totalMoney + mMapCount.get(bean) * bean.getPrice();
                 totalPieces = totalPieces + mMapCount.get(bean);
-
             }
 
             if (totalPieces != 0) {
@@ -710,77 +604,30 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         }
     }
 
+    StockProductListResponse mStockProductListResponse;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
-            case REQUEST_CATEGORY:
-                BaseEntity.ResultBean resultBean1 = result.getResult();
-                categoryResponse = (CategoryRespone) resultBean1.getData();
-                loadingLayout.onSuccess(categoryResponse.getCategoryList().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
-                setupViewPager();
-                break;
-            case REQUEST_VALIDATE:
-                ProductValidateResponse productValidateResponse = (ProductValidateResponse) result.getResult().getData();
-//                失效商品
-                List<ProductValidateResponse.ListBean> listResult = productValidateResponse.getList();
-//                有效商品
-                List<ProductValidateResponse.ListBean> products = productValidateResponse.getProducts();
-                //记录结果,注意：这里假设请求和结果的顺序一样
-                if (listResult != null) {
-                    for (int i = 0; i < listResult.size(); i++) {
-                        ProductValidateResponse.ListBean resultItem = listResult.get(i);
-                        for (int j = 0; j < mListToCheck.size(); j++) {
-                            ProductBasicList.ListBean listBean = mListToCheck.get(j);
-                            if (listBean.getProductID() == resultItem.getProductID()) {
-                                listBean.setInvalid(true);
-                                mSetInvalid.add(listBean);
-                                break;
-                            }
-                        }
-                        for (ProductBasicList.ListBean listBean1 : mMapCount.keySet()) {
-                            if (listBean1.getProductID() == resultItem.getProductID()) {
-                                listBean1.setProductTag(resultItem.getProductTag());
-                                listBean1.setInvalid(true);
-                                break;
-                            }
-                        }
+            case REQUEST_CODE_STOCK_PRODUCT_LIST:
+                BaseEntity.ResultBean resultBean = result.getResult();
+                mStockProductListResponse = (StockProductListResponse) resultBean.getData();
+                    if (mStockProductListResponse.getList() != null) {
+                        mListBeans = mStockProductListResponse.getList();
+                        requestCategory();
                     }
-                }
 
-                if (products != null) {
-                    for (int i = 0; i < products.size(); i++) {
-                        ProductValidateResponse.ListBean listBean = products.get(i);
-                        for (ProductBasicList.ListBean listBean1 : mMapCount.keySet()) {
-                            if (listBean1.getProductID() == listBean.getProductID()) {
-                                listBean1.setProductTag(listBean.getProductTag());
-                                listBean1.setInvalid(false);
-                                break;
-                            }
-                        }
-                    }
-                }
-                initChildBadges();
-                updateBottomBar();//更新底部bar
-                if (mFirstGetShopCartCache) {
-                    showCart(false);
-                    mFirstGetShopCartCache = false;
-                } else {
-                    showCart(true);
-                }
-                break;
-            default:
                 break;
         }
     }
 
 
-    private String getCategoryCountInfo(String categoryParent, String categoryChild,boolean isInvalid) {
+    private String getCategoryCountInfo(String categoryParent, String categoryChild) {
         String desc = "";
         int count = 0;
         int productCount = 0;
-        for (ProductBasicList.ListBean listBean : mmProductList) {
+        for (StockProductListResponse.ListBean listBean : mmProductList) {
             if (categoryParent.equals(listBean.getCategoryParent())
-                    && categoryChild.equals(listBean.getCategoryChild())&& isInvalid == listBean.isInvalid()) {
+                    && categoryChild.equals(listBean.getCategoryChild())) {
                 count++;
                 if(mMapCount.get(listBean)!= null){
                     productCount += mMapCount.get(listBean);
@@ -801,7 +648,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      * @param event
      */
     @Subscribe
-    public void updateProductCount(ProductCountUpdateEvent event) {
+    public void updateProductCount(TransferoutProductCountUpdateEvent event) {
         //更新购物车选择框
         if (event.bean != null) {
             if (event.count != 0) mmSelected.add(event.bean.getProductID());
@@ -823,14 +670,8 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
-            case REQUEST_VALIDATE:
-                updateBottomBar();//更新底部bar
-//                startRequest();//查询接口
-                if (!TextUtils.isEmpty(errMsg)) toast(errMsg);
-                break;
-            case REQUEST_CATEGORY:
-                if (!TextUtils.isEmpty(errMsg)) toast(errMsg);
-                loadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+            case REQUEST_CODE_STOCK_PRODUCT_LIST:
+                toast(errMsg);
                 break;
         }
     }
@@ -907,7 +748,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     /**
      * ************* 以下为弹出的购物车框 ******************
      */
-    List<ProductBasicList.ListBean> mmProductList = new ArrayList<>();//购物车显示用的数据，包含有效和无效商品
+    List<StockProductListResponse.ListBean> mmProductList = new ArrayList<>();//购物车显示用的数据，包含有效和无效商品
     @ViewInject(R.id.rv_cart)
     RecyclerView mmRvCart;
     CartAdapter mmCartAdapter;
@@ -970,8 +811,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             @Override
             public void onClick(View view) {
                 if (mmCbSelectAll.isChecked()) {
-                    for (ProductBasicList.ListBean listBean : mMapCount.keySet()) {
-                        if (listBean.isInvalid()) continue;//全选跳过无效商品
+                    for (StockProductListResponse.ListBean listBean : mMapCount.keySet()) {
                         mmSelected.add(listBean.getProductID());
                     }
                 } else {
@@ -992,10 +832,10 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                 customDialog.setRightBtnListener("删除", new CustomDialog.DialogListener() {
                     @Override
                     public void doClickButton(Button btn, CustomDialog dialog) {
-                        List<ProductBasicList.ListBean> deleteBeanList = new ArrayList<>();
-                        Iterator<ProductBasicList.ListBean> it = mMapCount.keySet().iterator();
+                        List<StockProductListResponse.ListBean> deleteBeanList = new ArrayList<>();
+                        Iterator<StockProductListResponse.ListBean> it = mMapCount.keySet().iterator();
                         while (it.hasNext()) {
-                            ProductBasicList.ListBean item = it.next();
+                            StockProductListResponse.ListBean item = it.next();
                             if (mmSelected.contains(item.getProductID())) {
                                 it.remove();
                                 mmProductList.remove(item);
@@ -1006,7 +846,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                         mmCartAdapter.notifyChanged();
                         ToastUtil.show(getActivityContext(), "删除成功");
                         initChildBadges();
-                        EventBus.getDefault().post(new ProductCountUpdateEvent(deleteBeanList));
+                        EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(deleteBeanList));
                     }
                 });
                 customDialog.show();
@@ -1023,22 +863,14 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     protected void initProductListData() {
         mmProductList = new ArrayList<>();
         //mmProductList.addAll(mMapCount.keySet());
-        for (ProductBasicList.ListBean bean : mMapCount.keySet()) {//先加入合法商品
-            if (!bean.isInvalid()) mmProductList.add(bean);
+        for (StockProductListResponse.ListBean bean : mMapCount.keySet()) {//先加入合法商品
+            mmProductList.add(bean);
         }
-        //按照添加先后排序
-        Collections.sort(mmProductList, (p1, p2) -> {
-            if (p1.getCartAddedTime() == 0 && p2.getCartAddedTime() == 0)
-                return p1.getProductID() - p2.getProductID();
-            else if (p1.getCartAddedTime() == 0 && p2.getCartAddedTime() != 0) return 1;
-            else if (p1.getCartAddedTime() != 0 && p2.getCartAddedTime() == 0) return -1;
-            return (int) (p2.getCartAddedTime() - p1.getCartAddedTime());
-        });
-        LinkedHashMap<String, List<ProductBasicList.ListBean>> linkedHashMap = new LinkedHashMap<>();
+        LinkedHashMap<String, List<StockProductListResponse.ListBean>> linkedHashMap = new LinkedHashMap<>();
         //按一级和二级分类分组
-        for (ProductBasicList.ListBean bean : mmProductList) {
+        for (StockProductListResponse.ListBean bean : mmProductList) {
             String key = bean.getCategoryParent() + "&" + bean.getCategoryChild();
-            List<ProductBasicList.ListBean> listBeans = linkedHashMap.get(key);
+            List<StockProductListResponse.ListBean> listBeans = linkedHashMap.get(key);
             if (listBeans == null) {
                 listBeans = new ArrayList<>();
             }
@@ -1046,15 +878,8 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             linkedHashMap.put(key, listBeans);
         }
         mmProductList.clear();
-        for (List<ProductBasicList.ListBean> listBeanList : linkedHashMap.values()) {
+        for (List<StockProductListResponse.ListBean> listBeanList : linkedHashMap.values()) {
             mmProductList.addAll(listBeanList);
-        }
-        //加入下架商品
-        if (mSetInvalid.size() > 0) {
-            mmProductList.add(new ProductBasicList.ListBean());//加入头部
-            for (ProductBasicList.ListBean bean : mSetInvalid) {//加入下架商品
-                if (bean.isInvalid()) mmProductList.add(bean);
-            }
         }
     }
 
@@ -1100,34 +925,18 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             double count = mMapCount.containsKey(holder.listBean) ? mMapCount.get(holder.listBean) : 0;
             holder.mmTvCount.setText(NumberUtil.getIOrD(count) + holder.listBean.getSaleUom());
             StringBuilder sb = new StringBuilder();
-            if (SampleApplicationLike.getInstance().getCanSeePrice()) {
-                sb.append("￥" + df.format(holder.listBean.getPrice())).append("/").append(holder.listBean.getSaleUom()).append(" ");
-            }
             sb.append(holder.listBean.getUnit());
             holder.mmTvContent.setText(sb.toString());
             if(holder.listBean.getImage()!=null){
                 FrecoFactory.getInstance(mContext).displayWithoutHost(holder.simpleDraweeView, holder.listBean.getImage().getImageSmall());
             }
-            if (holder.listBean.isInvalid()) {
-                holder.mmTvInvalide.setVisibility(View.VISIBLE);
-                holder.mmTvCount.setBackgroundResource(0);
-                holder.mmTvCount.setTextColor(getResources().getColor(R.color.color999999));
-                holder.mmTvName.setTextColor(getResources().getColor(R.color.color999999));
-                holder.mmTvAdd.setEnabled(false);
-                holder.mmTvReduce.setEnabled(false);
-            } else {
                 holder.mmTvInvalide.setVisibility(View.GONE);
                 holder.mmTvCount.setBackgroundResource(R.drawable.order_input_mid);
                 holder.mmTvCount.setTextColor(Color.BLACK);
                 holder.mmTvName.setTextColor(Color.BLACK);
                 holder.mmTvAdd.setEnabled(true);
                 holder.mmTvReduce.setEnabled(true);
-            }
-            if (TextUtils.isEmpty(holder.listBean.getProductTag())) {
                 holder.mmTvTag.setVisibility(View.GONE);
-            } else {
-                holder.mmTvTag.setVisibility(View.VISIBLE);
-            }
 
             String remark = mMapRemarks.get(holder.listBean);
             if (TextUtils.isEmpty(remark)) {
@@ -1146,13 +955,13 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             if (position == 0) {
                 holder.mVStickHeader.setVisibility(View.VISIBLE);
                 holder.mVProductMain.setTag(FIRST_STICKY_VIEW);
-                holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild(),holder.listBean.isInvalid()));
+                holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild()));
             } else {
                 if (!TextUtils.equals(holder.listBean.getCategoryParent(), mmProductList.get(position - 1).getCategoryParent()) ||
                         !TextUtils.equals(holder.listBean.getCategoryChild(), mmProductList.get(position - 1).getCategoryChild())) {
                     holder.mVStickHeader.setVisibility(View.VISIBLE);
                     holder.mVProductMain.setTag(HAS_STICKY_VIEW);
-                    holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild(),holder.listBean.isInvalid()));
+                    holder.mTvHeader.setText(getCategoryCountInfo(holder.listBean.getCategoryParent(), holder.listBean.getCategoryChild()));
                 } else {
                     holder.mVProductMain.setTag(NONE_STICKY_VIEW);
                     holder.mVStickHeader.setVisibility(View.GONE);
@@ -1166,12 +975,9 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
 //                    mMapCount.put(listBean,count);
                     //从购物车中删除
                     mmProductList.remove(holder.listBean);
-                    mSetInvalid.remove(holder.listBean);
-                    if (mSetInvalid.size() == 0) {
                         initProductListData();
-                    }
                     mmCartAdapter.notifyChanged();
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(holder.listBean, 0));
+                    EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(holder.listBean, 0));
                     holder.mmTvCount.setText(0 + holder.listBean.getSaleUom());
                     mmCartAdapter.notifyChanged();
                 }
@@ -1206,7 +1012,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      * 商品
      */
     private class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ProductBasicList.ListBean listBean;
+        StockProductListResponse.ListBean listBean;
         TextView mmTvName;
         TextView mmTvCount;
         TextView mmTvContent;
@@ -1247,7 +1053,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                     double count = mMapCount.containsKey(listBean) ? mMapCount.get(listBean) : 0;
                     count = BigDecimal.valueOf(count).add(BigDecimal.ONE).doubleValue();
                     mMapCount.put(listBean, count);
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, count));
+                    EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(listBean, count));
                     mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
                     mmCartAdapter.notifyChanged();
                     break;
@@ -1260,13 +1066,10 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                     if (count == 0) {
                         //从购物车中删除
                         mmProductList.remove(listBean);
-                        mSetInvalid.remove(listBean);
-                        if (mSetInvalid.size() == 0) {
                             initProductListData();
-                        }
                         mmCartAdapter.notifyChanged();
                     }
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, count));
+                    EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(listBean, count));
                     mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
                     mmCartAdapter.notifyChanged();
                     break;
@@ -1282,13 +1085,10 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                             mMapCount.put(listBean, value);
                             if (value == 0) {
                                 mMapCount.remove(listBean);
-                                mSetInvalid.remove(listBean);
-                                if (mSetInvalid.size() == 0) {
                                     initProductListData();
-                                }
                                 mmCartAdapter.notifyChanged();
                             }
-                            EventBus.getDefault().post(new ProductCountUpdateEvent(listBean, value));
+                            EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(listBean, value));
                             mmTvCount.setText(NumberUtil.getIOrD(value) + listBean.getSaleUom());
                             if (!TextUtils.isEmpty(remark)) {
                                 mmTvRemark.setVisibility(View.VISIBLE);
@@ -1337,14 +1137,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
          * 删除全部无效商品，并更新购物车列表
          */
         private void clearInvalid() {
-            Iterator<Map.Entry<ProductBasicList.ListBean, Double>> it = mMapCount.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<ProductBasicList.ListBean, Double> entry = it.next();
-                if (entry.getKey().isInvalid()) {
-                    it.remove();
-                }
-            }
-            mSetInvalid.clear();
+            Iterator<Map.Entry<StockProductListResponse.ListBean, Double>> it = mMapCount.entrySet().iterator();
             initProductListData();
             mmCartAdapter.notifyChanged();
             updateBottomBar();
@@ -1356,29 +1149,40 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      * 初始化全选按钮
      */
     protected void initSelectAll() {
-        for (ProductBasicList.ListBean listBean : mMapCount.keySet()) {
+        for (StockProductListResponse.ListBean listBean : mMapCount.keySet()) {
             mmSelected.add(listBean.getProductID());
         }
     }
 
     /**
+     * 供子fragment统一设置商品数量,隐藏细节
+     */
+    public interface ProductCountSetter {
+        void setCount(StockProductListResponse.ListBean bean, double count);
+
+        void setRemark(StockProductListResponse.ListBean bean);
+
+        double getCount(StockProductListResponse.ListBean bean);
+
+        String getRemark(StockProductListResponse.ListBean bean);
+    }
+
+    /**
      * 供子fragment统一设置商品数量的接口，向子fragment隐藏实现
      */
-    ProductActivityV2.ProductCountSetter mCountSetter = new ProductActivityV2.ProductCountSetter() {
+    ProductCountSetter mCountSetter = new ProductCountSetter() {
         @Override
-        public void setCount(ProductBasicList.ListBean bean, double count) {
+        public void setCount(StockProductListResponse.ListBean bean, double count) {
             if (count == 0) {
-                bean.setCartAddedTime(0);
                 mMapCount.remove(bean);
             } else {
                 //设置加入购物车的时间
-                if (!mMapCount.containsKey(bean)) bean.setCartAddedTime(System.currentTimeMillis());
                 mMapCount.put(bean, count);
             }
         }
 
         @Override
-        public double getCount(ProductBasicList.ListBean bean) {
+        public double getCount(StockProductListResponse.ListBean bean) {
             if (mMapCount.get(bean) == null) {
                 return 0;
             } else {
@@ -1387,12 +1191,12 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         }
 
         @Override
-        public void setRemark(ProductBasicList.ListBean bean) {
+        public void setRemark(StockProductListResponse.ListBean bean) {
             mMapRemarks.put(bean, bean.getRemark());
         }
 
         @Override
-        public String getRemark(ProductBasicList.ListBean bean) {
+        public String getRemark(StockProductListResponse.ListBean bean) {
             return mMapRemarks.get(bean);
         }
     };
@@ -1400,7 +1204,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     /**
      * 供子fragment统一设置商品数量
      */
-    public ProductActivityV2.ProductCountSetter getProductCountSetter() {
+    public ProductCountSetter getProductCountSetter() {
         return mCountSetter;
     }
 

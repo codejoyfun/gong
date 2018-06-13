@@ -22,9 +22,10 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.ProductAdapterV2;
 import com.runwise.supply.adapter.TransferoutProductAdapter;
 import com.runwise.supply.adapter.TypeAdapter;
+import com.runwise.supply.entity.StockProductListResponse;
+import com.runwise.supply.mine.TransferoutProductListActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductAdapter;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
@@ -47,7 +48,7 @@ public class TransferoutListContainer extends LinearLayout {
 
     private ListView recyclerView2;
     //    private LinearLayoutManager linearLayoutManager;
-    private List<ProductBasicList.ListBean> foodBeanList;
+    private List<StockProductListResponse.ListBean> foodBeanList;
     private List<String> mCategoryList;
     private boolean move;
     private int index;
@@ -71,7 +72,7 @@ public class TransferoutListContainer extends LinearLayout {
         super(context);
     }
 
-    public void init(String category, List<ProductBasicList.ListBean> foodBeanList, List<String> categoryList, ProductActivityV2.ProductCountSetter productCountSetter) {
+    public void init(String category, List<StockProductListResponse.ListBean> foodBeanList, List<String> categoryList, TransferoutProductListActivity.ProductCountSetter productCountSetter) {
         this.foodBeanList = foodBeanList;
         mCategoryList = categoryList;
         typeAdapter = new TypeAdapter(categoryList, category);
@@ -92,7 +93,7 @@ public class TransferoutListContainer extends LinearLayout {
         typeAdapter.bindToRecyclerView(recyclerView1);
         recyclerView1.addItemDecoration(new SimpleDividerDecoration(mContext));
         ((DefaultItemAnimator) recyclerView1.getItemAnimator()).setSupportsChangeAnimations(false);
-        List<ProductBasicList.ListBean> finalFoodBeanList = foodBeanList;
+        List<StockProductListResponse.ListBean> finalFoodBeanList = foodBeanList;
         recyclerView1.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
@@ -102,7 +103,7 @@ public class TransferoutListContainer extends LinearLayout {
                     String type = view.getTag().toString();
                     boolean findIt = false;
                     for (int ii = 0; ii < finalFoodBeanList.size(); ii++) {
-                        ProductBasicList.ListBean typeBean = finalFoodBeanList.get(ii);
+                        StockProductListResponse.ListBean typeBean = finalFoodBeanList.get(ii);
                         if (typeBean.getCategoryChild().equals(type)) {
                             findIt = true;
                             index = ii;

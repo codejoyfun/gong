@@ -130,7 +130,7 @@ public class ProductSearchFragment extends NetWorkFragment {
         if (parentActivity instanceof TransferoutProductListActivity) {
 //            mCountMap = ((TransferoutProductListActivity) parentActivity).getCountMap();
 //            mProductAdapter.setCountMap(mCountMap);
-            mProductAdapter.setProductCountSetter(((TransferoutProductListActivity) parentActivity).getProductCountSetter());
+            mProductAdapter.setProductCountSetter(((ProductActivityV2) parentActivity).getProductCountSetter());
         }
     }
 
@@ -172,7 +172,7 @@ public class ProductSearchFragment extends NetWorkFragment {
     }
 
     protected void requestData(int where) {
-        List<ProductBasicList.ListBean> listBeans = ((TransferoutProductListActivity) getActivity()).getListBeans();
+        List<ProductBasicList.ListBean> listBeans = ((ProductActivityV2) getActivity()).getListBeans();
         if (listBeans == null){
             return;
         }

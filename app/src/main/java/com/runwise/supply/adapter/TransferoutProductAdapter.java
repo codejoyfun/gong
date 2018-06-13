@@ -16,13 +16,14 @@ import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.R;
 import com.runwise.supply.SampleApplicationLike;
-import com.runwise.supply.event.ProductCountUpdateEvent;
+import com.runwise.supply.entity.StockProductListResponse;
+import com.runwise.supply.event.TransferoutProductCountUpdateEvent;
 import com.runwise.supply.mine.TransferoutProductListActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductValueDialog;
-import com.runwise.supply.orderpage.entity.ProductBasicList;
 import com.runwise.supply.tools.LongPressUtil;
 import com.runwise.supply.view.ProductImageDialog;
+import com.runwise.supply.view.TransferProductImageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -35,7 +36,7 @@ import io.vov.vitamio.utils.NumberUtil;
  * Created by mike on 2018/6/13.
  */
 
-public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
+public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResponse.ListBean> {
 
     public static final int FIRST_STICKY_VIEW = 1;
     public static final int HAS_STICKY_VIEW = 2;
@@ -44,7 +45,7 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
     Context mContext;
     boolean canSeePrice = false;
     //    Map<ProductData.ListBean,Integer> mCountMap;
-    ProductActivityV2.ProductCountSetter productCountSetter;
+    TransferoutProductListActivity.ProductCountSetter productCountSetter;
     boolean hasOtherSub = false;
 
     public TransferoutProductAdapter(@NonNull Context context, boolean hasOtherSub){
@@ -57,14 +58,14 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
 //        mCountMap = countMap;
 //    }
 
-    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter){
+    public void setProductCountSetter(TransferoutProductListActivity.ProductCountSetter productCountSetter){
         this.productCountSetter = productCountSetter;
     }
 
     @Override
     protected View getExView(int position, View convertView, ViewGroup parent) {
         final ViewHolder viewHolder;
-        final ProductBasicList.ListBean bean = (ProductBasicList.ListBean) mList.get(position);
+        final StockProductListResponse.ListBean bean = (StockProductListResponse.ListBean) mList.get(position);
         if (convertView == null) {
             viewHolder = new ViewHolder();
             //有其它子分类和没有其它子分类layout有不同，但是id必须是一样的
@@ -93,11 +94,8 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
         convertView.setContentDescription(bean.getCategoryChild());
 
         //标签
-        if(TextUtils.isEmpty(bean.getProductTag())){
             viewHolder.tvProductTag.setVisibility(View.GONE);
-        }else{
-            viewHolder.tvProductTag.setVisibility(View.VISIBLE);
-        }
+
 
 //        final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
         double count = productCountSetter.getCount(bean);
@@ -136,9 +134,9 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
                         viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                        mCountMap.remove(bean);
                     }
-                    ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,currentNum);
-                    productCountUpdateEvent.setException(this);
-                    EventBus.getDefault().post(productCountUpdateEvent);
+                    TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean,currentNum);
+                    TransferoutProductCountUpdateEvent.setException(this);
+                    EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
                 }
 
             }
@@ -154,9 +152,9 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
                 viewHolder.tvCount.setVisibility(View.INVISIBLE);
                 viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 
-                ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean, 0);
-                productCountUpdateEvent.setException(this);
-                EventBus.getDefault().post(productCountUpdateEvent);
+                TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean, 0);
+                TransferoutProductCountUpdateEvent.setException(this);
+                EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
             }
         });
 
@@ -178,9 +176,9 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
                     viewHolder.tvCount.setVisibility(View.VISIBLE);
                     viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
-                ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,currentNum);
-                productCountUpdateEvent.setException(this);
-                EventBus.getDefault().post(productCountUpdateEvent);
+                TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean,currentNum);
+                TransferoutProductCountUpdateEvent.setException(this);
+                EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
             }
         });
 
@@ -212,9 +210,9 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
 //                            mCountMap.put(bean,value);
                         }
                         viewHolder.tvCount.setText(value + bean.getSaleUom());
-                        ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,(int)value);
-                        productCountUpdateEvent.setException(this);
-                        EventBus.getDefault().post(productCountUpdateEvent);
+                        TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean,(int)value);
+                        TransferoutProductCountUpdateEvent.setException(this);
+                        EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
                     }
                 }).show();
             }
@@ -232,7 +230,7 @@ public class TransferoutProductAdapter extends IBaseAdapter<ProductBasicList.Lis
         viewHolder.sDv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProductImageDialog productImageDialog = new ProductImageDialog(mContext);
+                TransferProductImageDialog productImageDialog = new TransferProductImageDialog(mContext);
                 productImageDialog.setListBean(bean);
                 productImageDialog.setProductCountSetter(productCountSetter);
                 productImageDialog.show();

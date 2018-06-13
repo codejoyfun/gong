@@ -45,6 +45,8 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
     RelativeLayout mRlContent;
     MineTransferOutDetailAdapter mMineTransferOutDetailAdapter;
 
+    public static final String INTENT_KEY_PICKING_ID = "intent_key_picking_id";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,7 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
         mMineTransferOutDetailAdapter = new MineTransferOutDetailAdapter();
         mRvProductList.setAdapter(mMineTransferOutDetailAdapter);
+
 
     }
 
