@@ -94,8 +94,7 @@ public class UserGuideActivity extends NetWorkActivity {
     private void inflateGuideView(){
         LayoutInflater inflater = LayoutInflater.from(this);
         if(mGuideResponse.getList()==null||mGuideResponse.getList().size() == 0){
-            findViewById(R.id.rl_guide_video).setVisibility(View.GONE
-            );
+            findViewById(R.id.rl_guide_video).setVisibility(View.GONE);
             return;
         }
         for(final GuideResponse.GuideItem guideItem:mGuideResponse.getList()){

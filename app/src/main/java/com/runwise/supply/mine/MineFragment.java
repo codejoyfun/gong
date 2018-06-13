@@ -200,10 +200,17 @@ public class MineFragment extends NetWorkFragment {
 
     }
 
-    @OnClick({R.id.rl_user_guide, R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_3, R.id.itemLayout_4, R.id.rl_price_list, R.id.rl_bill, rl_procurement, R.id.rl_transfer})
+    @OnClick({R.id.rl_transfer_out,R.id.rl_user_guide, R.id.settingIcon, R.id.cellIcon, R.id.mineHead, R.id.itemLayout_1, R.id.itemLayout_3, R.id.itemLayout_4, R.id.rl_price_list, R.id.rl_bill, rl_procurement, R.id.rl_transfer})
     public void doClickHandler(View view) {
         Intent intent;
         switch (view.getId()) {
+            case R.id.rl_transfer_out:
+                //出库
+                intent = new Intent(mContext, MineTransferoutActivity.class);
+                if (UserUtils.checkLogin(intent, mContext)) {
+                    startActivity(intent);
+                }
+                break;
             //头像
             case R.id.mineHead:
                 intent = new Intent(mContext, EditUserinfoActivity.class);

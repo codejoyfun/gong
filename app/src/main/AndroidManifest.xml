@@ -209,7 +209,7 @@
             android:name=".LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/LoginActivityAnimTheme"></activity>
+            android:theme="@style/LoginActivityAnimTheme" />
         <activity
             android:name=".FindPasswordActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -642,7 +642,11 @@
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"
             android:theme="@android:style/Theme.Translucent" />
-        <activity android:name=".orderpage.OrderRemarkActivity"></activity>
+        <activity android:name=".orderpage.OrderRemarkActivity" />
+        <activity android:name=".mine.MineTransferoutActivity" />
+        <activity android:name=".mine.MineTransferOutDetailActivity" />
+        <activity android:name=".mine.MineTransferoutSuccessActivity" />
+        <activity android:name=".mine.TransferoutProductListActivity"></activity>
     </application>
 
 </manifest>

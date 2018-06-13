@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F0">
+
+    <include
+        android:id="@+id/title_bar"
+        layout="@layout/common_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        />
+
+    <RelativeLayout
+        android:id="@+id/rl_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_below="@id/title_bar"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:text="出库单号："
+            android:textColor="#999999"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_num_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_num"
+            android:layout_toRightOf="@id/tv_num"
+            android:gravity="center_vertical"
+            android:text="SK0001"
+            android:textColor="#999999"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:text="出库时间："
+            android:textColor="#999999"
+            android:layout_below="@id/tv_num_value"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_time_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_time"
+            android:layout_toRightOf="@id/tv_time"
+            android:gravity="center_vertical"
+            android:text="2018-02-02 12:30"
+            android:textColor="#999999"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_operator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:text="操作人："
+            android:textColor="#999999"
+            android:layout_below="@id/tv_time"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_operator_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_operator"
+            android:layout_toRightOf="@id/tv_operator"
+            android:gravity="center_vertical"
+            android:text="张大杰"
+            android:textColor="#999999"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_product"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:text="出库商品："
+            android:textColor="#999999"
+            android:layout_below="@id/tv_operator"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_product_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_product"
+            android:layout_toRightOf="@id/tv_product"
+            android:gravity="center_vertical"
+            android:text="6种888件"
+            android:textColor="#999999"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_product_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/rl_info"/>
+
+
+
+</RelativeLayout>
