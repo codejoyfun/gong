@@ -7,16 +7,7 @@ import java.util.List;
  * Created by mike on 2018/6/13.
  */
 
-public class StockProductListResponse implements Serializable {
-
-    public List<CategoryBean> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<CategoryBean> types) {
-        this.types = types;
-    }
-
+public class TestBean {
     public List<ListBean> getList() {
         return list;
     }
@@ -25,15 +16,21 @@ public class StockProductListResponse implements Serializable {
         this.list = list;
     }
 
-    List<ListBean> list;
-    List<CategoryBean> types;
+    public List<StockProductListResponse.CategoryBean> getTypes() {
+        return types;
+    }
 
-    public static class ListBean implements Serializable{
+    public void setTypes(List<StockProductListResponse.CategoryBean> types) {
+        this.types = types;
+    }
+
+    List<ListBean> list;
+    List<StockProductListResponse.CategoryBean> types;
+    public static class ListBean implements Serializable {
         private String category;
         private String tracking;
         private String productUom;
         private String name;
-        private Image image;
         private int qty;
         private int productID;
         private String defaultCode;
@@ -46,9 +43,7 @@ public class StockProductListResponse implements Serializable {
         private int categoryID;
         private String uom;
         private String saleUom;
-
-
-//        private String remark;
+        private String remark;
 
         public String getCategory() {
             return category;
@@ -80,14 +75,6 @@ public class StockProductListResponse implements Serializable {
 
         public void setName(String name) {
             this.name = name;
-        }
-
-        public Image getImage() {
-            return image;
-        }
-
-        public void setImage(Image image) {
-            this.image = image;
         }
 
         public int getQty() {
@@ -187,108 +174,12 @@ public class StockProductListResponse implements Serializable {
         }
 
         public void setRemark(String remark) {
-//            this.remark = remark;
+            this.remark = remark;
         }
 
         public String getRemark() {
-            return "";
+            return remark;
         }
     }
-
-    public static class Image implements Serializable{
-
-        private String imageMedium;
-        private String image;
-        private String imageSmall;
-        private int imageID;
-        public void setImageMedium(String imageMedium) {
-            this.imageMedium = imageMedium;
-        }
-        public String getImageMedium() {
-            return imageMedium;
-        }
-
-        public void setImage(String image) {
-            this.image = image;
-        }
-        public String getImage() {
-            return image;
-        }
-
-        public void setImageSmall(String imageSmall) {
-            this.imageSmall = imageSmall;
-        }
-        public String getImageSmall() {
-            return imageSmall;
-        }
-
-        public void setImageID(int imageID) {
-            this.imageID = imageID;
-        }
-        public int getImageID() {
-            return imageID;
-        }
-
-    }
-
-    public static class CategoryBean implements Serializable {
-        private CategoryParent categoryParent;
-        private List<CategoryChild> categoryChild;
-        public void setCategoryParent(CategoryParent categoryParent) {
-            this.categoryParent = categoryParent;
-        }
-        public CategoryParent getCategoryParent() {
-            return categoryParent;
-        }
-
-        public void setCategoryChild(List<CategoryChild> categoryChild) {
-            this.categoryChild = categoryChild;
-        }
-        public List<CategoryChild> getCategoryChild() {
-            return categoryChild;
-        }
-
-    }
-
-    public static class CategoryChild implements Serializable{
-
-        private String name;
-        private int id;
-        public void setName(String name) {
-            this.name = name;
-        }
-        public String getName() {
-            return name;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-        public int getId() {
-            return id;
-        }
-
-    }
-
-    public static class CategoryParent implements Serializable{
-
-        private String name;
-        private int id;
-        public void setName(String name) {
-            this.name = name;
-        }
-        public String getName() {
-            return name;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-        public int getId() {
-            return id;
-        }
-
-    }
-
 
 }

@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:layout_marginTop="127dp"
-            layout="@layout/dialog_cart"/>
+            layout="@layout/dialog_cart_transferout"/>
     </RelativeLayout>
 
     <RelativeLayout

@@ -112,7 +112,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
         long mStartTime;
         mStartTime = System.currentTimeMillis();
         //查询二级分类
-        List<StockProductListResponse.ListBean> listBeans = ((TransferoutProductListActivity) getActivity()).getProductMap().get(mCategory);
+        List<StockProductListResponse.ListBean> listBeans = ((TransferoutProductListActivity) getActivity()).getProductMap().get(mCategory.getCategoryParent().getName());
         //        促销商品
         ArrayList<StockProductListResponse.ListBean> salesPromotionList = new ArrayList<>();
         if (listBeans == null) {

@@ -54,16 +54,19 @@ import com.runwise.supply.entity.ProductValidateRequest;
 import com.runwise.supply.entity.ProductValidateResponse;
 import com.runwise.supply.entity.ProductVersionRequest;
 import com.runwise.supply.entity.StockProductListResponse;
+import com.runwise.supply.entity.TransferoutSubmitRequest;
 import com.runwise.supply.event.TransferoutProductCountUpdateEvent;
 import com.runwise.supply.fragment.TransferoutProductSearchFragment;
 import com.runwise.supply.orderpage.CartManager;
 import com.runwise.supply.orderpage.OrderSubmitActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductBasicUtils;
+import com.runwise.supply.orderpage.TransferOutSuccessActivity;
 import com.runwise.supply.orderpage.TransferoutProductCategoryFragment;
 import com.runwise.supply.orderpage.ProductSearchFragment;
 import com.runwise.supply.orderpage.ProductValueDialog;
 import com.runwise.supply.orderpage.entity.AddedProduct;
+import com.runwise.supply.orderpage.entity.TransferOutRequest;
 import com.runwise.supply.tools.DensityUtil;
 import com.runwise.supply.tools.LongPressUtil;
 import com.runwise.supply.tools.MyDbUtil;
@@ -113,6 +116,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     //检查购物车有效性
     protected static final int REQUEST_VALIDATE = 2;
     private static final int REQUEST_CODE_STOCK_PRODUCT_LIST = 1<<3;
+    private static final int REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST = 1<<4;
 
     @ViewInject(R.id.indicator)
     protected TabLayout smartTabLayout;
@@ -122,8 +126,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     protected ViewPager mViewPagerCategoryFrags;
     @ViewInject(R.id.iv_product_cart)
     protected ImageView mIvCart;//购物车图标
-    @ViewInject(R.id.tv_order_resume)
-    protected TextView mTvResume;//继续选择
     @ViewInject(R.id.tv_order_commit)
     protected TextView mTvOrderCommit;//选好了
     @ViewInject(R.id.tv_product_total_count)
@@ -466,17 +468,14 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         ivOpen = (ImageView) findViewById(R.id.iv_open);
         mViewPagerCategoryFrags = (ViewPager) findViewById(R.id.vp_product_fragments);
         mIvCart = (ImageView) findViewById(R.id.iv_product_cart);
-        mTvResume = (TextView) findViewById(R.id.tv_order_resume);
         mTvOrderCommit = (TextView) findViewById(R.id.tv_order_commit);
         mTvProductTotalCount = (TextView) findViewById(R.id.tv_product_total_count);
         mRlCartContainer = (RelativeLayout) findViewById(R.id.rl_cart_container);
-        mmCbSelectAll = (CheckBox) findViewById(R.id.cb_cart_select_all);
 
 
         findViewById(R.id.title_iv_left).setOnClickListener(this);
         findViewById(R.id.iv_open).setOnClickListener(this);
         findViewById(R.id.iv_product_cart).setOnClickListener(this);
-        findViewById(R.id.tv_order_resume).setOnClickListener(this);
         findViewById(R.id.rl_cart_container).setOnClickListener(this);
         findViewById(R.id.title_iv_rigth2).setOnClickListener(this);
         findViewById(R.id.tv_order_commit).setOnClickListener(this);
@@ -522,12 +521,8 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
 //                if (mPlaceOrderType == PLACE_ORDER_TYPE_AGAIN){
 //                    showCart(true);
 //                }
-//                showCart(true);
+                showCart(true);
                 MobclickAgent.onEvent(getActivityContext(), EVENT_ID_SHOPPING_CART);
-                break;
-            case R.id.tv_order_resume:
-                showCart(false);
-                MobclickAgent.onEvent(getActivityContext(), EVENT_ID_CONTINUE_TO_CHOOSE);
                 break;
             case R.id.rl_cart_container:
                 showCart(false);
@@ -535,7 +530,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             case R.id.title_iv_rigth2:
                 if (mTypeWindow != null) mTypeWindow.dismiss();
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.rl_content_container, new ProductSearchFragment())
+                        .add(R.id.rl_content_container, new TransferoutProductSearchFragment())
                         .addToBackStack("product_search")
                         .commitAllowingStateLoss();
                 break;
@@ -552,23 +547,21 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      */
     protected void onOkClicked() {
         MobclickAgent.onEvent(getActivityContext(), EVENT_ID_XUAN_HAO_L);
-        if (mmSelected.size() == 0) {
-            Toast.makeText(this, "请在购物车中勾选商品", Toast.LENGTH_LONG).show();
-            return;
-        }
             goToOrderSubmitActivity();
     }
 
     void goToOrderSubmitActivity() {
         //判断是否是自助下单
-        ArrayList<StockProductListResponse.ListBean> list = new ArrayList<>();
+        ArrayList<TransferoutSubmitRequest.Product> list = new ArrayList<>();
         for (StockProductListResponse.ListBean bean : mMapCount.keySet()) {
-            if (!mmSelected.contains(bean.getProductID())) continue;//木有在购物车中打勾，跳过
-//            if (bean.isInvalid() || mMapCount.get(bean) == 0) continue;
-//            bean.setActualQty(mMapCount.get(bean));
-//            bean.setRemark(mMapRemarks.get(bean));
-            list.add(bean);
+            TransferoutSubmitRequest.Product product  =new TransferoutSubmitRequest.Product();
+            product.setProduct_id(bean.getProductID());
+            product.setQty(mMapCount.get(bean));
+            list.add(product);
         }
+        TransferoutSubmitRequest transferoutSubmitRequest = new TransferoutSubmitRequest();
+        transferoutSubmitRequest.setProducts(list);
+        netWorkHelper.sendConnection("/api/self/transfer/create", transferoutSubmitRequest, REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST, true, null);
     }
 
     /*
@@ -615,7 +608,10 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                         mListBeans = mStockProductListResponse.getList();
                         requestCategory();
                     }
-
+                break;
+            case REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST:
+                Intent intent = new Intent(getActivityContext(), TransferOutSuccessActivity.class);
+                startActivity(intent);
                 break;
         }
     }
@@ -670,7 +666,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
         switch (where) {
-            case REQUEST_CODE_STOCK_PRODUCT_LIST:
+            case REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST:
                 toast(errMsg);
                 break;
         }
@@ -726,20 +722,13 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      */
     protected void showCart(boolean isShow) {
         if (isShow) {
-            if (mTvResume.getVisibility() == View.VISIBLE) {
-                //已经在显示，收起
-                showCart(false);
-                return;
-            }
             if (mMapCount.size() == 0) return;
-            mTvResume.setVisibility(View.VISIBLE);
             final View view = findViewById(R.id.include_cart);
             view.setVisibility(View.VISIBLE);
             view.setAnimation(AnimationUtils.loadAnimation(getActivityContext(), R.anim.slide_in_from_bottom));
             mRlCartContainer.setVisibility(View.VISIBLE);
             initCartViews();
         } else {
-            mTvResume.setVisibility(View.GONE);
             findViewById(R.id.include_cart).setVisibility(View.INVISIBLE);
             mRlCartContainer.setVisibility(View.GONE);
         }
@@ -752,10 +741,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     @ViewInject(R.id.rv_cart)
     RecyclerView mmRvCart;
     CartAdapter mmCartAdapter;
-    @ViewInject(R.id.cb_cart_select_all)
-    CheckBox mmCbSelectAll;
-    @ViewInject(R.id.tv_cart_del)
-    TextView mmTvDelete;
     @ViewInject(R.id.stick_header)
     View mVStickHeader;
     @ViewInject(R.id.tv_header)
@@ -800,58 +785,12 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      */
     protected void initCartViews() {
         mmRvCart = (RecyclerView) findViewById(R.id.rv_cart);
-        mmTvDelete = (TextView) findViewById(R.id.tv_cart_del);
         mTvHeader = (TextView) findViewById(R.id.tv_header);
         mVStickHeader = findViewById(R.id.stick_header);
         mmRvCart.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mmCartAdapter = new CartAdapter();
         mmRvCart.setAdapter(mmCartAdapter);
-        //全选
-        mmCbSelectAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mmCbSelectAll.isChecked()) {
-                    for (StockProductListResponse.ListBean listBean : mMapCount.keySet()) {
-                        mmSelected.add(listBean.getProductID());
-                    }
-                } else {
-                    mmSelected.clear();
-                }
-                updateBottomBar();
-                mmCartAdapter.notifyDataSetChanged();
-            }
-        });
-        if (mmSelected.size() == mMapCount.size()) mmCbSelectAll.setChecked(true);//全选按钮初始化
         //删除全部选择
-        mmTvDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mmSelected.size() == 0) return;
-                CustomDialog customDialog = new CustomDialog(getActivityContext());
-                customDialog.setMessage("删除购物车中所选商品");
-                customDialog.setRightBtnListener("删除", new CustomDialog.DialogListener() {
-                    @Override
-                    public void doClickButton(Button btn, CustomDialog dialog) {
-                        List<StockProductListResponse.ListBean> deleteBeanList = new ArrayList<>();
-                        Iterator<StockProductListResponse.ListBean> it = mMapCount.keySet().iterator();
-                        while (it.hasNext()) {
-                            StockProductListResponse.ListBean item = it.next();
-                            if (mmSelected.contains(item.getProductID())) {
-                                it.remove();
-                                mmProductList.remove(item);
-                                mmSelected.remove(item.getProductID());
-                                deleteBeanList.add(item);
-                            }
-                        }
-                        mmCartAdapter.notifyChanged();
-                        ToastUtil.show(getActivityContext(), "删除成功");
-                        initChildBadges();
-                        EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(deleteBeanList));
-                    }
-                });
-                customDialog.show();
-            }
-        });
         initProductListData();
         setUpRvCart();
     }
@@ -887,13 +826,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      * 更新全选多选框
      */
     protected void notifySelectAll() {
-        if (mmSelected.size() == mMapCount.size()) {
-            //全选
-            mmCbSelectAll.setChecked(true);
-        } else {
-            //非全选
-            mmCbSelectAll.setChecked(false);
-        }
     }
 
     /**
@@ -908,7 +840,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivityContext());
             if (viewType == 0) {
-                return new ViewHolder(inflater.inflate(R.layout.item_cart, parent, false));
+                return new ViewHolder(inflater.inflate(R.layout.list_item_transferout_cart, parent, false));
             } else {
                 return new HeaderViewHolder(inflater.inflate(R.layout.item_cart_invalid_header, parent, false));
             }
