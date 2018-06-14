@@ -6,27 +6,29 @@
     android:id="@+id/product_main"
     android:paddingBottom="10dp">
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/stick_header"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:background="@color/white"
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+       >
+
+        <View
+            android:id="@+id/v_space"
+            android:layout_width="match_parent"
+            android:background="@color/windowBackground"
+            android:layout_height="15dp"/>
 
         <TextView
             android:id="@+id/tv_header"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"/>
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:layout_below="@id/v_space"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_gravity="bottom"
-            android:layout_marginLeft="16dp"/>
-    </FrameLayout>
+    </RelativeLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
@@ -90,6 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/tv_product_unit"
             android:text="x 2"
+            android:layout_centerVertical="true"
             android:textColor="@color/textColorPrimary"
             android:textSize="@dimen/second_title" />
         <TextView
@@ -98,6 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="袋"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:textColor="@color/textColorPrimary"
             android:textSize="@dimen/second_title" />

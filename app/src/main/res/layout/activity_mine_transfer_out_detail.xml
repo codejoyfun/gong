@@ -114,7 +114,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:layout_marginTop="20dp"
         android:layout_below="@id/rl_info"/>
 
 

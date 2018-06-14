@@ -93,6 +93,9 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
             count += line.getProductQtyDone();
         }
         mTvProductValue.setText(mTransferOutDetailResponse.getInfo().getProductLines() + "种" + count + "件");
+        mTvOperatorValue.setText(mTransferOutDetailResponse.getInfo().getCreatUID());
+        mTvTimeValue.setText(mTransferOutDetailResponse.getInfo().getDateExpected());
+
         mLinkedHashMap = new LinkedHashMap<>();
         for (TransferOutDetailResponse.Lines lines : mTransferOutDetailResponse.getLines()) {
             String categoryKey = lines.getCategoryParent() +"&"+lines.getCategoryChild();
@@ -101,7 +104,7 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
                 linesList.add(lines);
                 mLinkedHashMap.put(categoryKey, linesList);
             }else{
-                mLinkedHashMap.get(categoryKey).add(lines);mLinkedHashMap.get(categoryKey).add(lines);
+                mLinkedHashMap.get(categoryKey).add(lines);
             }
 
         }
