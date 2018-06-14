@@ -20,10 +20,13 @@ import com.kids.commonframe.base.view.LoadingLayout;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.TransferOutResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.runwise.supply.mine.MineTransferOutDetailActivity.INTENT_KEY_PICKING_ID;
 
 public class MineTransferoutActivity extends NetWorkActivity {
 
@@ -33,7 +36,6 @@ public class MineTransferoutActivity extends NetWorkActivity {
     @BindView(R.id.loadingLayout)
     LoadingLayout mLoadingLayout;
     MineTransferoutAdapter mMineTransferoutAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class MineTransferoutActivity extends NetWorkActivity {
         });
 
         mMineTransferoutAdapter = new MineTransferoutAdapter();
+        mPullListView.setAdapter(mMineTransferoutAdapter);
 
         View headerView = LayoutInflater.from(getActivityContext()).inflate(R.layout.list_header_mine_transfer_out, null);
         mPullListView.getRefreshableView().addHeaderView(headerView);
@@ -83,10 +86,11 @@ public class MineTransferoutActivity extends NetWorkActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivityContext(), MineTransferOutDetailActivity.class);
+                intent.putExtra(INTENT_KEY_PICKING_ID,mTransferOutResponse.getList().get(position-2).getPickingID());
                 startActivity(intent);
             }
         });
-//        requestTransferoutList(true);
+        requestTransferoutList(true);
     }
 
     private void requestTransferoutList(boolean showDialog) {
@@ -94,21 +98,20 @@ public class MineTransferoutActivity extends NetWorkActivity {
         sendConnection("/api/self/transfer/list", o, REQUEST_CODE_LIST, showDialog, TransferOutResponse.class);
 
     }
-
+    TransferOutResponse mTransferOutResponse;
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_CODE_LIST:
                 BaseEntity.ResultBean resultBean = result.getResult();
-                TransferOutResponse transferOutResponse = (TransferOutResponse) resultBean.getData();
-                mMineTransferoutAdapter.setList(transferOutResponse.getList());
+                mTransferOutResponse = (TransferOutResponse) resultBean.getData();
+                mMineTransferoutAdapter.setList(mTransferOutResponse.getList());
                 if (mMineTransferoutAdapter.getCount() == 0 && mPullListView.getRefreshableView().getHeaderViewsCount() == 1) {
                     mLoadingLayout.onSuccess(0, "哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 } else {
                     mLoadingLayout.onSuccess(mMineTransferoutAdapter.getCount(), "哎呀！这里是空哒~~",R.drawable.default_ico_none);
                 }
                 mPullListView.onRefreshComplete(Integer.MAX_VALUE);
-                mPullListView.setAdapter(mMineTransferoutAdapter);
                 break;
         }
 
@@ -130,10 +133,12 @@ public class MineTransferoutActivity extends NetWorkActivity {
     }
 
     public class MineTransferoutAdapter extends BaseAdapter {
-        List<TransferOutResponse.TransferOut> transferOutList;
+        List<TransferOutResponse.TransferOut> transferOutList = new ArrayList<>();
 
         public void setList(List<TransferOutResponse.TransferOut> transferOutList) {
-            this.transferOutList = transferOutList;
+            this.transferOutList.clear();
+            this.transferOutList.addAll(transferOutList);
+            notifyDataSetChanged();
         }
 
         @Override
@@ -148,7 +153,7 @@ public class MineTransferoutActivity extends NetWorkActivity {
 
         @Override
         public long getItemId(int position) {
-            return 0;
+            return position;
         }
 
         @Override
@@ -163,7 +168,7 @@ public class MineTransferoutActivity extends NetWorkActivity {
             viewHolder = (ViewHolder) convertView.getTag();
             viewHolder.mTvTranferoutName.setText(transferOutList.get(position).getCreatUID());
             viewHolder.mTvTranferoutNum.setText(transferOutList.get(position).getPickingName());
-            viewHolder.mTvTranferoutTime.setText(transferOutList.get(position).getDateExpected());
+            viewHolder.mTvTranferoutTime.setText(transferOutList.get(position).getDateExpected().split(" ")[0]);
 
             return convertView;
         }

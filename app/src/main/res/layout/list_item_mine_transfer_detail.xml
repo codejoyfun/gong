@@ -31,8 +31,8 @@
 
         <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
             android:id="@+id/sdv_product"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
             android:layout_marginRight="10dp"
             fresco:failureImage="@color/grayBackground"
             fresco:failureImageScaleType="fitXY"
@@ -99,13 +99,13 @@
             android:id="@+id/tv_item_order_submit_remark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="11sp"
+            android:layout_below="@+id/sdv_product"
+            android:layout_toEndOf="@+id/sdv_product"
+            android:layout_toRightOf="@+id/sdv_product"
             android:text="备注"
-            android:layout_toRightOf="@id/sdv_product"
-            android:layout_below="@+id/tv_product_price"
-            android:layout_toLeftOf="@+id/tv_product_count"
+            android:visibility="gone"
             android:textColor="@color/textColorThird"
-            android:layout_marginTop="7dp"/>
+            android:textSize="11sp" />
     </RelativeLayout>
 
 </LinearLayout>

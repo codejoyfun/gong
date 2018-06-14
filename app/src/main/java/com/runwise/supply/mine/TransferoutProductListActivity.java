@@ -54,6 +54,7 @@ import com.runwise.supply.entity.ProductValidateRequest;
 import com.runwise.supply.entity.ProductValidateResponse;
 import com.runwise.supply.entity.ProductVersionRequest;
 import com.runwise.supply.entity.StockProductListResponse;
+import com.runwise.supply.entity.SubmitTransferoutResponse;
 import com.runwise.supply.entity.TransferoutSubmitRequest;
 import com.runwise.supply.event.TransferoutProductCountUpdateEvent;
 import com.runwise.supply.fragment.TransferoutProductSearchFragment;
@@ -561,7 +562,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         }
         TransferoutSubmitRequest transferoutSubmitRequest = new TransferoutSubmitRequest();
         transferoutSubmitRequest.setProducts(list);
-        netWorkHelper.sendConnection("/api/self/transfer/create", transferoutSubmitRequest, REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST, true, null);
+        netWorkHelper.sendConnection("/api/self/transfer/create", transferoutSubmitRequest, REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST, true, SubmitTransferoutResponse.class);
     }
 
     /*
@@ -610,7 +611,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                     }
                 break;
             case REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST:
-                Intent intent = new Intent(getActivityContext(), TransferOutSuccessActivity.class);
+                Intent intent = new Intent(getActivityContext(), MineTransferoutSuccessActivity.class);
                 startActivity(intent);
                 break;
         }

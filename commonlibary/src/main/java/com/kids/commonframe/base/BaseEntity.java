@@ -169,6 +169,8 @@ public class BaseEntity {
         private JSONObject dataJson;
         private Object orders;
 
+        public ResultBean() {
+        }
         public String getError() {
             return error;
         }
