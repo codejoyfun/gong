@@ -165,7 +165,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
         setStatusBarEnabled();
         setContentView(R.layout.activity_transferout_product_list);
         init();
-        setTitleText(true, "全部商品");
+        setTitleText(true, "出库");
         showBackBtn();
         setTitleRightIcon2(true, R.drawable.ic_nav_search);
         //获取上一个页面传来的Parcelable

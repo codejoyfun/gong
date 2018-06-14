@@ -1,10 +1,12 @@
 package com.runwise.supply.orderpage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.kids.commonframe.base.BaseActivity;
 import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.runwise.supply.MainActivity;
 import com.runwise.supply.R;
 import com.umeng.analytics.MobclickAgent;
 
@@ -28,6 +30,7 @@ public class OrderSubmitSuccessActivity extends BaseActivity {
     @OnClick({R.id.title_iv_left,R.id.btn_gohome})
     public void onBtnClick(View v){
         finish();
+        startActivity(new Intent(getActivityContext(), MainActivity.class));
     }
 
     @Override

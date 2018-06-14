@@ -346,7 +346,7 @@
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="20dp"
-                    android:drawableLeft="@drawable/ic_more_restaurant_call"
+                    android:drawableLeft="@drawable/more_ico_ex_warehouse"
                     android:drawablePadding="10dp"
                     android:gravity="center"
                     android:text="出库"

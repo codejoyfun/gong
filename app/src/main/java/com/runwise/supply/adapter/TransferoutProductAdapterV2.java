@@ -62,8 +62,10 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
 
 
     @Override
+
+
     public ProductAdapterV2.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_with_subcategory, null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transferout_product_with_subcategory, null);
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         ProductAdapterV2.ViewHolder viewHolder = new ProductAdapterV2.ViewHolder(view);
         return viewHolder;
@@ -76,7 +78,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
         } else {
             StockProductListResponse.ListBean listBean = mData.get(position);
             double count = productCountSetter.getCount(listBean);
-            holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+            holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getStockUom());
             //先根据集合里面对应个数初始化一次
             if (count > 0) {
                 holder.mTvProductCount.setVisibility(View.VISIBLE);
@@ -207,16 +209,10 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
         holder.mTvProductName.setText(listBean.getName());
         holder.mTvProductCode.setText(listBean.getDefaultCode());
         holder.mTvProductContent.setText(listBean.getUnit());
+        holder.mTvProductPriceUnit.setText("");
 
-        if (canSeePrice) {
-            StringBuffer sb1 = new StringBuffer();
+        holder.mTvProductPrice.setText("库存  " + listBean.getQty() + listBean.getStockUom());
 
-            holder.mTvProductPrice.setText(sb1.toString());
-            holder.mTvProductPriceUnit.setText("/" + listBean.getSaleUom());
-        } else {
-            holder.mTvProductPrice.setVisibility(View.GONE);
-            holder.mTvProductPriceUnit.setVisibility(View.GONE);
-        }
         if (listBean.getImage() != null) {
             FrecoFactory.getInstance(holder.itemView.getContext()).displayWithoutHost(holder.mSdvProductImage, listBean.getImage().getImageSmall());
 

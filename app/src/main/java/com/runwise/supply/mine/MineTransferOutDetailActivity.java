@@ -62,6 +62,7 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
     private TransferOutDetailResponse mTransferOutDetailResponse;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,11 +80,12 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
         requestTransferoutDetail(true);
     }
 
+
+
     private void requestTransferoutDetail(boolean showDialog) {
         GetTransferDetailRequest getTransferDetailRequest = new GetTransferDetailRequest();
         getTransferDetailRequest.setPickingID(mPickingID);
         sendConnection("/api/self/transfer/detail", getTransferDetailRequest, REQUEST_TRANSFEROUT_DETAL, showDialog, TransferOutDetailResponse.class);
-
     }
     LinkedHashMap<String, List<TransferOutDetailResponse.Lines>> mLinkedHashMap;
     private void setUpDetail() {

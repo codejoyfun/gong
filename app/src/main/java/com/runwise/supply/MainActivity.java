@@ -90,6 +90,7 @@ public class MainActivity extends NetWorkActivity {
     //    private UserInfo userInfo;
     private boolean isLogin;
     public static final String INTENT_KEY_SKIP_TO_LOGIN = "intent_key_skip_to_login";
+    public static final String INTENT_KEY_JUMP_INDEX= "intent_key_jump_index";
 
     long mTimeStartQUERY_ALL;
 
@@ -97,6 +98,8 @@ public class MainActivity extends NetWorkActivity {
 
     DbUtils mDbUtils;
     boolean mFirstResume = true;
+
+
 
     //缓存基本商品信息到内存，便于每次查询对应productid所需基本信息
     private class CachRunnale implements Runnable {

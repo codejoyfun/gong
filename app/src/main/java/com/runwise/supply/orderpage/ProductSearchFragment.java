@@ -127,7 +127,7 @@ public class ProductSearchFragment extends NetWorkFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         FragmentActivity parentActivity = getActivity();
-        if (parentActivity instanceof TransferoutProductListActivity) {
+        if (parentActivity instanceof ProductActivityV2) {
 //            mCountMap = ((TransferoutProductListActivity) parentActivity).getCountMap();
 //            mProductAdapter.setCountMap(mCountMap);
             mProductAdapter.setProductCountSetter(((ProductActivityV2) parentActivity).getProductCountSetter());

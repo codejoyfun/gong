@@ -17,6 +17,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.runwise.supply.MainActivity.INTENT_KEY_JUMP_INDEX;
+import static com.runwise.supply.MainActivity.INTENT_KEY_TAB;
+
 public class MineTransferoutSuccessActivity extends BaseActivity {
 
     @BindView(R.id.icon)
@@ -56,7 +59,10 @@ public class MineTransferoutSuccessActivity extends BaseActivity {
 
     @OnClick(R.id.tv_home_page)
     public void onMTvHomePageClicked() {
-        ActivityManager.getInstance().returnHomePage(MainActivity.class);
+
+       Intent intent = new Intent(getActivityContext(),MainActivity.class);
+        intent.putExtra(INTENT_KEY_TAB,2);
+        startActivity(intent);
     }
 
     @OnClick(R.id.title_iv_left)

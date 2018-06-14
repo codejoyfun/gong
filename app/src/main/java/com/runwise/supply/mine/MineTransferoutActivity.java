@@ -37,6 +37,7 @@ public class MineTransferoutActivity extends NetWorkActivity {
     @BindView(R.id.loadingLayout)
     LoadingLayout mLoadingLayout;
     MineTransferoutAdapter mMineTransferoutAdapter;
+    private boolean mFirstResume = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,16 @@ public class MineTransferoutActivity extends NetWorkActivity {
             }
         });
         requestTransferoutList(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mFirstResume){
+            mFirstResume = false;
+        }else{
+           mPullListView.setRefreshing();
+        }
     }
 
     private void requestTransferoutList(boolean showDialog) {
