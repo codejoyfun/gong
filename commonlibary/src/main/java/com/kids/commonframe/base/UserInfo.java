@@ -60,6 +60,7 @@ public class UserInfo implements Serializable{
     private String isAgreeItem;
     private boolean hasNewInvoice;
     private boolean noAfterSaleApply;
+    private String isSelfTransfer;
 
     public String getIsShopTransfer() {
         return isShopTransfer;
@@ -305,5 +306,13 @@ public class UserInfo implements Serializable{
 
     public void setIsAgreeItem(String isAgreeItem) {
         this.isAgreeItem = isAgreeItem;
+    }
+
+    public String getIsSelfTransfer() {
+        return isSelfTransfer;
+    }
+
+    public void setIsSelfTransfer(String isSelfTransfer) {
+        this.isSelfTransfer = isSelfTransfer;
     }
 }

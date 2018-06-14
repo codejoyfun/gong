@@ -179,7 +179,7 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
         mPullListView.setAdapter(adapter);
         page = 1;
         mLoadingLayout.setStatusLoading();
-        requestOrderList(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
+//        requestOrderList(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
         mLoadingLayout.setOnRetryClickListener(this);
         mOrderDateSelectDialog = new OrderDateSelectDialog(getActivity());
         mOrderDateSelectDialog.setPickerClickListener(new OrderDateSelectDialog.PickerClickListener() {
@@ -194,6 +194,12 @@ public class OrderListFragmentV2 extends NetWorkFragment implements AdapterView.
                 mOrderDateSelectDialog.dismiss();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        requestOrderList(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
     }
 
     //    退货单状态：

@@ -174,6 +174,12 @@ public class MineFragment extends NetWorkFragment {
                 } else {
                     findViewById(R.id.rl_transfer).setVisibility(View.GONE);
                 }
+                if (!TextUtils.isEmpty(userInfo.getIsSelfTransfer()) && userInfo.getIsSelfTransfer().equals("true")) {
+                    findViewById(R.id.rl_transfer_out).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.rl_transfer_out).setVisibility(View.GONE);
+                }
+
                 SampleApplicationLike.getInstance().saveUserInfo(userInfo);
                 break;
             case REQUEST_USERINFO_PROCUMENT:

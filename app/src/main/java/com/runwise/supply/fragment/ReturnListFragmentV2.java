@@ -169,7 +169,7 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
         pullListView.setOnRefreshListener(mOnRefreshListener2);
         pullListView.setAdapter(adapter);
         page = 1;
-        requestData(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
+//        requestData(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
         loadingLayout.setStatusLoading();
         loadingLayout.setOnRetryClickListener(this);
         mOrderDateSelectDialog = new OrderDateSelectDialog(getActivity());
@@ -185,6 +185,12 @@ public class ReturnListFragmentV2 extends NetWorkFragment implements AdapterView
                 mOrderDateSelectDialog.dismiss();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        requestData(false, mState, REQUEST_MAIN, page, mStartTime, mEndTime);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
