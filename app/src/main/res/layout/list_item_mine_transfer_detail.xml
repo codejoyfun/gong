@@ -9,9 +9,11 @@
     <FrameLayout
         android:id="@+id/stick_header"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
         android:background="@color/white"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
 
         <TextView
             android:id="@+id/tv_header"
@@ -25,9 +27,14 @@
             android:layout_gravity="bottom"
             android:layout_marginLeft="16dp"/>
     </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/windowBackground"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="20dp">
 
         <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
             android:id="@+id/sdv_product"

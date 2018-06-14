@@ -31,6 +31,7 @@ import static com.runwise.supply.mine.MineTransferOutDetailActivity.INTENT_KEY_P
 public class MineTransferoutActivity extends NetWorkActivity {
 
     private static final int REQUEST_CODE_LIST = 1 << 0;
+    private static final int REQUEST_CHECK_INVENTORY_STATE = 1 << 1;
     @BindView(R.id.pullListView)
     PullToRefreshListView mPullListView;
     @BindView(R.id.loadingLayout)
@@ -51,8 +52,8 @@ public class MineTransferoutActivity extends NetWorkActivity {
             @Override
             public void onClick(View v) {
 //                跳去出库商品列表
-                Intent intent = new Intent(getActivityContext(), TransferoutProductListActivity.class);
-                startActivity(intent);
+                checkInventoryState();
+
             }
         });
 
@@ -98,6 +99,12 @@ public class MineTransferoutActivity extends NetWorkActivity {
         sendConnection("/api/self/transfer/list", o, REQUEST_CODE_LIST, showDialog, TransferOutResponse.class);
 
     }
+
+    private void checkInventoryState(){
+        Object o = null;
+        sendConnection("/api/check/inventory/state", o, REQUEST_CHECK_INVENTORY_STATE, true, null);
+
+    }
     TransferOutResponse mTransferOutResponse;
     @Override
     public void onSuccess(BaseEntity result, int where) {
@@ -113,23 +120,35 @@ public class MineTransferoutActivity extends NetWorkActivity {
                 }
                 mPullListView.onRefreshComplete(Integer.MAX_VALUE);
                 break;
+            case REQUEST_CHECK_INVENTORY_STATE:
+                Intent intent = new Intent(getActivityContext(), TransferoutProductListActivity.class);
+                startActivity(intent);
+                break;
         }
 
     }
 
     @Override
     public void onFailure(String errMsg, BaseEntity result, int where) {
-        if (where == REQUEST_CODE_LIST && errMsg.equals(getResources().getString(R.string.network_error))){
-            mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
-        }else{
-            mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+        switch(where){
+            case REQUEST_CHECK_INVENTORY_STATE:
+                toast(errMsg);
+                break;
+                case REQUEST_CODE_LIST:
+                    if (where == REQUEST_CODE_LIST && errMsg.equals(getResources().getString(R.string.network_error))){
+                        mLoadingLayout.onFailure(errMsg, R.drawable.default_icon_checkconnection);
+                    }else{
+                        mLoadingLayout.onFailure(errMsg,R.drawable.nonocitify_icon);
+                    }
+                    mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
+                        @Override
+                        public void retryOnClick(View view) {
+                            requestTransferoutList(true);
+                        }
+                    });
+                    break;
         }
-        mLoadingLayout.setOnRetryClickListener(new LoadingLayoutInterface() {
-            @Override
-            public void retryOnClick(View view) {
-                requestTransferoutList(true);
-            }
-        });
+
     }
 
     public class MineTransferoutAdapter extends BaseAdapter {

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.IBaseAdapter;
+import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.img.FrecoFactory;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
@@ -20,7 +21,7 @@ import com.runwise.supply.entity.StockProductListResponse;
 import com.runwise.supply.event.TransferoutProductCountUpdateEvent;
 import com.runwise.supply.mine.TransferoutProductListActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
-import com.runwise.supply.orderpage.ProductValueDialog;
+import com.runwise.supply.orderpage.TransferProductValueDialog;
 import com.runwise.supply.tools.LongPressUtil;
 import com.runwise.supply.view.ProductImageDialog;
 import com.runwise.supply.view.TransferProductImageDialog;
@@ -48,7 +49,7 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
     TransferoutProductListActivity.ProductCountSetter productCountSetter;
     boolean hasOtherSub = false;
 
-    public TransferoutProductAdapter(@NonNull Context context, boolean hasOtherSub){
+    public TransferoutProductAdapter(@NonNull Context context, boolean hasOtherSub) {
         mContext = context;
         canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         this.hasOtherSub = hasOtherSub;
@@ -58,7 +59,7 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
 //        mCountMap = countMap;
 //    }
 
-    public void setProductCountSetter(TransferoutProductListActivity.ProductCountSetter productCountSetter){
+    public void setProductCountSetter(TransferoutProductListActivity.ProductCountSetter productCountSetter) {
         this.productCountSetter = productCountSetter;
     }
 
@@ -78,7 +79,7 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
 
         if (position == 0) {
             String headText = bean.getCategoryChild();
-            viewHolder.mStickHeader.setVisibility(!TextUtils.isEmpty(headText)?View.VISIBLE:View.GONE);
+            viewHolder.mStickHeader.setVisibility(!TextUtils.isEmpty(headText) ? View.VISIBLE : View.GONE);
             viewHolder.mTvHeader.setText(headText);
             viewHolder.mStickHeader.setTag(FIRST_STICKY_VIEW);
         } else {
@@ -94,12 +95,12 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
         convertView.setContentDescription(bean.getCategoryChild());
 
         //标签
-            viewHolder.tvProductTag.setVisibility(View.GONE);
+        viewHolder.tvProductTag.setVisibility(View.GONE);
 
 
 //        final int count = mCountMap.get(bean)==null?0:mCountMap.get(bean);
         double count = productCountSetter.getCount(bean);
-        viewHolder.tvCount.setText(NumberUtil.getIOrD(count)+bean.getSaleUom());
+        viewHolder.tvCount.setText(NumberUtil.getIOrD(count) + bean.getStockUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
             viewHolder.tvCount.setVisibility(View.VISIBLE);
@@ -124,17 +125,17 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
                     //https://stackoverflow.com/questions/179427/how-to-resolve-a-java-rounding-double-issue
                     //防止double的问题
                     currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
-                    if(currentNum<0)currentNum = 0;
-                    viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getSaleUom());
+                    if (currentNum < 0) currentNum = 0;
+                    viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getStockUom());
 //                    mCountMap.put(bean, currentNum);
-                    productCountSetter.setCount(bean,currentNum);
+                    productCountSetter.setCount(bean, currentNum);
                     if (currentNum == 0) {
                         v.setVisibility(View.INVISIBLE);
                         viewHolder.tvCount.setVisibility(View.INVISIBLE);
                         viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                        mCountMap.remove(bean);
                     }
-                    TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean,currentNum);
+                    TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean, currentNum);
                     TransferoutProductCountUpdateEvent.setException(this);
                     EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
                 }
@@ -145,7 +146,7 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
         longPressUtil.setUpEvent(viewHolder.inputMBtn, new LongPressUtil.CallBack() {
             @Override
             public void call() {
-                viewHolder.tvCount.setText(0 + bean.getSaleUom());
+                viewHolder.tvCount.setText(0 + bean.getStockUom());
                 productCountSetter.setCount(bean, 0);
 
                 viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
@@ -168,15 +169,19 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
 //                int currentNum = mCountMap.get(bean)==null?0:mCountMap.get(bean);
                 double currentNum = productCountSetter.getCount(bean);
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
-                viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getSaleUom());
+//                if (currentNum > bean.getQty()) {
+//                    ToastUtil.show(mContext, "超过了库存数量!");
+//                    return;
+//                }
+                viewHolder.tvCount.setText(NumberUtil.getIOrD(currentNum) + bean.getStockUom());
 //                mCountMap.put(bean, currentNum);
-                productCountSetter.setCount(bean,currentNum);
+                productCountSetter.setCount(bean, currentNum);
                 if (currentNum == 1) {//0变到1
                     viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                     viewHolder.tvCount.setVisibility(View.VISIBLE);
                     viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
-                TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean,currentNum);
+                TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean, currentNum);
                 TransferoutProductCountUpdateEvent.setException(this);
                 EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
             }
@@ -190,27 +195,30 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
             public void onClick(View view) {
 //                int currentCount = mCountMap.get(bean)==null?0:mCountMap.get(bean);
                 double currentCount = productCountSetter.getCount(bean);
-                new ProductValueDialog(mContext, bean.getName(), currentCount, productCountSetter.getRemark(bean),new ProductValueDialog.IProductDialogCallback() {
+                new TransferProductValueDialog(mContext, bean.getName(), currentCount, productCountSetter.getRemark(bean), new TransferProductValueDialog.IProductDialogCallback() {
                     @Override
-                    public void onInputValue(double value,String remark) {
-
-                        productCountSetter.setCount(bean,value);
-                        bean.setRemark(remark);
+                    public void onInputValue(double value) {
+//                        if (value > bean.getQty()) {
+//                            ToastUtil.show(mContext, "超过了库存数量!");
+//                            return;
+//                        }
+                        productCountSetter.setCount(bean, value);
                         productCountSetter.setRemark(bean);
                         if (value == 0) {
                             viewHolder.inputMBtn.setVisibility(View.INVISIBLE);
                             viewHolder.tvCount.setVisibility(View.INVISIBLE);
                             viewHolder.inputPBtn.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                            mCountMap.remove(bean);
-                        }else{
+                        } else {
+
                             viewHolder.inputMBtn.setVisibility(View.VISIBLE);
                             viewHolder.tvCount.setVisibility(View.VISIBLE);
-                            viewHolder.tvCount.setText(value+bean.getSaleUom());
+                            viewHolder.tvCount.setText(value + bean.getStockUom());
                             viewHolder.inputPBtn.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
 //                            mCountMap.put(bean,value);
                         }
-                        viewHolder.tvCount.setText(value + bean.getSaleUom());
-                        TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean,(int)value);
+                        viewHolder.tvCount.setText(value + bean.getStockUom());
+                        TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean, (int) value);
                         TransferoutProductCountUpdateEvent.setException(this);
                         EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
                     }
@@ -222,9 +230,9 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
         viewHolder.tvCode.setText(bean.getDefaultCode());
         viewHolder.tvContent.setText(bean.getUnit());
 
-        viewHolder.tvPrice.setText("库存  10袋");
+        viewHolder.tvPrice.setText("库存  " + bean.getQty() + bean.getStockUom());
 
-        if(bean.getImage()!=null){
+        if (bean.getImage() != null) {
             FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, bean.getImage().getImageSmall());
         }
         viewHolder.sDv.setOnClickListener(new View.OnClickListener() {

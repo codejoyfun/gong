@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.NetWorkActivity;
 import com.kids.commonframe.base.devInterface.LoadingLayoutInterface;
@@ -65,7 +66,7 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.TransferOutSuccessActivity;
 import com.runwise.supply.orderpage.TransferoutProductCategoryFragment;
 import com.runwise.supply.orderpage.ProductSearchFragment;
-import com.runwise.supply.orderpage.ProductValueDialog;
+import com.runwise.supply.orderpage.TransferProductValueDialog;
 import com.runwise.supply.orderpage.entity.AddedProduct;
 import com.runwise.supply.orderpage.entity.TransferOutRequest;
 import com.runwise.supply.tools.DensityUtil;
@@ -116,8 +117,8 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     protected static final int REQUEST_CATEGORY = 1;
     //检查购物车有效性
     protected static final int REQUEST_VALIDATE = 2;
-    private static final int REQUEST_CODE_STOCK_PRODUCT_LIST = 1<<3;
-    private static final int REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST = 1<<4;
+    private static final int REQUEST_CODE_STOCK_PRODUCT_LIST = 1 << 3;
+    private static final int REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST = 1 << 4;
 
     @ViewInject(R.id.indicator)
     protected TabLayout smartTabLayout;
@@ -228,7 +229,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     List<StockProductListResponse.ListBean> mListToCheck;//记录需要查询有效性的商品，用于设置结果
 
 
-
     @Override
     public void onStop() {
         super.onStop();
@@ -253,27 +253,27 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     protected void requestCategory() {
         ///gongfu/v3/shop/product/list
         mProductMap = new HashMap<>();
-            getCache();//获取缓存
-            updateBottomBar();//更新底部bar
-            for (int i = 0; i < mListBeans.size(); i++) {
-                StockProductListResponse.ListBean bean = mListBeans.get(i);
-                String categoryParent = bean.getCategoryParent();
-                if (TextUtils.isEmpty(categoryParent)) {
-                    categoryParent = "其他";
-                    bean.setCategoryParent("其他");
-                }
-
-
-                List<StockProductListResponse.ListBean> beanList;
-                if (mProductMap.containsKey(categoryParent)) {
-                    beanList = mProductMap.get(categoryParent);
-                    beanList.add(bean);
-                } else {
-                    beanList = new ArrayList<>();
-                    beanList.add(bean);
-                    mProductMap.put(categoryParent, beanList);
-                }
+        getCache();//获取缓存
+        updateBottomBar();//更新底部bar
+        for (int i = 0; i < mListBeans.size(); i++) {
+            StockProductListResponse.ListBean bean = mListBeans.get(i);
+            String categoryParent = bean.getCategoryParent();
+            if (TextUtils.isEmpty(categoryParent)) {
+                categoryParent = "其他";
+                bean.setCategoryParent("其他");
             }
+
+
+            List<StockProductListResponse.ListBean> beanList;
+            if (mProductMap.containsKey(categoryParent)) {
+                beanList = mProductMap.get(categoryParent);
+                beanList.add(bean);
+            } else {
+                beanList = new ArrayList<>();
+                beanList.add(bean);
+                mProductMap.put(categoryParent, beanList);
+            }
+        }
 
         loadingLayout.onSuccess(mStockProductListResponse.getTypes().size(), "哎呀！这里是空哒~~", R.drawable.default_icon_goodsnone);
         setupViewPager();
@@ -340,7 +340,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     }
 
     protected void initUI(List<String> titles, List<TransferoutProductCategoryFragment> repertoryEntityFragmentList) {
-        if(mViewPagerCategoryFrags == null){
+        if (mViewPagerCategoryFrags == null) {
             return;
         }
         mAdapterVp = new TabPageIndicatorAdapter(getSupportFragmentManager(), titles, repertoryEntityFragmentList);
@@ -547,15 +547,25 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
      * 点击选好了
      */
     protected void onOkClicked() {
-        MobclickAgent.onEvent(getActivityContext(), EVENT_ID_XUAN_HAO_L);
-            goToOrderSubmitActivity();
+        dialog.setTitleGone();
+        dialog.setMessage("确认出库?");
+        dialog.setMessageGravity();
+        dialog.setModel(CustomDialog.BOTH);
+        dialog.setRightBtnListener("确认", new CustomDialog.DialogListener() {
+            @Override
+            public void doClickButton(Button btn, CustomDialog dialog) {
+                goToOrderSubmitActivity();
+            }
+        });
+        dialog.show();
+
     }
 
     void goToOrderSubmitActivity() {
         //判断是否是自助下单
         ArrayList<TransferoutSubmitRequest.Product> list = new ArrayList<>();
         for (StockProductListResponse.ListBean bean : mMapCount.keySet()) {
-            TransferoutSubmitRequest.Product product  =new TransferoutSubmitRequest.Product();
+            TransferoutSubmitRequest.Product product = new TransferoutSubmitRequest.Product();
             product.setProduct_id(bean.getProductID());
             product.setQty(mMapCount.get(bean));
             list.add(product);
@@ -589,7 +599,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             if (totalPieces != 0) {
                 mTvOrderCommit.setEnabled(true);
                 mTvProductTotalCount.setVisibility(View.VISIBLE);
-                mTvProductTotalCount.setText(NumberUtil.getIOrD(mmSelected.size())+"种 "+NumberUtil.getIOrD(totalPieces) + "件商品");
+                mTvProductTotalCount.setText(NumberUtil.getIOrD(mmSelected.size()) + "种 " + NumberUtil.getIOrD(totalPieces) + "件商品");
             } else {
                 mTvOrderCommit.setEnabled(false);
                 mTvProductTotalCount.setVisibility(View.GONE);
@@ -599,18 +609,20 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
     }
 
     StockProductListResponse mStockProductListResponse;
+
     @Override
     public void onSuccess(BaseEntity result, int where) {
         switch (where) {
             case REQUEST_CODE_STOCK_PRODUCT_LIST:
                 BaseEntity.ResultBean resultBean = result.getResult();
                 mStockProductListResponse = (StockProductListResponse) resultBean.getData();
-                    if (mStockProductListResponse.getList() != null) {
-                        mListBeans = mStockProductListResponse.getList();
-                        requestCategory();
-                    }
+                if (mStockProductListResponse.getList() != null) {
+                    mListBeans = mStockProductListResponse.getList();
+                    requestCategory();
+                }
                 break;
             case REQUEST_CODE_SUBMIT_STOCK_PRODUCT_LIST:
+                finish();
                 Intent intent = new Intent(getActivityContext(), MineTransferoutSuccessActivity.class);
                 startActivity(intent);
                 break;
@@ -626,7 +638,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             if (categoryParent.equals(listBean.getCategoryParent())
                     && categoryChild.equals(listBean.getCategoryChild())) {
                 count++;
-                if(mMapCount.get(listBean)!= null){
+                if (mMapCount.get(listBean) != null) {
                     productCount += mMapCount.get(listBean);
                 }
             }
@@ -658,7 +670,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             }
         }
         updateBottomBar();
-        if(mmProductList.size() == 1 && mmProductList.get(0).getProductID() == 0){
+        if (mmProductList.size() == 1 && mmProductList.get(0).getProductID() == 0) {
             showCart(false);
         }
     }
@@ -687,12 +699,13 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             fragmentList.addAll(repertoryEntityFragmentList);
             titleList = titles;
         }
+
         @Override
         public void finishUpdate(ViewGroup container) {
-            try{
+            try {
                 super.finishUpdate(container);
-            } catch (Exception nullPointerException){
-                Log.e("finishUpdate",nullPointerException.toString());
+            } catch (Exception nullPointerException) {
+                Log.e("finishUpdate", nullPointerException.toString());
             }
         }
 
@@ -856,20 +869,20 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             holder.listBean = mmProductList.get(position);
             holder.mmTvName.setText(holder.listBean.getName());
             double count = mMapCount.containsKey(holder.listBean) ? mMapCount.get(holder.listBean) : 0;
-            holder.mmTvCount.setText(NumberUtil.getIOrD(count) + holder.listBean.getSaleUom());
+            holder.mmTvCount.setText(NumberUtil.getIOrD(count) + holder.listBean.getStockUom());
             StringBuilder sb = new StringBuilder();
             sb.append(holder.listBean.getUnit());
             holder.mmTvContent.setText(sb.toString());
-            if(holder.listBean.getImage()!=null){
+            if (holder.listBean.getImage() != null) {
                 FrecoFactory.getInstance(mContext).displayWithoutHost(holder.simpleDraweeView, holder.listBean.getImage().getImageSmall());
             }
-                holder.mmTvInvalide.setVisibility(View.GONE);
-                holder.mmTvCount.setBackgroundResource(R.drawable.order_input_mid);
-                holder.mmTvCount.setTextColor(Color.BLACK);
-                holder.mmTvName.setTextColor(Color.BLACK);
-                holder.mmTvAdd.setEnabled(true);
-                holder.mmTvReduce.setEnabled(true);
-                holder.mmTvTag.setVisibility(View.GONE);
+            holder.mmTvInvalide.setVisibility(View.GONE);
+            holder.mmTvCount.setBackgroundResource(R.drawable.order_input_mid);
+            holder.mmTvCount.setTextColor(Color.BLACK);
+            holder.mmTvName.setTextColor(Color.BLACK);
+            holder.mmTvAdd.setEnabled(true);
+            holder.mmTvReduce.setEnabled(true);
+            holder.mmTvTag.setVisibility(View.GONE);
 
             String remark = mMapRemarks.get(holder.listBean);
             if (TextUtils.isEmpty(remark)) {
@@ -908,10 +921,10 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
 //                    mMapCount.put(listBean,count);
                     //从购物车中删除
                     mmProductList.remove(holder.listBean);
-                        initProductListData();
+                    initProductListData();
                     mmCartAdapter.notifyChanged();
                     EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(holder.listBean, 0));
-                    holder.mmTvCount.setText(0 + holder.listBean.getSaleUom());
+                    holder.mmTvCount.setText(0 + holder.listBean.getStockUom());
                     mmCartAdapter.notifyChanged();
                 }
             });
@@ -987,7 +1000,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                     count = BigDecimal.valueOf(count).add(BigDecimal.ONE).doubleValue();
                     mMapCount.put(listBean, count);
                     EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(listBean, count));
-                    mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+                    mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getStockUom());
                     mmCartAdapter.notifyChanged();
                     break;
                 case R.id.iv_item_cart_minus://减少
@@ -999,38 +1012,34 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                     if (count == 0) {
                         //从购物车中删除
                         mmProductList.remove(listBean);
-                            initProductListData();
+                        initProductListData();
                         mmCartAdapter.notifyChanged();
                     }
                     EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(listBean, count));
-                    mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+                    mmTvCount.setText(NumberUtil.getIOrD(count) + listBean.getStockUom());
                     mmCartAdapter.notifyChanged();
                     break;
                 case R.id.tv_item_cart_count:
                     double currentCount = mCountSetter.getCount(listBean);
-                    new ProductValueDialog(mContext, listBean.getName(), currentCount, mCountSetter.getRemark(listBean), new ProductValueDialog.IProductDialogCallback() {
+                    new TransferProductValueDialog(mContext, listBean.getName(), currentCount, mCountSetter.getRemark(listBean), new TransferProductValueDialog.IProductDialogCallback() {
                         @Override
-                        public void onInputValue(double value, String remark) {
-
+                        public void onInputValue(double value) {
+                            if (value > listBean.getQty()) {
+                                ToastUtil.show(mContext, "超过了库存数量!");
+                                return;
+                            }
                             mCountSetter.setCount(listBean, value);
-                            listBean.setRemark(remark);
                             mCountSetter.setRemark(listBean);
                             mMapCount.put(listBean, value);
                             if (value == 0) {
                                 mMapCount.remove(listBean);
-                                    initProductListData();
+                                initProductListData();
                                 mmCartAdapter.notifyChanged();
                             }
                             EventBus.getDefault().post(new TransferoutProductCountUpdateEvent(listBean, value));
-                            mmTvCount.setText(NumberUtil.getIOrD(value) + listBean.getSaleUom());
-                            if (!TextUtils.isEmpty(remark)) {
-                                mmTvRemark.setVisibility(View.VISIBLE);
-                                mmTvRemark.setText("备注：" + remark);
-                            } else {
-                                mmTvRemark.setText("");
-                                mmTvRemark.setVisibility(View.GONE);
-                            }
-
+                            mmTvCount.setText(NumberUtil.getIOrD(value) + listBean.getStockUom());
+                            mmTvRemark.setText("");
+                            mmTvRemark.setVisibility(View.GONE);
                             mmCartAdapter.notifyChanged();
                         }
                     }).show();
@@ -1189,7 +1198,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             switch (intent.getAction()) {
                 case ACTION_TYPE_SERVICE:
                     String status = intent.getStringExtra(INTENT_KEY_STATUS);
-                    if (status.equals(getString(R.string.service_finish))||status.equals(getString(R.string.service_fail_finish))) {
+                    if (status.equals(getString(R.string.service_finish)) || status.equals(getString(R.string.service_fail_finish))) {
                         //刷新商品列表
                         startRequest();
                         smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);

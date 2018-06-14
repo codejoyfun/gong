@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_bg">
+
+    <TextView
+        android:id="@+id/tv_dialog_product_sub_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:lineSpacingExtra="9dp"
+        android:text="玉米"
+        android:textColor="#2e2e2e"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_dialog_product_sub_title"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="11dp"
+        android:paddingRight="11dp"
+        android:background="#f5f5f5">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:text="数量"/>
+
+        <EditText
+            android:id="@+id/et_dialog_product_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:background="#f5f5f5"
+            android:layout_marginLeft="12dp"
+            android:maxLength="5"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/hline"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/ll"
+        android:layout_marginTop="20dp"
+        android:background="#d4d4d4" />
+
+    <LinearLayout
+        android:id="@+id/dialog_btn_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hline">
+
+        <Button
+            android:id="@+id/dialog_product_input_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="#0000"
+            android:onClick="doClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="取消"
+            android:textColor="#999999"
+            android:textSize="16sp" />
+
+        <View
+            android:id="@+id/vline"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="#d4d4d4" />
+
+        <Button
+            android:id="@+id/dialog_product_input_ok"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="#0000"
+            android:minWidth="120dip"
+            android:onClick="doClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="确认"
+            android:textColor="@color/colorAccent"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

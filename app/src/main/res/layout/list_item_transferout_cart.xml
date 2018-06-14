@@ -6,7 +6,27 @@
     android:id="@+id/product_main"
     android:orientation="vertical">
 
-    <include layout="@layout/view_stick_header"/>
+    <FrameLayout
+        android:id="@+id/stick_header"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/windowBackground"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="16dp"
+            android:background="@color/divider_gray"/>
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/windowBackground"
+    android:paddingTop="10dp"
     android:weightSum="3">
 
     <TextView
@@ -12,6 +14,7 @@
         android:textColor="#999999"
         android:textSize="14sp"
         android:gravity="center"
+        android:background="@color/white"
         android:text="出库单号"/>
 
     <TextView
@@ -22,6 +25,7 @@
         android:textColor="#999999"
         android:textSize="14sp"
         android:gravity="center"
+        android:background="@color/white"
         android:text="出库时间"/>
 
     <TextView
@@ -31,6 +35,7 @@
         android:layout_weight="1"
         android:textColor="#999999"
         android:textSize="14sp"
+        android:background="@color/white"
         android:gravity="center"
         android:paddingRight="20dp"
         android:text="操作人"/>

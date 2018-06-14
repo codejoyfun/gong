@@ -177,7 +177,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         loadingLayout = (LoadingLayout) findViewById(R.id.loadingLayout);
         loadingLayout.setOnRetryClickListener(this);
         showIProgressDialog();
-        if (RunwiseService.getStatus().equals(getString(R.string.service_finish)) || RunwiseService.getStatus().equals(getString(R.string.service_fail_finish))){
+        if (RunwiseService.getStatus().equals(getString(R.string.service_finish)) || RunwiseService.getStatus().equals(getString(R.string.service_fail_finish)) ||RunwiseService.getStatus().equals(getString(R.string.service_fail_finish_protocol_close))){
             Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
             startService(startIntent);
         }
@@ -1533,6 +1533,10 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                         startRequest();
                         smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                     }
+                    if (status.equals(getString(R.string.service_fail_finish_protocol_close))){
+                        dismissIProgressDialog();
+                    }
+
                     break;
             }
         }

@@ -21,6 +21,7 @@ import com.runwise.supply.event.TransferoutProductCountUpdateEvent;
 import com.runwise.supply.mine.TransferoutProductListActivity;
 import com.runwise.supply.orderpage.ProductActivityV2;
 import com.runwise.supply.orderpage.ProductValueDialog;
+import com.runwise.supply.orderpage.TransferProductValueDialog;
 import com.runwise.supply.view.ProductImageDialog;
 import com.runwise.supply.view.TransferProductImageDialog;
 
@@ -179,12 +180,11 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
             @Override
             public void onClick(View v) {
                 double currentCount = productCountSetter.getCount(listBean);
-                new ProductValueDialog(holder.itemView.getContext(), listBean.getName(), currentCount, productCountSetter.getRemark(listBean), new ProductValueDialog.IProductDialogCallback() {
+                new TransferProductValueDialog(holder.itemView.getContext(), listBean.getName(), currentCount, productCountSetter.getRemark(listBean), new TransferProductValueDialog.IProductDialogCallback() {
                     @Override
-                    public void onInputValue(double value, String remark) {
+                    public void onInputValue(double value) {
 
                         productCountSetter.setCount(listBean, value);
-                        listBean.setRemark(remark);
                         productCountSetter.setRemark(listBean);
                         if (value == 0) {
                             holder.mIvProductReduce.setVisibility(View.INVISIBLE);

@@ -92,7 +92,7 @@ public class ProductBasicUtils {
     public static boolean isInit(Context context) {
         if (getBasicArr().size() == 0){
             ToastUtil.show(context,"正在下载商品数据");
-            if (RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish))||RunwiseService.getStatus().equals(context.getString(R.string.service_finish))){
+            if (RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish))||RunwiseService.getStatus().equals(context.getString(R.string.service_finish)) ||RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish_protocol_close))){
                 SPUtils.put(context, FILE_KEY_VERSION_PRODUCT_LIST, 0);
                 context.startService(new Intent(context,RunwiseService.class));
             }

@@ -31,8 +31,28 @@ public class TransferOutDetailResponse implements Serializable {
         private int pickingID;
         private int productLines;
         private String pickingName;
+
+        private String dateExpected;
+
+        private String creatUID;
         private int pickingStateNum;
         private int totalNum;
+
+        public String getCreatUID() {
+            return creatUID;
+        }
+
+        public void setCreatUID(String creatUID) {
+            this.creatUID = creatUID;
+        }
+
+        public String getDateExpected() {
+            return dateExpected;
+        }
+
+        public void setDateExpected(String dateExpected) {
+            this.dateExpected = dateExpected;
+        }
 
         public void setTotalPrice(double totalPrice) {
             this.totalPrice = totalPrice;
@@ -82,16 +102,57 @@ public class TransferOutDetailResponse implements Serializable {
             return totalNum;
         }
     }
-    public static class Lines {
+    public static class Lines implements Serializable{
         private String productUom;
-        private double priceUnit;
-        private String productName;
+        private String stockUom;
+        private String name;
         private int productID;
-        private String productCode;
+        private String defaultCode;
         private double productUnit;
         private String productImage;
+        private String unit;
         private int productQtyDone;
         private int productUomQty;
+        private String categoryParent;
+        private String categoryChild;
+        private Image image;
+
+        public String getStockUom() {
+            return stockUom;
+        }
+
+        public void setStockUom(String stockUom) {
+            this.stockUom = stockUom;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCategoryChild() {
+            return categoryChild;
+        }
+
+        public void setCategoryChild(String categoryChild) {
+            this.categoryChild = categoryChild;
+        }
+
+        public String getCategoryParent() {
+            return categoryParent;
+        }
+
+        public void setCategoryParent(String categoryParent) {
+            this.categoryParent = categoryParent;
+        }
+
+
+
+
+
         public void setProductUom(String productUom) {
             this.productUom = productUom;
         }
@@ -99,19 +160,7 @@ public class TransferOutDetailResponse implements Serializable {
             return productUom;
         }
 
-        public void setPriceUnit(double priceUnit) {
-            this.priceUnit = priceUnit;
-        }
-        public double getPriceUnit() {
-            return priceUnit;
-        }
 
-        public void setProductName(String productName) {
-            this.productName = productName;
-        }
-        public String getProductName() {
-            return productName;
-        }
 
         public void setProductID(int productID) {
             this.productID = productID;
@@ -120,12 +169,6 @@ public class TransferOutDetailResponse implements Serializable {
             return productID;
         }
 
-        public void setProductCode(String productCode) {
-            this.productCode = productCode;
-        }
-        public String getProductCode() {
-            return productCode;
-        }
 
         public void setProductUnit(double productUnit) {
             this.productUnit = productUnit;
@@ -153,6 +196,64 @@ public class TransferOutDetailResponse implements Serializable {
         }
         public int getProductUomQty() {
             return productUomQty;
+        }
+
+        public Image getImage() {
+            return image;
+        }
+
+        public void setImage(Image image) {
+            this.image = image;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
+
+        public String getDefaultCode() {
+            return defaultCode;
+        }
+
+        public void setDefaultCode(String defaultCode) {
+            this.defaultCode = defaultCode;
+        }
+    }
+    public static class Image implements Serializable{
+
+        private String imageMedium;
+        private String image;
+        private String imageSmall;
+        private int imageID;
+        public void setImageMedium(String imageMedium) {
+            this.imageMedium = imageMedium;
+        }
+        public String getImageMedium() {
+            return imageMedium;
+        }
+
+        public void setImage(String image) {
+            this.image = image;
+        }
+        public String getImage() {
+            return image;
+        }
+
+        public void setImageSmall(String imageSmall) {
+            this.imageSmall = imageSmall;
+        }
+        public String getImageSmall() {
+            return imageSmall;
+        }
+
+        public void setImageID(int imageID) {
+            this.imageID = imageID;
+        }
+        public int getImageID() {
+            return imageID;
         }
 
     }

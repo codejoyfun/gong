@@ -56,12 +56,6 @@ public class MineTransferoutSuccessActivity extends BaseActivity {
 
     @OnClick(R.id.tv_home_page)
     public void onMTvHomePageClicked() {
-        if(ActivityManager.getInstance().has(MineTransferoutActivity.class)){
-            Intent intent2 = new Intent(getActivityContext(), MineTransferoutActivity.class);
-            intent2.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent2);
-            return;
-        }
         ActivityManager.getInstance().returnHomePage(MainActivity.class);
     }
 

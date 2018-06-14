@@ -21,13 +21,17 @@ import com.runwise.supply.entity.GetTransferDetailRequest;
 import com.runwise.supply.entity.TransferOutDetailResponse;
 import com.runwise.supply.entity.TransferOutResponse;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.vov.vitamio.utils.NumberUtil;
 
 public class MineTransferOutDetailActivity extends NetWorkActivity {
 
-    private static final int REQUEST_TRANSFEROUT_DETAL = 1 <<0;
+    private static final int REQUEST_TRANSFEROUT_DETAL = 1 << 0;
     @BindView(R.id.tv_num)
     TextView mTvNum;
     @BindView(R.id.tv_num_value)
@@ -47,7 +51,7 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
     @BindView(R.id.rl_info)
     RelativeLayout mRlInfo;
     @BindView(R.id.rv_product_list)
-    RecyclerView  mRvProductList;
+    RecyclerView mRvProductList;
     @BindView(R.id.rl_content)
     RelativeLayout mRlContent;
     MineTransferOutDetailAdapter mMineTransferOutDetailAdapter;
@@ -64,41 +68,60 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
         setContentView(R.layout.activity_mine_transfer_out_detail);
         ButterKnife.bind(this);
 
-        setTitleText(true,"出库单详情");
+        setTitleText(true, "出库单详情");
         showBackBtn();
 
         mRvProductList.setLayoutManager(new LinearLayoutManager(mContext));
         mMineTransferOutDetailAdapter = new MineTransferOutDetailAdapter();
 
 
-        mPickingID = getIntent().getIntExtra(INTENT_KEY_PICKING_ID,0);
+        mPickingID = getIntent().getIntExtra(INTENT_KEY_PICKING_ID, 0);
         requestTransferoutDetail(true);
     }
 
     private void requestTransferoutDetail(boolean showDialog) {
         GetTransferDetailRequest getTransferDetailRequest = new GetTransferDetailRequest();
         getTransferDetailRequest.setPickingID(mPickingID);
-        sendConnection("/api/self/transfer/detail",getTransferDetailRequest, REQUEST_TRANSFEROUT_DETAL, showDialog, TransferOutDetailResponse.class);
+        sendConnection("/api/self/transfer/detail", getTransferDetailRequest, REQUEST_TRANSFEROUT_DETAL, showDialog, TransferOutDetailResponse.class);
 
     }
-    private void setUpDetail(){
+    LinkedHashMap<String, List<TransferOutDetailResponse.Lines>> mLinkedHashMap;
+    private void setUpDetail() {
         mTvNumValue.setText(mTransferOutDetailResponse.getInfo().getPickingName());
         int count = 0;
-        for (TransferOutDetailResponse.Lines line:mTransferOutDetailResponse.getLines()){
-            count+=line.getProductQtyDone();
+        for (TransferOutDetailResponse.Lines line : mTransferOutDetailResponse.getLines()) {
+            count += line.getProductQtyDone();
         }
-        mTvProductValue.setText(mTransferOutDetailResponse.getInfo().getProductLines()+"种"+count+"件");
+        mTvProductValue.setText(mTransferOutDetailResponse.getInfo().getProductLines() + "种" + count + "件");
+        mLinkedHashMap = new LinkedHashMap<>();
+        for (TransferOutDetailResponse.Lines lines : mTransferOutDetailResponse.getLines()) {
+            String categoryKey = lines.getCategoryParent() +"&"+lines.getCategoryChild();
+            if (mLinkedHashMap.get(categoryKey) == null) {
+                List<TransferOutDetailResponse.Lines> linesList = new ArrayList<>();
+                linesList.add(lines);
+                mLinkedHashMap.put(categoryKey, linesList);
+            }else{
+                mLinkedHashMap.get(categoryKey).add(lines);mLinkedHashMap.get(categoryKey).add(lines);
+            }
+
+        }
+        List<TransferOutDetailResponse.Lines> newLinesList = new ArrayList<>();
+        for (String category:mLinkedHashMap.keySet()){
+            List<TransferOutDetailResponse.Lines> linesList = mLinkedHashMap.get(category);
+            newLinesList.addAll(linesList);
+        }
+        mTransferOutDetailResponse.setLines(newLinesList);
         mRvProductList.setAdapter(mMineTransferOutDetailAdapter);
     }
 
     @Override
     public void onSuccess(BaseEntity result, int where) {
-            switch (where){
-                case REQUEST_TRANSFEROUT_DETAL:
-                    mTransferOutDetailResponse = (TransferOutDetailResponse) result.getResult().getData();
-                    setUpDetail();
-                    break;
-            }
+        switch (where) {
+            case REQUEST_TRANSFEROUT_DETAL:
+                mTransferOutDetailResponse = (TransferOutDetailResponse) result.getResult().getData();
+                setUpDetail();
+                break;
+        }
     }
 
     @Override
@@ -107,11 +130,11 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
     }
 
 
-    public class MineTransferOutDetailAdapter extends RecyclerView.Adapter<ViewHolder>{
+    public class MineTransferOutDetailAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_mine_transfer_detail,null);
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_mine_transfer_detail, null);
             ViewHolder viewHolder = new ViewHolder(view);
             return viewHolder;
         }
@@ -119,13 +142,26 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int i) {
             TransferOutDetailResponse.Lines lines = mTransferOutDetailResponse.getLines().get(i);
-            if(!TextUtils.isEmpty(lines.getProductImage())){
-                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(viewHolder.mSdvProduct, lines.getProductImage());
+            if (!TextUtils.isEmpty(lines.getImage().getImageSmall())) {
+                FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(viewHolder.mSdvProduct, lines.getImage().getImageSmall());
             }
-            viewHolder.mTvHeader.setText("测试");
-            viewHolder.mTvProductCount.setText("x"+String.valueOf(lines.getProductQtyDone()));
-            viewHolder.mTvProductName.setText(lines.getProductName());
-            viewHolder.mTvProductPrice.setText(lines.getProductCode()+" | "+ NumberUtil.getIOrD(lines.getPriceUnit())+"/"+lines.getProductUom());
+            String categoryKey = lines.getCategoryParent() +"&"+lines.getCategoryChild();
+            if (i == 0){
+                viewHolder.mVStickHeader.setVisibility(View.VISIBLE);
+            }else{
+                TransferOutDetailResponse.Lines lastLines = mTransferOutDetailResponse.getLines().get(i-1);
+                String lastCategoryKey = lastLines.getCategoryParent() +"&"+lastLines.getCategoryChild();
+                if (!lastCategoryKey.equals(categoryKey)){
+                    viewHolder.mVStickHeader.setVisibility(View.VISIBLE);
+                }else{
+                    viewHolder.mVStickHeader.setVisibility(View.GONE);
+                }
+            }
+
+            viewHolder.mTvHeader.setText(lines.getCategoryParent() +"/"+lines.getCategoryChild()+"("+mLinkedHashMap.get(categoryKey).size()+"种)");
+            viewHolder.mTvProductCount.setText("x" + String.valueOf(lines.getProductQtyDone()));
+            viewHolder.mTvProductName.setText(lines.getName());
+            viewHolder.mTvProductPrice.setText(lines.getDefaultCode() + " | " + lines.getUnit());
             viewHolder.mTvProductUnit.setText(lines.getProductUom());
             viewHolder.mTvSalesPromotion.setVisibility(View.GONE);
 

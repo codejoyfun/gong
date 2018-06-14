@@ -273,7 +273,7 @@ public class TransferoutProductCategoryFragment extends NetWorkFragment {
             ImageView mIvProductReduce = (ImageView) childView.findViewById(R.id.iv_product_reduce);
             ImageView mIvProductAdd = (ImageView) childView.findViewById(R.id.iv_product_add);
             double count = ((TransferoutProductListActivity) getActivity()).getProductCountSetter().getCount(listBean);
-            tvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+            tvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getStockUom());
             //先根据集合里面对应个数初始化一次
             if (count > 0) {
                 tvProductCount.setVisibility(View.VISIBLE);

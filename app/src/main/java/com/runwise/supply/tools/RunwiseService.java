@@ -180,6 +180,10 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
         switch (where) {
             case REQUEST_CODE_PRODUCT_LIST:
                 ToastUtil.show(getBaseContext(), errMsg);
+                if (!errMsg.equals(getString(R.string.network_error))){
+                    sendServiceStatus(getString(R.string.service_fail_finish_protocol_close));
+                    return;
+                }
                 DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
                 HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
                 dbUtils.configAllowTransaction(true);
