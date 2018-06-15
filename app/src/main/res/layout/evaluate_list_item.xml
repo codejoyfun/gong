@@ -20,15 +20,25 @@
         android:textSize="14sp"
         android:layout_below="@id/numTv"
         android:textColor="#2E2E2E"/>
-    <RatingBar
+
+    <com.example.xlhratingbar_lib.XLHRatingBar
+        xmlns:xlhRatingBar="http://schemas.android.com/apk/res-auto"
         android:id="@+id/rateRb"
         style="@style/RatingBarStyle2"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
+        xlhRatingBar:canEdit="true"
+        xlhRatingBar:differentSize="false"
+        xlhRatingBar:dividerWidth="3dp"
+        xlhRatingBar:countSelected="0"
+        xlhRatingBar:starCount="5"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:numStars="5"
-        android:stepSize="1" />
+        xlhRatingBar:stateResId="@drawable/comment_ratingbar_selector"
+        xlhRatingBar:widthAndHeight="24dp"
+        />
+
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"

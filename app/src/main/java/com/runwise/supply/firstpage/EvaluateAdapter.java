@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.xlhratingbar_lib.XLHRatingBar;
 import com.runwise.supply.R;
 import com.runwise.supply.firstpage.entity.OrderResponse;
 import com.runwise.supply.orderpage.ProductBasicUtils;
@@ -92,18 +93,16 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
         }
         if (map != null && map.containsKey(lineId)){
             Integer rate = map.get(lineId);
-            itemHolder.ratingBar.setRating(rate);
+            itemHolder.ratingBar.setCountSelected(rate);
         }
-        itemHolder.ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+        itemHolder.ratingBar.setOnRatingChangeListener(new XLHRatingBar.OnRatingChangeListener() {
             @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                if (fromUser){
+            public void onChange(int countSelected) {
                     //将当前星级信息给父activity
                     if (callback != null){
-                        callback.rateChanged(lineId,Integer.valueOf((int)rating));
-                        map.put(lineId,(int)rating);
+                        callback.rateChanged(lineId,Integer.valueOf((int)countSelected));
+                        map.put(lineId,(int)countSelected);
                     }
-                }
             }
         });
 
@@ -116,13 +115,13 @@ public class EvaluateAdapter extends RecyclerView.Adapter {
     public class ViewHolder extends RecyclerView.ViewHolder{
         public TextView numTv;
         public TextView nameTv;
-        public RatingBar ratingBar;
+        public XLHRatingBar ratingBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
             numTv = (TextView) itemView.findViewById(R.id.numTv);
             nameTv = (TextView) itemView.findViewById(R.id.nameTv);
-            ratingBar = (RatingBar) itemView.findViewById(R.id.rateRb);
+            ratingBar = (XLHRatingBar) itemView.findViewById(R.id.rateRb);
 
         }
     }

@@ -59,12 +59,34 @@
         android:layout_height="20dp"
         android:layout_below="@id/v_line"
         android:layout_marginLeft="15dp"
+        android:layout_marginTop="3dp"
         android:gravity="center_vertical"
         android:text="配送评价"
         android:textColor="#2E2E2E"
         android:textSize="@dimen/second_title"/>
 
-    <RatingBar
+    <com.example.xlhratingbar_lib.XLHRatingBar
+        xmlns:xlhRatingBar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/rb_delivery_service"
+        style="@style/RatingBarStyle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xlhRatingBar:canEdit="true"
+        xlhRatingBar:differentSize="false"
+        xlhRatingBar:dividerWidth="3dp"
+        xlhRatingBar:countSelected="0"
+        xlhRatingBar:starCount="5"
+        android:layout_below="@id/v_line"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@id/tv_deliveryman"
+        xlhRatingBar:stateResId="@drawable/comment_ratingbar_selector"
+        xlhRatingBar:widthAndHeight="25dp"
+        />
+
+
+   <!-- <RatingBar
         android:id="@+id/rb_delivery_service"
         style="@style/RatingBarStyle2"
         android:layout_width="wrap_content"
@@ -75,7 +97,7 @@
         android:layout_marginLeft="15dp"
         android:layout_toRightOf="@id/tv_deliveryman"
         android:numStars="5"
-        android:stepSize="1"/>
+        android:stepSize="1"/>-->
 
     <com.runwise.supply.view.AutoLinefeedLayout
         android:id="@+id/alfl_tag_one"

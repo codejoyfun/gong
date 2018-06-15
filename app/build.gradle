@@ -48,6 +48,7 @@ dependencies {
     compile 'com.tencent.bugly:nativecrashreport:latest.release'
     //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
 //    compile files('libs/multidex1.0.2.jar')
+    compile 'com.xingliuhua:xlhratingbar_lib:1.0.1'
 }
 
 android {

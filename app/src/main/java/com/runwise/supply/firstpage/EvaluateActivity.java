@@ -1,5 +1,6 @@
 package com.runwise.supply.firstpage;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -24,6 +25,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.xlhratingbar_lib.XLHRatingBar;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kids.commonframe.base.ActivityManager;
 import com.kids.commonframe.base.BaseEntity;
@@ -109,7 +111,7 @@ public class EvaluateActivity extends NetWorkActivity {
     @BindView(R.id.tv_evaluate_product)
     TextView mTvEvaluateProduct;
     @BindView(R.id.rb_delivery_service)
-    RatingBar mRbDeliveryService;
+    XLHRatingBar mRbDeliveryService;
     @BindView(R.id.v_line1_product)
     View mVLine1Product;
     @BindView(R.id.et_product)
@@ -123,7 +125,7 @@ public class EvaluateActivity extends NetWorkActivity {
     @BindView(R.id.tv_deliveryman)
     TextView mTvDeliveryman;
     @BindView(R.id.rb_product_service)
-    RatingBar mRbProductService;
+    XLHRatingBar mRbProductService;
     @BindView(R.id.v_line1)
     View mVLine1;
     @BindView(R.id.et_delivery)
@@ -274,12 +276,13 @@ public class EvaluateActivity extends NetWorkActivity {
         mAlflTagFour.setVisibility(View.GONE);
         mAlflTagFive.setVisibility(View.GONE);
 
-        mRbDeliveryService.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+        mRbDeliveryService.setOnRatingChangeListener(new XLHRatingBar.OnRatingChangeListener() {
             @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                mDeliveryRating = rating;
-                setDeliveryTagLayout((int) rating);
-                if (rating > 0) {
+            public void onChange(int countSelected) {
+
+                mDeliveryRating = countSelected;
+                setDeliveryTagLayout((int) countSelected);
+                if (countSelected > 0) {
                     mTvSubmit.setBackgroundResource(R.color.colorAccent);
                     mVLine1.setVisibility(View.VISIBLE);
                     mEtDelivery.setVisibility(View.VISIBLE);
@@ -291,9 +294,29 @@ public class EvaluateActivity extends NetWorkActivity {
                     }
                     return;
                 }
-
             }
         });
+
+//        mRbDeliveryService.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+//            @Override
+//            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+//                mDeliveryRating = rating;
+//                setDeliveryTagLayout((int) rating);
+//                if (rating > 0) {
+//                    mTvSubmit.setBackgroundResource(R.color.colorAccent);
+//                    mVLine1.setVisibility(View.VISIBLE);
+//                    mEtDelivery.setVisibility(View.VISIBLE);
+//                } else {
+//                    mVLine1.setVisibility(View.GONE);
+//                    mEtDelivery.setVisibility(View.GONE);
+//                    if (mProductRating < 1) {
+//                        mTvSubmit.setBackgroundResource(R.color.textColorSecondary);
+//                    }
+//                    return;
+//                }
+//
+//            }
+//        });
         mVLine1Product.setVisibility(View.GONE);
         mEtProduct.setVisibility(View.GONE);
         findViewById(R.id.ic_bar).setVisibility(View.GONE);
@@ -304,12 +327,12 @@ public class EvaluateActivity extends NetWorkActivity {
         mAlflTagProductFour.setVisibility(View.GONE);
         mAlflTagProductFive.setVisibility(View.GONE);
 
-        mRbProductService.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+        mRbProductService.setOnRatingChangeListener(new XLHRatingBar.OnRatingChangeListener() {
             @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                mProductRating = rating;
-                setProductTagLayout((int) rating);
-                if (rating > 0) {
+            public void onChange(int countSelected) {
+                mProductRating = countSelected;
+                setProductTagLayout((int) countSelected);
+                if (countSelected > 0) {
                     mTvSubmit.setBackgroundResource(R.color.colorAccent);
                 } else {
                     mVLine1Product.setVisibility(View.GONE);
@@ -325,7 +348,7 @@ public class EvaluateActivity extends NetWorkActivity {
                 findViewById(R.id.ic_bar).setVisibility(View.VISIBLE);
 
                 for (OrderResponse.ListBean.LinesBean linesBean : bean.getLines()) {
-                    mRateMap.put(linesBean.getSaleOrderProductID(), (int) rating);
+                    mRateMap.put(linesBean.getSaleOrderProductID(), (int) countSelected);
                 }
                 if (orderProductFragmentList != null) {
                     for (Fragment evaluateProductFragment : orderProductFragmentList) {
@@ -439,7 +462,7 @@ public class EvaluateActivity extends NetWorkActivity {
         EvaluateRequest request = new EvaluateRequest();
         request.setQuality_evaluation(mEtProduct.getText().toString());
         request.setService_evaluation(mEtDelivery.getText().toString());
-        request.setService_score((int) mRbDeliveryService.getRating());
+        request.setService_score((int) mRbDeliveryService.getCountSelected());
         StringBuffer sb = new StringBuffer("/gongfu/assess/order/");
         sb.append(orderId).append("/");
         List<String> serviceTags = getService_tags();
@@ -625,6 +648,7 @@ public class EvaluateActivity extends NetWorkActivity {
     private PopupWindow mProductTypeWindow;
     ProductTypeAdapter mProductTypeAdapter;
 
+    @SuppressLint("WrongConstant")
     private void initPopWindow(ArrayList<String> typeList) {
         View dialog = LayoutInflater.from(this).inflate(R.layout.dialog_tab_type, null);
         GridView gridView = (GridView) dialog.findViewById(R.id.gv);
