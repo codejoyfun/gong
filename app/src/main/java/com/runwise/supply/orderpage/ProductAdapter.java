@@ -209,7 +209,7 @@ public class ProductAdapter extends IBaseAdapter<ProductBasicList.ListBean> {
 //                            mCountMap.put(bean,value);
                         }
                         viewHolder.tvCount.setText(value + bean.getSaleUom());
-                        ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,(int)value);
+                        ProductCountUpdateEvent productCountUpdateEvent = new ProductCountUpdateEvent(bean,value);
                         productCountUpdateEvent.setException(ProductAdapter.this);
                         EventBus.getDefault().post(productCountUpdateEvent);
                     }

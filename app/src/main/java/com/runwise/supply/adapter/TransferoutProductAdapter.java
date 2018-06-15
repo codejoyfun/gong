@@ -218,7 +218,7 @@ public class TransferoutProductAdapter extends IBaseAdapter<StockProductListResp
 //                            mCountMap.put(bean,value);
                         }
                         viewHolder.tvCount.setText(value + bean.getStockUom());
-                        TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean, (int) value);
+                        TransferoutProductCountUpdateEvent TransferoutProductCountUpdateEvent = new TransferoutProductCountUpdateEvent(bean, value);
                         TransferoutProductCountUpdateEvent.setException(this);
                         EventBus.getDefault().post(TransferoutProductCountUpdateEvent);
                     }

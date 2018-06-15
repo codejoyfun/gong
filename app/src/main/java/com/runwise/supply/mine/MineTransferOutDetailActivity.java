@@ -90,11 +90,11 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
     LinkedHashMap<String, List<TransferOutDetailResponse.Lines>> mLinkedHashMap;
     private void setUpDetail() {
         mTvNumValue.setText(mTransferOutDetailResponse.getInfo().getPickingName());
-        int count = 0;
+        double count = 0;
         for (TransferOutDetailResponse.Lines line : mTransferOutDetailResponse.getLines()) {
             count += line.getProductQtyDone();
         }
-        mTvProductValue.setText(mTransferOutDetailResponse.getInfo().getProductLines() + "种" + count + "件");
+        mTvProductValue.setText(mTransferOutDetailResponse.getInfo().getProductLines() + "种" + NumberUtil.getIOrD(count) + "件");
         mTvOperatorValue.setText(mTransferOutDetailResponse.getInfo().getCreatUID());
         mTvTimeValue.setText(mTransferOutDetailResponse.getInfo().getDateExpected());
 
@@ -164,7 +164,7 @@ public class MineTransferOutDetailActivity extends NetWorkActivity {
             }
 
             viewHolder.mTvHeader.setText(lines.getCategoryParent() +"/"+lines.getCategoryChild()+"("+mLinkedHashMap.get(categoryKey).size()+"种)");
-            viewHolder.mTvProductCount.setText("x" + String.valueOf(lines.getProductQtyDone()));
+            viewHolder.mTvProductCount.setText("x" + String.valueOf(NumberUtil.getIOrD(lines.getProductQtyDone())));
             viewHolder.mTvProductName.setText(lines.getName());
             viewHolder.mTvProductPrice.setText(lines.getDefaultCode() + " | " + lines.getUnit());
             viewHolder.mTvProductUnit.setText(lines.getProductUom());

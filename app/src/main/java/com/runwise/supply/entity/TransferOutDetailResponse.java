@@ -111,8 +111,8 @@ public class TransferOutDetailResponse implements Serializable {
         private double productUnit;
         private String productImage;
         private String unit;
-        private int productQtyDone;
-        private int productUomQty;
+        private double productQtyDone;
+        private double productUomQty;
         private String categoryParent;
         private String categoryChild;
         private Image image;
@@ -184,17 +184,17 @@ public class TransferOutDetailResponse implements Serializable {
             return productImage;
         }
 
-        public void setProductQtyDone(int productQtyDone) {
+        public void setProductQtyDone(double productQtyDone) {
             this.productQtyDone = productQtyDone;
         }
-        public int getProductQtyDone() {
+        public double getProductQtyDone() {
             return productQtyDone;
         }
 
-        public void setProductUomQty(int productUomQty) {
+        public void setProductUomQty(double productUomQty) {
             this.productUomQty = productUomQty;
         }
-        public int getProductUomQty() {
+        public double getProductUomQty() {
             return productUomQty;
         }
 
