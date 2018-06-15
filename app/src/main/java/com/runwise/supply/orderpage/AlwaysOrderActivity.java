@@ -150,7 +150,7 @@ public class AlwaysOrderActivity extends ProductActivityV2 {
     private ArrayList<ProductBasicList.ListBean> getSelectProductList() {
         ArrayList<ProductBasicList.ListBean> list = new ArrayList<>();
         for (ProductBasicList.ListBean bean : mMapCount.keySet()) {
-            if (bean.isInvalid() || mMapCount.get(bean) == 0 || !mmSelected.contains(bean.getProductID()))
+            if (bean.isInvalid() || mMapCount.get(bean) == 0 /*|| !mmSelected.contains(bean.getProductID())*/)
                 continue;
             bean.setActualQty(mMapCount.get(bean));
             bean.setRemark(mMapRemarks.get(bean));

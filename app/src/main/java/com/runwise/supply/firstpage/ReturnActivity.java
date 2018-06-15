@@ -192,6 +192,7 @@ public class ReturnActivity extends NetWorkActivity implements ReturnFragment.Re
         }
         if (list.size() == 0) {
             ToastUtil.show(mContext, "请先选择退货数量");
+            isCommiting = false;
             return;
         }
         rr.setProducts(list);

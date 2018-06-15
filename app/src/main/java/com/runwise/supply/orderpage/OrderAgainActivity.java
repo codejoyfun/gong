@@ -28,6 +28,10 @@ public class OrderAgainActivity extends ProductActivityV2 {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mOrder = getIntent().getParcelableExtra(INTENT_KEY_ORDER_AGAIN);
+        mOrder.setRemark("");
+        for (OrderResponse.ListBean.LinesBean linesBean:mOrder.getLines()){
+            linesBean.setRemark("");
+        }
         initData();
         initSelectAll();
         super.onCreate(savedInstanceState);
