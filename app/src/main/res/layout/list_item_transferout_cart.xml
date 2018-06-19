@@ -121,7 +121,7 @@
             android:singleLine="true"
             android:textColor="@color/color999999"
             android:textSize="11sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/iv_item_cart_add"

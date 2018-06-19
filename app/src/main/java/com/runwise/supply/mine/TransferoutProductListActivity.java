@@ -884,13 +884,7 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
             holder.mmTvReduce.setEnabled(true);
             holder.mmTvTag.setVisibility(View.GONE);
 
-            String remark = mMapRemarks.get(holder.listBean);
-            if (TextUtils.isEmpty(remark)) {
-                holder.mmTvRemark.setVisibility(View.GONE);
-            } else {
-                holder.mmTvRemark.setVisibility(View.VISIBLE);
-                holder.mmTvRemark.setText("备注：" + remark);
-            }
+            holder.mmTvRemark.setText("库存  " + holder.listBean.getQty() + holder.listBean.getStockUom());
 
             if (TextUtils.isEmpty(holder.listBean.getCategoryChild())) {
                 holder.itemView.setContentDescription(holder.listBean.getCategoryParent());
@@ -1024,10 +1018,6 @@ public class TransferoutProductListActivity extends NetWorkActivity implements V
                     new TransferProductValueDialog(mContext, listBean.getName(), currentCount, mCountSetter.getRemark(listBean), new TransferProductValueDialog.IProductDialogCallback() {
                         @Override
                         public void onInputValue(double value) {
-                            if (value > listBean.getQty()) {
-                                ToastUtil.show(mContext, "超过了库存数量!");
-                                return;
-                            }
                             mCountSetter.setCount(listBean, value);
                             mCountSetter.setRemark(listBean);
                             mMapCount.put(listBean, value);
