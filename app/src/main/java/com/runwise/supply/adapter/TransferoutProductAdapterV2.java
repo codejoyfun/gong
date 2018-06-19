@@ -115,7 +115,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
         //标签
             holder.mIvProductSale.setVisibility(View.GONE);
         double count = productCountSetter.getCount(listBean);
-        holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getSaleUom());
+        holder.mTvProductCount.setText(NumberUtil.getIOrD(count) + listBean.getStockUom());
         //先根据集合里面对应个数初始化一次
         if (count > 0) {
             holder.mTvProductCount.setVisibility(View.VISIBLE);
@@ -140,7 +140,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
                     //防止double的问题
                     currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
                     if (currentNum < 0) currentNum = 0;
-                    holder.mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
+                    holder.mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + listBean.getStockUom());
                     productCountSetter.setCount(listBean, currentNum);
                     if (currentNum == 0) {
                         v.setVisibility(View.INVISIBLE);
@@ -163,7 +163,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
             public void onClick(View v) {
                 double currentNum = productCountSetter.getCount(listBean);
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
-                holder.mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + listBean.getSaleUom());
+                holder.mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + listBean.getStockUom());
                 productCountSetter.setCount(listBean, currentNum);
                 if (currentNum == 1) {//0变到1
                     holder.mIvProductReduce.setVisibility(View.VISIBLE);
@@ -197,7 +197,7 @@ public class TransferoutProductAdapterV2 extends RecyclerView.Adapter<ProductAda
                             holder.mTvProductCount.setVisibility(View.VISIBLE);
                             holder.mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                         }
-                        holder.mTvProductCount.setText(NumberUtil.getIOrD(value) + listBean.getSaleUom());
+                        holder.mTvProductCount.setText(NumberUtil.getIOrD(value) + listBean.getStockUom());
                         TransferoutProductCountUpdateEvent productCountUpdateEvent = new TransferoutProductCountUpdateEvent(listBean, (int) value);
                         productCountUpdateEvent.setException(TransferoutProductAdapterV2.this);
                         EventBus.getDefault().post(productCountUpdateEvent);
