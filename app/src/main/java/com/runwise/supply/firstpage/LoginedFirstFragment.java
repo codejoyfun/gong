@@ -254,6 +254,9 @@ public class LoginedFirstFragment extends NetWorkFragment implements OrderAdapte
         pullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (!getUserVisibleHint()){
+                    return;
+                }
                 //根据点击的position，确定是退货还是正常订单
                 int realPosition = (int) l;
                 if (adapter.getItemViewType(realPosition) == adapter.TYPE_ORDER) {
