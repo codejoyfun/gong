@@ -62,14 +62,12 @@ public class UserGuideActivity extends NetWorkActivity {
      * 请求用户手册
      */
     private void requestGuide(){
-        UserInfo userInfo = SampleApplicationLike.getInstance().loadUserInfo();
         DbUtils mDb = MyDbUtil.create(this);
         try{
-            RemUser rem = mDb.findFirst(Selector.from(RemUser.class).where(WhereBuilder.b("userName", "=", userInfo.getLogin())));
+            RemUser rem = mDb.findFirst(Selector.from(RemUser.class));
             if (rem == null){
                 return;
             }
-//            List<RemUser> userList = mDb.findAll(Selector.from(RemUser.class).orderBy("id", true));
             UserGuideRequest request = new UserGuideRequest(rem.getCompany());
             sendConnection(Constant.UNLOGIN_URL,"/api/user/guide",request,REQUEST_USER_GUIDE,false,GuideResponse.class,true);
         }catch (DbException e){

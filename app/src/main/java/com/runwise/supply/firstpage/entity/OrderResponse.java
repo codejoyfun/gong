@@ -1209,10 +1209,19 @@ public class OrderResponse {
             private String saleUom;//实际发货数量
             private String categoryParent;
             private String categoryChild;
+            private String description;
 
 
             //自定义字段
             private boolean isChanged;
+
+            public String getDescription() {
+                return description;
+            }
+
+            public void setDescription(String description) {
+                this.description = description;
+            }
 
             public String getCategory() {
                 return category;

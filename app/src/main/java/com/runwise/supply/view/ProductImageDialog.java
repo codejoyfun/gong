@@ -2,15 +2,20 @@ package com.runwise.supply.view;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -64,8 +69,18 @@ public class ProductImageDialog extends Dialog {
     ImageButton mIvProductAdd;
     @BindView(R.id.ll_item_product_btns)
     LinearLayout mLlItemProductBtns;
+    @BindView(R.id.tv_explain)
+    TextView mTvExplain;
+    @BindView(R.id.iv_show_more)
+    ImageView mIvShowMore;
+    @BindView(R.id.v_split_line)
+    View mVSplitLine;
+    @BindView(R.id.sv)
+    ScrollView mSv;
 
     private boolean mModify = false;
+
+    public static final int MAX_CHAR_COUNT = 24;
 
     public void setListBean(ProductBasicList.ListBean listBean) {
         mListBean = listBean;
@@ -75,12 +90,13 @@ public class ProductImageDialog extends Dialog {
     ProductActivityV2.ProductCountSetter productCountSetter;
     boolean mCanSeePrice = false;
     DecimalFormat df = new DecimalFormat("#.##");
-    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter){
+
+    public void setProductCountSetter(ProductActivityV2.ProductCountSetter productCountSetter) {
         this.productCountSetter = productCountSetter;
     }
 
     public ProductImageDialog(@NonNull Context context) {
-        super(context, R.style.CustomProgressDialog);
+        super(context, R.style.ProductImageDialog);
     }
 
     @Override
@@ -89,85 +105,124 @@ public class ProductImageDialog extends Dialog {
         setContentView(R.layout.dialog_product_image);
         ButterKnife.bind(this);
         Window window = getWindow();
-        window.getAttributes().gravity = Gravity.CENTER;
-        window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.getAttributes().gravity = Gravity.BOTTOM;
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mCanSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         setUp();
     }
-    
-    private void setUp(){
-        if (mListBean == null){
+
+    private void setUp() {
+        if (mListBean == null) {
             return;
         }
         //标签
-        if(TextUtils.isEmpty(mListBean.getProductTag())){
+        if (TextUtils.isEmpty(mListBean.getProductTag())) {
             mIvProductSale.setVisibility(View.GONE);
-        }else{
+        } else {
             mIvProductSale.setVisibility(View.VISIBLE);
         }
 
-//        final int count = mCountMap.get(mListBean)==null?0:mCountMap.get(mListBean);
-        double count = productCountSetter.getCount(mListBean);
-        mTvProductCount.setText(NumberUtil.getIOrD(count)+mListBean.getSaleUom());
-        //先根据集合里面对应个数初始化一次
-        if (count > 0) {
-            mTvProductCount.setVisibility(View.VISIBLE);
-            mIvProductReduce.setVisibility(View.VISIBLE);
-            mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
-        } else {
-            mTvProductCount.setVisibility(View.INVISIBLE);
-            mIvProductReduce.setVisibility(View.INVISIBLE);
-            mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
+        if (productCountSetter != null){
+            double count = productCountSetter.getCount(mListBean);
+            mTvProductCount.setText(NumberUtil.getIOrD(count) + mListBean.getSaleUom());
+            //先根据集合里面对应个数初始化一次
+            if (count > 0) {
+                mTvProductCount.setVisibility(View.VISIBLE);
+                mIvProductReduce.setVisibility(View.VISIBLE);
+                mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
+            } else {
+                mTvProductCount.setVisibility(View.INVISIBLE);
+                mIvProductReduce.setVisibility(View.INVISIBLE);
+                mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
+            }
+        }else{
+            mLlItemProductBtns.setVisibility(View.GONE);
         }
+
 
         mTvProductName.setText(mListBean.getName());
         mTvProductCode.setText(mListBean.getDefaultCode());
         mTvProductContent.setText(mListBean.getUnit());
-
+        if (TextUtils.isEmpty(mListBean.getDescription())) {
+            mTvExplain.setVisibility(ViewGroup.GONE);
+            mIvShowMore.setVisibility(ViewGroup.GONE);
+            mVSplitLine.setVisibility(ViewGroup.GONE);
+        } else {
+            mTvExplain.setVisibility(ViewGroup.VISIBLE);
+            mVSplitLine.setVisibility(ViewGroup.VISIBLE);
+            mTvExplain.setText(mListBean.getDescription());
+            mTvExplain.post(new Runnable() {
+                @Override
+                public void run() {
+                    int charCount = mListBean.getDescription().length();
+                    if (charCount > MAX_CHAR_COUNT) {
+                        mIvShowMore.setVisibility(ViewGroup.VISIBLE);
+                    } else {
+                        mIvShowMore.setVisibility(ViewGroup.GONE);
+                        mTvExplain.setMaxLines(1);
+                    }
+                }
+            });
+        }
         if (mCanSeePrice) {
             StringBuffer sb1 = new StringBuffer();
-                sb1.append("¥").append(df.format(Double.valueOf(mListBean.getPrice())));
-                mTvProductPrice.setText(sb1.toString());
-                mTvProductPriceUnit.setText("/"+mListBean.getSaleUom());
+            sb1.append("¥").append(df.format(Double.valueOf(mListBean.getPrice())));
+            mTvProductPrice.setText(sb1.toString());
+            mTvProductPriceUnit.setText("/" + mListBean.getSaleUom());
         } else {
             mTvProductPrice.setVisibility(View.GONE);
             mTvProductPriceUnit.setVisibility(View.GONE);
         }
 
-        if(mListBean.getImage()!=null){
+        if (mListBean.getImage() != null) {
             FrecoFactory.getInstance(getContext()).displayWithoutHost(mSdvProductImage, mListBean.getImage().getImage());
         }
     }
 
-    @OnClick({R.id.iv_product_reduce, R.id.iv_product_add,R.id.tv_product_count,R.id.iv_close})
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @OnClick({R.id.iv_product_reduce, R.id.iv_product_add, R.id.tv_product_count, R.id.iv_close, R.id.iv_show_more})
     public void onViewClicked(View view) {
         double currentNum;
         switch (view.getId()) {
+            case R.id.iv_show_more:
+                if (mTvExplain.getMaxLines() == 1) {
+                    mTvExplain.setMaxLines(Integer.MAX_VALUE);
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSv.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
+                } else {
+                    mTvExplain.setMaxLines(1);
+                }
+                mIvShowMore.setVisibility(View.GONE);
+                break;
             case R.id.iv_product_reduce:
-               if (!mModify){
-                   MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);
-                   mModify = true;
-               }
+                if (!mModify) {
+                    MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);
+                    mModify = true;
+                }
                 currentNum = productCountSetter.getCount(mListBean);
                 if (currentNum > 0) {
                     //https://stackoverflow.com/questions/179427/how-to-resolve-a-java-rounding-double-issue
                     //防止double的问题
                     currentNum = BigDecimal.valueOf(currentNum).subtract(BigDecimal.ONE).doubleValue();
-                    if(currentNum<0)currentNum = 0;
+                    if (currentNum < 0) currentNum = 0;
                     mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + mListBean.getSaleUom());
 //                    mCountMap.put(mListBean, currentNum);
-                    productCountSetter.setCount(mListBean,currentNum);
+                    productCountSetter.setCount(mListBean, currentNum);
                     if (currentNum == 0) {
                         view.setVisibility(View.INVISIBLE);
                         mTvProductCount.setVisibility(View.INVISIBLE);
                         mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                        mCountMap.remove(mListBean);
                     }
-                    EventBus.getDefault().post(new ProductCountUpdateEvent(mListBean,currentNum));
+                    EventBus.getDefault().post(new ProductCountUpdateEvent(mListBean, currentNum));
                 }
                 break;
             case R.id.iv_product_add:
-                if (!mModify){
+                if (!mModify) {
                     MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);
                     mModify = true;
                 }
@@ -175,16 +230,16 @@ public class ProductImageDialog extends Dialog {
                 currentNum = BigDecimal.valueOf(currentNum).add(BigDecimal.ONE).doubleValue();
                 mTvProductCount.setText(NumberUtil.getIOrD(currentNum) + mListBean.getSaleUom());
 //                mCountMap.put(mListBean, currentNum);
-                productCountSetter.setCount(mListBean,currentNum);
+                productCountSetter.setCount(mListBean, currentNum);
                 if (currentNum == 1) {//0变到1
                     mIvProductReduce.setVisibility(View.VISIBLE);
                     mTvProductCount.setVisibility(View.VISIBLE);
                     mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
                 }
-                EventBus.getDefault().post(new ProductCountUpdateEvent(mListBean,currentNum));
+                EventBus.getDefault().post(new ProductCountUpdateEvent(mListBean, currentNum));
                 break;
             case R.id.tv_product_count:
-                if (!mModify){
+                if (!mModify) {
                     MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);
                     mModify = true;
                 }
@@ -192,11 +247,11 @@ public class ProductImageDialog extends Dialog {
                  * 点击数量展示输入对话框
                  */
                 double currentCount = productCountSetter.getCount(mListBean);
-                ProductValueDialog productValueDialog = new ProductValueDialog(getContext(), mListBean.getName(), currentCount, productCountSetter.getRemark(mListBean),new ProductValueDialog.IProductDialogCallback() {
+                ProductValueDialog productValueDialog = new ProductValueDialog(getContext(), mListBean.getName(), currentCount, productCountSetter.getRemark(mListBean), new ProductValueDialog.IProductDialogCallback() {
                     @Override
-                    public void onInputValue(double value,String remark) {
+                    public void onInputValue(double value, String remark) {
 
-                        productCountSetter.setCount(mListBean,value);
+                        productCountSetter.setCount(mListBean, value);
                         mListBean.setRemark(remark);
                         productCountSetter.setRemark(mListBean);
                         if (value == 0) {
@@ -204,15 +259,15 @@ public class ProductImageDialog extends Dialog {
                             mTvProductCount.setVisibility(View.INVISIBLE);
                             mIvProductAdd.setBackgroundResource(R.drawable.order_btn_add_gray);
 //                            mCountMap.remove(mListBean);
-                        }else{
+                        } else {
                             mIvProductReduce.setVisibility(View.VISIBLE);
                             mTvProductCount.setVisibility(View.VISIBLE);
-                            mTvProductCount.setText(value+mListBean.getUom());
+                            mTvProductCount.setText(value + mListBean.getUom());
                             mIvProductAdd.setBackgroundResource(R.drawable.ic_order_btn_add_green_part);
 //                            mCountMap.put(mListBean,value);
                         }
                         mTvProductCount.setText(value + mListBean.getUom());
-                        EventBus.getDefault().post(new ProductCountUpdateEvent(mListBean,(int)value));
+                        EventBus.getDefault().post(new ProductCountUpdateEvent(mListBean, (int) value));
                     }
                 });
                 productValueDialog.show();

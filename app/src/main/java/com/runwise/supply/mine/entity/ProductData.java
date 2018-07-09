@@ -64,6 +64,7 @@ public class ProductData implements Serializable{
         }
 
         private String productUom;
+        private String saleUom;
 
         public String getCategory() {
             return category;
@@ -167,6 +168,14 @@ public class ProductData implements Serializable{
 
         public void setProductID(String productID) {
             this.productID = productID;
+        }
+
+        public String getSaleUom() {
+            return saleUom;
+        }
+
+        public void setSaleUom(String saleUom) {
+            this.saleUom = saleUom;
         }
 
         public static class ImageBean implements Serializable{

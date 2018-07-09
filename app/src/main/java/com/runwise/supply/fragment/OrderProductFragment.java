@@ -19,6 +19,9 @@ import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderProductAdapter;
 import com.runwise.supply.event.IntEvent;
 import com.runwise.supply.firstpage.entity.OrderResponse;
+import com.runwise.supply.orderpage.entity.ImageBean;
+import com.runwise.supply.orderpage.entity.ProductBasicList;
+import com.runwise.supply.view.ProductImageDialog;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -84,6 +87,30 @@ public class OrderProductFragment extends BaseFragment {
         mOrderDtailAdapter.setStatus(name,state,listBean);
         mOrderDtailAdapter.setHasReturn(getArguments().getBoolean(BUNDLE_KEY_RETURN));
         mOrderDtailAdapter.setTwoUnit(getArguments().getBoolean(BUNDLE_KEY_TWO_UNIT));
+
+        mRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ProductImageDialog productImageDialog = new ProductImageDialog(getActivity());
+                OrderResponse.ListBean.LinesBean linesBean = listDatas.get(position);
+                ProductBasicList.ListBean listBean = new ProductBasicList.ListBean();
+
+                ImageBean image = new ImageBean();
+                image.setImage(linesBean.getImageMedium());
+                listBean.setImage(image);
+
+                listBean.setName(linesBean.getName());
+                listBean.setDefaultCode(linesBean.getDefaultCode());
+                listBean.setPrice(linesBean.getProductPrice());
+
+                listBean.setDescription(linesBean.getDescription());
+                listBean.setSaleUom(linesBean.getSaleUom());
+                listBean.setUnit(linesBean.getUnit());
+
+                productImageDialog.setListBean(listBean);
+                productImageDialog.show();
+            }
+        });
 
 
         boolean canSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
