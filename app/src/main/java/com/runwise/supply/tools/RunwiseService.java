@@ -104,10 +104,17 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 BaseEntity.ResultBean resultBean = result.getResult();
                 try {
                     productListResponse = (ProductListResponse) resultBean.getData();
-                    if (productListResponse.getProducts() != null && productListResponse.getProducts().size() > 0) {
-                        deleteProductFromDB();
+                    if (productListResponse.getProducts() != null) {
+                        ProductListResponse finalProductListResponse = productListResponse;
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                deleteProductFromDB();
+                                putProductsToDB(finalProductListResponse.getProducts());
+                                sendServiceStatus(getString(R.string.service_finish));
+                            }
+                        }.start();
                         SPUtils.put(getApplicationContext(), FILE_KEY_VERSION_PRODUCT_LIST, productListResponse.getVersion());
-                        putProductsToDB(productListResponse.getProducts());
                     }
                     if (productListResponse != null) {
                         if (productListResponse.getCategory() != null && productListResponse.getCategory().size() > 0) {
@@ -116,9 +123,14 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    loadProducts();
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            loadProducts();
+                            sendServiceStatus(getString(R.string.service_finish));
+                        }
+                    }.start();
                 }
-                sendServiceStatus(getString(R.string.service_finish));
                 break;
         }
     }
@@ -183,32 +195,6 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
                 if (!errMsg.equals(getString(R.string.network_error))){
                     sendServiceStatus(getString(R.string.service_fail_finish_protocol_close));
                     return;
-                }
-                DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
-                HashMap<String, ProductBasicList.ListBean> map = new HashMap<>();
-                dbUtils.configAllowTransaction(true);
-                try {
-                    Selector selector1 = Selector.from(ProductBasicList.ListBean.class);
-                    selector1.orderBy("orderBy", false);
-                    List<ProductBasicList.ListBean> orderProductList = dbUtils.findAll(selector1);
-                    if (orderProductList == null) {
-                        return;
-                    }
-                    for (ProductBasicList.ListBean bean : orderProductList) {
-                        String keyId = bean.getProductID() + "";
-                        if (!map.containsKey(keyId)) {
-                            if (bean.getImage() == null) {//TODO:xutils的坑，没有load imagebean？
-                                bean.setImage(new ImageBean());
-                            }
-                            map.put(keyId, bean);
-                        }
-                    }
-                    ProductBasicUtils.setBasicMap(map);
-                    orderProductList = filterSubValid(orderProductList);
-                    ProductBasicUtils.setBasicArr(orderProductList);
-
-                } catch (DbException e) {
-                    e.printStackTrace();
                 }
                 sendServiceStatus(getString(R.string.service_fail_finish));
                 break;

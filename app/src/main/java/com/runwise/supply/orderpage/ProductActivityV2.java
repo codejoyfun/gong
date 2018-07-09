@@ -1,5 +1,6 @@
 package com.runwise.supply.orderpage;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,6 +8,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -66,6 +70,7 @@ import com.umeng.analytics.MobclickAgent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -92,6 +97,7 @@ import static com.runwise.supply.firstpage.OrderDetailActivity.TAB_EXPAND_COUNT;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PLACE_ORDER_TYPE;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_PRODUCTS;
 import static com.runwise.supply.orderpage.OrderSubmitActivity.INTENT_KEY_SELF_HELP;
+import static com.runwise.supply.orderpage.ProductActivityV2.WeakHandler.MSG_GET_PRODUCT_LIST;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_CATEGORY;
 import static com.runwise.supply.orderpage.ProductCategoryFragment.INTENT_KEY_FIRST;
 import static com.runwise.supply.tools.RunwiseService.INTENT_KEY_STATUS;
@@ -320,11 +326,34 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
 
     protected List<ProductBasicList.ListBean> mListBeans;
 
-    /**
-     * 查询类别
-     */
-    protected void requestCategory() {
-        ///gongfu/v3/shop/product/list
+    public static class WeakHandler extends Handler{
+
+        WeakReference<Activity> mActivityWeakReference;
+        public static final int MSG_GET_PRODUCT_LIST = 1 << 0;
+
+        public WeakHandler(Activity activity){
+            super(Looper.getMainLooper());
+            mActivityWeakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void dispatchMessage(Message msg) {
+            super.dispatchMessage(msg);
+            if (mActivityWeakReference.get() != null && msg.what == MSG_GET_PRODUCT_LIST){
+                ProductActivityV2 productActivityV2 = (ProductActivityV2) mActivityWeakReference.get();
+                productActivityV2.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        productActivityV2.requestCategory();
+                    }
+                });
+
+            }
+        }
+    }
+    WeakHandler mWeakHandler = new WeakHandler(getActivityContext());
+
+    public void syncProductList(){
         DbUtils dbUtils = MyDbUtil.create(getApplicationContext());
         mProductMap = new HashMap<>();
         try {
@@ -336,8 +365,7 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                 mListBeans =  RunwiseService.filterSubValid(mListBeans);
                 ProductBasicUtils.setBasicArr(mListBeans);
             }
-            getCache();//获取缓存
-            updateBottomBar();//更新底部bar
+
             for (int i = 0; i < mListBeans.size(); i++) {
                 ProductBasicList.ListBean bean = mListBeans.get(i);
                 String categoryParent = bean.getCategoryParent();
@@ -368,9 +396,22 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     mProductMap.put(categoryParent, beanList);
                 }
             }
+
+            Message message = Message.obtain();
+            message.what = MSG_GET_PRODUCT_LIST;
+            mWeakHandler.dispatchMessage(message);
         } catch (DbException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 查询类别
+     */
+    protected void requestCategory() {
+        smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+            getCache();//获取缓存
+            updateBottomBar();//更新底部bar
 
         List<String> categoryList = new ArrayList<>();
         List<ProductListResponse.CategoryBean> categoryBeans = (List<ProductListResponse.CategoryBean>) SPUtils.readObject(getApplicationContext(), FILE_KEY_PRODUCT_CATEGORY_LIST);
@@ -1530,8 +1571,13 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
                     String status = intent.getStringExtra(INTENT_KEY_STATUS);
                     if (status.equals(getString(R.string.service_finish))||status.equals(getString(R.string.service_fail_finish))) {
                         //刷新商品列表
-                        startRequest();
-                        smartTabLayout.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                syncProductList();
+                            }
+                        }.start();
+
                     }
                     if (status.equals(getString(R.string.service_fail_finish_protocol_close))){
                         dismissIProgressDialog();
