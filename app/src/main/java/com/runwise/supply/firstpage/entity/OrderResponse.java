@@ -1209,18 +1209,27 @@ public class OrderResponse {
             private String saleUom;//实际发货数量
             private String categoryParent;
             private String categoryChild;
-            private String description;
+            private String explain;
+            private String imageBig;
 
 
             //自定义字段
             private boolean isChanged;
 
-            public String getDescription() {
-                return description;
+            public String getImageBig() {
+                return imageBig;
             }
 
-            public void setDescription(String description) {
-                this.description = description;
+            public void setImageBig(String imageBig) {
+                this.imageBig = imageBig;
+            }
+
+            public String getExplain() {
+                return explain;
+            }
+
+            public void setExplain(String explain) {
+                this.explain = explain;
             }
 
             public String getCategory() {
@@ -1637,6 +1646,8 @@ public class OrderResponse {
                 dest.writeString(saleUom);
                 dest.writeString(categoryParent);
                 dest.writeString(categoryChild);
+                dest.writeString(explain);
+                dest.writeString(imageBig);
 
             }
 
@@ -1677,6 +1688,8 @@ public class OrderResponse {
                 saleUom = in.readString();
                 categoryParent = in.readString();
                 categoryChild = in.readString();
+                explain = in.readString();
+                imageBig = in.readString();
             }
 
             public static final Creator<LinesBean> CREATOR = new Creator<LinesBean>() {

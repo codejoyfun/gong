@@ -2,15 +2,20 @@ package com.runwise.supply.view;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -35,6 +40,7 @@ import butterknife.OnClick;
 import io.vov.vitamio.utils.NumberUtil;
 
 import static com.kids.commonframe.base.util.UmengUtil.EVENT_ID_PRODUCT_COUNT_MODIFY;
+import static com.runwise.supply.view.ProductImageDialog.MAX_CHAR_COUNT;
 
 /**
  * Created by mike on 2018/6/13.
@@ -65,6 +71,14 @@ public class TransferProductImageDialog extends Dialog {
     ImageButton mIvProductAdd;
     @BindView(R.id.ll_item_product_btns)
     LinearLayout mLlItemProductBtns;
+    @BindView(R.id.tv_explain)
+    TextView mTvExplain;
+    @BindView(R.id.iv_show_more)
+    ImageView mIvShowMore;
+    @BindView(R.id.v_split_line)
+    View mVSplitLine;
+    @BindView(R.id.sv)
+    ScrollView mSv;
 
     private boolean mModify = false;
 
@@ -81,7 +95,7 @@ public class TransferProductImageDialog extends Dialog {
     }
 
     public TransferProductImageDialog(@NonNull Context context) {
-        super(context, R.style.CustomProgressDialog);
+        super(context, R.style.ProductImageDialog);
     }
 
     @Override
@@ -90,8 +104,8 @@ public class TransferProductImageDialog extends Dialog {
         setContentView(R.layout.dialog_product_image);
         ButterKnife.bind(this);
         Window window = getWindow();
-        window.getAttributes().gravity = Gravity.CENTER;
-        window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.getAttributes().gravity = Gravity.BOTTOM;
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mCanSeePrice = SampleApplicationLike.getInstance().getCanSeePrice();
         setUp();
     }
@@ -121,6 +135,28 @@ public class TransferProductImageDialog extends Dialog {
         mTvProductCode.setText(mListBean.getDefaultCode());
         mTvProductContent.setText(mListBean.getUnit());
 
+        if (TextUtils.isEmpty(mListBean.getExplain())) {
+            mTvExplain.setVisibility(ViewGroup.GONE);
+            mIvShowMore.setVisibility(ViewGroup.GONE);
+            mVSplitLine.setVisibility(ViewGroup.GONE);
+        } else {
+            mTvExplain.setVisibility(ViewGroup.VISIBLE);
+            mVSplitLine.setVisibility(ViewGroup.VISIBLE);
+            mTvExplain.setText(mListBean.getExplain());
+            mTvExplain.post(new Runnable() {
+                @Override
+                public void run() {
+                    int charCount = mListBean.getExplain().length();
+                    if (charCount > MAX_CHAR_COUNT) {
+                        mIvShowMore.setVisibility(ViewGroup.VISIBLE);
+                    } else {
+                        mIvShowMore.setVisibility(ViewGroup.GONE);
+                        mTvExplain.setMaxLines(1);
+                    }
+                }
+            });
+        }
+
         if (mCanSeePrice) {
             StringBuffer sb1 = new StringBuffer();
             mTvProductPrice.setText(sb1.toString());
@@ -135,10 +171,25 @@ public class TransferProductImageDialog extends Dialog {
         }
     }
 
-    @OnClick({R.id.iv_product_reduce, R.id.iv_product_add,R.id.tv_product_count,R.id.iv_close})
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @OnClick({R.id.iv_product_reduce, R.id.iv_product_add,R.id.tv_product_count,R.id.iv_close,R.id.iv_show_more})
     public void onViewClicked(View view) {
         double currentNum;
         switch (view.getId()) {
+            case R.id.iv_show_more:
+                if (mTvExplain.getMaxLines() == 1) {
+                    mTvExplain.setMaxLines(Integer.MAX_VALUE);
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSv.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
+                } else {
+                    mTvExplain.setMaxLines(1);
+                }
+                mIvShowMore.setVisibility(View.GONE);
+                break;
             case R.id.iv_product_reduce:
                 if (!mModify){
                     MobclickAgent.onEvent(getContext(), EVENT_ID_PRODUCT_COUNT_MODIFY);

@@ -9,11 +9,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kids.commonframe.base.BaseFragment;
 import com.kids.commonframe.config.Constant;
-import com.lidroid.xutils.view.annotation.ViewInject;
 import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
 import com.runwise.supply.adapter.OrderProductAdapter;
@@ -96,14 +94,14 @@ public class OrderProductFragment extends BaseFragment {
                 ProductBasicList.ListBean listBean = new ProductBasicList.ListBean();
 
                 ImageBean image = new ImageBean();
-                image.setImage(linesBean.getImageMedium());
+                image.setImage(linesBean.getImageBig());
                 listBean.setImage(image);
 
                 listBean.setName(linesBean.getName());
                 listBean.setDefaultCode(linesBean.getDefaultCode());
                 listBean.setPrice(linesBean.getProductPrice());
 
-                listBean.setDescription(linesBean.getDescription());
+                listBean.setExplain(linesBean.getExplain());
                 listBean.setSaleUom(linesBean.getSaleUom());
                 listBean.setUnit(linesBean.getUnit());
 

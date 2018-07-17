@@ -16,7 +16,7 @@ import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_VERSION_PRODUCT_LI
  */
 
 public class MyDbUtil {
-    public static final int DB_VERSION = 17;
+    public static final int DB_VERSION = 18;
 
     public static DbUtils create(Context context) {
         DbUtils dbUtils = DbUtils.create(context, "runwise.db", DB_VERSION, new DbUtils.DbUpgradeListener() {

@@ -118,10 +118,11 @@ public class OrderProductAdapter extends BaseAdapter {
             if (Constant.ORDER_STATE_PEISONG.equals(status) && bean.getActualSendNum() != bean.getProductUomQty()){
                 vh.oldPriceTv.setText("x" + NumberUtil.getIOrD(puq));
                 vh.oldPriceTv.setVisibility(View.VISIBLE);
+                vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(bean.getActualSendNum()));
             }else{
                 vh.oldPriceTv.setVisibility(View.GONE);
+                vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(bean.getProductUomQty()));
             }
-            vh.nowPriceTv.setText("x" + NumberUtil.getIOrD(bean.getActualSendNum()));
         }
 
         vh.name.setText(bean.getName());

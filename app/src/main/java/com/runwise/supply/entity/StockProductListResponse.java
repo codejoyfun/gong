@@ -46,6 +46,7 @@ public class StockProductListResponse implements Serializable {
         private int categoryID;
         private String uom;
         private String saleUom;
+        private String explain;
 
 
 //        private String remark;
@@ -192,6 +193,13 @@ public class StockProductListResponse implements Serializable {
 
         public String getRemark() {
             return "";
+        }
+
+        public String getExplain() {
+            return explain;
+        }
+        public void setExplain(String explain) {
+            this.explain = explain;
         }
     }
 

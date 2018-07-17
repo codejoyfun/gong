@@ -108,7 +108,7 @@ public class ProductBasicList implements Serializable, Parcelable {
         @Column
         private boolean subValid;//True就是用来下单的 False就不用来下单的
         @Column
-        private String description;
+        private String explain;
         //本地数据
         private boolean isInvalid;
         private boolean cacheSelected;
@@ -187,7 +187,7 @@ public class ProductBasicList implements Serializable, Parcelable {
             saleUom = in.readString();
             productTag = in.readString();
             orderBy = in.readInt();
-            description = in.readString();
+            explain = in.readString();
             isInvalid = in.readByte() != 0;
             cacheSelected = in.readByte() != 0;
             cartAddedTime = in.readLong();
@@ -220,7 +220,7 @@ public class ProductBasicList implements Serializable, Parcelable {
             dest.writeString(saleUom);
             dest.writeString(productTag);
             dest.writeInt(orderBy);
-            dest.writeString(description);
+            dest.writeString(explain);
             dest.writeByte((byte) (isInvalid ? 1 : 0));
             dest.writeByte((byte) (cacheSelected ? 1 : 0));
             dest.writeLong(cartAddedTime);
@@ -492,12 +492,12 @@ public class ProductBasicList implements Serializable, Parcelable {
         public void setSubValid(boolean subValid) {
             this.subValid = subValid;
         }
-        public String getDescription() {
-            return description;
+        public String getExplain() {
+            return explain;
         }
 
-        public void setDescription(String description) {
-            this.description = description;
+        public void setExplain(String explain) {
+            this.explain = explain;
         }
 
     }

@@ -143,18 +143,18 @@ public class ProductImageDialog extends Dialog {
         mTvProductName.setText(mListBean.getName());
         mTvProductCode.setText(mListBean.getDefaultCode());
         mTvProductContent.setText(mListBean.getUnit());
-        if (TextUtils.isEmpty(mListBean.getDescription())) {
+        if (TextUtils.isEmpty(mListBean.getExplain())) {
             mTvExplain.setVisibility(ViewGroup.GONE);
             mIvShowMore.setVisibility(ViewGroup.GONE);
             mVSplitLine.setVisibility(ViewGroup.GONE);
         } else {
             mTvExplain.setVisibility(ViewGroup.VISIBLE);
             mVSplitLine.setVisibility(ViewGroup.VISIBLE);
-            mTvExplain.setText(mListBean.getDescription());
+            mTvExplain.setText(mListBean.getExplain());
             mTvExplain.post(new Runnable() {
                 @Override
                 public void run() {
-                    int charCount = mListBean.getDescription().length();
+                    int charCount = mListBean.getExplain().length();
                     if (charCount > MAX_CHAR_COUNT) {
                         mIvShowMore.setVisibility(ViewGroup.VISIBLE);
                     } else {
