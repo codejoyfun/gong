@@ -155,7 +155,7 @@ public class ProductImageDialog extends Dialog {
                 @Override
                 public void run() {
                     int charCount = mListBean.getExplain().length();
-                    if (charCount > MAX_CHAR_COUNT) {
+                    if (charCount > MAX_CHAR_COUNT || mListBean.getExplain().contains("\n")) {
                         mIvShowMore.setVisibility(ViewGroup.VISIBLE);
                     } else {
                         mIvShowMore.setVisibility(ViewGroup.GONE);
