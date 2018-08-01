@@ -315,7 +315,7 @@ public class ProductListFragment extends NetWorkFragment {
             }
 
             FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + bean.getImage().getImageSmall());
-            viewHolder.unit1.setText(bean.getUom());
+            viewHolder.unit1.setText(bean.getStockUom());
             return convertView;
         }
 

@@ -531,10 +531,10 @@ public class TransferInModifyActivity extends NetWorkActivity {
                 } else {
                     viewHolder.tv_price.setText("");
                 }
-
+                viewHolder.unit1.setText(basicBean.getStockUom());
                 FrecoFactory.getInstance(mContext).disPlay(viewHolder.sDv, Constant.BASE_URL + basicBean.getImage().getImageSmall());
             }
-            viewHolder.unit1.setText(bean.getUom());
+
             viewHolder.tv_count.setText(NumberUtil.getIOrD(countMap.get(String.valueOf(bean.getProductID()))));
 
             viewHolder.iv_delete.setVisibility(mEditMode ? View.VISIBLE : View.GONE);

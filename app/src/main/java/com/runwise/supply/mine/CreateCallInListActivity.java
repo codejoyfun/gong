@@ -532,10 +532,10 @@ public class CreateCallInListActivity extends NetWorkActivity {
                 } else {
                     viewHolder.tv_price.setText("");
                 }
-
+                viewHolder.unit1.setText(basicBean.getStockUom());
                 if(basicBean.getImage()!=null)FrecoFactory.getInstance(mContext).displayWithoutHost(viewHolder.sDv, basicBean.getImage().getImageSmall());
             }
-            viewHolder.unit1.setText(bean.getUom());
+
             viewHolder.tv_count.setText(String.valueOf(countMap.get(String.valueOf(bean.getProductID()))));
 
             viewHolder.iv_delete.setVisibility(mEditMode ? View.VISIBLE : View.GONE);
