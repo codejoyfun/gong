@@ -313,6 +313,7 @@ public class TransferOutActivity extends NetWorkActivity implements LoadingLayou
         TextView tv_submit = (TextView) dialogViewNoBatch.findViewById(R.id.tv_submit);
         ImageView iv_reduce = (ImageView) dialogViewNoBatch.findViewById(R.id.iv_reduce);
         ImageView iv_add = (ImageView) dialogViewNoBatch.findViewById(R.id.iv_add);
+        TextView unit1 = (TextView) dialogViewNoBatch.findViewById(R.id.unit1);
         final NoWatchEditText et_count = (NoWatchEditText) dialogViewNoBatch.findViewById(R.id.et_count);
         FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, transferBatchLine.getProductImage());
         ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
@@ -330,7 +331,7 @@ public class TransferOutActivity extends NetWorkActivity implements LoadingLayou
             }
             content.setText(sb.toString());
         }
-
+        unit1.setText("/" + NumberUtil.getIOrD(transferBatchLine.getProductUomQty()) + transferBatchLine.getProductUom());
         tv_count.setText(NumberUtil.getIOrD(transferBatchLine.getProductUomQty()));
         et_count.setText(NumberUtil.getIOrD(transferBatchLine.getActualQty()));
 
@@ -409,6 +410,7 @@ public class TransferOutActivity extends NetWorkActivity implements LoadingLayou
         TextView tv_count = (TextView) dialogView.findViewById(R.id.tv_count);
         TextView tv_submit = (TextView) dialogView.findViewById(R.id.tv_submit);
         MaxHeightListView lv_batch = (MaxHeightListView) dialogView.findViewById(R.id.lv_batch);
+        TextView unit1 = (TextView) dialogViewNoBatch.findViewById(R.id.unit1);
         FrecoFactory.getInstance(getActivityContext()).displayWithoutHost(productImage, transferBatchLine.getProductImage());
         ProductBasicList.ListBean listBean = ProductBasicUtils.getBasicMap(getActivityContext()).get(transferBatchLine.getProductID());
         if (listBean != null) {
@@ -426,6 +428,7 @@ public class TransferOutActivity extends NetWorkActivity implements LoadingLayou
             content.setText(sb.toString());
         }
         tv_count.setText(NumberUtil.getIOrD(transferBatchLine.getProductUomQty()));
+        unit1.setText("/" + NumberUtil.getIOrD(transferBatchLine.getProductUomQty()) + transferBatchLine.getProductUom());
         TransferOutBatchAdapter transferOutBatchAdapter = new TransferOutBatchAdapter();
         transferOutBatchAdapter.setTotalCount(transferBatchLine.getProductUomQty());
         transferOutBatchAdapter.setData(transferBatchLine.getProductLotInfo());
