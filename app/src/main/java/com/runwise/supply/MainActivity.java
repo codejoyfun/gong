@@ -353,7 +353,11 @@ public class MainActivity extends NetWorkActivity {
 //            首页再去拿商品列表
             if (mFirstResume){
                 mFirstResume = false;
-                startService(new Intent(getActivityContext(),RunwiseService.class));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(new Intent(getActivityContext(), RunwiseService.class));
+                } else {
+                   startService(new Intent(getActivityContext(), RunwiseService.class));
+                }
             }
             Object request = null;
             sendConnection("/gongfu/message/unread", request, REQUEST_UNREAD, false, UnReadData.class);

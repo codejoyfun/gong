@@ -1,18 +1,15 @@
 package com.runwise.supply.tools;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.kids.commonframe.base.BaseEntity;
 import com.kids.commonframe.base.util.SPUtils;
 import com.kids.commonframe.base.util.ToastUtil;
 import com.kids.commonframe.base.util.net.NetWorkHelper;
-import com.kids.commonframe.base.view.CustomProgressDialog;
-import com.lidroid.xutils.DbUtils;
-import com.lidroid.xutils.db.sqlite.Selector;
-import com.lidroid.xutils.exception.DbException;
 import com.runwise.supply.R;
 import com.runwise.supply.entity.ProductListResponse;
 import com.runwise.supply.entity.ProductVersionRequest;
@@ -21,10 +18,9 @@ import com.runwise.supply.orderpage.ProductBasicUtils;
 import com.runwise.supply.orderpage.entity.ImageBean;
 import com.runwise.supply.orderpage.entity.ProductBasicList;
 
+import java.nio.channels.Selector;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.kids.commonframe.base.util.SPUtils.FILE_KEY_PRODUCT_CATEGORY_LIST;
@@ -55,6 +51,10 @@ public class RunwiseService extends IntentService implements NetWorkHelper.NetWo
     @Override
     public void onCreate() {
         super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForeground(Integer.MAX_VALUE,new Notification()); //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
+        }
+
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         netWorkHelper = new NetWorkHelper<BaseEntity>(this, this);
         sendServiceStatus(getString(R.string.service_start));
