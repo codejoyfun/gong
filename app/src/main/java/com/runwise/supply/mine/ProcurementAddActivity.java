@@ -184,8 +184,11 @@ public class ProcurementAddActivity extends NetWorkActivity implements LoadingLa
         });
         loadingLayout.setOnRetryClickListener(this);
         showIProgressDialog();
-        Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
-        startService(startIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(getActivityContext(), RunwiseService.class));
+        } else {
+            startService(new Intent(getActivityContext(), RunwiseService.class));
+        }
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter();

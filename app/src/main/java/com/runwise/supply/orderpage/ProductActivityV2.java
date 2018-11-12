@@ -1,12 +1,12 @@
 package com.runwise.supply.orderpage;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -49,8 +49,8 @@ import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.R;
+import com.runwise.supply.SampleApplicationLike;
 import com.runwise.supply.entity.CartCache;
 import com.runwise.supply.entity.CategoryRespone;
 import com.runwise.supply.entity.ProductListResponse;
@@ -184,8 +184,11 @@ public class ProductActivityV2 extends NetWorkActivity implements View.OnClickLi
         loadingLayout.setOnRetryClickListener(this);
         showIProgressDialog();
         if (RunwiseService.getStatus().equals(getString(R.string.service_finish)) || RunwiseService.getStatus().equals(getString(R.string.service_fail_finish)) ||RunwiseService.getStatus().equals(getString(R.string.service_fail_finish_protocol_close))){
-            Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
-            startService(startIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(new Intent(getActivityContext(), RunwiseService.class));
+            } else {
+                startService(new Intent(getActivityContext(), RunwiseService.class));
+            }
         }
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter();

@@ -87,8 +87,8 @@ android {
         applicationId "com.runwise.supply"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 20181103
-        versionName "V1.4.1"
+        versionCode 20181104
+        versionName "v1.4.1"
         multiDexEnabled true
         ndk {
             abiFilters "armeabi"

@@ -3,6 +3,7 @@ package com.runwise.supply.orderpage;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
 import com.kids.commonframe.base.util.SPUtils;
@@ -94,7 +95,11 @@ public class ProductBasicUtils {
             ToastUtil.show(context,"正在下载商品数据");
             if (RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish))||RunwiseService.getStatus().equals(context.getString(R.string.service_finish)) ||RunwiseService.getStatus().equals(context.getString(R.string.service_fail_finish_protocol_close))){
                 SPUtils.put(context, FILE_KEY_VERSION_PRODUCT_LIST, 0);
-                context.startService(new Intent(context,RunwiseService.class));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(new Intent(context, RunwiseService.class));
+                } else {
+                    context.startService(new Intent(context, RunwiseService.class));
+                }
             }
             return false;
         }

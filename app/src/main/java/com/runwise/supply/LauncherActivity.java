@@ -1,6 +1,7 @@
 package com.runwise.supply;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ImageView;
@@ -39,8 +40,11 @@ public class LauncherActivity extends BaseActivity {
            }
        }).start();
         // 像启动 Service 那样启动 IntentService
-        Intent startIntent = new Intent(getActivityContext(), RunwiseService.class);
-        startService(startIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(getActivityContext(), RunwiseService.class));
+        } else {
+            startService(new Intent(getActivityContext(), RunwiseService.class));
+        }
     }
 
    private void  getServerDate(){
